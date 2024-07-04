@@ -4,15 +4,15 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	Application.h
-// Author(s):	Anthon Reid 
+// File Name:	stubfile.h
+// Author(s):	name
 // 
 //------------------------------------------------------------------------------
 
 //******************************************************************************//
 // Includes																        //
 //******************************************************************************//
-#include "Core.h"
+#include "Null/Core/c.h"
 
 
 //******************************************************************************//
@@ -27,22 +27,22 @@
 
 //******************************************************************************//
 // Private structures													        //
+//******************************************************************************//
 
-namespace NULLENGINE
+
+
+class NLE_API Stub_Module
 {
-	class NLE_API Application
-	{
-	public:
-		Application();
+public:
+	Stub_Module();
+	~Stub_Module();
 
-		virtual ~Application();
+	virtual void Init() = 0;
+	virtual void Update() = 0;
+	virtual void Shutdown() = 0;
 
-		virtual void Run();
-	private:
+private:
 
-	};
+};
 
-	//To be defineded by user
 
-	Application* CreateApplication();
-}

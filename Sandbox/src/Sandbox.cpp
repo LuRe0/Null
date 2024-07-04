@@ -1,7 +1,7 @@
 #include "Null.h"
 #include <iostream>
 
-class Sandbox : public Application
+class Sandbox : public NULLENGINE::Application
 {
 public:
 	Sandbox() : Application()
@@ -17,7 +17,7 @@ private:
 
 };
 
-Application* CreateApplication()
+NULLENGINE::Application* NULLENGINE::CreateApplication()
 {
 	return new Sandbox;
 }

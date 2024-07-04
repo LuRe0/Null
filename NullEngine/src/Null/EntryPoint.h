@@ -17,7 +17,7 @@
 //******************************************************************************//
 // Definitions  														        //
 //******************************************************************************//
-extern Application* CreateApplication();
+extern NULLENGINE::Application* NULLENGINE::CreateApplication();
 
 //******************************************************************************//
 // Private constants														    //
@@ -40,7 +40,12 @@ extern Application* CreateApplication();
 #ifdef NLE_PLATFORM_WINDOWS
 	int main(int argc, char** argv)
 	{
-		auto app = CreateApplication();
+		NULLENGINE::Trace::Init();
+
+		NLE_CORE_WARN("Initialized Log!");
+		NLE_INFO("Initialized Log!");
+
+		auto app = NULLENGINE::CreateApplication();
 
 		app->Run();
 

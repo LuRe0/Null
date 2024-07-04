@@ -16,7 +16,7 @@
 //FOR USE BY OUTSIDE APPLICATIONS
 
 #include "Null/Application.h"
-
+#include "Null/Trace.h" 
 #include "Null/EntryPoint.h"
 
 //******************************************************************************//

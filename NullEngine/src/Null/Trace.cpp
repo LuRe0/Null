@@ -1,10 +1,7 @@
-#pragma once
-
-//------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 //
-// File Name:	Application.h
+// File Name:	Trace.cpp
 // Author(s):	Anthon Reid 
 // 
 //------------------------------------------------------------------------------
@@ -12,37 +9,34 @@
 //******************************************************************************//
 // Includes																        //
 //******************************************************************************//
-#include "Core.h"
-
-
-//******************************************************************************//
-// Definitions  														        //
-//******************************************************************************//
+#include "stdafx.h"
+#include "Trace.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
 
 
 
 //******************************************************************************//
-// Private constants														    //
+// Public Variables															    //
 //******************************************************************************//
 
 //******************************************************************************//
-// Private structures													        //
+// Function Declarations												        //
+//******************************************************************************//
 
 namespace NULLENGINE
 {
-	class NLE_API Application
+	std::shared_ptr<spdlog::logger> Trace::s_CoreLogger;
+	std::shared_ptr<spdlog::logger> Trace::s_ClientLogger;
+
+	void Trace::Init()
 	{
-	public:
-		Application();
+		spdlog::set_pattern("%^[%T] %n: %v%$");
 
-		virtual ~Application();
+		s_CoreLogger = spdlog::stdout_color_mt("NULL ENGINE");
+		s_CoreLogger->set_level(spdlog::level::trace);
 
-		virtual void Run();
-	private:
+		s_ClientLogger = spdlog::stdout_color_mt("APP");
+		s_ClientLogger->set_level(spdlog::level::trace);
 
-	};
-
-	//To be defineded by user
-
-	Application* CreateApplication();
+	}
 }

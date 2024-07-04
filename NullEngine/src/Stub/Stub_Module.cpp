@@ -1,16 +1,17 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	Application.cpp
-// Author(s):	Anthon Reid 
+// File Name:	Stub_Module.cpp
+// Author(s):	Anthon Reid
 // 
 //------------------------------------------------------------------------------
 
 //******************************************************************************//
 // Includes																        //
 //******************************************************************************//
-#include "stdafx.h"
-#include "Application.h"
+#include "Null/stdafx.h"
+#include "Stub_Module.h"
+
 
 
 
@@ -22,22 +23,12 @@
 // Function Declarations												        //
 //******************************************************************************//
 
-namespace NULLENGINE
+
+
+Stub_Module::Stub_Module()
 {
-	Application::Application()
-	{
-	}
-
-	Application::~Application()
-	{
-	}
-
-	void Application::Run()
-	{
-		while (true)
-		{
-
-		}
-	}
 }
 
+Stub_Module::~Stub_Module()
+{
+}

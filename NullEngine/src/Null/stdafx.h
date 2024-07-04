@@ -4,7 +4,7 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	Application.h
+// File Name:	stdafx.h
 // Author(s):	Anthon Reid 
 // 
 //------------------------------------------------------------------------------
@@ -12,14 +12,25 @@
 //******************************************************************************//
 // Includes																        //
 //******************************************************************************//
-#include "Core.h"
+// add headers that you want to pre-compile here
+#include <iostream>
+#include <vector>
+#include <string>
+#include <map>
+#include <algorithm>
+#include <memory>
+#include <functional>
+#include <sstream>
+#include <fstream>
+#include <string_view>
 
+#ifdef NLE_PLATFORM_WINDOWS
+#include <Windows.h>
+#endif // NLE_PLATFORM_WINDOWS
 
 //******************************************************************************//
 // Definitions  														        //
 //******************************************************************************//
-
-
 
 //******************************************************************************//
 // Private constants														    //
@@ -27,22 +38,15 @@
 
 //******************************************************************************//
 // Private structures													        //
+//******************************************************************************//
 
-namespace NULLENGINE
-{
-	class NLE_API Application
-	{
-	public:
-		Application();
 
-		virtual ~Application();
 
-		virtual void Run();
-	private:
 
-	};
 
-	//To be defineded by user
+//******************************************************************************//
+// Private Functions													        //
+//******************************************************************************//
 
-	Application* CreateApplication();
-}
+
+

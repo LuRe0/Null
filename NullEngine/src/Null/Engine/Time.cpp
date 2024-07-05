@@ -1,33 +1,39 @@
-#pragma once
-
-//------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 //
-// File Name:	Core.h
-// Author(s):	Anthon Reid 
+// File Name:	Time.cpp
+// Author(s):	Anthon Reid
 // 
 //------------------------------------------------------------------------------
 
 //******************************************************************************//
 // Includes																        //
 //******************************************************************************//
+#include "stdafx.h"
+#include "Time.h"
+#include <algorithm>
 
-//FOR USE BY OUTSIDE APPLICATIONS
 
-#include "Null/Application.h"
-#include "Null/Tools/Trace.h" 
-#include "Null/EntryPoint.h"
-
-//******************************************************************************//
-// Definitions  														        //
-//******************************************************************************//
 
 
 //******************************************************************************//
-// Private constants														    //
+// Public Variables															    //
 //******************************************************************************//
 
 //******************************************************************************//
-// Private structures													        //
+// Function Declarations												        //
 //******************************************************************************//
+
+namespace NULLENGINE
+{
+	double m_previousTime;
+	float m_DeltaTime;
+
+	void Time::Update()
+	{
+		double currentTime = glfwGetTime();
+		m_deltaTime = static_cast<float>(currentTime - m_previousTime);
+		m_previousTime = currentTime;
+		m_deltaTime = std::clamp(m_deltaTime, 0.0f, 0.05f);
+	}
+}

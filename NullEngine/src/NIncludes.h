@@ -1,24 +1,29 @@
 #pragma once
+#define NWINDOW_H
 
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 //
-// File Name:	EntryPoint.h
-// Author(s):	Anthon Reid 
+// File Name:	NIncludes.h
+// Author(s):	name
 // 
 //------------------------------------------------------------------------------
 
 //******************************************************************************//
 // Includes																        //
 //******************************************************************************//
-#include "Application.h"
-#include "stdafx.h"
+#include "Null/Engine/Modules/NWindow.h"
+#include "Null/Engine/NEngine.h"
+#include "Null/Engine/Time.h"
+#include "Null/Tools/Trace.h"
+
 
 //******************************************************************************//
 // Definitions  														        //
 //******************************************************************************//
-extern NULLENGINE::Application* NULLENGINE::CreateApplication();
+
+
 
 //******************************************************************************//
 // Private constants														    //
@@ -27,35 +32,3 @@ extern NULLENGINE::Application* NULLENGINE::CreateApplication();
 //******************************************************************************//
 // Private structures													        //
 //******************************************************************************//
-
-
-
-
-
-//******************************************************************************//
-// Private Functions													        //
-//******************************************************************************//
-
-
-
-#ifdef NLE_PLATFORM_WINDOWS
-	int main(int argc, char** argv)
-	{
-		NULLENGINE::Trace::Init();
-
-		NLE_CORE_WARN("Initialized Log!");
-		NLE_INFO("Initialized Log!");
-
-		auto app = NULLENGINE::CreateApplication();
-	
-		app->Init();
-
-		app->Run();
-
-		delete app;
-	}
-#else
-#error NullEngine only supports Windows.
-
-#endif // NE_PLATFORM_WINDOWN
-

@@ -4,21 +4,23 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	EntryPoint.h
-// Author(s):	Anthon Reid 
+// File Name:	Time.h
+// Author(s):	name
 // 
 //------------------------------------------------------------------------------
 
 //******************************************************************************//
 // Includes																        //
 //******************************************************************************//
-#include "Application.h"
-#include "stdafx.h"
+#include "Null/Core.h"
+#include "GLFW/glfw3.h"
+
 
 //******************************************************************************//
 // Definitions  														        //
 //******************************************************************************//
-extern NULLENGINE::Application* NULLENGINE::CreateApplication();
+
+
 
 //******************************************************************************//
 // Private constants														    //
@@ -29,33 +31,33 @@ extern NULLENGINE::Application* NULLENGINE::CreateApplication();
 //******************************************************************************//
 
 
-
-
-
-//******************************************************************************//
-// Private Functions													        //
-//******************************************************************************//
-
-
-
-#ifdef NLE_PLATFORM_WINDOWS
-	int main(int argc, char** argv)
+namespace NULLENGINE
+{
+	//! Wrapper class for delta time
+	class NLE_API Time
 	{
-		NULLENGINE::Trace::Init();
+	public:
 
-		NLE_CORE_WARN("Initialized Log!");
-		NLE_INFO("Initialized Log!");
+		// Get the delta time
+		float DeltaTime() const {return m_deltaTime;}
 
-		auto app = NULLENGINE::CreateApplication();
-	
-		app->Init();
+		//! Initialize class
+		static Time& Instance()
+		{
+			static Time instance;
+			return instance;
+		}
 
-		app->Run();
+		//! Update current delta time
+		void Update();
 
-		delete app;
-	}
-#else
-#error NullEngine only supports Windows.
+	private:
+		// Private constructor and destructor
+		Time() : m_previousTime(glfwGetTime()), m_deltaTime(0.0f) {}
+		~Time() {}
 
-#endif // NE_PLATFORM_WINDOWN
+		double m_previousTime;
+		float m_deltaTime;
 
+	};
+}

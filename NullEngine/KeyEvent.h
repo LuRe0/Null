@@ -4,21 +4,24 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	EntryPoint.h
-// Author(s):	Anthon Reid 
+// File Name:	NEngine.h
+// Author(s):	name
 // 
 //------------------------------------------------------------------------------
 
 //******************************************************************************//
 // Includes																        //
 //******************************************************************************//
-#include "Application.h"
 #include "stdafx.h"
+#include "Null/Core.h"
+#include "Null/Events/IEvents.h"
+
 
 //******************************************************************************//
 // Definitions  														        //
 //******************************************************************************//
-extern NULLENGINE::Application* NULLENGINE::CreateApplication();
+
+
 
 //******************************************************************************//
 // Private constants														    //
@@ -28,34 +31,16 @@ extern NULLENGINE::Application* NULLENGINE::CreateApplication();
 // Private structures													        //
 //******************************************************************************//
 
+namespace NULLENGINE
+{
 
-
-
-
-//******************************************************************************//
-// Private Functions													        //
-//******************************************************************************//
-
-
-
-#ifdef NLE_PLATFORM_WINDOWS
-	int main(int argc, char** argv)
+	class NLE_API KeyEvent : public Event
 	{
-		NULLENGINE::Trace::Init();
+	public:
+		KeyEvent ();
+		~KeyEvent ();
 
-		NLE_CORE_WARN("Initialized Log!");
-		NLE_INFO("Initialized Log!");
+	private:
 
-		auto app = NULLENGINE::CreateApplication();
-	
-		app->Init();
-
-		app->Run();
-
-		delete app;
-	}
-#else
-#error NullEngine only supports Windows.
-
-#endif // NE_PLATFORM_WINDOWN
-
+	};
+}

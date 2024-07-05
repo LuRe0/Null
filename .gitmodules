@@ -1,4 +1,6 @@
 [submodule "NullEngine/vendor/spdlog"]
 	path = NullEngine/vendor/spdlog
 	url = https://github.com/gabime/spdlog.git
-
+[submodule "NullEngine/vendor/GLFW"]
+	path = NullEngine/vendor/GLFW
+	url = https://github.com/TheCherno/GLFW

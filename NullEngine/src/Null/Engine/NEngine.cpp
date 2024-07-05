@@ -1,8 +1,8 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	Trace.cpp
-// Author(s):	Anthon Reid 
+// File Name:	NEngine.cpp
+// Author(s):	Anthon Reid
 // 
 //------------------------------------------------------------------------------
 
@@ -10,8 +10,9 @@
 // Includes																        //
 //******************************************************************************//
 #include "stdafx.h"
-#include "Trace.h"
-#include "spdlog/sinks/stdout_color_sinks.h"
+#include "NEngine.h"
+#include "Null/Engine/Modules/Base/IModule.h"
+
 
 
 
@@ -25,18 +26,45 @@
 
 namespace NULLENGINE
 {
-	std::shared_ptr<spdlog::logger> Trace::s_CoreLogger;
-	std::shared_ptr<spdlog::logger> Trace::s_ClientLogger;
-
-	void Trace::Init()
+	void NEngine::Init()
 	{
-		spdlog::set_pattern("%^[%T] %n: %v%$");
-
-		s_CoreLogger = spdlog::stdout_color_mt("NULL ENGINE");
-		s_CoreLogger->set_level(spdlog::level::trace);
-
-		s_ClientLogger = spdlog::stdout_color_mt("APP");
-		s_ClientLogger->set_level(spdlog::level::trace);
+		// Init each component
+		for (int i = 0; i < m_Modules.size(); i++)
+		{
+			m_Modules[i].first->Init();
+		}
 
 	}
+
+	void NEngine::Update(float dt)
+	{
+		// Init each component
+		for (int i = 0; i < m_Modules.size(); i++)
+		{
+			m_Modules[i].first->Update(dt);
+		}
+	}
+
+	void NEngine::Shutdown()
+	{
+	}
+
+	void NEngine::Add(IModule* component, const std::string_view& name)
+	{
+		component->SetParent(this);
+		m_Modules.push_back({ component, std::string(name.data()) });
+	}
+
+	IModule* NEngine::Get(const std::string_view& name) const
+	{
+		for (int i = 0; i < m_Modules.size(); ++i)
+		{
+			if (m_Modules[i].second == name)
+			{
+				return m_Modules[i].first;
+			}
+		}
+		return nullptr;
+	}
+
 }

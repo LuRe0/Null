@@ -4,33 +4,23 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	stdafx.h
-// Author(s):	Anthon Reid 
+// File Name:	NWindow.h
+// Author(s):	name
 // 
 //------------------------------------------------------------------------------
 
 //******************************************************************************//
 // Includes																        //
 //******************************************************************************//
-// add headers that you want to pre-compile here
-#include <iostream>
-#include <vector>
-#include <string>
-#include <map>
-#include <algorithm>
-#include <memory>
-#include <functional>
-#include <sstream>
-#include <fstream>
-#include <string_view>
+#include "Null/Core.h"
+#include "Null/Engine/Modules/Base/IModule.h"
 
-#ifdef NLE_PLATFORM_WINDOWS
-#include <Windows.h>
-#endif // NLE_PLATFORM_WINDOWS
 
 //******************************************************************************//
 // Definitions  														        //
 //******************************************************************************//
+
+
 
 //******************************************************************************//
 // Private constants														    //
@@ -41,12 +31,24 @@
 //******************************************************************************//
 
 
+namespace NULLENGINE
+{
+	class NLE_API NWindow : public IModule
+	{
+	public:
 
+		void Load() override;
+		//! Virtual Init function
+		void Init() override;
+		//! Virtual Update function
+		void Update(float dt) override;
 
+		void Unload() override;
+		//! Virtual Shutdown function
+		void Shutdown() override;
 
-//******************************************************************************//
-// Private Functions													        //
-//******************************************************************************//
+	private:
 
+	};
 
-
+}

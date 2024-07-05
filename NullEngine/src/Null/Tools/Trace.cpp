@@ -1,18 +1,17 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	Stub_Module.cpp
-// Author(s):	Anthon Reid
+// File Name:	Trace.cpp
+// Author(s):	Anthon Reid 
 // 
 //------------------------------------------------------------------------------
 
 //******************************************************************************//
 // Includes																        //
 //******************************************************************************//
-#include "Null/stdafx.h"
-#include "Stub_Module.h"
-
-
+#include "stdafx.h"
+#include "Trace.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
 
 
 //******************************************************************************//
@@ -23,12 +22,20 @@
 // Function Declarations												        //
 //******************************************************************************//
 
-
-
-Stub_Module::Stub_Module()
+namespace NULLENGINE
 {
-}
+	std::shared_ptr<spdlog::logger> Trace::s_CoreLogger;
+	std::shared_ptr<spdlog::logger> Trace::s_ClientLogger;
 
-Stub_Module::~Stub_Module()
-{
+	void Trace::Init()
+	{
+		spdlog::set_pattern("%^[%T] %n: %v%$");
+
+		s_CoreLogger = spdlog::stdout_color_mt("NULL ENGINE");
+		s_CoreLogger->set_level(spdlog::level::trace);
+
+		s_ClientLogger = spdlog::stdout_color_mt("APP");
+		s_ClientLogger->set_level(spdlog::level::trace);
+
+	}
 }

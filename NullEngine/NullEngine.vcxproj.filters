@@ -1,48 +1,94 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="Null">
+      <UniqueIdentifier>{20D5897C-0C0C-8B0D-B5F8-7010A10E070F}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    <Filter Include="Null\Engine">
+      <UniqueIdentifier>{A5BBA801-1171-21F7-9A65-1BCE061A18FB}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="Null\Engine\Base">
+      <UniqueIdentifier>{4F27B103-3B20-D055-6452-B5DA50AAAF61}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Null\Engine\Modules">
+      <UniqueIdentifier>{6D1D03B6-D97E-E0C3-62EC-2676CE4C1783}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Null\Engine\Modules\Base">
+      <UniqueIdentifier>{17E63797-030B-8717-2C56-6CA718DA8535}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Null\Events">
+      <UniqueIdentifier>{047D3802-7032-B1F7-F926-ABCE65DBA7FB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Null\Tools">
+      <UniqueIdentifier>{A071EE46-8C29-3094-F530-09F0E107CB84}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Null\Core.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <ClInclude Include="src\NIncludes.h" />
+    <ClInclude Include="src\Null.h" />
     <ClInclude Include="src\Null\Application.h">
-      <Filter>Header Files</Filter>
+      <Filter>Null</Filter>
     </ClInclude>
-    <ClInclude Include="src\Null.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\Null\Core.h">
+      <Filter>Null</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Base\IEngine.h">
+      <Filter>Null\Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Modules\Base\IModule.h">
+      <Filter>Null\Engine\Modules\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Modules\NStubModule.h">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Modules\NWindow.h">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\NEngine.h">
+      <Filter>Null\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Time.h">
+      <Filter>Null\Engine</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\EntryPoint.h">
-      <Filter>Header Files</Filter>
+      <Filter>Null</Filter>
     </ClInclude>
-    <ClInclude Include="src\Null\stdafx.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\Null\Events\IEvents.h">
+      <Filter>Null\Events</Filter>
     </ClInclude>
-    <ClInclude Include="src\Null\Trace.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\Null\Tools\Trace.h">
+      <Filter>Null\Tools</Filter>
     </ClInclude>
+    <ClInclude Include="src\stdafx.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Null\Application.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Null</Filter>
     </ClCompile>
-    <ClCompile Include="src\Null\stdafx.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\Null\Engine\Base\IEngine.cpp">
+      <Filter>Null\Engine\Base</Filter>
     </ClCompile>
-    <ClCompile Include="src\Null\Trace.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\Null\Engine\Modules\Base\IModule.cpp">
+      <Filter>Null\Engine\Modules\Base</Filter>
     </ClCompile>
+    <ClCompile Include="src\Null\Engine\Modules\NStubModule.cpp">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Modules\NWindow.cpp">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\NEngine.cpp">
+      <Filter>Null\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Time.cpp">
+      <Filter>Null\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Events\IEvents.cpp">
+      <Filter>Null\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Tools\Trace.cpp">
+      <Filter>Null\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="src\stdafx.cpp" />
   </ItemGroup>
 </Project>

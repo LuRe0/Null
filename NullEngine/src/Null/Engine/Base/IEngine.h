@@ -40,10 +40,11 @@ namespace NULLENGINE
 		virtual void Add(IModule* module, const std::string_view& name) = 0;
 		virtual IModule* Get(const std::string_view& name) const = 0;
 
+		virtual void Load() {};
 		virtual void Init() = 0;
 		virtual void Update(float dt) = 0;
+		virtual void Unload() {};
 		virtual void Shutdown() = 0;
-
 		template<typename T>
 		T* Get() const
 		{

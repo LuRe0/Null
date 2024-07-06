@@ -1,7 +1,7 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	KeyEvent.cpp
+// File Name:	Scene.cpp
 // Author(s):	Anthon Reid
 // 
 //------------------------------------------------------------------------------
@@ -10,7 +10,9 @@
 // Includes																        //
 //******************************************************************************//
 #include "stdafx.h"
-#include "KeyEvent.h"
+#include "Scene.h"
+
+
 
 
 //******************************************************************************//
@@ -21,13 +23,32 @@
 // Function Declarations												        //
 //******************************************************************************//
 
+
 namespace NULLENGINE
 {
-	KeyEvent::KeyEvent()
+
+	void Scene::Load()
 	{
 	}
 
-	KeyEvent ::~KeyEvent()
+	void Scene::Init()
 	{
 	}
+
+	void Scene::Update(float dt)
+	{
+	}
+
+	void Scene::Render()
+	{
+	}
+
+	void Scene::Unload()
+	{
+	}
+
+	void Scene::Shutdown()
+	{
+	}
+
 }

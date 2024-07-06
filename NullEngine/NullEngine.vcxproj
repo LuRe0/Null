@@ -79,10 +79,10 @@
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NLE_PLATFORM_WINDOWS;NLE_BUILD_DLL;NLE_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\JSON\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -100,9 +100,10 @@
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NLE_PLATFORM_WINDOWS;NLE_BUILD_DLL;NLE_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\JSON\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -120,9 +121,10 @@
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NLE_PLATFORM_WINDOWS;NLE_BUILD_DLL;NLE_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\JSON\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -135,15 +137,16 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="KeyEvent.h" />
     <ClInclude Include="src\NIncludes.h" />
     <ClInclude Include="src\Null.h" />
     <ClInclude Include="src\Null\Application.h" />
     <ClInclude Include="src\Null\Core.h" />
     <ClInclude Include="src\Null\Engine\Base\IEngine.h" />
     <ClInclude Include="src\Null\Engine\Modules\Base\IModule.h" />
+    <ClInclude Include="src\Null\Engine\Modules\NSceneManager.h" />
     <ClInclude Include="src\Null\Engine\Modules\NWindow.h" />
     <ClInclude Include="src\Null\Engine\NEngine.h" />
+    <ClInclude Include="src\Null\Engine\Subsystems\Scene.h" />
     <ClInclude Include="src\Null\Engine\Time.h" />
     <ClInclude Include="src\Null\EntryPoint.h" />
     <ClInclude Include="src\Null\Events\IEvents.h" />
@@ -151,12 +154,13 @@
     <ClInclude Include="src\stdafx.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="KeyEvent.cpp" />
     <ClCompile Include="src\Null\Application.cpp" />
     <ClCompile Include="src\Null\Engine\Base\IEngine.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\Base\IModule.cpp" />
+    <ClCompile Include="src\Null\Engine\Modules\NSceneManager.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NWindow.cpp" />
     <ClCompile Include="src\Null\Engine\NEngine.cpp" />
+    <ClCompile Include="src\Null\Engine\Subsystems\Scene.cpp" />
     <ClCompile Include="src\Null\Engine\Time.cpp" />
     <ClCompile Include="src\Null\Events\IEvents.cpp" />
     <ClCompile Include="src\Null\Tools\Trace.cpp" />

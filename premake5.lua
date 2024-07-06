@@ -13,6 +13,8 @@ outputDir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 includeDir = {}
 
 includeDir["GLFW"] = "NullEngine/vendor/GLFW/include" 
+includeDir["JSON"] = "NullEngine/vendor/JSON/include" 
+
 
 -- Include the GLFW project
 include "NullEngine/vendor/GLFW"
@@ -21,6 +23,7 @@ project "NullEngine"
     location "NullEngine"
     kind "SharedLib"
     language "C++"
+    cppdialect "C++20"
 
     targetdir ("bin/" .. outputDir .. "/%{prj.name}")
     objdir ("bin-int/" .. outputDir .. "/%{prj.name}")
@@ -38,8 +41,8 @@ project "NullEngine"
     {
         "%{prj.name}/src",
          "%{prj.name}/vendor/spdlog/include",
-         "%{includeDir.GLFW}"
-        --  "%{prj.name}/vendor/GLFW/include/GLFW"
+         "%{includeDir.GLFW}",
+         "%{includeDir.JSON}"
     }
 
     defines
@@ -84,6 +87,8 @@ project "Sandbox"
     location "Sandbox"
     kind "ConsoleApp"
     language "C++"
+    cppdialect "C++20"
+
 
     targetdir ("bin/" .. outputDir .. "/%{prj.name}")
     objdir ("bin-int/" .. outputDir .. "/%{prj.name}")
@@ -97,10 +102,9 @@ project "Sandbox"
     includedirs
     {
          "NullEngine/vendor/spdlog/include",
-        --  "NullEngine/vendor/GLFW/include/GLFW",
          "NullEngine/src",
-         "%{includeDir.GLFW}"
-         
+         "%{includeDir.GLFW}",
+         "%{includeDir.JSON}"
     }
 
     defines

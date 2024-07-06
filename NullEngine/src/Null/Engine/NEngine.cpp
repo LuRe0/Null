@@ -12,6 +12,7 @@
 #include "stdafx.h"
 #include "NEngine.h"
 #include "Null/Engine/Modules/Base/IModule.h"
+#include "Null/Tools/Trace.h"
 
 
 
@@ -26,6 +27,14 @@
 
 namespace NULLENGINE
 {
+	void NEngine::Load()
+	{
+		// Init each component
+		for (int i = 0; i < m_Modules.size(); i++)
+		{
+			m_Modules[i].first->Load();
+		}
+	}
 	void NEngine::Init()
 	{
 		// Init each component
@@ -45,14 +54,27 @@ namespace NULLENGINE
 		}
 	}
 
+	void NEngine::Unload()
+	{
+	}
+
 	void NEngine::Shutdown()
 	{
 	}
 
 	void NEngine::Add(IModule* component, const std::string_view& name)
 	{
-		component->SetParent(this);
-		m_Modules.push_back({ component, std::string(name.data()) });
+		if (component)
+		{
+			component->SetParent(this);
+			m_Modules.push_back({ component, std::string(name.data()) });
+			std::string message = "Added " + (std::string)name + " To Engine";
+			NLE_TRACE(message);
+			return;
+		}
+
+		std::string message = "Failed to add " + (std::string)name + " To Engine";
+		NLE_TRACE(message);
 	}
 
 	IModule* NEngine::Get(const std::string_view& name) const

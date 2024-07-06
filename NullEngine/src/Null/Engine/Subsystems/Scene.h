@@ -4,21 +4,22 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	EntryPoint.h
-// Author(s):	Anthon Reid 
+// File Name:	Scene.h
+// Author(s):	name
 // 
 //------------------------------------------------------------------------------
 
 //******************************************************************************//
 // Includes																        //
 //******************************************************************************//
-#include "Application.h"
-#include "stdafx.h"
+#include "Null/Core.h"
+
 
 //******************************************************************************//
 // Definitions  														        //
 //******************************************************************************//
-extern NULLENGINE::Application* NULLENGINE::CreateApplication();
+
+
 
 //******************************************************************************//
 // Private constants														    //
@@ -29,37 +30,58 @@ extern NULLENGINE::Application* NULLENGINE::CreateApplication();
 //******************************************************************************//
 
 
+namespace NULLENGINE
+{
+	using EntityID = uint32_t;
 
-
-
-//******************************************************************************//
-// Private Functions													        //
-//******************************************************************************//
-
-
-
-#ifdef NLE_PLATFORM_WINDOWS
-	int main(int argc, char** argv)
+	class NLE_API Scene
 	{
-		NULLENGINE::Trace::Init();
+        Scene(const std::string& name);
+        ~Scene();
 
-		NLE_CORE_WARN("Initialized Log!");
-		NLE_INFO("Initialized Log!");
+		/// <summary>
+		/// This function will be used to read json and load in entities
+		/// </summary>
+		void Load();
 
-		auto app = NULLENGINE::CreateApplication();
-	
-		app->Load();
-		app->Init();
+		//!  Init function
+		void Init();
 
-		app->Update();
+		//!  Update function
+		void Update(float dt) ;
 
-		app->Shutdown();
-		app->Unload();
+		//!  function
+		void Render();
 
-		delete app;
-	}
-#else
-#error NullEngine only supports Windows.
+		void Unload();
 
-#endif // NE_PLATFORM_WINDOWN
+		//!  Shutdown function
+		void Shutdown();
 
+		const std::string_view& GetNextScene() { return m_NextScene; }
+
+		const std::string_view& GetName() { return m_Name; }
+
+    private:
+        std::string m_Name;
+
+		std::string m_NextScene;
+
+
+
+        std::vector<EntityID> m_Entity;
+	};
+
+
+	class Layer
+	{
+	public:
+		Layer() =  default;
+		~Layer() = default;
+
+	private:
+
+		bool m_Active = 0; // is the scene active
+		bool m_MainGame = 0;
+	};
+}

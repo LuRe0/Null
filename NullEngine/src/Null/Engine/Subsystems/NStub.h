@@ -4,21 +4,22 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	EntryPoint.h
-// Author(s):	Anthon Reid 
+// File Name:	NStub.h
+// Author(s):	name
 // 
 //------------------------------------------------------------------------------
 
 //******************************************************************************//
 // Includes																        //
 //******************************************************************************//
-#include "Application.h"
-#include "stdafx.h"
+#include "Null/Core.h"
+
 
 //******************************************************************************//
 // Definitions  														        //
 //******************************************************************************//
-extern NULLENGINE::Application* NULLENGINE::CreateApplication();
+
+
 
 //******************************************************************************//
 // Private constants														    //
@@ -29,37 +30,16 @@ extern NULLENGINE::Application* NULLENGINE::CreateApplication();
 //******************************************************************************//
 
 
-
-
-
-//******************************************************************************//
-// Private Functions													        //
-//******************************************************************************//
-
-
-
-#ifdef NLE_PLATFORM_WINDOWS
-	int main(int argc, char** argv)
+namespace NULLENGINE
+{
+	class NLE_API NStub
 	{
-		NULLENGINE::Trace::Init();
+	public:
 
-		NLE_CORE_WARN("Initialized Log!");
-		NLE_INFO("Initialized Log!");
 
-		auto app = NULLENGINE::CreateApplication();
-	
-		app->Load();
-		app->Init();
 
-		app->Update();
+	private:
 
-		app->Shutdown();
-		app->Unload();
+	};
 
-		delete app;
-	}
-#else
-#error NullEngine only supports Windows.
-
-#endif // NE_PLATFORM_WINDOWN
-
+}

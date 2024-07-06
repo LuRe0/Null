@@ -4,3 +4,6 @@
 [submodule "NullEngine/vendor/GLFW"]
 	path = NullEngine/vendor/GLFW
 	url = https://github.com/TheCherno/GLFW
+[submodule "NullEngine/vendor/JSON"]
+	path = NullEngine/vendor/JSON
+	url = https://github.com/nlohmann/json

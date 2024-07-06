@@ -47,8 +47,6 @@ namespace NULLENGINE
 		virtual void Shutdown();
 
 		virtual ~Application();
-
-		virtual void Run();
 	private:
 		IEngine* m_NullEngine;
 	};

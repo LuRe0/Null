@@ -30,12 +30,14 @@ namespace NULLENGINE
 		IEngine& engine = NEngine::Instance();
 		
 		engine.Add<NULLENGINE::NWindow>();
+		engine.Add<NULLENGINE::NSceneManager>();
 
 		m_NullEngine = &engine;
 	}
 
 	void Application::Load()
 	{
+		m_NullEngine->Load();
 	}
 
 	void Application::Init()
@@ -45,30 +47,12 @@ namespace NULLENGINE
 
 	void Application::Update()
 	{
-	}
+		NWindow* window = m_NullEngine->Get<NWindow>();
 
-	void Application::Unload()
-	{
-	}
-
-	void Application::Shutdown()
-	{
-	}
-
-	Application::~Application()
-	{
-	}
-
-	void Application::Run()
-	{
-		 NWindow* window = m_NullEngine->Get<NWindow>();
-
-		 if (!window)
-			 return;
+		if (!window)
+			return;
 
 		Time& time = Time::Instance();
-
-
 
 		while (!window->WindowClosed())
 		{
@@ -80,5 +64,20 @@ namespace NULLENGINE
 			//NLE_TRACE(__cplusplus);
 		}
 	}
+
+	void Application::Unload()
+	{
+		m_NullEngine->Unload();
+	}
+
+	void Application::Shutdown()
+	{
+		m_NullEngine->Shutdown();
+	}
+
+	Application::~Application()
+	{
+	}
+
 }
 

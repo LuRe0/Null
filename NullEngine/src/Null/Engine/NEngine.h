@@ -39,8 +39,10 @@ namespace NULLENGINE
 	class NLE_API NEngine : public IEngine
 	{
 	public:
+		void Load() override;
 		void Init() override;           // Initialize FLEngine
 		void Update(float dt) override; // Update FLEngine
+		void Unload() override;
 		void Shutdown() override;       // Shutdown FLEngine
 
 		void Add(IModule* component, const std::string_view& name) override;

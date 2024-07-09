@@ -10,14 +10,20 @@
     <Filter Include="Null\Engine\Base">
       <UniqueIdentifier>{4F27B103-3B20-D055-6452-B5DA50AAAF61}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Null\Engine\Entities">
+      <UniqueIdentifier>{F9BDDBEB-E54C-65B5-8E6B-79B07AD9755B}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Null\Engine\Modules">
       <UniqueIdentifier>{6D1D03B6-D97E-E0C3-62EC-2676CE4C1783}</UniqueIdentifier>
     </Filter>
     <Filter Include="Null\Engine\Modules\Base">
       <UniqueIdentifier>{17E63797-030B-8717-2C56-6CA718DA8535}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Null\Events">
-      <UniqueIdentifier>{047D3802-7032-B1F7-F926-ABCE65DBA7FB}</UniqueIdentifier>
+    <Filter Include="Null\Engine\Submodules">
+      <UniqueIdentifier>{57920A45-438C-3397-2CF9-C9A718929903}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Null\Engine\Submodules\Events">
+      <UniqueIdentifier>{5B560797-C76E-EEC0-901B-7E5AFCF2825A}</UniqueIdentifier>
     </Filter>
     <Filter Include="Null\Tools">
       <UniqueIdentifier>{A071EE46-8C29-3094-F530-09F0E107CB84}</UniqueIdentifier>
@@ -35,10 +41,16 @@
     <ClInclude Include="src\Null\Engine\Base\IEngine.h">
       <Filter>Null\Engine\Base</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Engine\Entities\Entity.h">
+      <Filter>Null\Engine\Entities</Filter>
+    </ClInclude>
     <ClInclude Include="src\Null\Engine\Modules\Base\IModule.h">
       <Filter>Null\Engine\Modules\Base</Filter>
     </ClInclude>
-    <ClInclude Include="src\Null\Engine\Modules\NStubModule.h">
+    <ClInclude Include="src\Null\Engine\Modules\NEventManager.h">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Modules\NSceneManager.h">
       <Filter>Null\Engine\Modules</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Modules\NWindow.h">
@@ -47,14 +59,23 @@
     <ClInclude Include="src\Null\Engine\NEngine.h">
       <Filter>Null\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Events\CommonEvents.h">
+      <Filter>Null\Engine\Submodules\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Events\EventHandler.h">
+      <Filter>Null\Engine\Submodules\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Events\IEvents.h">
+      <Filter>Null\Engine\Submodules\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Scene.h">
+      <Filter>Null\Engine\Submodules</Filter>
+    </ClInclude>
     <ClInclude Include="src\Null\Engine\Time.h">
       <Filter>Null\Engine</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\EntryPoint.h">
       <Filter>Null</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Null\Events\IEvents.h">
-      <Filter>Null\Events</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Tools\Trace.h">
       <Filter>Null\Tools</Filter>
@@ -68,10 +89,16 @@
     <ClCompile Include="src\Null\Engine\Base\IEngine.cpp">
       <Filter>Null\Engine\Base</Filter>
     </ClCompile>
+    <ClCompile Include="src\Null\Engine\Entities\Entity.cpp">
+      <Filter>Null\Engine\Entities</Filter>
+    </ClCompile>
     <ClCompile Include="src\Null\Engine\Modules\Base\IModule.cpp">
       <Filter>Null\Engine\Modules\Base</Filter>
     </ClCompile>
-    <ClCompile Include="src\Null\Engine\Modules\NStubModule.cpp">
+    <ClCompile Include="src\Null\Engine\Modules\NEventManager.cpp">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Modules\NSceneManager.cpp">
       <Filter>Null\Engine\Modules</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Modules\NWindow.cpp">
@@ -80,11 +107,20 @@
     <ClCompile Include="src\Null\Engine\NEngine.cpp">
       <Filter>Null\Engine</Filter>
     </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Events\CommonEvents.cpp">
+      <Filter>Null\Engine\Submodules\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Events\EventHandler.cpp">
+      <Filter>Null\Engine\Submodules\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Events\IEvents.cpp">
+      <Filter>Null\Engine\Submodules\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Scene.cpp">
+      <Filter>Null\Engine\Submodules</Filter>
+    </ClCompile>
     <ClCompile Include="src\Null\Engine\Time.cpp">
       <Filter>Null\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Null\Events\IEvents.cpp">
-      <Filter>Null\Events</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Tools\Trace.cpp">
       <Filter>Null\Tools</Filter>

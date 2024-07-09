@@ -13,6 +13,7 @@
 #include "NSceneManager.h"
 #include "Null/Tools/Trace.h"
 #include <nlohmann/json.hpp>
+#include "Null/Engine/Submodules/Scene.h"
 
 using JSON = nlohmann::json;
 
@@ -24,9 +25,16 @@ using JSON = nlohmann::json;
 // Function Declarations												        //
 //******************************************************************************//
 
+void NULLENGINE::NSceneManager::RegisterScene(const std::string& name, std::shared_ptr<Scene> scene)
+{
+    m_Scenes[name] = scene;
+
+    NLE_CORE_TRACE("{0} scene addded successfully added to list", name);
+}
+
 void NULLENGINE::NSceneManager::Load()
 {
-    std::string filePath = std::string("../Data/Scenes/") + std::string("ScenePaths") + std::string(".json");
+    std::string filePath = std::string("../Data/Scenes/") + std::string("TestScene") + std::string(".json");
 
     // Open the JSON file
     std::ifstream inputFile(filePath);
@@ -36,19 +44,25 @@ void NULLENGINE::NSceneManager::Load()
     }
 
     // Parse the JSON file
-    JSON jsonData;
+    JSON sceneData;
+
     try {
-        inputFile >> jsonData;
+        inputFile >> sceneData;
     }
     catch (JSON::parse_error& e) {
         NLE_ERROR("Error: JSON parsing failed: _{0}", e.what());
         return ;
     }
 
-    //Read the list of scenes in this project
-    for (const auto& item : jsonData.at("Scenes")) {
-        m_SceneNames.push_back(item.at("name"));
-    }
+
+    std::string sceneName = sceneData["sceneName"];
+    auto scene = std::make_shared<Scene>();
+
+
+    RegisterScene(sceneName, scene);
+
+    scene->Load(sceneName,sceneData);
+    //ChangeScene(sceneName);
 }
 
 void NULLENGINE::NSceneManager::Init()

@@ -4,7 +4,7 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	NSceneManager.h
+// File Name:	NEventManager.h
 // Author(s):	name
 // 
 //------------------------------------------------------------------------------
@@ -12,8 +12,10 @@
 //******************************************************************************//
 // Includes																        //
 //******************************************************************************//
+#include "stdafx.h"
 #include "Null/Core.h"
 #include "Null/Engine/Modules/Base/IModule.h"
+#include "Null/Engine/Submodules/Events/EventHandler.h"
 
 
 //******************************************************************************//
@@ -33,46 +35,57 @@
 
 namespace NULLENGINE
 {
-
-	class NLE_API Scene;
-
-	class NLE_API NSceneManager : public IModule
+	class NLE_API NEventManager : public IModule
 	{
 	public:
-		NSceneManager() = default;
-		~NSceneManager() = default;
 
-		/// <summary>
-		/// Adds a scene to the list of currently loaded in scene
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="scene"></param>
-		void RegisterScene(const std::string& name, std::shared_ptr<Scene> scene);
-
-		/// <summary>
-		/// load in scene information
-		/// </summary>
 		void Load() override;
-
-
 		//! Virtual Init function
 		void Init() override;
 		//! Virtual Update function
 		void Update(float dt) override;
 
-		//! render function
-		void Render();
-
 		void Unload() override;
 		//! Virtual Shutdown function
 		void Shutdown() override;
 
-		static const std::string Name() { return "SceneManager"; }
+		std::uint32_t GenerateID();
+
+		/// <summary>
+		/// this registers an event to the manager
+		/// </summary>
+		/// <param name="eventId"></param>
+		/// <param name="handler"></param>
+		void Subscribe(std::uint32_t, std::unique_ptr<IEventHandler>&& handler);
+
+		/// <summary>
+		/// removes an event from the manager
+		/// </summary>
+		/// <param name="eventId"></param>
+		/// <param name="handlerName"></param>
+		void Unsubscribe(std::uint32_t, Event::EventType handlerType);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="event"></param>
+		void TriggerEvent(const Event& event);
+		void QueueEvent(std::unique_ptr<Event>&& event);
+		void DispatchEvents();
+
+		NEventManager() : m_EventId(0) {}
+
+		static const std::string Name() { return "EventManager"; }
 
 	private:
-		//std::vector<std::string> m_SceneNames = {};
-		std::unordered_map<std::string, std::shared_ptr<Scene>> m_Scenes;
-		std::shared_ptr<Scene> m_CurrentScene = nullptr;
+		NEventManager(NEventManager const&) = delete;
+		NEventManager& operator=(NEventManager const&) = delete;
+
+		std::vector<std::unique_ptr<Event>> m_EventsQueue;
+
+		std::unordered_map <std::uint32_t, std::vector<std::unique_ptr<IEventHandler>>> m_Subscribers;
+
+		std::uint32_t m_EventId;
 	};
 
 }

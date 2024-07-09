@@ -78,8 +78,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>NLE_PLATFORM_WINDOWS;NLE_BUILD_DLL;NLE_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\JSON\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NLE_PLATFORM_WINDOWS;NLE_BUILD_DLL;GLFW_INCLUDE_NONE;NLE_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\JSON\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <LanguageStandard>stdcpplatest</LanguageStandard>
@@ -99,8 +99,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>NLE_PLATFORM_WINDOWS;NLE_BUILD_DLL;NLE_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\JSON\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NLE_PLATFORM_WINDOWS;NLE_BUILD_DLL;GLFW_INCLUDE_NONE;NLE_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\JSON\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <LanguageStandard>stdcpplatest</LanguageStandard>
@@ -120,8 +120,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>NLE_PLATFORM_WINDOWS;NLE_BUILD_DLL;NLE_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\JSON\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NLE_PLATFORM_WINDOWS;NLE_BUILD_DLL;GLFW_INCLUDE_NONE;NLE_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\JSON\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <LanguageStandard>stdcpplatest</LanguageStandard>
@@ -142,27 +142,35 @@
     <ClInclude Include="src\Null\Application.h" />
     <ClInclude Include="src\Null\Core.h" />
     <ClInclude Include="src\Null\Engine\Base\IEngine.h" />
+    <ClInclude Include="src\Null\Engine\Entities\Entity.h" />
     <ClInclude Include="src\Null\Engine\Modules\Base\IModule.h" />
+    <ClInclude Include="src\Null\Engine\Modules\NEventManager.h" />
     <ClInclude Include="src\Null\Engine\Modules\NSceneManager.h" />
     <ClInclude Include="src\Null\Engine\Modules\NWindow.h" />
     <ClInclude Include="src\Null\Engine\NEngine.h" />
-    <ClInclude Include="src\Null\Engine\Subsystems\Scene.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Events\CommonEvents.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Events\EventHandler.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Events\IEvents.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Scene.h" />
     <ClInclude Include="src\Null\Engine\Time.h" />
     <ClInclude Include="src\Null\EntryPoint.h" />
-    <ClInclude Include="src\Null\Events\IEvents.h" />
     <ClInclude Include="src\Null\Tools\Trace.h" />
     <ClInclude Include="src\stdafx.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Null\Application.cpp" />
     <ClCompile Include="src\Null\Engine\Base\IEngine.cpp" />
+    <ClCompile Include="src\Null\Engine\Entities\Entity.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\Base\IModule.cpp" />
+    <ClCompile Include="src\Null\Engine\Modules\NEventManager.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NSceneManager.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NWindow.cpp" />
     <ClCompile Include="src\Null\Engine\NEngine.cpp" />
-    <ClCompile Include="src\Null\Engine\Subsystems\Scene.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\Events\CommonEvents.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\Events\EventHandler.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\Events\IEvents.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\Scene.cpp" />
     <ClCompile Include="src\Null\Engine\Time.cpp" />
-    <ClCompile Include="src\Null\Events\IEvents.cpp" />
     <ClCompile Include="src\Null\Tools\Trace.cpp" />
     <ClCompile Include="src\stdafx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
@@ -171,6 +179,9 @@
   <ItemGroup>
     <ProjectReference Include="vendor\GLFW\GLFW.vcxproj">
       <Project>{154B857C-0182-860D-AA6E-6C109684020F}</Project>
+    </ProjectReference>
+    <ProjectReference Include="vendor\Glad\Glad.vcxproj">
+      <Project>{BDD6857C-A90D-870D-52FA-6C103E10030F}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

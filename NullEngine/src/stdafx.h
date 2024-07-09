@@ -25,6 +25,7 @@
 #include <string_view>
 #include <cstdint>
 #include <iomanip>
+#include <unordered_map>
 
 
 #ifdef NLE_PLATFORM_WINDOWS

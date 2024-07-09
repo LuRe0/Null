@@ -39,7 +39,7 @@ namespace NULLENGINE
 	class NLE_API IModule
 	{
 	public:
-		IModule() :mParent(nullptr) {}
+		IModule() :m_Parent(nullptr) {}
 
 		virtual void Load() {};
 		//! Virtual Init function
@@ -51,11 +51,11 @@ namespace NULLENGINE
 		//! Virtual Shutdown function
 		virtual void Shutdown() = 0;
 
-		void SetParent(IEngine* engine) { mParent = engine; };
+		void SetParent(IEngine* engine) { m_Parent = engine; };
 
 		IEngine* GetParent(void) const
 		{
-			return mParent;
+			return m_Parent;
 		}
 
 		template<typename T>
@@ -67,7 +67,7 @@ namespace NULLENGINE
 		//! Virtual Deconstructor function
 		virtual ~IModule() = default;
 
-	private:
-		IEngine* mParent;
+	protected:
+		IEngine* m_Parent;
 	};
 }

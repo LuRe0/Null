@@ -12,6 +12,8 @@
 #include "stdafx.h"
 #include "Application.h"
 #include "NIncludes.h"
+#include "Null/Engine/Submodules/Events/CommonEvents.h"
+
 
 
 
@@ -30,6 +32,7 @@ namespace NULLENGINE
 		IEngine& engine = NEngine::Instance();
 		
 		engine.Add<NULLENGINE::NWindow>();
+		engine.Add<NULLENGINE::NEventManager>();
 		engine.Add<NULLENGINE::NSceneManager>();
 
 		m_NullEngine = &engine;
@@ -53,6 +56,8 @@ namespace NULLENGINE
 			return;
 
 		Time& time = Time::Instance();
+
+
 
 		while (!window->WindowClosed())
 		{

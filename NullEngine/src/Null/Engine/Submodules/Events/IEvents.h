@@ -4,7 +4,7 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	NWindow.h
+// File Name:	stubfile.h
 // Author(s):	name
 // 
 //------------------------------------------------------------------------------
@@ -13,7 +13,6 @@
 // Includes																        //
 //******************************************************************************//
 #include "Null/Core.h"
-#include "Null/Engine/Modules/Base/IModule.h"
 
 
 //******************************************************************************//
@@ -33,22 +32,25 @@
 
 namespace NULLENGINE
 {
-	class NLE_API NWindow : public IModule
-	{
+
+	class NLE_API Event {
 	public:
+		enum EventType
+		{
+			WindowResize, WindowClose, WindowFocus, WindowLostFocus,
+			KeyPress, KeyRelease, KeyHold,
+			MouseMove, MouseButtonPress, MouseButtonRelease, MouseButtonHold, MouseScrolled,
+		};
 
-		void Load() override;
-		//! Virtual Init function
-		void Init() override;
-		//! Virtual Update function
-		void Update(float dt) override;
+		virtual EventType GetEventType() const = 0;
+		virtual const char* GetName() const = 0;
+		virtual std::string Print() const { return GetName(); }
 
-		void Unload() override;
-		//! Virtual Shutdown function
-		void Shutdown() override;
+		virtual ~Event() = default;
 
-	private:
-
+	public:
+		bool Handled{ false };
 	};
+
 
 }

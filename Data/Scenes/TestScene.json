@@ -1,0 +1,29 @@
+{
+    "sceneName": "MainMenu",
+    "entities": [
+        {
+            "name": "Player",
+            "components": 
+            {
+                "Transform": { "x": 0, "y": 0, "z": 0 },
+                "Sprite": { "texture": "menu_background.png" }
+            }
+        },
+        {
+            "name": "Enemy",
+            "components":
+            {
+                "Transform": { "x": 0, "y": 0, "z": 0 },
+                "Sprite": { "texture": "menu_background.png" }
+            }  
+        }
+    ],
+
+    "transitions": [
+        {
+            "from": "MainMenu",
+            "to": "GameScene",
+            "trigger": "StartGame"
+        }
+    ]
+}

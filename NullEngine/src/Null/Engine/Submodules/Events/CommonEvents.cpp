@@ -1,7 +1,7 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	Scene.cpp
+// File Name:	CommonEvents.cpp
 // Author(s):	Anthon Reid
 // 
 //------------------------------------------------------------------------------
@@ -10,7 +10,7 @@
 // Includes																        //
 //******************************************************************************//
 #include "stdafx.h"
-#include "Scene.h"
+#include "CommonEvents.h"
 
 
 
@@ -23,32 +23,3 @@
 // Function Declarations												        //
 //******************************************************************************//
 
-
-namespace NULLENGINE
-{
-
-	void Scene::Load()
-	{
-	}
-
-	void Scene::Init()
-	{
-	}
-
-	void Scene::Update(float dt)
-	{
-	}
-
-	void Scene::Render()
-	{
-	}
-
-	void Scene::Unload()
-	{
-	}
-
-	void Scene::Shutdown()
-	{
-	}
-
-}

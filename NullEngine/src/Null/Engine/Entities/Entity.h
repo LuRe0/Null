@@ -4,7 +4,7 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	stubfile.h
+// File Name:	Entity.h
 // Author(s):	name
 // 
 //------------------------------------------------------------------------------
@@ -13,13 +13,16 @@
 // Includes																        //
 //******************************************************************************//
 #include "Null/Core.h"
+#include "nlohmann/json.hpp"
 
 
 //******************************************************************************//
 // Definitions  														        //
 //******************************************************************************//
 
+using JSON = nlohmann::json;
 
+using EntityID = uint32_t;
 
 //******************************************************************************//
 // Private constants														    //
@@ -32,45 +35,51 @@
 
 namespace NULLENGINE
 {
-
-	class NLE_API Event {
+	class NLE_API Entity
+	{
 	public:
-		enum EventType 
-		{
-			WindowResize, WindowClose, WindowFocus, WindowLostFocus, 
-			KeyPress, KeyRelease, KeyHold, 
-			MouseMove, MouseButtonPress, MouseButtonRelease, MouseButtonHold, MouseScrolled,
-		};
+		Entity(EntityID id);
 
-		virtual EventType GetEventType() const = 0;
-		virtual const char* GetName() const = 0;
-		virtual void Trace() = 0;
+
+		/// <summary>
+		/// Gets A component attached to the entity
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <returns></returns>
+		template <typename T>
+		T& Get();
+
+		/// <summary>
+		/// Attach a component to an entity
+		/// </summary>
+		void Add();
+
+		/// <summary>
+		/// reads an entity's information from a file
+		/// </summary>
+		void Read(const JSON& entityData);
+
+		/// <summary>
+		/// Calls components load functions
+		/// </summary>
+		void Load();
+
+		/// <summary>
+		/// calls attached components init functions
+		/// </summary>
+		void Init();
+
+		/// <summary>
+		/// calls attached components shutdown function.
+		/// </summary>
+		void Shutdown();
+
+		void SetName(const std::string& name);
 
 	private:
-		bool m_Handled = false;
+		std::string m_Name;
 
-		friend class EventDispatcher;
-	};
-
-	class NLE_API EventListener {
-	public:
-		virtual void OnEvent(Event& event) = 0;
-	};
-
-	class NLE_API EventDispatcher {
-	public:
-		void Dispatch(Event& event) {
-			for (auto& listener : listeners) {
-				listener->OnEvent(event);
-			}
-		}
-
-		void AddListener(EventListener* listener) {
-			listeners.push_back(listener);
-		}
-
-	private:
-		std::vector<EventListener*> listeners;
+		EntityID m_ID;
 	};
 
 }

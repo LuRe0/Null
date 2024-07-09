@@ -15,7 +15,7 @@
 #include "stdafx.h"
 #include "Null/Engine/Base/IEngine.h"
 #include "Null/Core.h"
-
+//#include "Null/Events.h"
 
 //******************************************************************************//
 // Definitions  														        //
@@ -35,7 +35,7 @@ namespace NULLENGINE
 {
 	class NLE_API IModule;
 
-
+	
 	class NLE_API NEngine : public IEngine
 	{
 	public:
@@ -48,6 +48,7 @@ namespace NULLENGINE
 		void Add(IModule* component, const std::string_view& name) override;
 
 		IModule* Get(const std::string_view& name) const override;
+
 
 		//FrameBuffer* fbo = nullptr;
 

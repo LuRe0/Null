@@ -1,7 +1,7 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	NStubModule.cpp
+// File Name:	EventHandler.cpp
 // Author(s):	Anthon Reid
 // 
 //------------------------------------------------------------------------------
@@ -10,7 +10,7 @@
 // Includes																        //
 //******************************************************************************//
 #include "stdafx.h"
-#include "NStubModule.h"
+#include "EventHandler.h"
 
 
 
@@ -23,22 +23,3 @@
 // Function Declarations												        //
 //******************************************************************************//
 
-void NULLENGINE::NStubModule::Load()
-{
-}
-
-void NULLENGINE::NStubModule::Init()
-{
-}
-
-void NULLENGINE::NStubModule::Update()
-{
-}
-
-void NULLENGINE::NStubModule::Unload()
-{
-}
-
-void NULLENGINE::NStubModule::Shutdown()
-{
-}

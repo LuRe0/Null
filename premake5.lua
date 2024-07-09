@@ -13,11 +13,13 @@ outputDir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 includeDir = {}
 
 includeDir["GLFW"] = "NullEngine/vendor/GLFW/include" 
+includeDir["Glad"] = "NullEngine/vendor/Glad/include" 
 includeDir["JSON"] = "NullEngine/vendor/JSON/include" 
 
 
 -- Include the GLFW project
 include "NullEngine/vendor/GLFW"
+include "NullEngine/vendor/Glad"
 
 project "NullEngine"
     location "NullEngine"
@@ -42,19 +44,22 @@ project "NullEngine"
         "%{prj.name}/src",
          "%{prj.name}/vendor/spdlog/include",
          "%{includeDir.GLFW}",
+         "%{includeDir.Glad}",
          "%{includeDir.JSON}"
     }
 
     defines
     {
         "NLE_PLATFORM_WINDOWS",
-        "NLE_BUILD_DLL"
+        "NLE_BUILD_DLL",
+        "GLFW_INCLUDE_NONE"
     }
 
         
     links 
     {
         "GLFW",
+        "Glad",
         "opengl32.lib"
     }
 
@@ -104,6 +109,7 @@ project "Sandbox"
          "NullEngine/vendor/spdlog/include",
          "NullEngine/src",
          "%{includeDir.GLFW}",
+         "%{includeDir.Glad}",
          "%{includeDir.JSON}"
     }
 

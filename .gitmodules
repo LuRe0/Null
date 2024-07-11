@@ -7,3 +7,9 @@
 [submodule "NullEngine/vendor/JSON"]
 	path = NullEngine/vendor/JSON
 	url = https://github.com/nlohmann/json
+[submodule "NullEngine/vendor/glm"]
+	path = NullEngine/vendor/glm
+	url = https://github.com/g-truc/glm
+[submodule "NullEngine/vendor/imgui"]
+	path = NullEngine/vendor/imgui
+	url = https://github.com/TheCherno/imgui

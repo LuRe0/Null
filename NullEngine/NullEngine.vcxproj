@@ -79,9 +79,10 @@
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NLE_PLATFORM_WINDOWS;NLE_BUILD_DLL;GLFW_INCLUDE_NONE;NLE_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\JSON\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\JSON\include;vendor\glm;vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
+      <AdditionalOptions>/MDd %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -100,9 +101,10 @@
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NLE_PLATFORM_WINDOWS;NLE_BUILD_DLL;GLFW_INCLUDE_NONE;NLE_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\JSON\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\JSON\include;vendor\glm;vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
+      <AdditionalOptions>/MD %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -121,9 +123,10 @@
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NLE_PLATFORM_WINDOWS;NLE_BUILD_DLL;GLFW_INCLUDE_NONE;NLE_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\JSON\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\JSON\include;vendor\glm;vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
+      <AdditionalOptions>/MDd %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -142,15 +145,22 @@
     <ClInclude Include="src\Null\Application.h" />
     <ClInclude Include="src\Null\Core.h" />
     <ClInclude Include="src\Null\Engine\Base\IEngine.h" />
-    <ClInclude Include="src\Null\Engine\Entities\Entity.h" />
     <ClInclude Include="src\Null\Engine\Modules\Base\IModule.h" />
     <ClInclude Include="src\Null\Engine\Modules\NEventManager.h" />
+    <ClInclude Include="src\Null\Engine\Modules\NRegistry.h" />
     <ClInclude Include="src\Null\Engine\Modules\NSceneManager.h" />
     <ClInclude Include="src\Null\Engine\Modules\NWindow.h" />
     <ClInclude Include="src\Null\Engine\NEngine.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\ComponentManager.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\IComponent.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Entities\Entity.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\PhysicsSystem.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\System.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Events\CommonEvents.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Events\EventHandler.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Events\IEvents.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Layers\ImGuiLayer.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Layers\Layer.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Scene.h" />
     <ClInclude Include="src\Null\Engine\Time.h" />
     <ClInclude Include="src\Null\EntryPoint.h" />
@@ -160,15 +170,22 @@
   <ItemGroup>
     <ClCompile Include="src\Null\Application.cpp" />
     <ClCompile Include="src\Null\Engine\Base\IEngine.cpp" />
-    <ClCompile Include="src\Null\Engine\Entities\Entity.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\Base\IModule.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NEventManager.cpp" />
+    <ClCompile Include="src\Null\Engine\Modules\NRegistry.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NSceneManager.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NWindow.cpp" />
     <ClCompile Include="src\Null\Engine\NEngine.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\ComponentManager.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Components\IComponent.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Entities\Entity.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\PhysicsSystem.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\System.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Events\CommonEvents.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Events\EventHandler.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Events\IEvents.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\Layers\ImGuiLayer.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\Layers\Layer.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Scene.cpp" />
     <ClCompile Include="src\Null\Engine\Time.cpp" />
     <ClCompile Include="src\Null\Tools\Trace.cpp" />
@@ -182,6 +199,9 @@
     </ProjectReference>
     <ProjectReference Include="vendor\Glad\Glad.vcxproj">
       <Project>{BDD6857C-A90D-870D-52FA-6C103E10030F}</Project>
+    </ProjectReference>
+    <ProjectReference Include="vendor\imgui\ImGui.vcxproj">
+      <Project>{C0FF640D-2C14-8DBE-F595-301E616989EF}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

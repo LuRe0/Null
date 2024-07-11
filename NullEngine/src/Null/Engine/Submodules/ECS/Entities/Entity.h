@@ -4,41 +4,25 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	stdafx.h
-// Author(s):	Anthon Reid 
+// File Name:	Entity.h
+// Author(s):	name
 // 
 //------------------------------------------------------------------------------
 
 //******************************************************************************//
 // Includes																        //
 //******************************************************************************//
-// add headers that you want to pre-compile here
-#include <iostream>
-#include <vector>
-#include <string>
-#include <map>
-#include <algorithm>
-#include <memory>
-#include <bitset>
-#include <functional>
-#include <sstream>
-#include <fstream>
-#include <string_view>
-#include <typeindex>
-#include <cstdint>
-#include <iomanip>
-#include <queue>
-#include <unordered_map>
-#include <glm/glm.hpp>
-#include "NIncludes.h"
+#include "Null/Core.h"
+#include "nlohmann/json.hpp"
 
-#ifdef NLE_PLATFORM_WINDOWS
-#include <Windows.h>
-#endif // NLE_PLATFORM_WINDOWS
 
 //******************************************************************************//
 // Definitions  														        //
 //******************************************************************************//
+
+using JSON = nlohmann::json;
+
+using EntityID = uint32_t;
 
 //******************************************************************************//
 // Private constants														    //
@@ -49,12 +33,55 @@
 //******************************************************************************//
 
 
+namespace NULLENGINE
+{
+	class NLE_API Entity
+	{
+	public:
+		Entity(EntityID id);
 
 
+		/// <summary>
+		/// Gets A component attached to the entity
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <returns></returns>
+		template <typename T>
+		T& Get();
 
-//******************************************************************************//
-// Private Functions													        //
-//******************************************************************************//
+		/// <summary>
+		/// Attach a component to an entity
+		/// </summary>
+		void Add();
 
+		/// <summary>
+		/// reads an entity's information from a file
+		/// </summary>
+		void Read(const JSON& entityData, NRegistry* registry);
 
+		/// <summary>
+		/// Calls components load functions
+		/// </summary>
+		void Load();
 
+		/// <summary>
+		/// calls attached components init functions
+		/// </summary>
+		void Init();
+
+		/// <summary>
+		/// calls attached components shutdown function.
+		/// </summary>
+		void Shutdown();
+
+		void SetName(const std::string& name);
+
+		EntityID GetID() const { return m_ID; }
+
+	private:
+		std::string m_Name;
+
+		EntityID m_ID;
+	};
+
+}

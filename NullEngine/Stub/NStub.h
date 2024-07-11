@@ -4,41 +4,22 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	stdafx.h
-// Author(s):	Anthon Reid 
+// File Name:	NStub.h
+// Author(s):	name
 // 
 //------------------------------------------------------------------------------
 
 //******************************************************************************//
 // Includes																        //
 //******************************************************************************//
-// add headers that you want to pre-compile here
-#include <iostream>
-#include <vector>
-#include <string>
-#include <map>
-#include <algorithm>
-#include <memory>
-#include <bitset>
-#include <functional>
-#include <sstream>
-#include <fstream>
-#include <string_view>
-#include <typeindex>
-#include <cstdint>
-#include <iomanip>
-#include <queue>
-#include <unordered_map>
-#include <glm/glm.hpp>
-#include "NIncludes.h"
+#include "Null/Core.h"
 
-#ifdef NLE_PLATFORM_WINDOWS
-#include <Windows.h>
-#endif // NLE_PLATFORM_WINDOWS
 
 //******************************************************************************//
 // Definitions  														        //
 //******************************************************************************//
+
+
 
 //******************************************************************************//
 // Private constants														    //
@@ -49,12 +30,16 @@
 //******************************************************************************//
 
 
+namespace NULLENGINE
+{
+	class NLE_API NStub
+	{
+	public:
 
 
 
-//******************************************************************************//
-// Private Functions													        //
-//******************************************************************************//
+	private:
 
+	};
 
-
+}

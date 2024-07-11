@@ -14,6 +14,7 @@
 //******************************************************************************//
 #include "Null/Core.h"
 #include "Null/Engine/Modules/Base/IModule.h"
+#include "Null/Engine/Submodules/Scene.h"
 
 
 //******************************************************************************//
@@ -34,7 +35,7 @@
 namespace NULLENGINE
 {
 
-	class NLE_API Scene;
+	//class NLE_API Scene;
 
 	class NLE_API NSceneManager : public IModule
 	{
@@ -47,7 +48,7 @@ namespace NULLENGINE
 		/// </summary>
 		/// <param name="name"></param>
 		/// <param name="scene"></param>
-		void RegisterScene(const std::string& name, std::shared_ptr<Scene> scene);
+		void RegisterScene(const std::string& name, std::unique_ptr<Scene>&& scene);
 
 		/// <summary>
 		/// load in scene information
@@ -70,9 +71,13 @@ namespace NULLENGINE
 		static const std::string Name() { return "SceneManager"; }
 
 	private:
-		//std::vector<std::string> m_SceneNames = {};
-		std::unordered_map<std::string, std::shared_ptr<Scene>> m_Scenes;
-		std::shared_ptr<Scene> m_CurrentScene = nullptr;
+		//std::vector<std::string> M_CUR = {};
+		std::unordered_map<std::string, std::unique_ptr<Scene>> m_Scenes;
+		std::string m_CurrentScene = "";
+
+		NSceneManager(NSceneManager const&) = delete;
+		NSceneManager& operator=(NSceneManager const&) = delete;
+
 	};
 
 }

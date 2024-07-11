@@ -4,7 +4,7 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	Entity.h
+// File Name:	NWindow.h
 // Author(s):	name
 // 
 //------------------------------------------------------------------------------
@@ -13,16 +13,14 @@
 // Includes																        //
 //******************************************************************************//
 #include "Null/Core.h"
-#include "nlohmann/json.hpp"
+#include "Null/Engine/Modules/Base/IModule.h"
 
 
 //******************************************************************************//
 // Definitions  														        //
 //******************************************************************************//
 
-using JSON = nlohmann::json;
 
-using EntityID = uint32_t;
 
 //******************************************************************************//
 // Private constants														    //
@@ -35,51 +33,22 @@ using EntityID = uint32_t;
 
 namespace NULLENGINE
 {
-	class NLE_API Entity
+	class NLE_API NWindow : public IModule
 	{
 	public:
-		Entity(EntityID id);
 
+		void Load() override;
+		//! Virtual Init function
+		void Init() override;
+		//! Virtual Update function
+		void Update(float dt) override;
 
-		/// <summary>
-		/// Gets A component attached to the entity
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <returns></returns>
-		template <typename T>
-		T& Get();
-
-		/// <summary>
-		/// Attach a component to an entity
-		/// </summary>
-		void Add();
-
-		/// <summary>
-		/// reads an entity's information from a file
-		/// </summary>
-		void Read(const JSON& entityData);
-
-		/// <summary>
-		/// Calls components load functions
-		/// </summary>
-		void Load();
-
-		/// <summary>
-		/// calls attached components init functions
-		/// </summary>
-		void Init();
-
-		/// <summary>
-		/// calls attached components shutdown function.
-		/// </summary>
-		void Shutdown();
-
-		void SetName(const std::string& name);
+		void Unload() override;
+		//! Virtual Shutdown function
+		void Shutdown() override;
 
 	private:
-		std::string m_Name;
 
-		EntityID m_ID;
 	};
 
 }

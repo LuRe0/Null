@@ -34,12 +34,6 @@ namespace NULLENGINE
 {
 
 
-    inline std::ostream& operator<<(std::ostream& os, const Event& e)
-    {
-        return os << e.Print();
-    }
-
-
 #define EVENT_CLASS_TYPE(type) static Event::EventType GetStaticEventType() { return EventType::##type; } \
                                virtual Event::EventType GetEventType() const override { return GetStaticEventType(); } \
                                virtual const char* GetName() const override { return #type; }
@@ -137,6 +131,20 @@ namespace NULLENGINE
             return ss.str();
         }
         EVENT_CLASS_TYPE(KeyRelease)
+    };
+
+    class KeyTypedEvent : public KeyEvent {
+    public:
+        KeyTypedEvent(int keycode)
+            : KeyEvent(keycode) {}
+
+        std::string Print() const override
+        {
+            std::stringstream ss;
+            ss << "KeyReleaseEvent: Key=" << m_Keycode;
+            return ss.str();
+        }
+        EVENT_CLASS_TYPE(KeyTyped)
     };
 
     class KeyHoldEvent : public KeyEvent {

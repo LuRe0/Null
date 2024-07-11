@@ -85,7 +85,16 @@ namespace NULLENGINE
 
 		std::unordered_map <std::uint32_t, std::vector<std::unique_ptr<IEventHandler>>> m_Subscribers;
 
+		EventCallback<Event> mEvent;
+
 		std::uint32_t m_EventId;
 	};
+
+#define SUBSCRIBE_EVENT(EVENT_TYPE, EVENT_CALLBACK, EVENT_MANAGER) \
+    { \
+        EventCallback<EVENT_TYPE> callback = std::bind(EVENT_CALLBACK, this, std::placeholders::_1); \
+        std::unique_ptr<IEventHandler> handler = std::make_unique<EventHandler<EVENT_TYPE>>(callback, EVENT_TYPE::GetStaticEventType()); \
+        EVENT_MANAGER->Subscribe(EVENT_TYPE::GetStaticEventType(), std::move(handler)); \
+    }
 
 }

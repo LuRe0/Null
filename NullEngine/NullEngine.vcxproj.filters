@@ -10,9 +10,6 @@
     <Filter Include="Null\Engine\Base">
       <UniqueIdentifier>{4F27B103-3B20-D055-6452-B5DA50AAAF61}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Null\Engine\Entities">
-      <UniqueIdentifier>{F9BDDBEB-E54C-65B5-8E6B-79B07AD9755B}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Null\Engine\Modules">
       <UniqueIdentifier>{6D1D03B6-D97E-E0C3-62EC-2676CE4C1783}</UniqueIdentifier>
     </Filter>
@@ -22,8 +19,23 @@
     <Filter Include="Null\Engine\Submodules">
       <UniqueIdentifier>{57920A45-438C-3397-2CF9-C9A718929903}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Null\Engine\Submodules\ECS">
+      <UniqueIdentifier>{21DA4412-0DEA-F0E2-76A3-550162D2DF7B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Null\Engine\Submodules\ECS\Components">
+      <UniqueIdentifier>{9688D489-024D-D379-CBB2-034437366FAF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Null\Engine\Submodules\ECS\Entities">
+      <UniqueIdentifier>{F5E7179E-61A1-8248-EA00-9D2256B938B8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Null\Engine\Submodules\ECS\Systems">
+      <UniqueIdentifier>{28C1638A-14FD-66F4-7D0F-7FEB696A0F0F}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Null\Engine\Submodules\Events">
       <UniqueIdentifier>{5B560797-C76E-EEC0-901B-7E5AFCF2825A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Null\Engine\Submodules\Layers">
+      <UniqueIdentifier>{3641EAA5-A259-D1CF-6B06-6169D7DD6569}</UniqueIdentifier>
     </Filter>
     <Filter Include="Null\Tools">
       <UniqueIdentifier>{A071EE46-8C29-3094-F530-09F0E107CB84}</UniqueIdentifier>
@@ -41,13 +53,13 @@
     <ClInclude Include="src\Null\Engine\Base\IEngine.h">
       <Filter>Null\Engine\Base</Filter>
     </ClInclude>
-    <ClInclude Include="src\Null\Engine\Entities\Entity.h">
-      <Filter>Null\Engine\Entities</Filter>
-    </ClInclude>
     <ClInclude Include="src\Null\Engine\Modules\Base\IModule.h">
       <Filter>Null\Engine\Modules\Base</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Modules\NEventManager.h">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Modules\NRegistry.h">
       <Filter>Null\Engine\Modules</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Modules\NSceneManager.h">
@@ -59,6 +71,21 @@
     <ClInclude Include="src\Null\Engine\NEngine.h">
       <Filter>Null\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ComponentManager.h">
+      <Filter>Null\Engine\Submodules</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\IComponent.h">
+      <Filter>Null\Engine\Submodules\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Entities\Entity.h">
+      <Filter>Null\Engine\Submodules\ECS\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\PhysicsSystem.h">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\System.h">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\Events\CommonEvents.h">
       <Filter>Null\Engine\Submodules\Events</Filter>
     </ClInclude>
@@ -67,6 +94,12 @@
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\Events\IEvents.h">
       <Filter>Null\Engine\Submodules\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Layers\ImGuiLayer.h">
+      <Filter>Null\Engine\Submodules\Layers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Layers\Layer.h">
+      <Filter>Null\Engine\Submodules\Layers</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\Scene.h">
       <Filter>Null\Engine\Submodules</Filter>
@@ -89,13 +122,13 @@
     <ClCompile Include="src\Null\Engine\Base\IEngine.cpp">
       <Filter>Null\Engine\Base</Filter>
     </ClCompile>
-    <ClCompile Include="src\Null\Engine\Entities\Entity.cpp">
-      <Filter>Null\Engine\Entities</Filter>
-    </ClCompile>
     <ClCompile Include="src\Null\Engine\Modules\Base\IModule.cpp">
       <Filter>Null\Engine\Modules\Base</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Modules\NEventManager.cpp">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Modules\NRegistry.cpp">
       <Filter>Null\Engine\Modules</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Modules\NSceneManager.cpp">
@@ -107,6 +140,21 @@
     <ClCompile Include="src\Null\Engine\NEngine.cpp">
       <Filter>Null\Engine</Filter>
     </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\ComponentManager.cpp">
+      <Filter>Null\Engine\Submodules</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Components\IComponent.cpp">
+      <Filter>Null\Engine\Submodules\ECS\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Entities\Entity.cpp">
+      <Filter>Null\Engine\Submodules\ECS\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\PhysicsSystem.cpp">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\System.cpp">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\Events\CommonEvents.cpp">
       <Filter>Null\Engine\Submodules\Events</Filter>
     </ClCompile>
@@ -115,6 +163,12 @@
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\Events\IEvents.cpp">
       <Filter>Null\Engine\Submodules\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Layers\ImGuiLayer.cpp">
+      <Filter>Null\Engine\Submodules\Layers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Layers\Layer.cpp">
+      <Filter>Null\Engine\Submodules\Layers</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\Scene.cpp">
       <Filter>Null\Engine\Submodules</Filter>

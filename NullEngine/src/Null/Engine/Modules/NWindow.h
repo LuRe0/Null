@@ -40,6 +40,7 @@ namespace NULLENGINE
 	class NLE_API NWindow : public IModule
 	{
 	public:
+		using EnventCallbackFn = std::function<void(const Event&)>;
 
 		void Load() override;
 		//! Virtual Init function
@@ -58,6 +59,7 @@ namespace NULLENGINE
 		// GLFW-specific functions
 		static bool InitGLFW();
 		GLFWwindow* InitializeWindow(int width, int height, const char* title);
+		GLFWwindow* GetWinddow() { return m_Window; };
 		static void TerminateGLFW();
 		//static void SetFramebufferSizeCallback(GLFWwindow* window, GLFWframebuffersizefun callback);
 
@@ -67,11 +69,12 @@ namespace NULLENGINE
 
 		const unsigned int Width() { return m_Data.m_Width;  }
 
-		void SetVSynch(bool s) { m_Data.m_VSynch = s; }
+		void SetVSynch(bool s);
 
 		bool IsVSynch(bool s) { return m_Data.m_VSynch; }
 
-		void ResizeWindowCallback(const WindowResizeEvent& event);
+		void SetEventCallback(EnventCallbackFn func) { m_Data.m_callbackFunc = func; };
+
 
 	private:
 		// Private data members
@@ -89,7 +92,7 @@ namespace NULLENGINE
 
 			bool m_VSynch;
 
-			//EventCallback<Event> m_callbackFunc;
+			EnventCallbackFn m_callbackFunc;
 
 			NWindow* m_Parent;
 		};
@@ -101,20 +104,10 @@ namespace NULLENGINE
 		static void WindowResizeCallback(GLFWwindow* window, int width, int height);
 		static void WindowCloseCallback(GLFWwindow* window);
 		static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+		static void KeyTypeCallback(GLFWwindow* window, unsigned int chara);
 		static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
 		static void MouseMoveCallback(GLFWwindow* window, double xpos, double ypos);
 		static void MouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
-
-
-		// Member functions for handling events
-		void OnWindowResize(const WindowResizeEvent& event);
-		void OnWindowClose(const WindowCloseEvent& event);
-		void OnKey(const KeyEvent& event);
-		void OnMouseButton(const MouseButtonEvent& event);
-		void OnMouseMove(const MouseMoveEvent& event);
-		void OnMouseScroll(const MouseScrolledEvent& event);
-
-
 	};
 
 

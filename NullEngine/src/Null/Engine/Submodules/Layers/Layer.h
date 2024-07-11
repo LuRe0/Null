@@ -4,41 +4,23 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	stdafx.h
-// Author(s):	Anthon Reid 
+// File Name:	Layer.h
+// Author(s):	name
 // 
 //------------------------------------------------------------------------------
 
 //******************************************************************************//
 // Includes																        //
 //******************************************************************************//
-// add headers that you want to pre-compile here
-#include <iostream>
-#include <vector>
-#include <string>
-#include <map>
-#include <algorithm>
-#include <memory>
-#include <bitset>
-#include <functional>
-#include <sstream>
-#include <fstream>
-#include <string_view>
-#include <typeindex>
-#include <cstdint>
-#include <iomanip>
-#include <queue>
-#include <unordered_map>
-#include <glm/glm.hpp>
-#include "NIncludes.h"
+#include "Null/Core.h"
+#include "Null/Engine/Modules/Base/IModule.h"
 
-#ifdef NLE_PLATFORM_WINDOWS
-#include <Windows.h>
-#endif // NLE_PLATFORM_WINDOWS
 
 //******************************************************************************//
 // Definitions  														        //
 //******************************************************************************//
+
+
 
 //******************************************************************************//
 // Private constants														    //
@@ -49,12 +31,61 @@
 //******************************************************************************//
 
 
+namespace NULLENGINE
+{
+	class NLE_API ILayer
+	{
+	public:
+		ILayer() = default;
+
+		virtual ~ILayer() {};
+
+		virtual void OnAttach() = 0;
+
+		virtual void OnUpdate(float dt) = 0;
+
+		virtual void OnDetach() = 0;
 
 
+		virtual void OnEvent(const Event& event) = 0;
 
-//******************************************************************************//
-// Private Functions													        //
-//******************************************************************************//
+	private:
+		ILayer(ILayer const&) = delete;
+		ILayer& operator=(ILayer const&) = delete;
+	};
+
+	template<typename T>
+	class NLE_API Layer : public ILayer
+	{
+	public:
+		static std::string TypeName() {
+			std::string fullName = typeid(T).name();
+			// Manual parsing: adjust based on compiler output
+			auto pos = fullName.find_last_of(':');
+			return fullName.substr(pos + 1);
+		}
+	private:
 
 
+	};
 
+
+	//class LayerStack
+	//{
+	//public:
+	//	LayerStack()
+	//	{}
+	//	~LayerStack()
+	//	{}
+
+	//	void AddLayer(std::unique_ptr<ILayer>&& layer);
+
+	//	void PopLayer();
+
+	//private:
+	//	std::vector<std::unique_ptr<ILayer>> m_LayerList;
+
+	//	LayerStack(LayerStack const&);
+	//	LayerStack& operator=(LayerStack const&);
+	//};
+}

@@ -38,7 +38,7 @@ namespace NULLENGINE
 		enum EventType
 		{
 			WindowResize, WindowClose, WindowFocus, WindowLostFocus,
-			KeyPress, KeyRelease, KeyHold,
+			KeyPress, KeyRelease, KeyHold, KeyTyped,
 			MouseMove, MouseButtonPress, MouseButtonRelease, MouseButtonHold, MouseScrolled,
 		};
 

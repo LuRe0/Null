@@ -25,9 +25,9 @@ using JSON = nlohmann::json;
 // Function Declarations												        //
 //******************************************************************************//
 
-void NULLENGINE::NSceneManager::RegisterScene(const std::string& name, std::shared_ptr<Scene> scene)
+void NULLENGINE::NSceneManager::RegisterScene(const std::string& name, std::unique_ptr<Scene>&& scene)
 {
-    m_Scenes[name] = scene;
+    m_Scenes[name] = std::move(scene);
 
     NLE_CORE_TRACE("{0} scene addded successfully added to list", name);
 }
@@ -56,17 +56,20 @@ void NULLENGINE::NSceneManager::Load()
 
 
     std::string sceneName = sceneData["sceneName"];
-    auto scene = std::make_shared<Scene>();
 
-
-    RegisterScene(sceneName, scene);
+    std::unique_ptr<Scene> scene = std::make_unique<Scene>(sceneName);
 
     scene->Load(sceneName,sceneData);
+
+    RegisterScene(sceneName, std::move(scene));
+
+    m_CurrentScene = sceneName;
     //ChangeScene(sceneName);
 }
 
 void NULLENGINE::NSceneManager::Init()
 {
+    m_Scenes[m_CurrentScene].get()->Init();
 }
 
 void NULLENGINE::NSceneManager::Update(float dt)

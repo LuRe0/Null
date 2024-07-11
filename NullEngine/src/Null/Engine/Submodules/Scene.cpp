@@ -11,8 +11,8 @@
 //******************************************************************************//
 #include "stdafx.h"
 #include "Scene.h"
-#include "Null/Engine/Entities/Entity.h"
-#include "Null/Tools/Trace.h"
+#include "Null/Engine/Submodules/ECS/Entities/Entity.h"
+
 
 
 
@@ -30,6 +30,8 @@ namespace NULLENGINE
 
 	void Scene::Load(const std::string& name, const JSON& sceneData)
 	{
+		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+
 		for (const auto& transitionData : sceneData["transitions"]) {
 
 			Transition transition(transitionData["from"], transitionData["to"], transitionData["trigger"]);
@@ -41,11 +43,13 @@ namespace NULLENGINE
 		{
 			const std::string name = entityData["name"];
 
-			Entity newEntity(m_EntityManager.CreateEntity(name));
+			Entity newEntity(registry->CreateEntity());
 
 			newEntity.SetName(name);
 	
-			newEntity.Read(entityData);
+			newEntity.Read(entityData, registry);
+
+			m_Entities.push_back(newEntity.GetID());
 		}
 
 	}
@@ -55,6 +59,10 @@ namespace NULLENGINE
 
 	void Scene::Init()
 	{
+		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+
+		for (const auto entityId : m_Entities)
+			registry->AddEntityToSystem(entityId);
 	}
 
 	void Scene::Update(float dt)
@@ -73,23 +81,4 @@ namespace NULLENGINE
 	{
 	}
 
-	EntityID Scene::EntityManager::CreateEntity(const std::string& name)
-	{
-		EntityID entity = 0;
-		if (m_freeEntities.empty()) {
-			entity = ++m_NextEntity;
-		}
-		else {
-			entity = m_freeEntities.back();
-			m_freeEntities.pop_back();
-		}
-
-		(entity == 0) ? NLE_CORE_ERROR("Failed to create Entity") : NLE_CORE_TRACE("Succesfully created entity ID: {0}, Name: {1}", entity, name);
-
-
-		m_EntityNames[entity] = name;
-		// Initialize new entity's component data
-		//componentMasks[entity] = 0;
-		return entity;
-	}
 }

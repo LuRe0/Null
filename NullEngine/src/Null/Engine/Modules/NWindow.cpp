@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "NWindow.h"
 #include "Null/Tools/Trace.h"
-#include "Null/Engine/Modules/NEventManager.h"
 #include "Null/Engine/Submodules/Events/IEvents.h"
 
 
@@ -10,12 +9,12 @@
 namespace NULLENGINE
 {
 
-#define SUBSCRIBE_EVENT(EVENT_TYPE, EVENT_CALLBACK, EVENT_MANAGER) \
-    { \
-        EventCallback<EVENT_TYPE> callback = std::bind(EVENT_CALLBACK, this, std::placeholders::_1); \
-        std::unique_ptr<IEventHandler> handler = std::make_unique<EventHandler<EVENT_TYPE>>(callback, EVENT_TYPE::GetStaticEventType()); \
-        EVENT_MANAGER->Subscribe(EVENT_TYPE::GetStaticEventType(), std::move(handler)); \
-    }
+//#define SUBSCRIBE_EVENT(EVENT_TYPE, EVENT_CALLBACK, EVENT_MANAGER) \
+//    { \
+//        EventCallback<EVENT_TYPE> callback = std::bind(EVENT_CALLBACK, this, std::placeholders::_1); \
+//        std::unique_ptr<IEventHandler> handler = std::make_unique<EventHandler<EVENT_TYPE>>(callback, EVENT_TYPE::GetStaticEventType()); \
+//        EVENT_MANAGER->Subscribe(EVENT_TYPE::GetStaticEventType(), std::move(handler)); \
+//    }
 
     void NWindow::Load()
     {
@@ -23,13 +22,13 @@ namespace NULLENGINE
             NLE_ERROR("Failed to initialize GLFW");
         }
         else {
-            m_Window = InitializeWindow(800, 600, "Null Engine Window");
+            m_Window = InitializeWindow(1280, 720, "Null Engine Window");
             if (!m_Window) {
                 NLE_ERROR("Failed to create GLFW window");
             }
             else {
                 //SetFramebufferSizeCallback(window, framebuffer_size_callback);
-                NLE_TRACE("Creating Window {0} ({1}, {2})", "Null Engine Window", 800, 600);
+                NLE_TRACE("Creating Window {0} ({1}, {2})", "Null Engine Window", 1280, 720);
             }
         }
     }
@@ -46,6 +45,7 @@ namespace NULLENGINE
         glfwSetWindowSizeCallback(m_Window, WindowResizeCallback);
         glfwSetWindowCloseCallback(m_Window, WindowCloseCallback);
         glfwSetKeyCallback(m_Window, KeyCallback);
+        glfwSetCharCallback(m_Window, KeyTypeCallback);
         glfwSetMouseButtonCallback(m_Window, MouseButtonCallback);
         glfwSetCursorPosCallback(m_Window, MouseMoveCallback);
         glfwSetScrollCallback(m_Window, MouseScrollCallback);
@@ -54,21 +54,16 @@ namespace NULLENGINE
 
     void NWindow::Update(float dt)
     {
+
         if (m_Window)
         {
             // Update loop: render, poll events, etc.
-            glfwSwapBuffers(m_Window);
-
-            //setWindowResizeCallback([](int width, int height) {
-            //    TriggerEvent(WindowResizeEvent(width, height));
-            //    })
-
-            //    setWindowCloseCallback(m_window, [](GLFWwindow* window) {
-            //        UniquePtr<WindowCloseEvent> closeEvent = std::move(MakeUniquePtr<WindowCloseEvent>());
-            //        QueueEvent(std:move(closeEvent));
-            //        });
-
+ 
             glfwPollEvents();
+
+            glClearColor(0.1f, 0.1f, .1f, 1.0f);
+
+            glClear(GL_COLOR_BUFFER_BIT);
         }
     }
 
@@ -95,15 +90,7 @@ namespace NULLENGINE
         //eventManager->Subscribe(WindowResizeEvent::GetStaticEventType(), std::move(handler));
 
 
-        SUBSCRIBE_EVENT(WindowResizeEvent, &NWindow::OnWindowResize, eventManager);
-        SUBSCRIBE_EVENT(WindowCloseEvent, &NWindow::OnWindowClose, eventManager);
-        SUBSCRIBE_EVENT(KeyPressEvent, &NWindow::OnKey, eventManager);
-        SUBSCRIBE_EVENT(KeyHoldEvent, &NWindow::OnKey, eventManager);
-        SUBSCRIBE_EVENT(KeyReleaseEvent, &NWindow::OnKey, eventManager);
-        SUBSCRIBE_EVENT(MouseButtonPressEvent, &NWindow::OnMouseButton, eventManager);
-        SUBSCRIBE_EVENT(MouseButtonReleaseEvent, &NWindow::OnMouseButton, eventManager);
-        SUBSCRIBE_EVENT(MouseMoveEvent, &NWindow::OnMouseMove, eventManager);
-        SUBSCRIBE_EVENT(MouseScrolledEvent, &NWindow::OnMouseScroll, eventManager);
+
     }
 
     bool NWindow::InitGLFW()
@@ -130,8 +117,8 @@ namespace NULLENGINE
         }
 
 
-        m_Data.m_Height = 800;
-        m_Data.m_Width = 600;
+        m_Data.m_Height = height;
+        m_Data.m_Width = width;
         m_Data.m_Parent = this;
 
         glfwMakeContextCurrent(window);
@@ -149,18 +136,17 @@ namespace NULLENGINE
     {
     }
 
+    void NWindow::SetVSynch(bool s)
+    {
+        glfwSwapInterval(s);
+
+        m_Data.m_VSynch = s;
+    }
+
     //void NWindow::SetFramebufferSizeCallback(GLFWwindow* window, GLFWframebuffersizefun callback)
     //{
     //    glfwSetFramebufferSizeCallback(window, callback);
     //}
-
-    void NWindow::ResizeWindowCallback(const WindowResizeEvent& event)
-    {
-        const WindowResizeEvent& resizeEvent = dynamic_cast<const WindowResizeEvent&>(event);
-
-        NLE_TRACE("Changing Window size to ({0}, {1})", resizeEvent.GetWidth(), resizeEvent.GetHeight());
-    }
-
 
 
     ///GLFW Callbacks
@@ -171,18 +157,14 @@ namespace NULLENGINE
         data.m_Width = width;
         data.m_Height = height;
 
-        NEventManager* eventManager = data.m_Parent->GetParent()->Get<NEventManager>();
-
-        eventManager->TriggerEvent(WindowResizeEvent(width, height));
+        data.m_callbackFunc(WindowResizeEvent(width, height));
     }
 
     void  NWindow::WindowCloseCallback(GLFWwindow* window)
     {
         Window& data = *((Window*)glfwGetWindowUserPointer(window));
 
-        NEventManager* eventManager = data.m_Parent->GetParent()->Get<NEventManager>();
-
-        eventManager->TriggerEvent(WindowCloseEvent());
+        data.m_callbackFunc(WindowCloseEvent());
     }
 
     void  NWindow::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -194,9 +176,7 @@ namespace NULLENGINE
 
             Window& data = *((Window*)glfwGetWindowUserPointer(window));
 
-            NEventManager* eventManager = data.m_Parent->GetParent()->Get<NEventManager>();
-
-            eventManager->TriggerEvent(KeyPressEvent(key, 0));
+            data.m_callbackFunc(KeyPressEvent(key, 0));
             break;
         }
         case GLFW_RELEASE:
@@ -204,9 +184,8 @@ namespace NULLENGINE
 
             Window& data = *((Window*)glfwGetWindowUserPointer(window));
 
-            NEventManager* eventManager = data.m_Parent->GetParent()->Get<NEventManager>();
+            data.m_callbackFunc(KeyReleaseEvent(key));
 
-            eventManager->TriggerEvent(KeyReleaseEvent(key));
             break;
         }
         case GLFW_REPEAT:
@@ -214,14 +193,22 @@ namespace NULLENGINE
 
             Window& data = *((Window*)glfwGetWindowUserPointer(window));
 
-            NEventManager* eventManager = data.m_Parent->GetParent()->Get<NEventManager>();
+            data.m_callbackFunc(KeyHoldEvent(key));
 
-            eventManager->TriggerEvent(KeyHoldEvent(key));
             break;
         }
         default:
             break;
         }
+    }
+
+    void NWindow::KeyTypeCallback(GLFWwindow* window, unsigned int keycode)
+    {
+
+        Window& data = *((Window*)glfwGetWindowUserPointer(window));
+
+        data.m_callbackFunc(KeyTypedEvent(keycode));
+
     }
 
     void  NWindow::MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
@@ -233,9 +220,8 @@ namespace NULLENGINE
 
             Window& data = *((Window*)glfwGetWindowUserPointer(window));
 
-            NEventManager* eventManager = data.m_Parent->GetParent()->Get<NEventManager>();
+            data.m_callbackFunc(MouseButtonPressEvent(button));
 
-            eventManager->TriggerEvent(MouseButtonPressEvent(button));
             break;
         }
         case GLFW_RELEASE:
@@ -243,9 +229,8 @@ namespace NULLENGINE
 
             Window& data = *((Window*)glfwGetWindowUserPointer(window));
 
-            NEventManager* eventManager = data.m_Parent->GetParent()->Get<NEventManager>();
+            data.m_callbackFunc(MouseButtonReleaseEvent(button));
 
-            eventManager->TriggerEvent(MouseButtonReleaseEvent(button));
             break;
         }
         default:
@@ -257,49 +242,17 @@ namespace NULLENGINE
 
         Window& data = *((Window*)glfwGetWindowUserPointer(window));
 
-        NEventManager* eventManager = data.m_Parent->GetParent()->Get<NEventManager>();
+        data.m_callbackFunc(MouseMoveEvent(static_cast<float>(xpos), static_cast<float>(ypos)));
 
-        eventManager->TriggerEvent(MouseMoveEvent(static_cast<float>(xpos), static_cast<float>(ypos)));
     }
 
     void  NWindow::MouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
 
         Window& data = *((Window*)glfwGetWindowUserPointer(window));
 
-        NEventManager* eventManager = data.m_Parent->GetParent()->Get<NEventManager>();
-
-         eventManager->TriggerEvent(MouseScrolledEvent(static_cast<float>(xoffset), static_cast<float>(yoffset)));
-    }
-
-    void NWindow::OnWindowResize(const WindowResizeEvent& e)
-    {
-        NLE_CORE_INFO("{0}", e.Print());
-    }
-
-    void NWindow::OnWindowClose(const WindowCloseEvent& e)
-    {
-        NLE_CORE_INFO("{0}", e.Print());
-    }
-
-    void NWindow::OnKey(const KeyEvent& e)
-    {
-        NLE_CORE_INFO("{0}", e.Print());
+        data.m_callbackFunc(MouseScrolledEvent(static_cast<float>(xoffset), static_cast<float>(yoffset)));
 
     }
 
-    void NWindow::OnMouseButton(const MouseButtonEvent& e)
-    {
-        NLE_CORE_INFO("{0}", e.Print());
-    }
 
-    void NWindow::OnMouseMove(const MouseMoveEvent& e)
-    {
-        NLE_CORE_INFO("{0}", e.Print());
-
-    }
-
-    void NWindow::OnMouseScroll(const MouseScrolledEvent& e)
-    {
-        NLE_CORE_INFO("{0}", e.Print());
-    }
 }

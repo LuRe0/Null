@@ -15,11 +15,14 @@ includeDir = {}
 includeDir["GLFW"] = "NullEngine/vendor/GLFW/include" 
 includeDir["Glad"] = "NullEngine/vendor/Glad/include" 
 includeDir["JSON"] = "NullEngine/vendor/JSON/include" 
+includeDir["glm"] = "NullEngine/vendor/glm" 
+includeDir["ImGui"] = "NullEngine/vendor/imgui" 
 
 
 -- Include the GLFW project
 include "NullEngine/vendor/GLFW"
 include "NullEngine/vendor/Glad"
+include "NullEngine/vendor/imgui"
 
 project "NullEngine"
     location "NullEngine"
@@ -41,11 +44,13 @@ project "NullEngine"
 
     includedirs
     {
-        "%{prj.name}/src",
+         "%{prj.name}/src",
          "%{prj.name}/vendor/spdlog/include",
          "%{includeDir.GLFW}",
          "%{includeDir.Glad}",
-         "%{includeDir.JSON}"
+         "%{includeDir.JSON}",
+         "%{includeDir.glm}",
+         "%{includeDir.ImGui}"
     }
 
     defines
@@ -60,6 +65,7 @@ project "NullEngine"
     {
         "GLFW",
         "Glad",
+        "ImGui",
         "opengl32.lib"
     }
 
@@ -75,14 +81,17 @@ project "NullEngine"
 
         filter "configurations:Debug"
             defines "NLE_DEBUG"
+            buildoptions "/MDd"
             symbols "On"
 
         filter "configurations:Release"
             defines "NLE_RELEASE"
+            buildoptions "/MD"
             symbols "On"
 
         filter "configurations:Dist"
             defines "NLE_DIST"
+            buildoptions "/MDd"
             symbols "On"
 
 
@@ -110,7 +119,8 @@ project "Sandbox"
          "NullEngine/src",
          "%{includeDir.GLFW}",
          "%{includeDir.Glad}",
-         "%{includeDir.JSON}"
+         "%{includeDir.JSON}",
+         "%{includeDir.glm}"
     }
 
     defines

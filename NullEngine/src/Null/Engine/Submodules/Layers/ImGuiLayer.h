@@ -4,41 +4,23 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	stdafx.h
-// Author(s):	Anthon Reid 
+// File Name:	ImGuiLayer.h
+// Author(s):	name
 // 
 //------------------------------------------------------------------------------
 
 //******************************************************************************//
 // Includes																        //
 //******************************************************************************//
-// add headers that you want to pre-compile here
-#include <iostream>
-#include <vector>
-#include <string>
-#include <map>
-#include <algorithm>
-#include <memory>
-#include <bitset>
-#include <functional>
-#include <sstream>
-#include <fstream>
-#include <string_view>
-#include <typeindex>
-#include <cstdint>
-#include <iomanip>
-#include <queue>
-#include <unordered_map>
-#include <glm/glm.hpp>
-#include "NIncludes.h"
+#include "Null/Core.h"
+#include "Null/Engine/Submodules/Layers/Layer.h"
 
-#ifdef NLE_PLATFORM_WINDOWS
-#include <Windows.h>
-#endif // NLE_PLATFORM_WINDOWS
 
 //******************************************************************************//
 // Definitions  														        //
 //******************************************************************************//
+
+
 
 //******************************************************************************//
 // Private constants														    //
@@ -49,12 +31,39 @@
 //******************************************************************************//
 
 
+namespace NULLENGINE
+{
+	class NLE_API ImGuiLayer : public ILayer
+	{
+	public:
+		ImGuiLayer() {};
+		~ImGuiLayer() override {}
+
+		 void OnAttach() override;
+
+		 void OnUpdate(float dt) override;
+
+		 void OnDetach() override;
 
 
+		 void OnEvent(const Event& event) override;
 
-//******************************************************************************//
-// Private Functions													        //
-//******************************************************************************//
+	private:
+		ImGuiLayer(ImGuiLayer const&) = delete;
+		ImGuiLayer& operator=(ImGuiLayer const&) = delete;
 
 
+		// Member functions for handling events
+		void OnWindowResize(const WindowResizeEvent& event);
+		void OnWindowClose(const WindowCloseEvent& event);
+		void OnKeyPressed(const KeyPressEvent& event);
+		void OnKeyReleased(const KeyReleaseEvent& event);
+		void OnKeyTyped(const KeyTypedEvent& event);
+		//void OnKeyHold(const KeyHoldEvent& event);
+		void OnMousePressed(const MouseButtonPressEvent& event);
+		void OnMouseReleased(const MouseButtonReleaseEvent& event);
+		void OnMouseMove(const MouseMoveEvent& event);
+		void OnMouseScroll(const MouseScrolledEvent& event);
+	};
 
+}

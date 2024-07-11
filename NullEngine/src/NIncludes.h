@@ -16,6 +16,7 @@
 #include "Null/Engine/Modules/NWindow.h"
 #include "Null/Engine/Modules/NSceneManager.h"
 #include "Null/Engine/Modules/NEventManager.h"
+#include "Null/Engine/Modules/NRegistry.h"
 #include "Null/Engine/NEngine.h"
 #include "Null/Engine/Time.h"
 #include "Null/Tools/Trace.h"

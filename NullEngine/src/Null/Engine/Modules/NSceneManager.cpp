@@ -34,7 +34,7 @@ void NULLENGINE::NSceneManager::RegisterScene(const std::string& name, std::uniq
 
 void NULLENGINE::NSceneManager::Load()
 {
-    std::string filePath = std::string("../Data/Scenes/") + std::string("TestScene") + std::string(".json");
+    std::string filePath = std::string("Data/Scenes/") + std::string("TestScene") + std::string(".json");
 
     // Open the JSON file
     std::ifstream inputFile(filePath);
@@ -74,10 +74,12 @@ void NULLENGINE::NSceneManager::Init()
 
 void NULLENGINE::NSceneManager::Update(float dt)
 {
+    //m_Scenes[m_CurrentScene].get()->Update();
 }
 
 void NULLENGINE::NSceneManager::Render()
 {
+    m_Scenes[m_CurrentScene].get()->Render();
 }
 
 void NULLENGINE::NSceneManager::Unload()

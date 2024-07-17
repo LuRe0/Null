@@ -39,13 +39,15 @@ namespace NULLENGINE
 	class NLE_API NRegistry : public IModule
 	{
 	public:
-		NRegistry() = default;
+		NRegistry();
 
 		void Load() override;
 		//! Virtual Init function
 		void Init() override;
 		//! Virtual Update function
 		void Update(float dt) override;
+
+		void Render();
 
 		void Unload() override;
 		//! Virtual Shutdown function
@@ -65,7 +67,24 @@ namespace NULLENGINE
 			if (componentID > m_ComponentManagers.size())
 			{
 				std::unique_ptr<IComponentManager> manager = std::make_unique<ComponentManager<T>>();
-				m_ComponentManagers.emplace_back(std::move(manager));
+
+				if (componentID - m_ComponentManagers.size() > 1)
+				{
+					m_ComponentManagers.resize(componentID);
+					m_ComponentManagers[componentID-1] = (std::move(manager));
+				}
+				else
+					m_ComponentManagers.push_back(std::move(manager));
+
+			}
+			else
+			{
+				if (!m_ComponentManagers[componentID-1])
+				{
+					std::unique_ptr<IComponentManager> manager = std::make_unique<ComponentManager<T>>();
+
+					m_ComponentManagers[componentID - 1] = (std::move(manager));
+				}
 			}
 
 			ComponentManager<T>* newManager = dynamic_cast<ComponentManager<T>*>(m_ComponentManagers[componentID - 1].get());
@@ -73,7 +92,7 @@ namespace NULLENGINE
 				// Successfully casted
 				if (!HasComponent<T>(entityID))
 				{
-					newManager->Add(entityID, std::make_unique<T>(std::forward(args)...));
+					newManager->Add(entityID, std::make_unique<T>(std::forward<TArgs>(args)...));
 					NLE_CORE_INFO("Succesfully added {0}, {1} to entity {2}", Component<T>::TypeName(), componentID, entityID);
 				}
 				else

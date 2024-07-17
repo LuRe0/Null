@@ -15,7 +15,6 @@ public:
 	void Load() override
 	{
 		Application::Load();
-		PushOverlay(std::move(std::make_unique<NULLENGINE::ImGuiLayer>()));
 	}
 
 private:

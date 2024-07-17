@@ -12,6 +12,8 @@
 #include "stdafx.h"
 #include "NRegistry.h"
 #include "Null/Engine/Submodules/ECS/Systems/PhysicsSystem.h"
+#include "Null/Engine/Submodules/ECS/Systems/SpriteRenderSystem.h"
+#include "Null/Engine/Submodules/ECS/Systems/TransformSystem.h"
 
 
 
@@ -26,14 +28,27 @@
 
 namespace NULLENGINE
 {
+	NRegistry::NRegistry() : m_NumEntities(0)
+	{
+		AddSystem<PhysicsSystem>();
+		AddSystem<TransformSystem>();
+		AddSystem<SpriteRenderSystem>();
+	}
+
 	void NRegistry::Load()
 	{
-
+		for (auto& system : m_Systems)
+		{
+			system.second.get()->Load();
+		}
 	}
 
 	void NRegistry::Init()
 	{
-		AddSystem<PhysicsSystem>();
+		for (auto& system : m_Systems)
+		{
+			system.second.get()->Init();
+		}
 	}
 
 	void NRegistry::Update(float dt)
@@ -41,6 +56,14 @@ namespace NULLENGINE
 		for (auto& system : m_Systems)
 		{
 			system.second.get()->Update(dt);
+		}
+	}
+
+	void NRegistry::Render()
+	{
+		for (auto& system : m_Systems)
+		{
+			system.second.get()->Render();
 		}
 	}
 

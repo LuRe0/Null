@@ -40,14 +40,16 @@ namespace NULLENGINE
 
 		virtual ~ILayer() {};
 
-		virtual void OnAttach() = 0;
+		virtual void OnAttach() {};
 
-		virtual void OnUpdate(float dt) = 0;
+		virtual void OnUpdate(float dt) {};
 
-		virtual void OnDetach() = 0;
+		virtual void OnRender(float dt) {};
+
+		virtual void OnDetach() {};
 
 
-		virtual void OnEvent(const Event& event) = 0;
+		virtual void OnEvent(const Event& event) {};
 
 	private:
 		ILayer(ILayer const&) = delete;

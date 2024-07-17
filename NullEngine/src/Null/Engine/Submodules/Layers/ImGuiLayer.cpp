@@ -32,13 +32,31 @@ namespace NULLENGINE
 {
 	void ImGuiLayer::OnAttach()
 	{
+		// Setup Dear ImGui context
+		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
-		ImGui::StyleColorsDark();
-
-		ImGuiIO& io = ImGui::GetIO();
+		ImGuiIO& io = ImGui::GetIO(); (void)io;
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
+		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
+		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
+		//io.ConfigViewportsNoAutoMerge = true;
+		//io.ConfigViewportsNoTaskBarIcon = true;
 
 		io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
 		io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;
+
+		// Setup Dear ImGui style
+		ImGui::StyleColorsDark();
+		//ImGui::StyleColorsLight();
+
+		// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
+		ImGuiStyle& style = ImGui::GetStyle();
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		{
+			style.WindowRounding = 0.0f;
+			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+		}
 
 		NWindow* window = NEngine::Instance().Get<NWindow>();
 		ImGui_ImplGlfw_InitForOpenGL(window->GetWinddow(), true);
@@ -46,46 +64,96 @@ namespace NULLENGINE
 
 		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
 
-		SUBSCRIBE_EVENT(WindowResizeEvent, &ImGuiLayer::OnWindowResize, eventManager);
-		SUBSCRIBE_EVENT(WindowCloseEvent, &ImGuiLayer::OnWindowClose, eventManager);
-		SUBSCRIBE_EVENT(KeyPressEvent, &ImGuiLayer::OnKeyPressed, eventManager);
-		SUBSCRIBE_EVENT(KeyTypedEvent, &ImGuiLayer::OnKeyTyped, eventManager);
-		SUBSCRIBE_EVENT(KeyReleaseEvent, &ImGuiLayer::OnKeyReleased, eventManager);
-		SUBSCRIBE_EVENT(MouseButtonPressEvent, &ImGuiLayer::OnMousePressed, eventManager);
-		SUBSCRIBE_EVENT(MouseButtonReleaseEvent, &ImGuiLayer::OnMouseReleased, eventManager);
-		SUBSCRIBE_EVENT(MouseMoveEvent, &ImGuiLayer::OnMouseMove, eventManager);
-		SUBSCRIBE_EVENT(MouseScrolledEvent, &ImGuiLayer::OnMouseScroll, eventManager);
+		//SUBSCRIBE_EVENT(WindowResizeEvent, &ImGuiLayer::OnWindowResize, eventManager);
+		//SUBSCRIBE_EVENT(WindowCloseEvent, &ImGuiLayer::OnWindowClose, eventManager);
+		//SUBSCRIBE_EVENT(KeyPressEvent, &ImGuiLayer::OnKeyPressed, eventManager);
+		//SUBSCRIBE_EVENT(KeyTypedEvent, &ImGuiLayer::OnKeyTyped, eventManager);
+		//SUBSCRIBE_EVENT(KeyReleaseEvent, &ImGuiLayer::OnKeyReleased, eventManager);
+		//SUBSCRIBE_EVENT(MouseButtonPressEvent, &ImGuiLayer::OnMousePressed, eventManager);
+		//SUBSCRIBE_EVENT(MouseButtonReleaseEvent, &ImGuiLayer::OnMouseReleased, eventManager);
+		//SUBSCRIBE_EVENT(MouseMoveEvent, &ImGuiLayer::OnMouseMove, eventManager);
+		//SUBSCRIBE_EVENT(MouseScrolledEvent, &ImGuiLayer::OnMouseScroll, eventManager);
 
 	}
 	void ImGuiLayer::OnUpdate(float dt)
+	{
+		//NWindow* window = NEngine::Instance().Get<NWindow>();
+
+		//ImGuiIO& io = ImGui::GetIO();
+		//io.DisplaySize = ImVec2(window->Width(), window->Height());
+
+		//ImGui_ImplOpenGL3_NewFrame();
+		//ImGui::NewFrame();
+
+		//static bool show = true;
+
+		//ImGui::ShowDemoWindow(&show);
+
+		//ImGui::Render();
+		//ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+		//if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		//{
+		//	GLFWwindow* backup_current_context = window->GetWinddow();
+		//	ImGui::UpdatePlatformWindows();
+		//	ImGui::RenderPlatformWindowsDefault();
+		//	glfwMakeContextCurrent(backup_current_context);
+		//}
+
+	}
+	void ImGuiLayer::OnRender()
+	{
+		static bool show = true;
+
+		ImGui::ShowDemoWindow(&show);
+	}
+	void ImGuiLayer::OnDetach()
+	{
+		ImGui_ImplOpenGL3_Shutdown();
+		ImGui_ImplGlfw_Shutdown();
+		ImGui::DestroyContext();
+	}
+
+	void ImGuiLayer::OnEvent(const Event& e) 
+	{
+		//NLE_INFO("{0}", e.Print());
+
+		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+
+		eventManager->TriggerEvent(e);
+	}
+
+	void ImGuiLayer::Begin()
+	{
+		// Start the Dear ImGui frame
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+	}
+
+	void ImGuiLayer::End()
 	{
 		NWindow* window = NEngine::Instance().Get<NWindow>();
 
 		ImGuiIO& io = ImGui::GetIO();
 		io.DisplaySize = ImVec2(window->Width(), window->Height());
 
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui::NewFrame();
-
-		static bool show = true;
-
-		ImGui::ShowDemoWindow(&show);
-
+		// Rendering
 		ImGui::Render();
+
+		// Update and Render additional Platform Windows
+		// (Platform functions may change the current OpenGL context, so we save/restore it to make it easier to paste this code elsewhere.
+		//  For this specific demo app we could also call glfwMakeContextCurrent(window) directly)
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		{
+			GLFWwindow* backup_current_context = window->GetWinddow();
+			ImGui::UpdatePlatformWindows();
+			ImGui::RenderPlatformWindowsDefault();
+			glfwMakeContextCurrent(backup_current_context);
+		}
+
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-	}
-	void ImGuiLayer::OnDetach()
-	{
-	}
-
-	void ImGuiLayer::OnEvent(const Event& e) 
-	{
-		NLE_INFO("{0}", e.Print());
-
-		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
-
-		eventManager->TriggerEvent(e);
 	}
 
 

@@ -36,7 +36,8 @@ namespace NULLENGINE
 
 #define EVENT_CLASS_TYPE(type) static Event::EventType GetStaticEventType() { return EventType::##type; } \
                                virtual Event::EventType GetEventType() const override { return GetStaticEventType(); } \
-                               virtual const char* GetName() const override { return #type; }
+                               virtual const char* GetName() const override { return #type; } \
+                               std::unique_ptr<Event> Clone() const override  { return std::make_unique<type##Event>(*this); }
 
     class NLE_API WindowResizeEvent : public Event {
     public:

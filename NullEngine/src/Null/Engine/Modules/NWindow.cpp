@@ -2,7 +2,8 @@
 #include "NWindow.h"
 #include "Null/Tools/Trace.h"
 #include "Null/Engine/Submodules/Events/IEvents.h"
-
+#include "imgui.h"
+#include "backends/imgui_impl_glfw.h"
 
 #include <glad/glad.h>
 
@@ -44,11 +45,39 @@ namespace NULLENGINE
         // Set GLFW callbacks
         glfwSetWindowSizeCallback(m_Window, WindowResizeCallback);
         glfwSetWindowCloseCallback(m_Window, WindowCloseCallback);
-        glfwSetKeyCallback(m_Window, KeyCallback);
-        glfwSetCharCallback(m_Window, KeyTypeCallback);
-        glfwSetMouseButtonCallback(m_Window, MouseButtonCallback);
-        glfwSetCursorPosCallback(m_Window, MouseMoveCallback);
-        glfwSetScrollCallback(m_Window, MouseScrollCallback);
+        //glfwSetKeyCallback(m_Window, KeyCallback);
+        //glfwSetCharCallback(m_Window, KeyTypeCallback);
+        //glfwSetMouseButtonCallback(m_Window, MouseButtonCallback);
+        //glfwSetCursorPosCallback(m_Window, MouseMoveCallback);
+        //glfwSetScrollCallback(m_Window, MouseScrollCallback);
+
+
+        glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+            ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
+            KeyCallback(window, key, scancode, action, mods);
+            });
+
+        glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods) {
+            ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
+            MouseButtonCallback(window, button, action, mods);
+            });
+
+        glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xoffset, double yoffset) {
+            ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
+            MouseScrollCallback(window, xoffset, yoffset);
+            });
+
+        glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xpos, double ypos) {
+            ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
+            MouseMoveCallback(window, xpos, ypos);
+            });
+
+
+ 
+        glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int c) {
+            ImGui_ImplGlfw_CharCallback(window, c);
+            KeyTypeCallback(window, c);
+            });
 
     }
 
@@ -61,9 +90,7 @@ namespace NULLENGINE
  
             glfwPollEvents();
 
-            glClearColor(0.1f, 0.1f, .1f, 1.0f);
-
-            glClear(GL_COLOR_BUFFER_BIT);
+ 
         }
     }
 
@@ -80,6 +107,11 @@ namespace NULLENGINE
     bool NWindow::WindowClosed()
     {
         return !m_Window || glfwWindowShouldClose(m_Window);
+    }
+
+    bool NWindow::WindowMinimized()
+    {
+        return (Width() && Height() == 0);
     }
 
     void NWindow::InitializeWindowEvents(NEventManager* eventManager)
@@ -152,106 +184,131 @@ namespace NULLENGINE
     ///GLFW Callbacks
     void  NWindow::WindowResizeCallback(GLFWwindow* window, int width, int height)
     {
-        Window& data = *((Window*)glfwGetWindowUserPointer(window));
+        if (!ImGui::GetIO().WantCaptureMouse)
+        {
+            Window& data = *((Window*)glfwGetWindowUserPointer(window));
 
-        data.m_Width = width;
-        data.m_Height = height;
+            data.m_Width = width;
+            data.m_Height = height;
 
-        data.m_callbackFunc(WindowResizeEvent(width, height));
+            data.m_callbackFunc(WindowResizeEvent(width, height));
+        }
     }
 
     void  NWindow::WindowCloseCallback(GLFWwindow* window)
     {
-        Window& data = *((Window*)glfwGetWindowUserPointer(window));
+        if (!ImGui::GetIO().WantCaptureMouse)
+        {
+            Window& data = *((Window*)glfwGetWindowUserPointer(window));
 
-        data.m_callbackFunc(WindowCloseEvent());
+            data.m_callbackFunc(WindowCloseEvent());
+        }
     }
 
     void  NWindow::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
     {
-        switch (action)
+        if (!ImGui::GetIO().WantCaptureMouse)
         {
-        case GLFW_PRESS:
-        {
+            switch (action)
+            {
+            case GLFW_PRESS:
+            {
 
-            Window& data = *((Window*)glfwGetWindowUserPointer(window));
+                Window& data = *((Window*)glfwGetWindowUserPointer(window));
 
-            data.m_callbackFunc(KeyPressEvent(key, 0));
-            break;
+                data.m_callbackFunc(KeyPressEvent(key, 0));
+                break;
+            }
+            case GLFW_RELEASE:
+            {
+
+                Window& data = *((Window*)glfwGetWindowUserPointer(window));
+
+                data.m_callbackFunc(KeyReleaseEvent(key));
+
+                break;
+            }
+            case GLFW_REPEAT:
+            {
+
+                Window& data = *((Window*)glfwGetWindowUserPointer(window));
+
+                data.m_callbackFunc(KeyHoldEvent(key));
+
+                break;
+            }
+            default:
+                break;
+            }
         }
-        case GLFW_RELEASE:
-        {
+        //Input::Instance().SetKeyState(key, action);
 
-            Window& data = *((Window*)glfwGetWindowUserPointer(window));
-
-            data.m_callbackFunc(KeyReleaseEvent(key));
-
-            break;
-        }
-        case GLFW_REPEAT:
-        {
-
-            Window& data = *((Window*)glfwGetWindowUserPointer(window));
-
-            data.m_callbackFunc(KeyHoldEvent(key));
-
-            break;
-        }
-        default:
-            break;
-        }
     }
 
     void NWindow::KeyTypeCallback(GLFWwindow* window, unsigned int keycode)
     {
+        if (!ImGui::GetIO().WantCaptureMouse)
+        {
+            Window& data = *((Window*)glfwGetWindowUserPointer(window));
 
-        Window& data = *((Window*)glfwGetWindowUserPointer(window));
-
-        data.m_callbackFunc(KeyTypedEvent(keycode));
-
+            data.m_callbackFunc(KeyTypedEvent(keycode));
+        }
     }
 
     void  NWindow::MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
     {
-        switch (action)
+        if (!ImGui::GetIO().WantCaptureMouse)
         {
-        case GLFW_PRESS:
-        {
+            switch (action)
+            {
+            case GLFW_PRESS:
+            {
 
-            Window& data = *((Window*)glfwGetWindowUserPointer(window));
+                Window& data = *((Window*)glfwGetWindowUserPointer(window));
 
-            data.m_callbackFunc(MouseButtonPressEvent(button));
+                data.m_callbackFunc(MouseButtonPressEvent(button));
 
-            break;
-        }
-        case GLFW_RELEASE:
-        {
+                break;
+            }
+            case GLFW_RELEASE:
+            {
 
-            Window& data = *((Window*)glfwGetWindowUserPointer(window));
+                Window& data = *((Window*)glfwGetWindowUserPointer(window));
 
-            data.m_callbackFunc(MouseButtonReleaseEvent(button));
+                data.m_callbackFunc(MouseButtonReleaseEvent(button));
 
-            break;
-        }
-        default:
-            break;
+                break;
+            }
+            default:
+                break;
+            }
+
+            //Input::Instance().SetMouseState(button, action);
         }
     }
 
-    void  NWindow::MouseMoveCallback(GLFWwindow* window, double xpos, double ypos) {
+    void  NWindow::MouseMoveCallback(GLFWwindow* window, double xpos, double ypos)
+    {
 
-        Window& data = *((Window*)glfwGetWindowUserPointer(window));
+        if (!ImGui::GetIO().WantCaptureMouse)
+        {
+            Window& data = *((Window*)glfwGetWindowUserPointer(window));
 
-        data.m_callbackFunc(MouseMoveEvent(static_cast<float>(xpos), static_cast<float>(ypos)));
+            data.m_callbackFunc(MouseMoveEvent(static_cast<float>(xpos), static_cast<float>(ypos)));
 
+            //Input::Instance().SetMousePos(xpos, ypos);
+        }
     }
 
-    void  NWindow::MouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
+    void  NWindow::MouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset) 
+    {
 
-        Window& data = *((Window*)glfwGetWindowUserPointer(window));
+        if (!ImGui::GetIO().WantCaptureMouse)
+        {
+            Window& data = *((Window*)glfwGetWindowUserPointer(window));
 
-        data.m_callbackFunc(MouseScrolledEvent(static_cast<float>(xoffset), static_cast<float>(yoffset)));
-
+            data.m_callbackFunc(MouseScrolledEvent(static_cast<float>(xoffset), static_cast<float>(yoffset)));
+        }
     }
 
 

@@ -10,6 +10,9 @@
     <Filter Include="Null\Engine\Base">
       <UniqueIdentifier>{4F27B103-3B20-D055-6452-B5DA50AAAF61}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Null\Engine\Misc">
+      <UniqueIdentifier>{8051B703-6C4A-D655-957C-BBDA81D4B561}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Null\Engine\Modules">
       <UniqueIdentifier>{6D1D03B6-D97E-E0C3-62EC-2676CE4C1783}</UniqueIdentifier>
     </Filter>
@@ -34,6 +37,9 @@
     <Filter Include="Null\Engine\Submodules\Events">
       <UniqueIdentifier>{5B560797-C76E-EEC0-901B-7E5AFCF2825A}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Null\Engine\Submodules\Graphics">
+      <UniqueIdentifier>{77EC9911-E3CF-A851-ECD2-D68D58356FA2}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Null\Engine\Submodules\Layers">
       <UniqueIdentifier>{3641EAA5-A259-D1CF-6B06-6169D7DD6569}</UniqueIdentifier>
     </Filter>
@@ -52,6 +58,12 @@
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Base\IEngine.h">
       <Filter>Null\Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Misc\Input.h">
+      <Filter>Null\Engine\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Misc\Time.h">
+      <Filter>Null\Engine\Misc</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Modules\Base\IModule.h">
       <Filter>Null\Engine\Modules\Base</Filter>
@@ -95,6 +107,27 @@
     <ClInclude Include="src\Null\Engine\Submodules\Events\IEvents.h">
       <Filter>Null\Engine\Submodules\Events</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\EBO.h">
+      <Filter>Null\Engine\Submodules\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Mesh.h">
+      <Filter>Null\Engine\Submodules\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Shader\Shader.h">
+      <Filter>Null\Engine\Submodules\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\SpriteSource.h">
+      <Filter>Null\Engine\Submodules\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Texture.h">
+      <Filter>Null\Engine\Submodules\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\VAO.h">
+      <Filter>Null\Engine\Submodules\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\VBO.h">
+      <Filter>Null\Engine\Submodules\Graphics</Filter>
+    </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\Layers\ImGuiLayer.h">
       <Filter>Null\Engine\Submodules\Layers</Filter>
     </ClInclude>
@@ -104,9 +137,6 @@
     <ClInclude Include="src\Null\Engine\Submodules\Scene.h">
       <Filter>Null\Engine\Submodules</Filter>
     </ClInclude>
-    <ClInclude Include="src\Null\Engine\Time.h">
-      <Filter>Null\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="src\Null\EntryPoint.h">
       <Filter>Null</Filter>
     </ClInclude>
@@ -114,6 +144,18 @@
       <Filter>Null\Tools</Filter>
     </ClInclude>
     <ClInclude Include="src\stdafx.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\TransformSystem.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\SpriteRenderSystem.h" />
+    <ClInclude Include="src\Null\Engine\Modules\NGraphics.h" />
+    <ClInclude Include="src\Null\Engine\Modules\NRenderer.h" />
+    <ClInclude Include="src\Null\Engine\Modules\NShaderManager.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\Camera.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\Camera2D.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\Camera3D.h" />
+    <ClInclude Include="src\Null\Engine\Modules\NCameraManager.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BufferData.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\RenderData.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\Framebuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Null\Application.cpp">
@@ -121,6 +163,12 @@
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Base\IEngine.cpp">
       <Filter>Null\Engine\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Misc\Input.cpp">
+      <Filter>Null\Engine\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Misc\Time.cpp">
+      <Filter>Null\Engine\Misc</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Modules\Base\IModule.cpp">
       <Filter>Null\Engine\Modules\Base</Filter>
@@ -164,6 +212,27 @@
     <ClCompile Include="src\Null\Engine\Submodules\Events\IEvents.cpp">
       <Filter>Null\Engine\Submodules\Events</Filter>
     </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Buffers\EBO.cpp">
+      <Filter>Null\Engine\Submodules\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Mesh.cpp">
+      <Filter>Null\Engine\Submodules\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Shader\Shader.cpp">
+      <Filter>Null\Engine\Submodules\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\SpriteSource.cpp">
+      <Filter>Null\Engine\Submodules\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Texture.cpp">
+      <Filter>Null\Engine\Submodules\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Buffers\VAO.cpp">
+      <Filter>Null\Engine\Submodules\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Buffers\VBO.cpp">
+      <Filter>Null\Engine\Submodules\Graphics</Filter>
+    </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\Layers\ImGuiLayer.cpp">
       <Filter>Null\Engine\Submodules\Layers</Filter>
     </ClCompile>
@@ -173,12 +242,19 @@
     <ClCompile Include="src\Null\Engine\Submodules\Scene.cpp">
       <Filter>Null\Engine\Submodules</Filter>
     </ClCompile>
-    <ClCompile Include="src\Null\Engine\Time.cpp">
-      <Filter>Null\Engine</Filter>
-    </ClCompile>
     <ClCompile Include="src\Null\Tools\Trace.cpp">
       <Filter>Null\Tools</Filter>
     </ClCompile>
     <ClCompile Include="src\stdafx.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\TransformSystem.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\SpriteRenderSystem.cpp" />
+    <ClCompile Include="src\Null\Engine\Modules\NGraphics.cpp" />
+    <ClCompile Include="src\Null\Engine\Modules\NRenderer.cpp" />
+    <ClCompile Include="src\Null\Engine\Modules\NShaderManager.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\Camera.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\Camera2D.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\Camera3D.cpp" />
+    <ClCompile Include="src\Null\Engine\Modules\NCameraManager.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Buffers\Framebuffer.cpp" />
   </ItemGroup>
 </Project>

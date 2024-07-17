@@ -67,10 +67,12 @@ namespace NULLENGINE
 
 	void Scene::Update(float dt)
 	{
+
 	}
 
 	void Scene::Render()
 	{
+
 	}
 
 	void Scene::Unload()

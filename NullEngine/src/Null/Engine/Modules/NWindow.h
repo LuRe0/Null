@@ -53,6 +53,7 @@ namespace NULLENGINE
 		void Shutdown() override;
 
 		bool WindowClosed();
+		bool WindowMinimized();
 
 		void InitializeWindowEvents(NEventManager* eventManager);
 
@@ -65,9 +66,9 @@ namespace NULLENGINE
 
 		static const std::string Name() { return "Window"; }
 
-		const unsigned int Height() { return m_Data.m_Height;  }
+		unsigned int Height() { return m_Data.m_Height;  }
 
-		const unsigned int Width() { return m_Data.m_Width;  }
+		unsigned int Width() { return m_Data.m_Width;  }
 
 		void SetVSynch(bool s);
 

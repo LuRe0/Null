@@ -43,10 +43,14 @@ namespace NULLENGINE
 
 		 void OnUpdate(float dt) override;
 
+		 void OnRender();
+
 		 void OnDetach() override;
 
-
 		 void OnEvent(const Event& event) override;
+
+		 void Begin();
+		 void End();
 
 	private:
 		ImGuiLayer(ImGuiLayer const&) = delete;

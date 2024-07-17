@@ -51,6 +51,7 @@ namespace NULLENGINE
 		for (int i = 0; i < m_Modules.size(); i++)
 		{
 			m_Modules[i].first->Update(dt);
+			m_Modules[i].first->Render();
 		}
 	}
 

@@ -49,7 +49,14 @@ namespace NULLENGINE
 #define NLE_CORE_INFO(...)		::NULLENGINE::Trace::GetCoreLogger()->info(__VA_ARGS__)
 #define NLE_CORE_WARN(...)		::NULLENGINE::Trace::GetCoreLogger()->warn(__VA_ARGS__)
 #define NLE_CORE_ERROR(...)		::NULLENGINE::Trace::GetCoreLogger()->error(__VA_ARGS__)
-#define NLE_CORE_FATAL(...)		::NULLENGINE::Trace::GetCoreLogger()->fatal(__VA_ARGS__)
+//#define NLE_CORE_FATAL(...)		::NULLENGINE::Trace::GetCoreLogger()->fatal(__VA_ARGS__)
+#define NLE_CORE_ASSERT(condition,...) \
+    do { \
+        if (!(condition)) { \
+            NLE_CORE_ERROR("Assertion failed: {0}", __VA_ARGS__); \
+            assert(false); \
+        } \
+    } while (0)
 
 
 

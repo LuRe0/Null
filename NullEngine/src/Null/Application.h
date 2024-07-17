@@ -15,7 +15,7 @@
 #include "Core.h"
 #include "Null/Engine/NEngine.h"
 #include "Null/Engine/Submodules/Layers/Layer.h"
-
+#include "Null//Engine/Submodules/Graphics/Shader/Shader.h"
 
 //******************************************************************************//
 // Definitions  														        //
@@ -33,7 +33,8 @@
 namespace NULLENGINE
 {
 	class NLE_API Application;
-	class NLE_API ILayer;
+	class NLE_API ImGuiLayer;
+	//class NLE_API Shader;
 
 	class NLE_API Application
 	{
@@ -66,11 +67,15 @@ namespace NULLENGINE
 
 		//std::multimap<LayerType, std::vector<Layer>>
 
-		std::multimap<LayerType, std::unique_ptr<ILayer>> m_layers;
+		//std::multimap<LayerType, std::unique_ptr<ILayer>> m_layers;
 
+		std::unique_ptr<ImGuiLayer> m_ImGuiLayer;
+		std::unique_ptr<Shader> m_Shader;
 
 		IEngine* m_NullEngine;
 
+		unsigned int m_VertexArray, m_VertexBuffer, m_IndexBuffer;
+		
 
 		Application(Application const&) = delete;
 		Application& operator=(Application const&) = delete;

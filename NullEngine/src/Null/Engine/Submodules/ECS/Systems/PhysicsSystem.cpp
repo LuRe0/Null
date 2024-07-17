@@ -19,7 +19,7 @@
 // Public Variables															    //
 //******************************************************************************//
 
-const glm::vec2 GRAVITY(0.0f, -9.81f);
+const glm::vec3 GRAVITY(0.0f, -9.81f, 0.0f);
 
 //******************************************************************************//
 // Function Declarations												        //
@@ -43,7 +43,7 @@ namespace NULLENGINE
 			Rigidbody2DComponent& rigidbody = m_Parent->GetComponent<Rigidbody2DComponent>(entityId);
 
 			// Calculate net force (including gravity)
-			glm::vec2 netForce = rigidbody.m_Force + (GRAVITY * rigidbody.m_GravityScale * rigidbody.m_Mass);
+			glm::vec3 netForce = rigidbody.m_Force + (GRAVITY * rigidbody.m_GravityScale * rigidbody.m_Mass);
 
 			// Update acceleration
 			rigidbody.m_Acceleration = netForce / rigidbody.m_Mass;
@@ -53,11 +53,13 @@ namespace NULLENGINE
 			rigidbody.m_Velocity *= std::clamp(1.0f - rigidbody.m_Drag * dt, 0.0f, 1.0f);
 
 			// Update position
-			rigidbody.m_OldTranslation = transform.Translation;
-			transform.Translation += rigidbody.m_Velocity * dt;
+			rigidbody.m_OldTranslation = transform.m_Translation;
+			transform.m_Translation += rigidbody.m_Velocity * dt;
 
 			// Reset the force for the next frame
-			rigidbody.m_Force = glm::vec2(0.0f);
+			rigidbody.m_Force = glm::vec3(0.0f); 
+			
+			transform.m_Dirty = true;
 		}
 	}
 

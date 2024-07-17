@@ -17,6 +17,7 @@ includeDir["Glad"] = "NullEngine/vendor/Glad/include"
 includeDir["JSON"] = "NullEngine/vendor/JSON/include" 
 includeDir["glm"] = "NullEngine/vendor/glm" 
 includeDir["ImGui"] = "NullEngine/vendor/imgui" 
+includeDir["stb"] = "NullEngine/vendor/stb/stb" 
 
 
 -- Include the GLFW project
@@ -50,6 +51,7 @@ project "NullEngine"
          "%{includeDir.Glad}",
          "%{includeDir.JSON}",
          "%{includeDir.glm}",
+         "%{includeDir.stb}",
          "%{includeDir.ImGui}"
     }
 
@@ -91,7 +93,7 @@ project "NullEngine"
 
         filter "configurations:Dist"
             defines "NLE_DIST"
-            buildoptions "/MDd"
+            buildoptions "/MT"
             symbols "On"
 
 

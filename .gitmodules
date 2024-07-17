@@ -13,3 +13,6 @@
 [submodule "NullEngine/vendor/imgui"]
 	path = NullEngine/vendor/imgui
 	url = https://github.com/TheCherno/imgui
+[submodule "NullEngine/vendor/stb/stb"]
+	path = NullEngine/vendor/stb/stb
+	url = https://github.com/nothings/stb

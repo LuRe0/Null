@@ -47,6 +47,8 @@ namespace NULLENGINE
 		//! Virtual Update function
 		virtual void Update(float dt) = 0;
 
+		virtual void Render() {};
+
 		virtual void Unload() {};
 		//! Virtual Shutdown function
 		virtual void Shutdown() = 0;

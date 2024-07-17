@@ -51,10 +51,9 @@ namespace NULLENGINE
 			std::string fullName = typeid(T).name();
 			// Manual parsing: adjust based on compiler output
 			auto pos = fullName.find_last_of(':');
-			fullName.substr(pos + 1);
-			std::string name = fullName.substr(pos + 1);
-
-			return dynamic_cast<T*>(Get(name));
+	
+	
+			return dynamic_cast<T*>(Get(fullName.substr(pos + 1)));
 		}
 
 		template<typename T, typename ... Args>
@@ -63,10 +62,9 @@ namespace NULLENGINE
 			std::string fullName = typeid(T).name();
 			// Manual parsing: adjust based on compiler output
 			auto pos = fullName.find_last_of(':');
-			fullName.substr(pos + 1);
-			std::string name = fullName.substr(pos + 1);
 
-			Add(new T(std::forward<Args>(args)...), name);
+
+			Add(new T(std::forward<Args>(args)...), fullName.substr(pos + 1));
 		}
 
 		virtual ~IEngine() = default;

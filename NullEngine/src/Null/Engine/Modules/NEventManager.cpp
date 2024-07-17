@@ -60,14 +60,14 @@ namespace NULLENGINE
 		if (subscribers != m_Subscribers.end()) {
 			auto& handlers = subscribers->second;
 
-			for (auto& it : handlers) {
+	/*		for (auto& it : handlers) {
 				if (it->GetType() == handler->GetType()) {
 					NLE_CORE_ERROR("Attempting to double-register callback");
 					return;
 				}
-			}
+			}*/
 
-			//handlers.emplace_back(std::move(handler));  // Move the handler into the vector
+			handlers.emplace_back(std::move(handler));  // Move the handler into the vector
 		}
 		else {
 			// Create a new vector for the eventId and move the handler into it

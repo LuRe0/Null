@@ -59,28 +59,43 @@ namespace NULLENGINE
 	private:
 	};
 
-	struct NLE_API TransformComponent
+	struct  TransformComponent
 	{
-		glm::vec2 Translation;
-		glm::vec2 Scale;
-		float Rotation;
+		glm::vec3 m_Translation;
+		glm::vec3 m_Scale;
+		glm::vec3 m_Rotation;
+		bool m_Dirty;
+
+		// Padding to ensure proper alignment of m_TransformMatrix
+		char padding[3];
+
+		glm::mat4 m_TransformMatrix;
 	};
 
-	struct NLE_API Rigidbody2DComponent
+	struct  Rigidbody2DComponent
 	{
 		float m_Mass = 1.0f;                // Mass of the rigidbody
-		glm::vec2 m_OldTranslation;       // Velocity of the rigidbody
-		glm::vec2 m_Velocity;       // Velocity of the rigidbody
-		glm::vec2 m_Acceleration;       // Velocity of the rigidbody
-		glm::vec2 m_Force;          // Force applied to the rigidbody
+		glm::vec3 m_OldTranslation;       // Velocity of the rigidbody
+		glm::vec3 m_Velocity;       // Velocity of the rigidbody
+		glm::vec3 m_Acceleration;       // Velocity of the rigidbody
+		glm::vec3 m_Force;          // Force applied to the rigidbody
 		float m_Drag = 0.0f;               // Linear drag applied to the rigidbody
-		float m_GravityScale = 1.0f;      // Scale factor for gravity
+		float m_GravityScale = 0;      // Scale factor for gravity
 	};
 
-	struct Texture;  // Forward declaration of Texture
+	class SpriteSource;  // Forward declaration of Texture
+	class Mesh;  // Forward declaration of Texture
 
-	struct SpriteComponent {
-		Texture* m_Texture;   // Pointer to the texture to be used
+	struct SpriteComponent 
+	{
+		unsigned int m_FrameIndex = 0;
+
+		SpriteSource* m_SpriteSource;   // Pointer to the texture to be used
+
+		Mesh* m_Mesh;   // Pointer to the mesh to be used
+
 		glm::vec4 m_Color;    // Color tint of the sprite
+
+		std::string m_ShaderName;
 	};
 }

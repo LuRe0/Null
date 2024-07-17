@@ -1,39 +1,61 @@
+  #pragma once
+
+//------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 //
-// File Name:	Time.cpp
-// Author(s):	Anthon Reid
+// File Name:	VAO.h
+// Author(s):	name
 // 
 //------------------------------------------------------------------------------
 
 //******************************************************************************//
 // Includes																        //
 //******************************************************************************//
-#include "stdafx.h"
-#include "Time.h"
-#include <algorithm>
+#include "Null/Core.h"
 
+
+//******************************************************************************//
+// Definitions  														        //
+//******************************************************************************//
 
 
 
 //******************************************************************************//
-// Public Variables															    //
+// Private constants														    //
 //******************************************************************************//
 
 //******************************************************************************//
-// Function Declarations												        //
+// Private structures													        //
 //******************************************************************************//
+
 
 namespace NULLENGINE
 {
-	double m_previousTime;
-	float m_DeltaTime;
 
-	void Time::Update()
+	class VBO;
+
+	class VAO
 	{
-		double currentTime = glfwGetTime();
-		m_deltaTime = static_cast<float>(currentTime - m_previousTime);
-		m_previousTime = currentTime;
-		m_deltaTime = std::clamp(m_deltaTime, 0.0f, 0.05f);
-	}
+	public:
+		VAO();
+		~VAO();
+
+		void Bind() const;
+		void Unbind() const;
+
+		const unsigned int GetID() const { return m_ID; }
+
+		//void Attach() const;
+
+		void AttachVBO(const VBO& vbo);
+
+		void AttachEBO(const VBO& vbo);
+
+	private:
+		unsigned int m_ID;
+
+	};
+
+
 }

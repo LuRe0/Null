@@ -4,7 +4,7 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	Time.h
+// File Name:	Camera.h
 // Author(s):	name
 // 
 //------------------------------------------------------------------------------
@@ -13,7 +13,9 @@
 // Includes																        //
 //******************************************************************************//
 #include "Null/Core.h"
-#include "GLFW/glfw3.h"
+#include "Camera.h"
+#include <WinUser.h>
+
 
 
 //******************************************************************************//
@@ -33,31 +35,41 @@
 
 namespace NULLENGINE
 {
-	//! Wrapper class for delta time
-	class NLE_API Time
-	{
-	public:
+    class Camera2D : public Camera {
+    public:
+        Camera2D(int windowWidth, int windowHeight, float zoom = 1.0f);
 
-		// Get the delta time
-		float DeltaTime() const {return m_deltaTime;}
+        void SetPosition(const glm::vec2& position);
 
-		//! Initialize class
-		static Time& Instance()
-		{
-			static Time instance;
-			return instance;
-		}
+        void SetRotation(float rotation);
 
-		//! Update current delta time
-		void Update();
+        void SetZoom(float zoom);
 
-	private:
-		// Private constructor and destructor
-		Time() : m_previousTime(glfwGetTime()), m_deltaTime(0.0f) {}
-		~Time() {}
 
-		double m_previousTime;
-		float m_deltaTime;
+        virtual void Init();
 
-	};
+        virtual void Shudown() {};
+
+        void Update(float dt) override;
+
+        const glm::mat4& GetViewMatrix() const override;
+
+
+        void OnWindowResize(const WindowResizeEvent& e);
+        void OnMouseScrolled(const MouseScrolledEvent& e);
+
+        //static void OnMouseMoved(const MouseMoveEvent& event);
+
+    private:
+        glm::vec2 m_Position;
+
+        float m_MovementSpeed;
+        float m_Zoom;
+        float m_Rotation;
+        float m_AspectRatio;
+
+        void SetProjection(float left,float right,float bottom,float top);
+    };
+
+
 }

@@ -57,6 +57,13 @@ namespace NULLENGINE
 
 		void OnEvent(const Event& event);
 
+		template <typename T>
+		void AddCreateFunction(std::function<void() > function)
+		{
+			m_Createfunctions.emplace(System<T>::TypeName(), function);
+		}
+
+
 		virtual ~Application();
 	private:
 		enum LayerType
@@ -76,6 +83,9 @@ namespace NULLENGINE
 
 		unsigned int m_VertexArray, m_VertexBuffer, m_IndexBuffer;
 		
+
+		std::unordered_map<std::string, std::function<void()>> m_Createfunctions;
+
 
 		Application(Application const&) = delete;
 		Application& operator=(Application const&) = delete;

@@ -54,7 +54,7 @@ namespace NULLENGINE
     do { \
         if (!(condition)) { \
             NLE_CORE_ERROR("Assertion failed: {0}", __VA_ARGS__); \
-            assert(false); \
+            assert(false, __VA_ARGS_); \
         } \
     } while (0)
 

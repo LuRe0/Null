@@ -40,11 +40,18 @@ namespace NULLENGINE
 
 
 
-    void EBO::AttachBuffer(std::vector<unsigned int> data)
+    void EBO::AttachBuffer(std::vector<unsigned int> data, bool dynamic)
     {
    
         //set buffer data with edges given
+
+        // just in case I wanna do some cool mesh translation
+   /*    dynamic ? glBufferData(GL_ELEMENT_ARRAY_BUFFER, data.size() * sizeof(float), data.data(), GL_DYNAMIC_DRAW)
+               : glBufferData(GL_ELEMENT_ARRAY_BUFFER, data.size() * sizeof(float), data.data(), GL_STATIC_DRAW);*/
+
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, data.size() * sizeof(float), data.data(), GL_STATIC_DRAW);
+
+        m_Size = data.size();
     }
 
     EBO::EBO()

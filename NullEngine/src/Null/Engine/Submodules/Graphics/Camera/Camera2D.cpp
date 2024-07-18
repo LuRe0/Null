@@ -25,7 +25,7 @@
 
 namespace NULLENGINE
 {
-	Camera2D::Camera2D(int windowWidth, int windowHeight, float zoom) : m_Position(0.0f), m_Rotation(0.0f), m_Zoom(zoom), m_MovementSpeed(250)
+	Camera2D::Camera2D(int windowWidth, int windowHeight, float zoom, float rotation) : m_Position(0.0f), m_Rotation(0.0f), m_Zoom(zoom), m_MovementSpeed(250)
 	{
 		m_AspectRatio = static_cast<float>(windowWidth) / static_cast<float>(windowHeight);
 

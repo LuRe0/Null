@@ -40,7 +40,7 @@ namespace NULLENGINE
 	{
 	}
 
-	glm::vec2 SpriteSource::SpriteSourceGetUV(unsigned int frameIndex) const
+	glm::vec2 SpriteSource::GetUV(unsigned int frameIndex) const
 	{
 		float uSize = 1.0f / m_Cols;
 		float vSize = 1.0f / m_Rows;

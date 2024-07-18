@@ -27,15 +27,56 @@ namespace NULLENGINE
 {
     void NCameraManager::Load()
     {
+        std::string filePath = std::string("Data/Cameras/") + std::string("Cameras") + std::string(".json");
+        // Open the JSON file
+        std::ifstream file(filePath);
+        if (!file.is_open()) {
+            NLE_ERROR("Error: Could not open file");
+            return;
+        }
+
+
+        JSON j;
+        file >> j;
+
+
+        NWindow* window = m_Parent->Get<NWindow>();
+
+        for (auto& cameraJson : j["cameras"]) {
+     
+            std::string type = cameraJson["type"];
+            NLE_CORE_ASSERT((type == "Camera2D" || type == "Camera3D"), "Camera type not reckognized: ", type);
+
+
+            if (type == "Camera2D")
+            {
+                AddCamera<Camera2D>("Default2D", window->Width(), window->Height(), cameraJson.value("zoom", 1.0f), cameraJson.value("rotation", 0.0f));
+            }
+            else
+            {
+                AddCamera<Camera3D>("Default3D", window->Width(), window->Height(), glm::vec3(cameraJson["position"][0], cameraJson["position"][1], cameraJson["position"][2]), 
+                                     glm::vec3(cameraJson["up"][0], cameraJson["up"][1], cameraJson["up"][2]), cameraJson.value("yaw", YAW), cameraJson.value("pitch", PITCH),
+                                     cameraJson.value("movementSpeed", SPEED), cameraJson.value("mouseSensitivity", SENSITIVITY), cameraJson.value("zoom", ZOOM),
+                                     cameraJson.value("nearclip", 0.1f), cameraJson.value("farclip", 5000.0f));
+            }
+
+             
+        }
+
+        std::string defaultCam = j.value("DefaultCamera", "Default3D");
+
+        m_CurrentCamera = GetCamera<Camera3D>(defaultCam);
+
+        m_CurrentCamera = m_CurrentCamera == nullptr ? GetCamera<Camera3D>("Default3D") : m_CurrentCamera;
+
+        if (!m_CurrentCamera)  m_CurrentCamera = GetCamera<Camera2D>("Default2D");
+
+        NLE_CORE_ASSERT(m_CurrentCamera != nullptr, "No valid camera found!");
+
     }
 
     void NCameraManager::Init()
     {
-       NWindow* window = m_Parent->Get<NWindow>();
-       m_CurrentCamera = AddCamera<Camera2D>("Default2D", window->Width(), window->Height());
-
-      AddCamera<Camera3D>("Default3D", window->Width(), window->Height());
-
 
        for (auto& cam : m_Cameras3D)
            cam.second->Init();

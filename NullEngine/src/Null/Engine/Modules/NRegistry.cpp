@@ -28,15 +28,38 @@
 
 namespace NULLENGINE
 {
+
 	NRegistry::NRegistry() : m_NumEntities(0)
 	{
-		AddSystem<PhysicsSystem>();
-		AddSystem<TransformSystem>();
-		AddSystem<SpriteRenderSystem>();
+		AddCreateFunction<PhysicsSystem>([this]() { AddSystem<PhysicsSystem>(); });
+		AddCreateFunction<TransformSystem>([this]() { AddSystem<TransformSystem>(); });
+		AddCreateFunction<SpriteRenderSystem>([this]() { AddSystem<SpriteRenderSystem>(); });
 	}
 
 	void NRegistry::Load()
 	{
+		std::string filePath = std::string("Data/Systems/") + std::string("Systems") + std::string(".json");
+		// Open the JSON file
+		std::ifstream file(filePath);
+		if (!file.is_open()) {
+			NLE_ERROR("Error: Could not open file");
+			return;
+		}
+
+
+		JSON j;
+		file >> j;
+
+
+		for (auto& sysJson : j["systems"]) {
+
+			std::string type = sysJson["type"];
+
+			m_Createfunctions.at(type)();
+		}
+
+
+
 		for (auto& system : m_Systems)
 		{
 			system.second.get()->Load();

@@ -40,7 +40,7 @@ namespace NULLENGINE
 
 		~SpriteSource();
 
-		glm::vec2 SpriteSourceGetUV(unsigned int frameIndex) const;
+		glm::vec2 GetUV(unsigned int frameIndex) const;
 		
 		int GetFrameCount() { return m_Rows * m_Cols; }
 

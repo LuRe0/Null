@@ -42,15 +42,16 @@ namespace NULLENGINE
 	public:
 
 
-		Mesh(float xHalfSize, float yHalfSize, float uSize, float vSize, const std::string& name);
+		Mesh(const std::string& filename);
 		~Mesh();
 
-
-		void SetupVertexBuffer(const std::vector<Vertex>& vertexData);
+		template <typename T>
+		void SetupVertexBuffer(const std::vector<T>& vertexData) {
+			m_Buffer.m_VBO.Bind();
+			m_Buffer.m_VBO.AttachBuffer(vertexData);
+		}
 		void SetupIndexBuffer(const std::vector<unsigned int>& indexData);
 		void SetupVertexAttributes();
-
-
 		void Render(const SpriteSource* spriteSource) const;
 
 	private:
@@ -69,6 +70,7 @@ namespace NULLENGINE
 
 		std::string m_Name;
 	};
+
 
 
 }

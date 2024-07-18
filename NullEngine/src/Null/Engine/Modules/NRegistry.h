@@ -231,6 +231,13 @@ namespace NULLENGINE
 			assert(false);
 		}
 
+		template <typename T>
+		void AddCreateFunction(std::function<void() > function)
+		{
+			m_Createfunctions.emplace(System<T>::TypeName(), function);
+		}
+
+
 
 		static const std::string Name() { return "Registry"; }
 
@@ -265,6 +272,8 @@ namespace NULLENGINE
 
 		NRegistry(NRegistry const&);
 		NRegistry& operator=(NRegistry const&);
+
+		std::unordered_map<std::string, std::function<void()>> m_Createfunctions;
 	};
 
 }

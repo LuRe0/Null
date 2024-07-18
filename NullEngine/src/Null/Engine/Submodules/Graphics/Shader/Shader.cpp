@@ -37,7 +37,7 @@ namespace NULLENGINE
         } \
     } while(0)
 
-	Shader::Shader(const std::string& vertexSrc, const std::string& fragmentSrc) : m_RendererID(0)
+	Shader::Shader(const std::string& vertexSrc, const std::string& fragmentSrc) : m_RendererID(0), m_Name(vertexSrc)
 	{
 		std::string vertexPath = std::string("Data/Shaders/Scripts/") + std::string(vertexSrc) + "V" + std::string(".glsl");
 		std::string fragmentPath = std::string("Data/Shaders/Scripts/") + std::string(fragmentSrc) + "F" + std::string(".glsl");
@@ -195,6 +195,10 @@ namespace NULLENGINE
 	void Shader::Unbind() const
 	{
 		GL(glUseProgram(0));
+	}
+	uint32_t Shader::GetID() const
+	{
+		return m_RendererID;
 	}
 	void Shader::setBool(const std::string& name, bool value) const
 	{

@@ -41,6 +41,7 @@ namespace NULLENGINE
 
 		void Bind() const ;
 		void Unbind() const;
+		uint32_t GetID() const;
 
 		// utility uniform functions
 		void setBool(const std::string& name, bool value) const;
@@ -55,6 +56,7 @@ namespace NULLENGINE
 		void setTextureOffset(float uSize, float vSize)const;
 	private:
 		uint32_t m_RendererID;
+		std::string m_Name;
 	};
 
 }

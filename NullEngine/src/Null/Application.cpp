@@ -41,13 +41,13 @@ namespace NULLENGINE
 	{
 		IEngine& engine = NEngine::Instance();
 
-		engine.Add<NULLENGINE::NWindow>();
-		engine.Add<NULLENGINE::NEventManager>();
-		engine.Add<NULLENGINE::NCameraManager>();
-		engine.Add<NULLENGINE::NRegistry>();
-		engine.Add<NULLENGINE::NShaderManager>();
-		engine.Add<NULLENGINE::NSceneManager>();
-		engine.Add<NULLENGINE::NRenderer>();
+		AddCreateFunction<NWindow>([&engine]() { engine.Add<NULLENGINE::NWindow>(); });
+		AddCreateFunction<NEventManager>([&engine]() { engine.Add<NULLENGINE::NEventManager>(); });
+		AddCreateFunction<NCameraManager>([&engine]() { engine.Add<NULLENGINE::NCameraManager>(); });
+		AddCreateFunction<NRegistry>([&engine]() { engine.Add<NULLENGINE::NRegistry>(); });
+		AddCreateFunction<NShaderManager>([&engine]() { engine.Add<NULLENGINE::NShaderManager>(); });
+		AddCreateFunction<NSceneManager>([&engine]() { engine.Add<NULLENGINE::NSceneManager>(); });
+		AddCreateFunction<NRenderer>([&engine]() { engine.Add<NULLENGINE::NRenderer>(); });
 
 		m_NullEngine = &engine;
 
@@ -59,6 +59,26 @@ namespace NULLENGINE
 
 	void Application::Load()
 	{
+		std::string filePath = std::string("Data/Modules/") + std::string("Modules") + std::string(".json");
+		// Open the JSON file
+		std::ifstream file(filePath);
+		if (!file.is_open()) {
+			NLE_ERROR("Error: Could not open file");
+			return;
+		}
+
+
+		JSON j;
+		file >> j;
+
+
+		for (auto& sysJson : j["modules"]) {
+
+			std::string type = sysJson["type"];
+
+			m_Createfunctions.at(type)();
+		}
+
 		m_NullEngine->Load();
 
 		m_ImGuiLayer = std::make_unique<NULLENGINE::ImGuiLayer>();

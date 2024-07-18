@@ -22,6 +22,7 @@
 #include <bitset>
 #include <functional>
 #include <sstream>
+#include <tuple>
 #include <fstream>
 #include <string_view>
 #include <typeinfo>
@@ -33,6 +34,7 @@
 #include <unordered_map>
 #include <glm/glm.hpp>
 #include "NIncludes.h"
+
 
 #define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
 #define GLM_FORCE_SIMD_AVX2
@@ -49,6 +51,9 @@
 #ifdef NLE_PLATFORM_WINDOWS
 #include <Windows.h>
 #endif // NLE_PLATFORM_WINDOWS
+
+using JSON = nlohmann::json;
+
 
 //******************************************************************************//
 // Definitions  														        //

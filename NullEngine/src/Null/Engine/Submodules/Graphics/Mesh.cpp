@@ -16,6 +16,7 @@
 #include "Null/Engine/Submodules/Graphics/Shader/Shader.h"
 #include "Null/Engine/Submodules/Graphics/SpriteSource.h"
 
+using JSON = nlohmann::json;
 
 
 //******************************************************************************//
@@ -40,36 +41,46 @@ namespace NULLENGINE
 
 
 
-	Mesh::Mesh(float xHalfSize, float yHalfSize, float uSize, float vSize, const std::string& name) : m_xHalfSize(xHalfSize), m_yHalfSize(yHalfSize), m_uSize(uSize), m_vSize(vSize), m_Name(name)
+	Mesh::Mesh(const std::string& filename) : m_xHalfSize(.5f), m_yHalfSize(.5f), m_uSize(1), m_vSize(1), m_Name("")
 	{
 		// Define vertices for a triangle
 		std::vector<Vertex> vertexData;
 
-		vertexData.push_back({ glm::vec3(xHalfSize, yHalfSize, 0), glm::vec4(0.0f), glm::vec2(1.0f / vSize, 0) });
-		vertexData.push_back({ glm::vec3(xHalfSize, -yHalfSize, 0), glm::vec4(0.0f), glm::vec2(1.0f / vSize, 1.0f / uSize) });
-		vertexData.push_back({ glm::vec3(-xHalfSize, -yHalfSize, 0), glm::vec4(0.0f), glm::vec2(0, 1.0f / uSize) });
-		vertexData.push_back({ glm::vec3(-xHalfSize, yHalfSize, 0), glm::vec4(0.0f), glm::vec2(0,0) });
 
-		std::vector<float> v = {
-			// positions                    // colors           // texture coords
-			 xHalfSize,  yHalfSize, 0.0f,   1.0f, 0.0f, 0.0f,   uSize, vSize,   // top right
-			 xHalfSize, -yHalfSize, 0.0f,   0.0f, 1.0f, 0.0f,   uSize, 0.0f,    // bottom right
-			-xHalfSize, -yHalfSize, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,     // bottom left
-			-xHalfSize,  yHalfSize, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, vSize     // top left 
-		};
+		std::vector<unsigned int> indexData;
 
-		std::vector<unsigned int> indexData = {  // note that we start from 0!
-		0, 1, 3,   // first triangle
-		1, 2, 3    // second triangle
-		};
+		std::string filePath =std::string("Data/Meshes/") + filename + std::string(".json");
 
-		//m_Buffer.m_VAO.Bind();
+		std::ifstream file(filePath);
 
-		//m_Buffer.m_VBO.Bind();
-		//m_Buffer.m_VBO.AttachBuffer(vertexData);
-		//
-		//m_Buffer.m_EBO.Bind();
-		//m_Buffer.m_EBO.AttachBuffer(indexData);
+		NLE_CORE_ASSERT(file.is_open(), "Could not open file ", filePath);
+
+		JSON j;
+		file >> j;
+
+		m_xHalfSize = j["xHalfSize"];
+		m_yHalfSize = j["yHalfSize"];
+		m_uSize = j["uSize"];
+		m_vSize = j["vSize"];
+		m_Name = j["name"];
+
+		for (const auto& vertex : j["vertices"]) {
+			Vertex v;
+			v.position = glm::vec3(vertex["position"][0], vertex["position"][1], vertex["position"][2]);
+			v.color = glm::vec4(vertex["color"][0], vertex["color"][1], vertex["color"][2], vertex["color"][3]);
+			v.textCoords = glm::vec2(vertex["texCoords"][0], vertex["texCoords"][1]);
+			vertexData.push_back(v);
+		}
+
+		// Update UV coordinates according to uSize and vSize
+		for (auto& vertex : vertexData) {
+			vertex.textCoords.x /= m_uSize;
+			vertex.textCoords.y /= m_vSize;
+		}
+
+		for (const auto& index : j["indices"]) {
+			indexData.push_back(index);
+		}
 
 		m_Buffer.m_VAO.Bind();
 
@@ -87,11 +98,6 @@ namespace NULLENGINE
 
 	}
 
-	void Mesh::SetupVertexBuffer(const std::vector<Vertex>& vertexData) {
-		m_Buffer.m_VBO.Bind();
-		m_Buffer.m_VBO.AttachBuffer(vertexData);
-	}
-
 	void Mesh::SetupIndexBuffer(const std::vector<unsigned int>& indexData) {
 		m_Buffer.m_EBO.Bind();
 		m_Buffer.m_EBO.AttachBuffer(indexData);
@@ -104,11 +110,11 @@ namespace NULLENGINE
 
 		// Color attribute
 		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
+		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
 
 		// vertex texture coords
 		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, textCoords));
 	}
 
 
@@ -124,7 +130,7 @@ namespace NULLENGINE
 		m_Buffer.m_VBO.Bind();
 		m_Buffer.m_EBO.Bind();
 
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, m_Buffer.m_EBO.GetSize(), GL_UNSIGNED_INT, 0);
 
 		m_Buffer.m_EBO.Unbind();
 		m_Buffer.m_VBO.Unbind();

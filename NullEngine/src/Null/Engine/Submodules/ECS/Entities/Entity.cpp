@@ -49,14 +49,18 @@ namespace NULLENGINE
 			}
 			else if (componentName == "Sprite") {
 
-				unsigned int frameIndex = componentData["frameindex"];
-				std::string texture = componentData["texture"];
-				std::string shader = componentData["shader"];
+				unsigned int frameIndex = componentData.contains("frameindex") ? static_cast<unsigned int>(componentData["frameindex"]) : 0;
+				std::string texturename = componentData.contains("texture") ? componentData["texture"] : "";
+				std::string shader = componentData.contains("shadername") ? componentData["shadername"] : "default";
+				
+				std::string meshname = componentData.contains("meshname") ? componentData["meshname"] : "Quad";
 				glm::vec2 dimension = { componentData["dimension"][0], componentData["dimension"][1] };
 				glm::vec4 tint = { componentData["tint"][0], componentData["tint"][1], componentData["tint"][2], componentData["tint"][3] };
 				// Assuming you have a SpriteComponent
+
+				Texture* texture = !texturename.empty() ? new Texture(texturename) : nullptr;
 		
-				registry->AddComponent<SpriteComponent>(m_ID, frameIndex, new SpriteSource(1,1, new Texture(texture)), new Mesh(0.5f, 0.5f, 1, 1, "deez"), tint, shader);
+				registry->AddComponent<SpriteComponent>(m_ID, frameIndex, new SpriteSource(dimension.x, dimension.y, texture), new Mesh(meshname), tint, shader);
 			}
 			else if (componentName == "Rigidbody") {
 				// Assuming you have a SpriteComponent

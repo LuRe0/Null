@@ -77,7 +77,7 @@ void NULLENGINE::NRenderer::RenderScene(const RenderData& render)
 	if (render.spriteSrc && render.spriteSrc->GetTexture())
 	{
 		//render.spriteSrc->GetTexture()->Bind();
-		glm::vec2 uv = render.spriteSrc->SpriteSourceGetUV(render.frameIndex);
+		glm::vec2 uv = render.spriteSrc->GetUV(render.frameIndex);
 		shader->setVec2("texOffset", uv);
 	}
 

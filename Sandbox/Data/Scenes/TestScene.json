@@ -5,8 +5,8 @@
             "name": "Player",
             "components": 
             {
-                "Transform": { "translation": [0, 0, 0], "scale": [100, 100, 1], "rotation": [0, 0, 0] },
-                "Sprite": {"frameindex": 0,  "texture": "titlesquished", "dimension": [1,1], "tint": [1, 1, 1, 1], "shader": "default" },
+                "Transform": { "translation": [0, 0, 0], "scale": [100, 100, 100], "rotation": [0, 0, 0] },
+                "Sprite": {"frameindex": 0,  "texture": "titlesquished", "dimension": [1,1], "tint": [1, 1, 1, 1], "shadername": "default", "meshname": "Quad" },
                 "Rigidbody": {"something": 0}
             }
         },
@@ -14,8 +14,8 @@
             "name": "Player2",
             "components": 
             {
-                "Transform": { "translation": [-25 ,0, 150], "scale": [50,50, 0], "rotation": [0,0,0] },
-                "Sprite": {"frameindex": 0,  "texture": "debugRect", "dimension": [1,1], "tint": [0.5, 0.2, 0.3, 1], "shader": "default" },
+                "Transform": { "translation": [-25 ,0, 50], "scale": [50,50, 50], "rotation": [0,0,0] },
+                "Sprite": {"frameindex": 0,  "texture": "debugRect", "dimension": [1,1], "tint": [0.5, 0.2, 0.3, 1], "shadername": "default", "meshname": "Triangle" },
                 "Rigidbody": {"something": 0}
             }
         },
@@ -23,8 +23,8 @@
             "name": "Player3",
             "components": 
             {
-                "Transform": { "translation": [-25 ,0, 200], "scale": [15,15, 0], "rotation": [0,0,0] },
-                "Sprite": {"frameindex": 0,  "texture": "ChargeParticle", "dimension": [1,1], "tint": [0.5, 0.2, 0.3, 1], "shader": "default" },
+                "Transform": { "translation": [-25 ,0,100], "scale": [15,15, 15], "rotation": [0,0,0] },
+                "Sprite": {"frameindex": 0,  "texture": "ChargeParticle", "dimension": [1,1], "tint": [0.5, 0.2, 0.3, 1], "shadername": "default", "meshname": "Cube" },
                 "Rigidbody": {"something": 0}
             }
         }

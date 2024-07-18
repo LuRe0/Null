@@ -58,13 +58,13 @@ namespace NULLENGINE
         stbi_image_free(m_Data);
 	}
 
-    void Texture::Bind()
+    void Texture::Bind() const
     {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, m_TextureID);
     }
 
-    void Texture::Unbind()
+    void Texture::Unbind() const
     {
 
         glActiveTexture(GL_TEXTURE0);
@@ -72,7 +72,12 @@ namespace NULLENGINE
 
     }
 
-	Texture::~Texture()
+    unsigned int Texture::GetID() const
+    {
+        return m_TextureID;
+    }
+
+    Texture::~Texture()
 	{
         glDeleteTextures(1, &m_TextureID);
 	}

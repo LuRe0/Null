@@ -73,8 +73,10 @@ namespace NULLENGINE
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 
-    void VBO::AttachBuffer(const std::vector<Vertex>& vertices)
+    unsigned int VBO::Count() const
     {
-        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
+        return m_Count;
     }
+
+
 }

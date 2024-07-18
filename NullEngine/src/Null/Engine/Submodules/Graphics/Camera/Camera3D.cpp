@@ -26,7 +26,12 @@
 
 namespace NULLENGINE
 {
-	Camera3D::Camera3D(int winWidth, int winHeight, glm::vec3 position, glm::vec3 up, float yaw, float pitch) : m_Front(glm::vec3(0.0f, 0.0f, -1.0f)), m_MovementSpeed(SPEED), m_MouseSensitivity(SENSITIVITY), m_Zoom(ZOOM)
+	Camera3D::Camera3D(int winWidth, int winHeight, glm::vec3 position, glm::vec3 up,
+		float yaw, float pitch, float movementSpeed, float mouseSensitivity,
+		float zoom, float nearclip, float farclip)
+		: m_Position(position), m_Up(up), m_Yaw(yaw), m_Pitch(pitch),
+		m_MovementSpeed(movementSpeed), m_MouseSensitivity(mouseSensitivity),
+		m_Zoom(zoom), m_NearClip(nearclip), m_FarClip(farclip)
 	{
 		m_Position = position;
 		m_WorldUp = up;

@@ -37,7 +37,7 @@ namespace NULLENGINE
 {
     class Camera2D : public Camera {
     public:
-        Camera2D(int windowWidth, int windowHeight, float zoom = 1.0f);
+        Camera2D(int windowWidth, int windowHeight, float zoom = 1.0f, float rotation = 0);
 
         void SetPosition(const glm::vec2& position);
 

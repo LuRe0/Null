@@ -40,7 +40,8 @@ namespace NULLENGINE
     class Camera3D : public Camera {
     public:
         // constructor with vectors
-        Camera3D(int winWidth, int winHeight, glm::vec3 position = glm::vec3(0.0f, 0.0f, 1000.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH);
+        Camera3D(int winWidth, int winHeight, glm::vec3 position = glm::vec3(0.0f, 0.0f, 1000.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW,
+                 float pitch = PITCH, float movementSpeed = SPEED, float mouseSensitivity = SENSITIVITY, float zoom = ZOOM, float nearclip = 0.1f, float farclip = 5000.0f);
 
 
         virtual void Init();
@@ -78,7 +79,7 @@ namespace NULLENGINE
         float m_MouseSensitivity;
         float m_Zoom;
 
-        float m_Fov;
+        float m_FOV;
         float m_Aspect;
         float m_NearClip = 0.1f;
         float m_FarClip =  5000.0f;

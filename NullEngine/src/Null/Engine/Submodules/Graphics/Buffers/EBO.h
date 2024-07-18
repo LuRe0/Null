@@ -39,7 +39,7 @@ namespace NULLENGINE
 	class EBO
 	{
 	public:
-		void AttachBuffer(std::vector<unsigned int> data);
+		void AttachBuffer(std::vector<unsigned int> data, bool dynamic = false);
 
 		EBO();
 
@@ -49,10 +49,12 @@ namespace NULLENGINE
 		void Unbind() const;
 
 		const unsigned int GetID() const { return m_ID; }
+		const unsigned int GetSize() const { return m_Size; }
 
 
 	private:
 		unsigned int m_ID;
+		unsigned int m_Size;
 	};
 
 

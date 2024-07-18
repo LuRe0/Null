@@ -1,0 +1,13 @@
+{
+    "systems": [
+        {
+            "type": "PhysicsSystem"
+        },
+        {
+            "type": "TransformSystem"
+        },
+        {
+            "type": "SpriteRenderSystem"
+        }
+    ]
+}

@@ -1,0 +1,25 @@
+{
+	"xHalfSize": 0.5,
+	"yHalfSize": 0.5,
+	"uSize": 1,
+	"vSize": 1,
+	"name": "TriangleMesh",
+	"vertices": [
+		{
+			"position": [0.0, 0.5, 0.0],
+			"color": [1.0, 0.0, 0.0, 1.0],
+			"texCoords": [0.5, 1.0]
+		},
+		{
+			"position": [-0.5, -0.5, 0.0],
+			"color": [0.0, 1.0, 0.0, 1.0],
+			"texCoords": [0.0, 0.0]
+		},
+		{
+			"position": [0.5, -0.5, 0.0],
+			"color": [0.0, 0.0, 1.0, 1.0],
+			"texCoords": [1.0, 0.0]
+		}
+	],
+	"indices": [0, 1, 2]
+}

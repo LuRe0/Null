@@ -1,0 +1,32 @@
+{
+    "modules": [
+        {
+            "type": "NWindow",
+            "Var": "something to initialize module with"
+        },
+        {
+            "type": "NEventManager",
+            "Var": "something to initialize module with"
+        },
+        {
+            "type": "NCameraManager",
+            "Var": "something to initialize module with"
+        },
+        {
+            "type": "NShaderManager",
+            "Var": "something to initialize module with"
+        },
+        {
+            "type": "NRegistry",
+            "Var": "something to initialize module with"
+        },
+        {
+            "type": "NSceneManager",
+            "Var": "something to initialize module with"
+        },
+        {
+            "type": "NRenderer",
+            "Var": "something to initialize module with"
+        }
+    ]
+}

@@ -16,3 +16,6 @@
 [submodule "NullEngine/vendor/stb/stb"]
 	path = NullEngine/vendor/stb/stb
 	url = https://github.com/nothings/stb
+[submodule "NullEngine/vendor/Box2D"]
+	path = NullEngine/vendor/Box2D
+	url = https://github.com/erincatto/box2d

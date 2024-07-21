@@ -31,6 +31,7 @@ namespace NULLENGINE
 	void Scene::Load(const std::string& name, const JSON& sceneData)
 	{
 		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+		NEntityFactory* entityFactory = NEngine::Instance().Get<NEntityFactory>();
 
 		for (const auto& transitionData : sceneData["transitions"]) {
 
@@ -41,15 +42,11 @@ namespace NULLENGINE
 
 		for (const auto& entityData : sceneData["entities"]) 
 		{
-			const std::string name = entityData["name"];
+			JsonWrapper jsonWrapper(entityData);
 
-			Entity newEntity(registry->CreateEntity());
-
-			newEntity.SetName(name);
+			EntityID entityID = entityFactory->CreateEntity(entityData, registry);
 	
-			newEntity.Read(entityData, registry);
-
-			m_Entities.push_back(newEntity.GetID());
+			m_Entities.push_back(entityID);
 		}
 
 	}

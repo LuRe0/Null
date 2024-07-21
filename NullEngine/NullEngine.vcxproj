@@ -79,7 +79,7 @@
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NLE_PLATFORM_WINDOWS;NLE_BUILD_DLL;GLFW_INCLUDE_NONE;NLE_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\JSON\include;vendor\glm;vendor\stb\stb;vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\JSON\include;vendor\Box2D\include;vendor\glm;vendor\stb\stb;vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <AdditionalOptions>/MDd %(AdditionalOptions)</AdditionalOptions>
@@ -101,7 +101,7 @@
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NLE_PLATFORM_WINDOWS;NLE_BUILD_DLL;GLFW_INCLUDE_NONE;NLE_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\JSON\include;vendor\glm;vendor\stb\stb;vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\JSON\include;vendor\Box2D\include;vendor\glm;vendor\stb\stb;vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <AdditionalOptions>/MD %(AdditionalOptions)</AdditionalOptions>
@@ -123,7 +123,7 @@
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NLE_PLATFORM_WINDOWS;NLE_BUILD_DLL;GLFW_INCLUDE_NONE;NLE_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\JSON\include;vendor\glm;vendor\stb\stb;vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\JSON\include;vendor\Box2D\include;vendor\glm;vendor\stb\stb;vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <AdditionalOptions>/MT %(AdditionalOptions)</AdditionalOptions>
@@ -149,12 +149,17 @@
     <ClInclude Include="src\Null\Engine\Misc\Time.h" />
     <ClInclude Include="src\Null\Engine\Modules\Base\IModule.h" />
     <ClInclude Include="src\Null\Engine\Modules\NCameraManager.h" />
+    <ClInclude Include="src\Null\Engine\Modules\NComponentFactory.h" />
     <ClInclude Include="src\Null\Engine\Modules\NEventManager.h" />
     <ClInclude Include="src\Null\Engine\Modules\NGraphics.h" />
+    <ClInclude Include="src\Null\Engine\Modules\NMeshManager.h" />
     <ClInclude Include="src\Null\Engine\Modules\NRegistry.h" />
     <ClInclude Include="src\Null\Engine\Modules\NRenderer.h" />
+    <ClInclude Include="src\Null\Engine\Modules\NResourceManager.h" />
     <ClInclude Include="src\Null\Engine\Modules\NSceneManager.h" />
     <ClInclude Include="src\Null\Engine\Modules\NShaderManager.h" />
+    <ClInclude Include="src\Null\Engine\Modules\NSpriteSourceManager.h" />
+    <ClInclude Include="src\Null\Engine\Modules\NTextureManager.h" />
     <ClInclude Include="src\Null\Engine\Modules\NWindow.h" />
     <ClInclude Include="src\Null\Engine\NEngine.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ComponentManager.h" />
@@ -168,24 +173,27 @@
     <ClInclude Include="src\Null\Engine\Submodules\Events\EventHandler.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Events\IEvents.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BufferData.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\EBO.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\Framebuffer.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\RenderData.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\VAO.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\VBO.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\Camera.h" />
-    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\EBO.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\Camera2D.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\Camera3D.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\InstanceMesh.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Mesh.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Shader\Shader.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\SpriteSource.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Texture.h" />
-    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\VAO.h" />
-    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\VBO.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Layers\ImGuiLayer.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Layers\Layer.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Scene.h" />
     <ClInclude Include="src\Null\EntryPoint.h" />
+    <ClInclude Include="src\Null\Tools\JsonWrapper.h" />
     <ClInclude Include="src\Null\Tools\Trace.h" />
     <ClInclude Include="src\stdafx.h" />
+    <ClInclude Include="src\Null\Engine\Modules\NEntityFactory.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Null\Application.cpp" />
@@ -194,12 +202,17 @@
     <ClCompile Include="src\Null\Engine\Misc\Time.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\Base\IModule.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NCameraManager.cpp" />
+    <ClCompile Include="src\Null\Engine\Modules\NComponentFactory.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NEventManager.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NGraphics.cpp" />
+    <ClCompile Include="src\Null\Engine\Modules\NMeshManager.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NRegistry.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NRenderer.cpp" />
+    <ClCompile Include="src\Null\Engine\Modules\NResourceManager.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NSceneManager.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NShaderManager.cpp" />
+    <ClCompile Include="src\Null\Engine\Modules\NSpriteSourceManager.cpp" />
+    <ClCompile Include="src\Null\Engine\Modules\NTextureManager.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NWindow.cpp" />
     <ClCompile Include="src\Null\Engine\NEngine.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\ComponentManager.cpp" />
@@ -212,24 +225,27 @@
     <ClCompile Include="src\Null\Engine\Submodules\Events\CommonEvents.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Events\EventHandler.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Events\IEvents.cpp" />
-    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Buffers\Framebuffer.cpp" />
-    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\Camera.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Buffers\EBO.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Buffers\Framebuffer.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Buffers\VAO.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Buffers\VBO.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\Camera.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\Camera2D.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\Camera3D.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\InstanceMesh.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Mesh.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Shader\Shader.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\SpriteSource.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Texture.cpp" />
-    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Buffers\VAO.cpp" />
-    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Buffers\VBO.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Layers\ImGuiLayer.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Layers\Layer.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Scene.cpp" />
+    <ClCompile Include="src\Null\Tools\JsonWrapper.cpp" />
     <ClCompile Include="src\Null\Tools\Trace.cpp" />
     <ClCompile Include="src\stdafx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\Null\Engine\Modules\NEntityFactory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="vendor\GLFW\GLFW.vcxproj">
@@ -237,6 +253,9 @@
     </ProjectReference>
     <ProjectReference Include="vendor\Glad\Glad.vcxproj">
       <Project>{BDD6857C-A90D-870D-52FA-6C103E10030F}</Project>
+    </ProjectReference>
+    <ProjectReference Include="vendor\Box2D\Box2D.vcxproj">
+      <Project>{A434E80C-1049-10BE-D9CA-B31D459E0CEF}</Project>
     </ProjectReference>
     <ProjectReference Include="vendor\imgui\ImGui.vcxproj">
       <Project>{C0FF640D-2C14-8DBE-F595-301E616989EF}</Project>

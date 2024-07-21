@@ -30,6 +30,7 @@
 // Private structures													        //
 //******************************************************************************//
 
+class b2World;
 
 namespace NULLENGINE
 {
@@ -37,11 +38,7 @@ namespace NULLENGINE
 	{
 	public:
 
-		PhysicsSystem()
-		{
-			Require<TransformComponent>();
-			Require<Rigidbody2DComponent>();
-		}
+		PhysicsSystem();
 		void Load() override;
 		//! Virtual Init function
 		void Init() override;
@@ -55,7 +52,10 @@ namespace NULLENGINE
 		void Shutdown() override;
 
 	private:
+		b2World* m_PhysicsWorld;
 
+		const glm::vec2 MetersToPixels(float x, float y);
+		const glm::vec2 PixelsToMeters(float x, float y);
 	};
 
 }

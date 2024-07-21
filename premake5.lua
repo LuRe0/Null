@@ -15,6 +15,7 @@ includeDir = {}
 includeDir["GLFW"] = "NullEngine/vendor/GLFW/include" 
 includeDir["Glad"] = "NullEngine/vendor/Glad/include" 
 includeDir["JSON"] = "NullEngine/vendor/JSON/include" 
+includeDir["Box2D"] = "NullEngine/vendor/Box2D/include" 
 includeDir["glm"] = "NullEngine/vendor/glm" 
 includeDir["ImGui"] = "NullEngine/vendor/imgui" 
 includeDir["stb"] = "NullEngine/vendor/stb/stb" 
@@ -24,6 +25,7 @@ includeDir["stb"] = "NullEngine/vendor/stb/stb"
 include "NullEngine/vendor/GLFW"
 include "NullEngine/vendor/Glad"
 include "NullEngine/vendor/imgui"
+include "NullEngine/vendor/Box2D"
 
 project "NullEngine"
     location "NullEngine"
@@ -50,6 +52,7 @@ project "NullEngine"
          "%{includeDir.GLFW}",
          "%{includeDir.Glad}",
          "%{includeDir.JSON}",
+         "%{includeDir.Box2D}",
          "%{includeDir.glm}",
          "%{includeDir.stb}",
          "%{includeDir.ImGui}"
@@ -67,6 +70,7 @@ project "NullEngine"
     {
         "GLFW",
         "Glad",
+        "Box2D",
         "ImGui",
         "opengl32.lib"
     }

@@ -4,7 +4,7 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	Mesh.h
+// File Name:	InstanceMesh.h
 // Author(s):	name
 // 
 //------------------------------------------------------------------------------
@@ -17,6 +17,7 @@
 #include "Null/Engine/Submodules/Graphics/Buffers/VBO.h"
 #include "Null/Engine/Submodules/Graphics/Buffers/EBO.h"
 #include "Null/Engine/Submodules/Graphics/Buffers/BufferData.h"
+#include "Null/Engine/Submodules/Graphics/Mesh.h"
 
 //******************************************************************************//
 // Definitions  														        //
@@ -36,14 +37,13 @@
 namespace NULLENGINE
 {
 
-	class NLE_API Mesh
+	class NLE_API InstanceMesh : public Mesh
 	{
 	public:
 
 
-		Mesh(const std::string& filename);
-		Mesh() = default;
-		~Mesh();
+		InstanceMesh(const std::string& filename);
+		~InstanceMesh();
 
 		template <typename T>
 		void SetupVertexBuffer(const std::vector<T>& vertexData) {

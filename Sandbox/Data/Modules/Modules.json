@@ -17,11 +17,31 @@
             "Var": "something to initialize module with"
         },
         {
-            "type": "NRegistry",
+            "type": "NMeshManager",
+            "Var": "something to initialize module with"
+        },
+        {
+            "type": "NTextureManager",
+            "Var": "something to initialize module with"
+        },
+        {
+            "type": "NSpriteSourceManager",
+            "Var": "something to initialize module with"
+        },
+        {
+            "type": "NEntityFactory",
+            "Var": "something to initialize module with"
+        },
+        {
+            "type": "NComponentFactory",
             "Var": "something to initialize module with"
         },
         {
             "type": "NSceneManager",
+            "Var": "something to initialize module with"
+        },
+        {
+            "type": "NRegistry",
             "Var": "something to initialize module with"
         },
         {

@@ -1,10 +1,10 @@
-  #pragma once
+#pragma once
 
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 //
-// File Name:	Mesh.h
+// File Name:	NEntityFactory.h
 // Author(s):	name
 // 
 //------------------------------------------------------------------------------
@@ -13,10 +13,8 @@
 // Includes																        //
 //******************************************************************************//
 #include "Null/Core.h"
-#include "Null/Engine/Submodules/Graphics/Buffers/VAO.h"
-#include "Null/Engine/Submodules/Graphics/Buffers/VBO.h"
-#include "Null/Engine/Submodules/Graphics/Buffers/EBO.h"
-#include "Null/Engine/Submodules/Graphics/Buffers/BufferData.h"
+#include "Null/Engine/Modules/Base/IModule.h"
+
 
 //******************************************************************************//
 // Definitions  														        //
@@ -36,41 +34,39 @@
 namespace NULLENGINE
 {
 
-	class NLE_API Mesh
+	class Entity;
+
+	class NLE_API NEntityFactory : public IModule
 	{
 	public:
 
+		void Load() override;
+		//! Virtual Init function
+		void Init() override;
+		//! Virtual Update function
+		void Update(float dt) override;
 
-		Mesh(const std::string& filename);
-		Mesh() = default;
-		~Mesh();
+		void Unload() override;
+		//! Virtual Shutdown function
+		void Shutdown() override;
 
-		template <typename T>
-		void SetupVertexBuffer(const std::vector<T>& vertexData) {
-			m_Buffer.m_VBO.Bind();
-			m_Buffer.m_VBO.AttachBuffer(vertexData);
-		}
-		void SetupIndexBuffer(const std::vector<unsigned int>& indexData);
-		void SetupVertexAttributes();
-		void Render(const SpriteSource* spriteSource) const;
+		void RegisterArchetype(const std::string& archetypeName);
+
+
+		EntityID CreateEntity(const JSON& entityData, NRegistry* registry);
+
+		void UpdateArchetype(const std::string& archetypeName, BaseComponent* component);
+
+		bool HasArchetype(const std::string& archetypeName) const;
+
+		bool ArchetypeHasComponent(const std::string& archetypeName, BaseComponent* component) const;
+
+		void ReadArchetype(const std::string& filename, Entity& entity, NComponentFactory* componentFactory, NRegistry* registry);
+
+		void CloneComponents(NComponentFactory* componentFactory, const std::string& archetype, NRegistry* registry, EntityID id);
 
 	private:
-		struct Buffer
-		{
-			Buffer() = default;
-
-			VAO m_VAO;
-			VBO m_VBO;
-			EBO m_EBO;
-		};
-
-		Buffer m_Buffer;
-
-		float m_xHalfSize, m_yHalfSize, m_uSize, m_vSize;
-
-		std::string m_Name;
+		std::unordered_map<std::string, std::unordered_map<std::string, BaseComponent*>> m_Archetypes;
 	};
-
-
 
 }

@@ -18,13 +18,19 @@
 #include "Null/Engine/Modules/NEventManager.h"
 #include "Null/Engine/Modules/NRegistry.h"
 #include "Null/Engine/Modules/NShaderManager.h"
+#include "Null/Engine/Modules/NSpriteSourceManager.h"
+#include "Null/Engine/Modules/NMeshManager.h"
 #include "Null/Engine/Modules/NGraphics.h"
 #include "Null/Engine/Modules/NRenderer.h"
 #include "Null/Engine/Modules/NCameraManager.h"
+#include "Null/Engine/Modules/NTextureManager.h"
+#include "Null/Engine/Modules/NComponentFactory.h"
+#include "Null/Engine/Modules/NEntityFactory.h"
 #include "Null/Engine/NEngine.h"
 #include "Null/Engine/Misc/Time.h"
 #include "Null/Engine/Misc/Input.h"
 #include "Null/Tools/Trace.h"
+#include "Null/Tools/JsonWrapper.h"
 
 
 //******************************************************************************//

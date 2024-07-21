@@ -3,7 +3,7 @@
     "yHalfSize": 0.5,
     "uSize": 1.0,
     "vSize": 1.0,
-    "name": "QuadMesh",
+    "name": "Quad1x1",
     "vertices": [
         {"position": [0.5, 0.5, 0.0], "color": [0.0, 0.0, 0.0, 0.0], "texCoords": [1.0, 0.0]},
         {"position": [0.5, -0.5, 0.0], "color": [0.0, 0.0, 0.0, 0.0], "texCoords": [1.0, 1.0]},

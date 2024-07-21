@@ -1,10 +1,10 @@
-  #pragma once
+#pragma once
 
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 //
-// File Name:	Mesh.h
+// File Name:	JsonWrapper.h
 // Author(s):	name
 // 
 //------------------------------------------------------------------------------
@@ -13,10 +13,7 @@
 // Includes																        //
 //******************************************************************************//
 #include "Null/Core.h"
-#include "Null/Engine/Submodules/Graphics/Buffers/VAO.h"
-#include "Null/Engine/Submodules/Graphics/Buffers/VBO.h"
-#include "Null/Engine/Submodules/Graphics/Buffers/EBO.h"
-#include "Null/Engine/Submodules/Graphics/Buffers/BufferData.h"
+
 
 //******************************************************************************//
 // Definitions  														        //
@@ -35,42 +32,25 @@
 
 namespace NULLENGINE
 {
+    class JsonWrapper {
+    public:
+        JsonWrapper(const nlohmann::json& jsonData);
 
-	class NLE_API Mesh
-	{
-	public:
+        glm::vec2 GetVec2(const std::string& key, const glm::vec2& defaultValue = { 0.0f, 0.0f }) const;
+        glm::vec3 GetVec3(const std::string& key, const glm::vec3& defaultValue = { 0.0f, 0.0f, 0.0f }) const;
+        glm::vec4 GetVec4(const std::string& key, const glm::vec4& defaultValue = { 0.0f, 0.0f, 0.0f, 0.0f }) const;
 
+        int GetInt(const std::string& key, int defaultValue = 0) const;
+        float GetFloat(const std::string& key, float defaultValue = 0.0f) const;
+        bool GetBool(const std::string& key, bool defaultValue = false) const;
+        std::string GetString(const std::string& key, const std::string& defaultValue = "") const;
 
-		Mesh(const std::string& filename);
-		Mesh() = default;
-		~Mesh();
+        bool HasData(const std::string& key) const;
 
-		template <typename T>
-		void SetupVertexBuffer(const std::vector<T>& vertexData) {
-			m_Buffer.m_VBO.Bind();
-			m_Buffer.m_VBO.AttachBuffer(vertexData);
-		}
-		void SetupIndexBuffer(const std::vector<unsigned int>& indexData);
-		void SetupVertexAttributes();
-		void Render(const SpriteSource* spriteSource) const;
+        bool Empty() const;
 
-	private:
-		struct Buffer
-		{
-			Buffer() = default;
-
-			VAO m_VAO;
-			VBO m_VBO;
-			EBO m_EBO;
-		};
-
-		Buffer m_Buffer;
-
-		float m_xHalfSize, m_yHalfSize, m_uSize, m_vSize;
-
-		std::string m_Name;
-	};
-
-
+    private:
+        const nlohmann::json& data;
+    };
 
 }

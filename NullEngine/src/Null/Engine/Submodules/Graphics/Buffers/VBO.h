@@ -14,7 +14,7 @@
 //******************************************************************************//
 #include "Null/Core.h"
 #include "BufferData.h"
-#include "glad/glad.h"
+
 
 
 //******************************************************************************//
@@ -48,13 +48,10 @@ namespace NULLENGINE
 		void Unbind() const;
 		unsigned int Count() const;
 
-		template <typename T>
-		void AttachBuffer(const std::vector<T>& vertices, bool dynamic = false)
-		{
-			m_Count = vertices.size();
-			dynamic ? glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(T), vertices.data(), GL_DYNAMIC_DRAW)
-				: glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(T), vertices.data(), GL_STATIC_DRAW);
-		}
+
+		void AttachBuffer(const std::vector<float>& vertices, bool dynamic = false);
+
+		void AttachBuffer(const std::vector<Vertex>& vertices, bool dynamic = false);
 
 		const unsigned int GetID() const { return m_ID; }
 
@@ -63,6 +60,5 @@ namespace NULLENGINE
 		unsigned int m_ID;
 		unsigned int m_Count = 0;
 	};
-
 
 }

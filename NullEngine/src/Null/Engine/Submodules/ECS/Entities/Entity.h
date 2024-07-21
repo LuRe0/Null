@@ -76,6 +76,8 @@ namespace NULLENGINE
 
 		void SetName(const std::string& name);
 
+		const std::string GetName() { return m_Name; };
+
 		EntityID GetID() const { return m_ID; }
 
 	private:

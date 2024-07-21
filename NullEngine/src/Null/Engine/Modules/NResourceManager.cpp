@@ -1,7 +1,7 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	Entity.cpp
+// File Name:	NResourceManager.cpp
 // Author(s):	Anthon Reid
 // 
 //------------------------------------------------------------------------------
@@ -10,12 +10,7 @@
 // Includes																        //
 //******************************************************************************//
 #include "stdafx.h"
-#include "Entity.h"
-#include "Null/Engine/Submodules/ECS/Components/IComponent.h"
-#include "Null/Engine/Submodules/Graphics/Texture.h"
-#include "Null/Engine/Submodules/Graphics/SpriteSource.h"
-#include "Null/Engine/Submodules/Graphics/Mesh.h"
-
+#include "NResourceManager.h"
 
 
 
@@ -30,29 +25,36 @@
 
 namespace NULLENGINE
 {
-	Entity::Entity(EntityID id) : m_ID(id)
-	{
-	}
-	void Entity::Add()
-	{
-	}
-	void Entity::Read(const JSON& entityData, NRegistry* registry)
-	{
-		NSpriteSourceManager* spritesrcManager = NEngine::Instance().Get<NSpriteSourceManager>();
-		NMeshManager* meshManager = NEngine::Instance().Get<NMeshManager>();
+	//void NResourceManager::Load()
+	//{
+	//	std::string filePath = std::string("Data/Shaders/") + std::string("paths") + std::string(".json");
 
-	}
-	void Entity::Load()
-	{
-	}
-	void Entity::Init()
-	{
-	}
-	void Entity::Shutdown()
-	{
-	}
-	void Entity::SetName(const std::string& name)
-	{
-		m_Name = name;
-	}
+	//	// Open the JSON file
+	//	std::ifstream inputFile(filePath);
+	//	if (!inputFile.is_open()) {
+	//		NLE_ERROR("Error: Could not open file");
+	//		return;
+	//	}
+
+	//	// Parse the JSON file
+	//	JSON shaderData;
+
+	//	try {
+	//		inputFile >> shaderData;
+	//	}
+	//	catch (JSON::parse_error& e) {
+	//		NLE_ERROR("Error: JSON parsing failed: _{0}", e.what());
+	//		return;
+	//	}
+
+	//	for (const auto& paths : shaderData["shaders"])
+	//	{
+	//		const std::string path = paths["path"];
+
+	//		CreateShader(path);
+	//	}
+	//}
+
+
+
 }

@@ -1,7 +1,7 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	NShaderManager.cpp
+// File Name:	NTextureManager.cpp
 // Author(s):	Anthon Reid
 // 
 //------------------------------------------------------------------------------
@@ -10,7 +10,7 @@
 // Includes																        //
 //******************************************************************************//
 #include "stdafx.h"
-#include "NShaderManager.h"
+#include "NTextureManager.h"
 #include "Null/Engine/Submodules/ECS/Systems/PhysicsSystem.h"
 #include "Null/Engine/Submodules/Graphics/Shader/Shader.h"
 
@@ -27,37 +27,30 @@
 
 namespace NULLENGINE
 {
-	void NShaderManager::Load()
+	void NTextureManager::Load()
 	{
-		std::string filePath = std::string("Data/Shaders/") + std::string("paths") + std::string(".json");
+		std::string filePath = std::string("Data/Textures");
 
-		// Open the JSON file
-		std::ifstream inputFile(filePath);
-		if (!inputFile.is_open()) {
-			NLE_ERROR("Error: Could not open file");
-			return;
-		}
-
-		// Parse the JSON file
-		JSON resourceData;
-
-		try {
-			inputFile >> resourceData;
-		}
-		catch (JSON::parse_error& e) {
-			NLE_ERROR("Error: JSON parsing failed: _{0}", e.what());
-			return;
-		}
-
-		for (const auto& paths : resourceData["shaders"])
+		for (const auto& entry : std::filesystem::directory_iterator(filePath))
 		{
-			const std::string path = paths["path"];
+			if (entry.is_regular_file()) // Ensure it's a regular file (not a directory or symlink)
+			{
+				const std::string& filePath = entry.path().string();
 
-			Create(path);
+				size_t lastSlash = filePath.find_last_of("\\/");
+				size_t start = (lastSlash == std::string::npos) ? 0 : lastSlash + 1;
+
+				size_t lastDot = filePath.find_last_of('.');
+				size_t end = (lastDot == std::string::npos) ? filePath.length() : lastDot;
+
+				const std::string& name = filePath.substr(start, end - start);
+
+				Create(name);
+			}
 		}
 	}
 
-	void NShaderManager::Unload()
+	void NTextureManager::Unload()
 	{
 		NResourceManager::Unload();
 	}

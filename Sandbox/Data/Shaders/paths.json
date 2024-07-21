@@ -2,9 +2,6 @@
     "shaders": [
         {
             "path": "default"
-        },
-        {
-            "path": "instance"
         }
     ]
 }

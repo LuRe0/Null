@@ -4,7 +4,7 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	NShaderManager.h
+// File Name:	NResourceManager.h
 // Author(s):	name
 // 
 //------------------------------------------------------------------------------
@@ -14,8 +14,7 @@
 //******************************************************************************//
 #include "Null/Core.h"
 #include "Null/Engine/Modules/Base/IModule.h"
-#include "Null/Engine/Modules/NResourceManager.h"
-#include "Null/Engine/Submodules/Graphics/Shader/Shader.h"
+
 
 
 //******************************************************************************//
@@ -36,23 +35,72 @@
 namespace NULLENGINE
 {
 
-	// Specialize for resource
-	class NLE_API NShaderManager : public NResourceManager<Shader>
+	template <typename T>
+	class NLE_API NResourceManager : public IModule
 	{
 	public:
+		NResourceManager() = default;
 
-
-		void Load() override;
+		virtual void Load() override {};
 
 		//! Virtual Init function
-		void Init() override {};
+		virtual void Init() override {};
 
 		//! Virtual Update function
-		void Update(float dt) override {};
+		virtual void Update(float dt) override {};
 
-		void Unload() override;
+		virtual void Unload() override
+		{
+			for (auto& resource : m_ResourceList)
+			{
+				delete resource.second;
+			}
+
+			m_ResourceList.clear();
+		}
 		//! Virtual Shutdown function
-		void Shutdown() override {};
+		virtual void Shutdown() override {}
+
+		void Add(const std::string& name, T* resource)
+		{
+			NLE_CORE_ASSERT(!m_ResourceList.contains(name), "resource {0} already exists", name);
+
+
+			m_ResourceList[name] = resource;
+		}
+
+		T* Get(const std::string& name)
+		{
+			NLE_CORE_ASSERT(m_ResourceList.contains(name), "resource {0} does not exist", name);
+			return m_ResourceList.at(name);
+		}
+
+		template <typename ...TArgs>
+		T* Create(const std::string& name, TArgs&& ...args)
+		{
+			if (!m_ResourceList.contains(name))
+			{
+				T* resource = new T(name,std::forward<TArgs>(args)...);
+
+				Add(name, resource);
+
+				return resource;
+			}
+
+
+			return m_ResourceList.at(name);
+		}
+
+	private:
+
+		std::unordered_map<std::string, T*> m_ResourceList;
+
+		NResourceManager(NResourceManager const&);
+		NResourceManager& operator=(NResourceManager const&);
 	};
+
+
+
+
 
 }

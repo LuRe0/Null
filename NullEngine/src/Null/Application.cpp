@@ -44,9 +44,14 @@ namespace NULLENGINE
 		AddCreateFunction<NWindow>([&engine]() { engine.Add<NULLENGINE::NWindow>(); });
 		AddCreateFunction<NEventManager>([&engine]() { engine.Add<NULLENGINE::NEventManager>(); });
 		AddCreateFunction<NCameraManager>([&engine]() { engine.Add<NULLENGINE::NCameraManager>(); });
-		AddCreateFunction<NRegistry>([&engine]() { engine.Add<NULLENGINE::NRegistry>(); });
 		AddCreateFunction<NShaderManager>([&engine]() { engine.Add<NULLENGINE::NShaderManager>(); });
+		AddCreateFunction<NMeshManager>([&engine]() { engine.Add<NULLENGINE::NMeshManager>(); });
+		AddCreateFunction<NSpriteSourceManager>([&engine]() { engine.Add<NULLENGINE::NSpriteSourceManager>(); });
+		AddCreateFunction<NTextureManager>([&engine]() { engine.Add<NULLENGINE::NTextureManager>(); });
+		AddCreateFunction<NRegistry>([&engine]() { engine.Add<NULLENGINE::NRegistry>(); });
 		AddCreateFunction<NSceneManager>([&engine]() { engine.Add<NULLENGINE::NSceneManager>(); });
+		AddCreateFunction<NComponentFactory>([&engine]() { engine.Add<NULLENGINE::NComponentFactory>(); });
+		AddCreateFunction<NEntityFactory>([&engine]() { engine.Add<NULLENGINE::NEntityFactory>(); });
 		AddCreateFunction<NRenderer>([&engine]() { engine.Add<NULLENGINE::NRenderer>(); });
 
 		m_NullEngine = &engine;

@@ -52,7 +52,7 @@ void NULLENGINE::NRenderer::RenderScene(const RenderData& render)
 	
 	std::string shaderName = render.shaderName.empty() ? "default" : render.shaderName;
 
-	Shader* shader = shaderMan->GetShader(shaderName);
+	Shader* shader = shaderMan->Get(shaderName);
 
 
 	shader->Bind();

@@ -12,8 +12,8 @@
 #include "stdafx.h"
 #include "VBO.h"
 #include "glad/glad.h"
-#include "Null/Core.h"
-#include "Null/Engine/Submodules/Graphics/Mesh.h"
+
+
 
 
 
@@ -37,28 +37,10 @@ namespace NULLENGINE
         } \
     } while(0)
 
-
-
-    //VBO(const std::vector<float>& vertices) 
-    //{
-
-    //}
-
     VBO::VBO()
     {
         glGenBuffers(1, &m_ID);
     }
-
-    //VBO::VBO(const std::vector<float>& vertices)
-    //{
-
-    //  glBindBuffer(GL_ARRAY_BUFFER, m_ID);
-
-
-    //  glBindBuffer(GL_ARRAY_BUFFER, 0);
-    //}
-
-
 
     VBO::~VBO()
     {
@@ -78,5 +60,17 @@ namespace NULLENGINE
         return m_Count;
     }
 
+    void VBO::AttachBuffer(const std::vector<float>& vertices, bool dynamic)
+    {
+        m_Count = vertices.size();
+        dynamic ? glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_DYNAMIC_DRAW)
+            : glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
+    }
 
+    void VBO::AttachBuffer(const std::vector<Vertex>& vertices, bool dynamic)
+    {
+        m_Count = vertices.size();
+        dynamic ? glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_DYNAMIC_DRAW)
+            : glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
+    }
 }

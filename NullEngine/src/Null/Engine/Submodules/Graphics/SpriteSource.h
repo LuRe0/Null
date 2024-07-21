@@ -36,7 +36,7 @@ namespace NULLENGINE
 	class NLE_API SpriteSource
 	{
 	public:
-		SpriteSource(int numCols, int numRows, Texture* pTexture);
+		SpriteSource(const std::string name, int numCols, int numRows);
 
 		~SpriteSource();
 

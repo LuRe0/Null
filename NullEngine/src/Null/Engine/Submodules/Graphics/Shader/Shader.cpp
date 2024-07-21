@@ -37,10 +37,10 @@ namespace NULLENGINE
         } \
     } while(0)
 
-	Shader::Shader(const std::string& vertexSrc, const std::string& fragmentSrc) : m_RendererID(0), m_Name(vertexSrc)
+	Shader::Shader(const std::string& name) : m_RendererID(0), m_Name(name)
 	{
-		std::string vertexPath = std::string("Data/Shaders/Scripts/") + std::string(vertexSrc) + "V" + std::string(".glsl");
-		std::string fragmentPath = std::string("Data/Shaders/Scripts/") + std::string(fragmentSrc) + "F" + std::string(".glsl");
+		std::string vertexPath = std::string("Data/Shaders/Scripts/") + std::string(name) + "V" + std::string(".glsl");
+		std::string fragmentPath = std::string("Data/Shaders/Scripts/") + std::string(name) + "F" + std::string(".glsl");
 		// 1. retrieve the vertex/fragment source code from filePath
 		std::string vertexCode;
 		std::string fragmentCode;

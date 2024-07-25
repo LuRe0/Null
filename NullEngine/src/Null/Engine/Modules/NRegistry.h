@@ -237,7 +237,7 @@ namespace NULLENGINE
 			m_Createfunctions.emplace(System<T>::TypeName(), function);
 		}
 
-
+		const Signature& EntitySignature(EntityID id);
 
 		static const std::string Name() { return "Registry"; }
 
@@ -245,7 +245,7 @@ namespace NULLENGINE
 	private:
 		/// <summary>
 		/// vector of component managers
-		/// vector index = component type id
+		/// vector in dex = component type id
 		/// </summary>
 		std::vector<std::unique_ptr<IComponentManager>> m_ComponentManagers;
 

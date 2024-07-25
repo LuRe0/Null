@@ -2,6 +2,9 @@
     "shaders": [
         {
             "path": "default"
+        },
+        {
+            "path": "framebuffer"
         }
     ]
 }

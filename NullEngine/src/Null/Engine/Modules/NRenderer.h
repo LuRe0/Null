@@ -60,7 +60,7 @@ namespace NULLENGINE
 		void Update(float dt) override;
 
 		//! render function
-		void Render();
+		void Render() override;
 
 		void Unload() override;
 		//! Virtual Shutdown function
@@ -70,8 +70,12 @@ namespace NULLENGINE
 
 		void AddRenderCall(const RenderData& render);
 
-		static void ClearRender();
+		const Framebuffer& GetFramebuffer(const std::string& buffer) const;
+
+		void ClearRender(float r = 0.1f, float g = 0.1f, float b = 0.1f, float a = 1.0f);
+		static void ClearRenderS();
 	private:
+
 		void OnWindowResize(const WindowResizeEvent& e);
 
 		std::vector<RenderData> m_RenderQueue;
@@ -80,6 +84,10 @@ namespace NULLENGINE
 
 		NRenderer(NRenderer const&) = delete;
 		NRenderer& operator=(NRenderer const&) = delete;
+
+
+		float m_WinWidth;
+		float m_WinHeight;
 
 	};
 

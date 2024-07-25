@@ -37,17 +37,15 @@ namespace NULLENGINE
 	{
 	public:
 
-		TransformSystem()
-		{
-			Require<TransformComponent>();
-		}
+		TransformSystem();
+
 		void Load() override;
 		//! Virtual Init function
 		void Init() override;
 		//! Virtual Update function
 		void Update(float dt) override;
 
-		void Render() const override;
+		void Render() override;
 
 		void Unload() override;
 		//! Virtual Shutdown function
@@ -55,6 +53,9 @@ namespace NULLENGINE
 
 	private:
 		//void OnWindowResize(const WindowResizeEvent& e);
+		static void CreateTransformComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
+
+
 	};
 
 }

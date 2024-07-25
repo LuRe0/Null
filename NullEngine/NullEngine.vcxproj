@@ -22,19 +22,19 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
@@ -53,25 +53,22 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LinkIncremental>true</LinkIncremental>
     <OutDir>..\bin\Debug-windows-x86_64\NullEngine\</OutDir>
     <IntDir>..\bin-int\Debug-windows-x86_64\NullEngine\</IntDir>
     <TargetName>NullEngine</TargetName>
-    <TargetExt>.dll</TargetExt>
+    <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LinkIncremental>true</LinkIncremental>
     <OutDir>..\bin\Release-windows-x86_64\NullEngine\</OutDir>
     <IntDir>..\bin-int\Release-windows-x86_64\NullEngine\</IntDir>
     <TargetName>NullEngine</TargetName>
-    <TargetExt>.dll</TargetExt>
+    <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
-    <LinkIncremental>true</LinkIncremental>
     <OutDir>..\bin\Dist-windows-x86_64\NullEngine\</OutDir>
     <IntDir>..\bin-int\Dist-windows-x86_64\NullEngine\</IntDir>
     <TargetName>NullEngine</TargetName>
-    <TargetExt>.dll</TargetExt>
+    <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -88,11 +85,13 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ImportLibrary>..\bin\Debug-windows-x86_64\NullEngine\NullEngine.lib</ImportLibrary>
     </Link>
+    <Lib>
+      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
     <PostBuildEvent>
-      <Command>IF EXIST ..\bin\Debug-windows-x86_64\NullEngine\NullEngine.dll\ (xcopy /Q /E /Y /I ..\bin\Debug-windows-x86_64\NullEngine\NullEngine.dll ..\bin\Debug-windows-x86_64\sandbox &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Debug-windows-x86_64\NullEngine\NullEngine.dll ..\bin\Debug-windows-x86_64\sandbox &gt; nul)</Command>
+      <Command>IF EXIST ..\bin\Debug-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /Y /I ..\bin\Debug-windows-x86_64\NullEngine\NullEngine.lib ..\bin\Debug-windows-x86_64\sandbox &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Debug-windows-x86_64\NullEngine\NullEngine.lib ..\bin\Debug-windows-x86_64\sandbox &gt; nul)
+IF EXIST ..\bin\Debug-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /Y /I ..\bin\Debug-windows-x86_64\NullEngine\NullEngine.lib ..\bin\Debug-windows-x86_64\NullEditor &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Debug-windows-x86_64\NullEngine\NullEngine.lib ..\bin\Debug-windows-x86_64\NullEditor &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -110,11 +109,13 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ImportLibrary>..\bin\Release-windows-x86_64\NullEngine\NullEngine.lib</ImportLibrary>
     </Link>
+    <Lib>
+      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
     <PostBuildEvent>
-      <Command>IF EXIST ..\bin\Release-windows-x86_64\NullEngine\NullEngine.dll\ (xcopy /Q /E /Y /I ..\bin\Release-windows-x86_64\NullEngine\NullEngine.dll ..\bin\Release-windows-x86_64\sandbox &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Release-windows-x86_64\NullEngine\NullEngine.dll ..\bin\Release-windows-x86_64\sandbox &gt; nul)</Command>
+      <Command>IF EXIST ..\bin\Release-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /Y /I ..\bin\Release-windows-x86_64\NullEngine\NullEngine.lib ..\bin\Release-windows-x86_64\sandbox &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Release-windows-x86_64\NullEngine\NullEngine.lib ..\bin\Release-windows-x86_64\sandbox &gt; nul)
+IF EXIST ..\bin\Release-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /Y /I ..\bin\Release-windows-x86_64\NullEngine\NullEngine.lib ..\bin\Release-windows-x86_64\NullEditor &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Release-windows-x86_64\NullEngine\NullEngine.lib ..\bin\Release-windows-x86_64\NullEditor &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
@@ -132,11 +133,13 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ImportLibrary>..\bin\Dist-windows-x86_64\NullEngine\NullEngine.lib</ImportLibrary>
     </Link>
+    <Lib>
+      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
     <PostBuildEvent>
-      <Command>IF EXIST ..\bin\Dist-windows-x86_64\NullEngine\NullEngine.dll\ (xcopy /Q /E /Y /I ..\bin\Dist-windows-x86_64\NullEngine\NullEngine.dll ..\bin\Dist-windows-x86_64\sandbox &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Dist-windows-x86_64\NullEngine\NullEngine.dll ..\bin\Dist-windows-x86_64\sandbox &gt; nul)</Command>
+      <Command>IF EXIST ..\bin\Dist-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /Y /I ..\bin\Dist-windows-x86_64\NullEngine\NullEngine.lib ..\bin\Dist-windows-x86_64\sandbox &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Dist-windows-x86_64\NullEngine\NullEngine.lib ..\bin\Dist-windows-x86_64\sandbox &gt; nul)
+IF EXIST ..\bin\Dist-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /Y /I ..\bin\Dist-windows-x86_64\NullEngine\NullEngine.lib ..\bin\Dist-windows-x86_64\NullEditor &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Dist-windows-x86_64\NullEngine\NullEngine.lib ..\bin\Dist-windows-x86_64\NullEditor &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -150,6 +153,7 @@
     <ClInclude Include="src\Null\Engine\Modules\Base\IModule.h" />
     <ClInclude Include="src\Null\Engine\Modules\NCameraManager.h" />
     <ClInclude Include="src\Null\Engine\Modules\NComponentFactory.h" />
+    <ClInclude Include="src\Null\Engine\Modules\NEntityFactory.h" />
     <ClInclude Include="src\Null\Engine\Modules\NEventManager.h" />
     <ClInclude Include="src\Null\Engine\Modules\NGraphics.h" />
     <ClInclude Include="src\Null\Engine\Modules\NMeshManager.h" />
@@ -165,6 +169,7 @@
     <ClInclude Include="src\Null\Engine\Submodules\ComponentManager.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\IComponent.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Entities\Entity.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\AnimationSystem.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\PhysicsSystem.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\SpriteRenderSystem.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\System.h" />
@@ -193,7 +198,6 @@
     <ClInclude Include="src\Null\Tools\JsonWrapper.h" />
     <ClInclude Include="src\Null\Tools\Trace.h" />
     <ClInclude Include="src\stdafx.h" />
-    <ClInclude Include="src\Null\Engine\Modules\NEntityFactory.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Null\Application.cpp" />
@@ -203,6 +207,7 @@
     <ClCompile Include="src\Null\Engine\Modules\Base\IModule.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NCameraManager.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NComponentFactory.cpp" />
+    <ClCompile Include="src\Null\Engine\Modules\NEntityFactory.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NEventManager.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NGraphics.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NMeshManager.cpp" />
@@ -218,6 +223,7 @@
     <ClCompile Include="src\Null\Engine\Submodules\ComponentManager.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Components\IComponent.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Entities\Entity.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\AnimationSystem.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\PhysicsSystem.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\SpriteRenderSystem.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\System.cpp" />
@@ -245,7 +251,6 @@
     <ClCompile Include="src\stdafx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\Null\Engine\Modules\NEntityFactory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="vendor\GLFW\GLFW.vcxproj">

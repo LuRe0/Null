@@ -19,6 +19,11 @@
 using JSON = nlohmann::json;
 
 
+static const size_t MAXQUADCOUNT = 1000;
+static const size_t MAXVERTEXCOUNT = MAXQUADCOUNT * 4;
+static const size_t MAXINDEXCOUNT = MAXQUADCOUNT * 6;
+static const size_t MAXTEXTURES = 64;
+
 //******************************************************************************//
 // Public Variables															    //
 //******************************************************************************//
@@ -88,6 +93,9 @@ namespace NULLENGINE
 		SetupIndexBuffer(indexData);
 		SetupVertexAttributes();
 
+
+		
+
 		m_Buffer.m_EBO.Unbind();
 		m_Buffer.m_VBO.Unbind();
 		m_Buffer.m_VAO.Unbind();
@@ -98,6 +106,20 @@ namespace NULLENGINE
 
 	}
 
+	void InstanceMesh::Bind() const
+	{
+		m_Buffer.m_VAO.Bind();
+		m_Buffer.m_VBO.Bind();
+		m_Buffer.m_EBO.Bind();
+	}
+
+	void InstanceMesh::Unbind() const
+	{
+		m_Buffer.m_VAO.Unbind();
+		m_Buffer.m_VBO.Unbind();
+		m_Buffer.m_EBO.Unbind();
+	}
+
 	void InstanceMesh::SetupIndexBuffer(const std::vector<unsigned int>& indexData) {
 		m_Buffer.m_EBO.Bind();
 		m_Buffer.m_EBO.AttachBuffer(indexData);
@@ -106,15 +128,67 @@ namespace NULLENGINE
 	void InstanceMesh::SetupVertexAttributes() {
 		// Position attribute
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)0);
+		glVertexAttribDivisor(0, 1);
+
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(1 * sizeof(glm::vec4)));
+		glVertexAttribDivisor(1, 1);
+
+		glEnableVertexAttribArray(5);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(2 * sizeof(glm::vec4)));
+		glVertexAttribDivisor(2, 1);
+
+		glEnableVertexAttribArray(3);
+		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(3 * sizeof(glm::vec4)));
+		glVertexAttribDivisor(3, 1);
 
 		// Color attribute
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
+		glEnableVertexAttribArray(4);
+		glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(Instance), (void*)offsetof(Instance, color));
+		glVertexAttribDivisor(4, 1);
 
 		// vertex texture coords
-		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, textCoords));
+		glEnableVertexAttribArray(5);
+		glVertexAttribPointer(5, 2, GL_FLOAT, GL_FALSE, sizeof(Instance), (void*)offsetof(Instance, textCoords));
+		glVertexAttribDivisor(5, 1);
+
+		// vertex texture coords
+		glEnableVertexAttribArray(6);
+		glVertexAttribPointer(6, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof(Instance), (void*)offsetof(Instance, textIndex));
+		glVertexAttribDivisor(6, 1);
+
+	}
+
+	void InstanceMesh::SetupInstances()
+	{
+		std::vector<unsigned int> indices(MAXINDEXCOUNT);
+		uint32_t offset = 0;
+
+		for (size_t i = 0; i < MAXINDEXCOUNT; i+=6)
+		{
+			indices[i + 0] = 0 + offset;
+			indices[i + 1] = 1 + offset;
+			indices[i + 2] = 2 + offset;
+
+			indices[i + 3] = 2 + offset;
+			indices[i + 4] = 3 + offset;
+			indices[i + 5] = 0 + offset;
+
+			offset += 4;
+
+		}
+		m_Buffer.m_VAO.Bind();
+
+		SetupVertexBuffer(std::vector<Instance>(), true, MAXVERTEXCOUNT);
+		SetupIndexBuffer(indices);
+		SetupVertexAttributes();
+
+
+		m_Buffer.m_EBO.Unbind();
+		m_Buffer.m_VBO.Unbind();
+		m_Buffer.m_VAO.Unbind();
+
 	}
 
 

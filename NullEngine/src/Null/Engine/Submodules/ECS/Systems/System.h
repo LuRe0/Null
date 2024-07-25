@@ -41,22 +41,22 @@ namespace NULLENGINE
 
 	class NLE_API NRegistry;
 
-	class NLE_API ISystem
+	class NLE_API ISystem : public IModule
 	{
 	public:
 		virtual ~ISystem() {};
 
-		virtual void Load()  = 0;
+		virtual void Load()  override = 0;
 		//! Virtual Init function
-		virtual void Init()  = 0;
+		virtual void Init() override;
 		//! Virtual Update function
-		virtual void Update(float dt)  = 0;
+		virtual void Update(float dt) override = 0;
 
-		virtual void Render() const = 0;
+		virtual void Render() override = 0;
 
-		virtual void Unload()  = 0;
+		virtual void Unload()override = 0;
 		//! Virtual Shutdown function
-		virtual void Shutdown()  = 0;
+		virtual void Shutdown() override = 0;
 
 		/// <summary>
 		/// Adds entity to system
@@ -90,10 +90,10 @@ namespace NULLENGINE
 			m_ComponentSignatures.set(id);
 		}
 
-		void SetParent(NRegistry* registry)
-		{
-			m_Parent = registry;
-		}
+		//void SetParent(NRegistry* registry)
+		//{
+		//	m_Parent = registry;
+		//}
 	private:
 		/// <summary>
 		/// the componets an entity must possess in order to be modified by the system
@@ -106,7 +106,7 @@ namespace NULLENGINE
 		std::vector<EntityID> m_Entities;
 
 	protected:
-		NRegistry* m_Parent;
+		//NRegistry* m_Parent;
 	};
 	
 	template <typename T>

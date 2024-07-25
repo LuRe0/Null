@@ -11,9 +11,6 @@
 //******************************************************************************//
 #include "stdafx.h"
 #include "NRegistry.h"
-#include "Null/Engine/Submodules/ECS/Systems/PhysicsSystem.h"
-#include "Null/Engine/Submodules/ECS/Systems/SpriteRenderSystem.h"
-#include "Null/Engine/Submodules/ECS/Systems/TransformSystem.h"
 
 
 
@@ -31,39 +28,40 @@ namespace NULLENGINE
 
 	NRegistry::NRegistry() : m_NumEntities(0)
 	{
-		AddCreateFunction<PhysicsSystem>([this]() { AddSystem<PhysicsSystem>(); });
-		AddCreateFunction<TransformSystem>([this]() { AddSystem<TransformSystem>(); });
-		AddCreateFunction<SpriteRenderSystem>([this]() { AddSystem<SpriteRenderSystem>(); });
+		//AddCreateFunction<PhysicsSystem>([this]() { AddSystem<PhysicsSystem>(); });
+		//AddCreateFunction<TransformSystem>([this]() { AddSystem<TransformSystem>(); });
+		//AddCreateFunction<SpriteRenderSystem>([this]() { AddSystem<SpriteRenderSystem>(); });
+		//AddCreateFunction<AnimationSystem>([this]() { AddSystem<AnimationSystem>(); });
 	}
 
 	void NRegistry::Load()
 	{
-		std::string filePath = std::string("Data/Systems/") + std::string("Systems") + std::string(".json");
-		// Open the JSON file
-		std::ifstream file(filePath);
-		if (!file.is_open()) {
-			NLE_ERROR("Error: Could not open file");
-			return;
-		}
+		//std::string filePath = std::string("Data/Systems/") + std::string("Systems") + std::string(".json");
+		//// Open the JSON file
+		//std::ifstream file(filePath);
+		//if (!file.is_open()) {
+		//	NLE_ERROR("Error: Could not open file");
+		//	return;
+		//}
 
 
-		JSON j;
-		file >> j;
+		//JSON j;
+		//file >> j;
 
 
-		for (auto& sysJson : j["systems"]) {
+		//for (auto& sysJson : j["systems"]) {
 
-			std::string type = sysJson["type"];
+		//	std::string type = sysJson["type"];
 
-			m_Createfunctions.at(type)();
-		}
+		//	m_Createfunctions.at(type)();
+		//}
 
 
 
-		for (auto& system : m_Systems)
-		{
-			system.second.get()->Load();
-		}
+		//for (auto& system : m_Systems)
+		//{
+		//	system.second.get()->Load();
+		//}
 	}
 
 	void NRegistry::Init()
@@ -139,5 +137,10 @@ namespace NULLENGINE
 			if(match)
 				system.second.get()->Add(entityID);
 		}
+	}
+	const Signature& NRegistry::EntitySignature(EntityID entityID)
+	{
+		// TODO: insert return statement here
+		return m_EntityComponentSignatures[m_EntityToIndexMap[entityID]];
 	}
 }

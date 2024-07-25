@@ -47,7 +47,7 @@ namespace NULLENGINE
 
 	void NEngine::Update(float dt)
 	{
-		// Init each component
+		// Update and draw each component
 		for (int i = 0; i < m_Modules.size(); i++)
 		{
 			m_Modules[i].first->Update(dt);
@@ -57,10 +57,20 @@ namespace NULLENGINE
 
 	void NEngine::Unload()
 	{
+		// Unload each component
+		for (int i = 0; i < m_Modules.size(); i++)
+		{
+			m_Modules[i].first->Unload();
+		}
 	}
 
 	void NEngine::Shutdown()
 	{
+		// Shutdown each component
+		for (int i = 0; i < m_Modules.size(); i++)
+		{
+			m_Modules[i].first->Shutdown();
+		}
 	}
 
 	void NEngine::Add(IModule* component, const std::string_view& name)

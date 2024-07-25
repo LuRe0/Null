@@ -53,7 +53,7 @@ namespace NULLENGINE
 		void RegisterArchetype(const std::string& archetypeName);
 
 
-		EntityID CreateEntity(const JSON& entityData, NRegistry* registry);
+		Entity CreateEntity(const JSON& entityData, NRegistry* registry);
 
 		void UpdateArchetype(const std::string& archetypeName, BaseComponent* component);
 

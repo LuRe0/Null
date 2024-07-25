@@ -60,17 +60,24 @@ namespace NULLENGINE
         return m_Count;
     }
 
-    void VBO::AttachBuffer(const std::vector<float>& vertices, bool dynamic)
+    void VBO::AttachBuffer(const std::vector<float>& vertices, bool dynamic, size_t size)
     {
         m_Count = vertices.size();
         dynamic ? glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_DYNAMIC_DRAW)
             : glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
     }
 
-    void VBO::AttachBuffer(const std::vector<Vertex>& vertices, bool dynamic)
+    void VBO::AttachBuffer(const std::vector<Vertex>& vertices, bool dynamic, size_t size)
     {
         m_Count = vertices.size();
         dynamic ? glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_DYNAMIC_DRAW)
             : glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
+    }
+
+    void VBO::AttachBuffer(const std::vector<Instance>& vertices, bool dynamic, size_t size)
+    {
+        m_Count = size == 0 ? vertices.size() : size;
+        dynamic ? glBufferData(GL_ARRAY_BUFFER, m_Count * sizeof(Vertex), vertices.data(), GL_DYNAMIC_DRAW)
+            : glBufferData(GL_ARRAY_BUFFER, m_Count * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
     }
 }

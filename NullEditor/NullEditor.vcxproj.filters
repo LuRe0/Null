@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Pannels">
+      <UniqueIdentifier>{D6933BFC-4273-BA97-4B8B-456EB7E920F9}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Pannels\SceneHierarchyPannel.h">
+      <Filter>Pannels</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\NullEditor.cpp" />
+    <ClCompile Include="src\Pannels\SceneHierarchyPannel.cpp">
+      <Filter>Pannels</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

@@ -55,7 +55,7 @@ namespace NULLENGINE
         void SetUp(const glm::vec3& up);
         void SetZoom(float zoom);
         // returns the view matrix calculated using Euler Angles and the LookAt Matrix
-        const glm::mat4& GetViewMatrix() const override;
+        const glm::mat4 GetViewMatrix() const override;
 
 
         void OnWindowResize(const WindowResizeEvent& e);

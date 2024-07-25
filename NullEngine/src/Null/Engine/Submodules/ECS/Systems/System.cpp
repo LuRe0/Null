@@ -32,15 +32,31 @@ namespace NULLENGINE
 
 	void ISystem::Init()
 	{
+		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+		NSceneManager* scMan = NEngine::Instance().Get<NSceneManager>();
+		Scene* currScene = scMan->GetCurrentScene();
+
+		auto& entities = currScene->GetManagedEntities();
+
+		for (auto& entity : entities)
+		{
+			EntityID entityId = entity.GetID();
+			const auto& entityComponentSignatures = registry->EntitySignature(entityId);
+
+			const auto& systemComponentSignatures = GetComponentSignature();
+
+			bool match = ((entityComponentSignatures & systemComponentSignatures) == systemComponentSignatures);
+
+			if (match)
+				Add(entityId);
+		}
 	}
 
 	void ISystem::Update(float dt)
 	{
 	}
 
-	void ISystem::Render() const
-	{
-	}
+
 
 	void ISystem::Unload()
 	{

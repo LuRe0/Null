@@ -26,6 +26,11 @@
 #include "Null/Engine/Modules/NTextureManager.h"
 #include "Null/Engine/Modules/NComponentFactory.h"
 #include "Null/Engine/Modules/NEntityFactory.h"
+#include "Null/Engine/Submodules/ECS/Systems/PhysicsSystem.h"
+#include "Null/Engine/Submodules/ECS/Systems/SpriteRenderSystem.h"
+#include "Null/Engine/Submodules/ECS/Systems/TransformSystem.h"
+#include "Null/Engine/Submodules/ECS/Systems/AnimationSystem.h"
+
 #include "Null/Engine/NEngine.h"
 #include "Null/Engine/Misc/Time.h"
 #include "Null/Engine/Misc/Input.h"

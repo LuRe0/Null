@@ -96,7 +96,7 @@ namespace NULLENGINE
 		m_Zoom = zoom;
 	}
 
-	const glm::mat4& Camera3D::GetViewMatrix() const
+	const glm::mat4 Camera3D::GetViewMatrix() const
 	{
 		return m_ViewMatrix;
 	}
@@ -106,7 +106,7 @@ namespace NULLENGINE
 	{
 		//SetZoom(1280.0f / e.GetWidth());
 
-		m_Aspect = e.GetWidth() / e.GetHeight();
+		m_Aspect = e.GetHeight() != 0 ? e.GetWidth() / e.GetHeight() : 0;
 
 		m_IsDirty = true;
 	}

@@ -93,6 +93,43 @@ namespace NULLENGINE
 		m_Buffer.m_VAO.Unbind();
 
 	}
+	Mesh::Mesh(const std::string& name, float xHalfSize, float yHalfSize, float uSize, float vSize) :
+		m_xHalfSize(xHalfSize), m_yHalfSize(yHalfSize), m_uSize(uSize), m_vSize(vSize), m_Name(name)
+	{
+		// Define vertices for a triangle
+		std::vector<Vertex> vertexData;
+
+		vertexData.push_back({ glm::vec3(xHalfSize, yHalfSize, 0), glm::vec4(0.0f), glm::vec2(1.0f / vSize, 0) });
+		vertexData.push_back({ glm::vec3(xHalfSize, -yHalfSize, 0), glm::vec4(0.0f), glm::vec2(1.0f / vSize, 1.0f / uSize) });
+		vertexData.push_back({ glm::vec3(-xHalfSize, -yHalfSize, 0), glm::vec4(0.0f), glm::vec2(0, 1.0f / uSize) });
+		vertexData.push_back({ glm::vec3(-xHalfSize, yHalfSize, 0), glm::vec4(0.0f), glm::vec2(0,0) });
+
+		std::vector<float> v = {
+			// positions                    // colors           // texture coords
+			 xHalfSize,  yHalfSize, 0.0f,   1.0f, 0.0f, 0.0f,   uSize, vSize,   // top right
+			 xHalfSize, -yHalfSize, 0.0f,   0.0f, 1.0f, 0.0f,   uSize, 0.0f,    // bottom right
+			-xHalfSize, -yHalfSize, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,     // bottom left
+			-xHalfSize,  yHalfSize, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, vSize     // top left 
+		};
+
+		std::vector<unsigned int> indexData = {  // note that we start from 0!
+		0, 1, 3,   // first triangle
+		1, 2, 3    // second triangle
+		};
+
+
+		m_Buffer.m_VAO.Bind();
+
+		SetupVertexBuffer(vertexData);
+		SetupIndexBuffer(indexData);
+		SetupVertexAttributes();
+
+		m_Buffer.m_EBO.Unbind();
+		m_Buffer.m_VBO.Unbind();
+		m_Buffer.m_VAO.Unbind();
+	}
+
+
 	Mesh::~Mesh()
 	{
 
@@ -142,6 +179,27 @@ namespace NULLENGINE
 			spriteSource->GetTexture()->Unbind();
 		}
 
+	}
+
+	void Mesh::RenderTexture(unsigned int texture) const
+	{
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture);
+		glBindSampler(1, 1);
+
+
+		m_Buffer.m_VAO.Bind();
+		m_Buffer.m_VBO.Bind();
+		m_Buffer.m_EBO.Bind();
+
+		glDrawElements(GL_TRIANGLES, m_Buffer.m_EBO.GetSize(), GL_UNSIGNED_INT, 0);
+
+		m_Buffer.m_EBO.Unbind();
+		m_Buffer.m_VBO.Unbind();
+		m_Buffer.m_VAO.Unbind();
+
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
 

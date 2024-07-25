@@ -57,7 +57,7 @@ namespace NULLENGINE
         NLE_CORE_INFO("Archetype {0} already exists!", archetypeName);
     }
 
-    EntityID NEntityFactory::CreateEntity(const JSON& entityData, NRegistry* registry)
+    Entity NEntityFactory::CreateEntity(const JSON& entityData, NRegistry* registry)
     {
         NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
 
@@ -81,34 +81,28 @@ namespace NULLENGINE
 
                 if (newEntity.GetName().empty())
                 {
-                    const std::string& name = jsonWrapper.GetString("name", archetype);
+                    const std::string& name = jsonWrapper.GetString("name", "");
 
-                    newEntity.SetName(name + " (Clone)");
+                    if (!name.empty())
+                        newEntity.SetName(name);
+                    else
+                        newEntity.SetName(archetype + " (Clone)");
                 }
 
-                return newEntity.GetID();
+                return newEntity;
             }
 
             CloneComponents(componentFactory, archetype, registry, newEntity.GetID());
 
-            const std::string& name = jsonWrapper.GetString("name", archetype);
+            const std::string& name = jsonWrapper.GetString("name", "");
 
-            newEntity.SetName(name + " (Clone)");
-        }
-        else
-        {
-            const std::string& name = jsonWrapper.GetString("name", "Entity(" + std::to_string(newEntity.GetID()) + ")");
-
-			newEntity.SetName(name);
-
-            for (const auto& [componentName, componentData] : entityData["components"].items())
-            {
-                componentFactory->CreateUniqueComponent(componentName + "Component", componentData, registry, newEntity.GetID());
-            }
-
+            if (!name.empty())
+                newEntity.SetName(name);
+            else
+                newEntity.SetName(archetype + " (Clone)");
         }
 
-        return newEntity.GetID();
+        return newEntity;
 
     }
 

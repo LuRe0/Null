@@ -68,6 +68,8 @@ namespace NULLENGINE
 		//! Virtual Shutdown function
 		void Shutdown() override;
 
+		Scene* GetCurrentScene();
+
 		static const std::string Name() { return "SceneManager"; }
 
 	private:

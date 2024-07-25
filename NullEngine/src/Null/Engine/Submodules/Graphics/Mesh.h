@@ -42,6 +42,7 @@ namespace NULLENGINE
 
 
 		Mesh(const std::string& filename);
+		Mesh(const std::string& name, float xHalfSize, float yHalfSize, float uSize, float vSize);
 		Mesh() = default;
 		~Mesh();
 
@@ -53,6 +54,7 @@ namespace NULLENGINE
 		void SetupIndexBuffer(const std::vector<unsigned int>& indexData);
 		void SetupVertexAttributes();
 		void Render(const SpriteSource* spriteSource) const;
+		void RenderTexture(unsigned int texture) const;
 
 	private:
 		struct Buffer

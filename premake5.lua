@@ -20,16 +20,16 @@ includeDir["glm"] = "NullEngine/vendor/glm"
 includeDir["ImGui"] = "NullEngine/vendor/imgui" 
 includeDir["stb"] = "NullEngine/vendor/stb/stb" 
 
-
--- Include the GLFW project
-include "NullEngine/vendor/GLFW"
-include "NullEngine/vendor/Glad"
-include "NullEngine/vendor/imgui"
-include "NullEngine/vendor/Box2D"
+group "Depenencies"
+    include "NullEngine/vendor/GLFW"
+    include "NullEngine/vendor/Glad"
+    include "NullEngine/vendor/imgui"
+    include "NullEngine/vendor/Box2D"
+group ""
 
 project "NullEngine"
     location "NullEngine"
-    kind "SharedLib"
+    kind "StaticLib"
     language "C++"
     cppdialect "C++20"
 
@@ -77,7 +77,8 @@ project "NullEngine"
 
     postbuildcommands
     {
-        ("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputDir .. "/sandbox")
+        ("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputDir .. "/sandbox"),
+        ("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputDir .. "/NullEditor")
     }
 
     filter "system.windows"
@@ -108,7 +109,7 @@ project "Sandbox"
     kind "ConsoleApp"
     language "C++"
     cppdialect "C++20"
-
+    -- staticruntime "on"
 
     targetdir ("bin/" .. outputDir .. "/%{prj.name}")
     objdir ("bin-int/" .. outputDir .. "/%{prj.name}")
@@ -123,8 +124,63 @@ project "Sandbox"
     {
          "NullEngine/vendor/spdlog/include",
          "NullEngine/src",
+         "%{includeDir.glm}"
+    }
+
+    defines
+    {
+        "NLE_PLATFORM_WINDOWS"
+    }
+    links 
+    {
+        "NullEngine"
+    }
+
+    filter "system.windows"
+        cppdialect "C++20"
+        staticruntime "On"
+        systemversion "latest"
+
+        filter "configurations:Debug"
+            defines "NLE_DEBUG"
+            symbols "On"
+
+        filter "configurations:Release"
+            defines "NLE_RELEASE"
+            symbols "On"
+
+        filter "configurations:Dist"
+            defines "NLE_DIST"
+            symbols "On"
+
+project "NullEditor" 
+    location "NullEditor"
+    kind "ConsoleApp"
+    language "C++"
+    cppdialect "C++20"
+    -- staticruntime "on"
+
+    targetdir ("bin/" .. outputDir .. "/%{prj.name}")
+    objdir ("bin-int/" .. outputDir .. "/%{prj.name}")
+
+    links 
+    {
+        "NullEngine"
+    }
+    files
+    {
+        "%{prj.name}/src/**.h",
+        "%{prj.name}/src/**.cpp"
+    }
+
+    includedirs
+    {
+         "NullEngine/vendor/spdlog/include",
+         "NullEngine/src",
+         "NullEditor/src",
          "%{includeDir.GLFW}",
          "%{includeDir.Glad}",
+         "%{includeDir.ImGui}",
          "%{includeDir.JSON}",
          "%{includeDir.glm}"
     }
@@ -134,11 +190,6 @@ project "Sandbox"
         "NLE_PLATFORM_WINDOWS"
     }
 
-    
-    links 
-    {
-        "NullEngine"
-    }
 
     filter "system.windows"
         cppdialect "C++20"

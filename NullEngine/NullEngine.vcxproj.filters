@@ -80,6 +80,12 @@
     <ClInclude Include="src\Null\Engine\Modules\NCameraManager.h">
       <Filter>Null\Engine\Modules</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Engine\Modules\NComponentFactory.h">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Modules\NEntityFactory.h">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClInclude>
     <ClInclude Include="src\Null\Engine\Modules\NEventManager.h">
       <Filter>Null\Engine\Modules</Filter>
     </ClInclude>
@@ -124,6 +130,9 @@
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Entities\Entity.h">
       <Filter>Null\Engine\Submodules\ECS\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\AnimationSystem.h">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\PhysicsSystem.h">
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
@@ -200,6 +209,9 @@
     <ClInclude Include="src\Null\EntryPoint.h">
       <Filter>Null</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Tools\JsonWrapper.h">
+      <Filter>Null\Tools</Filter>
+    </ClInclude>
     <ClInclude Include="src\Null\Tools\Trace.h">
       <Filter>Null\Tools</Filter>
     </ClInclude>
@@ -222,6 +234,12 @@
       <Filter>Null\Engine\Modules\Base</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Modules\NCameraManager.cpp">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Modules\NComponentFactory.cpp">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Modules\NEntityFactory.cpp">
       <Filter>Null\Engine\Modules</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Modules\NEventManager.cpp">
@@ -268,6 +286,9 @@
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Entities\Entity.cpp">
       <Filter>Null\Engine\Submodules\ECS\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\AnimationSystem.cpp">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\PhysicsSystem.cpp">
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
@@ -334,6 +355,9 @@
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\Scene.cpp">
       <Filter>Null\Engine\Submodules</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Tools\JsonWrapper.cpp">
+      <Filter>Null\Tools</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Tools\Trace.cpp">
       <Filter>Null\Tools</Filter>

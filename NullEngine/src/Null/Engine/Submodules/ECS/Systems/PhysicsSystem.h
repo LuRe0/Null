@@ -45,7 +45,7 @@ namespace NULLENGINE
 		//! Virtual Update function
 		void Update(float dt) override;
 
-		void Render() const override;
+		void Render() override;
 
 		void Unload() override;
 		//! Virtual Shutdown function
@@ -56,6 +56,9 @@ namespace NULLENGINE
 
 		const glm::vec2 MetersToPixels(float x, float y);
 		const glm::vec2 PixelsToMeters(float x, float y);
+
+		static void CreateRigidbody2DComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
+		static void CreateBoxCollider2DComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
 	};
 
 }

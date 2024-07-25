@@ -11,7 +11,6 @@
 //******************************************************************************//
 #include "stdafx.h"
 #include "Scene.h"
-#include "Null/Engine/Submodules/ECS/Entities/Entity.h"
 
 
 
@@ -32,6 +31,7 @@ namespace NULLENGINE
 	{
 		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
 		NEntityFactory* entityFactory = NEngine::Instance().Get<NEntityFactory>();
+		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
 
 		for (const auto& transitionData : sceneData["transitions"]) {
 
@@ -44,9 +44,24 @@ namespace NULLENGINE
 		{
 			JsonWrapper jsonWrapper(entityData);
 
-			EntityID entityID = entityFactory->CreateEntity(entityData, registry);
+			Entity entity = entityFactory->CreateEntity(entityData, registry);
 	
-			m_Entities.push_back(entityID);
+
+			if (entityData.contains("components"))
+			{
+				const std::string& name = jsonWrapper.GetString("name", "Entity(" + std::to_string(entity.GetID()) + ")");
+
+				entity.SetName(name);
+
+				for (const auto& [componentName, componentData] : entityData["components"].items())
+				{
+					componentFactory->CreateUniqueComponent(componentName + "Component", componentData, registry, entity.GetID());
+				}
+
+			}
+
+			m_Entities.push_back(entity);
+
 		}
 
 	}
@@ -58,8 +73,10 @@ namespace NULLENGINE
 	{
 		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
 
-		for (const auto entityId : m_Entities)
-			registry->AddEntityToSystem(entityId);
+		for (const auto& entity : m_Entities)
+		{
+			registry->AddEntityToSystem(entity.GetID());
+		}
 	}
 
 	void Scene::Update(float dt)

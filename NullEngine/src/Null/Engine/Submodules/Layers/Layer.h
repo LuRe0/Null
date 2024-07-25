@@ -13,7 +13,6 @@
 // Includes																        //
 //******************************************************************************//
 #include "Null/Core.h"
-#include "Null/Engine/Modules/Base/IModule.h"
 
 
 //******************************************************************************//
@@ -44,7 +43,7 @@ namespace NULLENGINE
 
 		virtual void OnUpdate(float dt) {};
 
-		virtual void OnRender(float dt) {};
+		virtual void OnRender() {};
 
 		virtual void OnDetach() {};
 

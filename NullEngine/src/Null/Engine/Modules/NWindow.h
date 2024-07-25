@@ -31,6 +31,7 @@
 // Private structures													        //
 //******************************************************************************//
 
+//class GLFWwindow;
 
 namespace NULLENGINE
 {
@@ -41,7 +42,7 @@ namespace NULLENGINE
 	{
 	public:
 		using EnventCallbackFn = std::function<void(const Event&)>;
-
+		NWindow(const std::string& name, uint32_t width = 1280, uint32_t height = 720);
 		void Load() override;
 		//! Virtual Init function
 		void Init() override;
@@ -54,6 +55,8 @@ namespace NULLENGINE
 
 		bool WindowClosed();
 		bool WindowMinimized();
+
+		void CloseWindow();
 
 		void InitializeWindowEvents(NEventManager* eventManager);
 
@@ -71,6 +74,7 @@ namespace NULLENGINE
 		unsigned int Width() { return m_Data.m_Width;  }
 
 		void SetVSynch(bool s);
+		void SetBlockEvents(bool b);
 
 		bool IsVSynch(bool s) { return m_Data.m_VSynch; }
 
@@ -93,13 +97,14 @@ namespace NULLENGINE
 
 			bool m_VSynch;
 
+			bool m_BlockEvents = false;
+
 			EnventCallbackFn m_callbackFunc;
 
 			NWindow* m_Parent;
 		};
 
 		Window m_Data;
-
 
 		// GLFW Callback function declarations
 		static void WindowResizeCallback(GLFWwindow* window, int width, int height);

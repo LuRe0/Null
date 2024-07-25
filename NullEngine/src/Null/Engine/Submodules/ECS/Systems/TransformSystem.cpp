@@ -28,12 +28,24 @@ const glm::vec2 GRAVITY(0.0f, -9.81f);
 
 namespace NULLENGINE
 {
+	TransformSystem::TransformSystem()
+	{
+		Require<TransformComponent>();
+
+		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
+
+		componentFactory->Register<TransformComponent>(CreateTransformComponent);
+	}
+
+
 	void TransformSystem::Load()
 	{
 	}
 
 	void TransformSystem::Init()
 	{
+		ISystem::Init();
+
 		//NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
 
 
@@ -42,6 +54,8 @@ namespace NULLENGINE
 
 	void TransformSystem::Update(float dt)
 	{
+		NRegistry* m_Parent = NEngine::Instance().Get<NRegistry>();
+
 		for (const auto entityId : GetSystemEntities())
 		{
 			TransformComponent& transform = m_Parent->GetComponent<TransformComponent>(entityId);
@@ -66,7 +80,7 @@ namespace NULLENGINE
 	}
 
 
-	void TransformSystem::Render() const
+	void TransformSystem::Render() 
 	{
 	}
 
@@ -78,4 +92,21 @@ namespace NULLENGINE
 	{
 	}
 
+
+	void TransformSystem::CreateTransformComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id)
+	{
+		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
+
+		auto* comp = static_cast<TransformComponent*>(component);
+		JsonWrapper jsonWrapper(json);
+
+		if (!jsonWrapper.Empty())
+		{
+			comp->m_Translation = jsonWrapper.GetVec3("translation", { 0.0f, 0.0f, 0.0f });
+			comp->m_Scale = jsonWrapper.GetVec3("scale", { 1.0f, 1.0f, 1.0f });
+			comp->m_Rotation = jsonWrapper.GetVec3("rotation", { 0.0f, 0.0f, 0.0f });
+		}
+
+		componentFactory->AddOrUpdate<TransformComponent>(id, comp, registry, comp->m_Translation, comp->m_Scale, comp->m_Rotation);
+	}
 }

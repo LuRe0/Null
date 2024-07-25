@@ -56,6 +56,8 @@ namespace NULLENGINE
 
 
         stbi_image_free(m_Data);
+
+        glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
     void Texture::Bind() const

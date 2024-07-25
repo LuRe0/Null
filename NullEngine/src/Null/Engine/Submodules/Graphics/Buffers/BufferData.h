@@ -60,5 +60,5 @@ struct Instance
 
 	glm::vec2 textCoords;
 
-	float textIndex;
+	unsigned int textIndex;
 };

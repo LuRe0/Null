@@ -15,6 +15,7 @@
 #include "stdafx.h"
 #include "Null/Core.h"
 #include "nlohmann/json.hpp"
+#include "Null/Engine/Submodules/ECS/Entities/Entity.h"
 
 
 using JSON = nlohmann::json;
@@ -41,12 +42,14 @@ namespace NULLENGINE
 
 	const EntityID MAX_ENTITIES = 5000;
 
+
+
 	//class NLE_API IComponentManager;
 
 	class NLE_API Scene
 	{
 	public:
-		Scene(const std::string& name) : m_Name(name), m_Transitions(std::vector<Transition>()), m_Entities(std::vector<EntityID>())
+		Scene(const std::string& name) : m_Name(name), m_Transitions(std::vector<Transition>()), m_Entities(std::vector<Entity>())
 		{
 			m_Entities.reserve(MAX_ENTITIES);
 		}
@@ -72,6 +75,8 @@ namespace NULLENGINE
 		//!  Shutdown function
 		void Shutdown();
 
+		const std::vector<Entity>& GetManagedEntities() { return m_Entities; }
+
 		const std::string_view GetName() { return m_Name; }
 
     private:
@@ -91,7 +96,7 @@ namespace NULLENGINE
 
         std::string m_Name;
 
-        std::vector<EntityID> m_Entities;
+        std::vector<Entity> m_Entities;
 
         std::vector<Transition> m_Transitions;
 

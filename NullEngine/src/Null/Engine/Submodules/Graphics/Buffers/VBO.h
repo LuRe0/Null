@@ -49,9 +49,11 @@ namespace NULLENGINE
 		unsigned int Count() const;
 
 
-		void AttachBuffer(const std::vector<float>& vertices, bool dynamic = false);
+		void AttachBuffer(const std::vector<float>& vertices, bool dynamic = false, size_t size = 0);
 
-		void AttachBuffer(const std::vector<Vertex>& vertices, bool dynamic = false);
+		void AttachBuffer(const std::vector<Vertex>& vertices, bool dynamic = false, size_t size = 0);
+
+		void AttachBuffer(const std::vector<Instance>& vertices, bool dynamic = false, size_t size = 0);
 
 		const unsigned int GetID() const { return m_ID; }
 

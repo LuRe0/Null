@@ -88,6 +88,40 @@ namespace NULLENGINE
 			return new T();
 		}
 
+
+		template <typename T, typename ...TArgs>
+		static void AddOrUpdate(EntityID entityID, T* newComponent, NRegistry* registry, TArgs&& ...args)
+		{
+			if (registry->HasComponent<T>(entityID))
+			{
+				T& component = registry->GetComponent<T>(entityID);
+
+				component = *newComponent;
+
+				NLE_CORE_INFO("Succesfully Updated {0}, {1} to entity {2}", Component<T>::TypeName(), Component<T>::GetID(), entityID);
+
+				return;
+			}
+
+			registry->AddComponent<T>(entityID, std::forward<TArgs>(args)...);
+		}
+
+
+		//void AddComponentCreateFunction(std::string_view component, std::function < Component& (Entity&)> function);
+
+
+		template <typename T>
+		void Register(void (*func)(void*, const nlohmann::json&, NRegistry* registry, EntityID id))
+		{
+			AddCreateFunction<T>(func);
+		}
+
+	private:
+		std::unordered_map<std::string, std::function<void(void*, const nlohmann::json&, NRegistry*, EntityID)>> m_componentReader;
+		std::unordered_map<std::string, std::function<BaseComponent* ()>> m_ComponentCreator;
+
+		
+
 		template <typename T>
 		void AddCreateFunction(void (*func)(void*, const nlohmann::json&, NRegistry* registry, EntityID id))
 		{
@@ -98,18 +132,6 @@ namespace NULLENGINE
 				};
 		}
 
-
-		//void AddComponentCreateFunction(std::string_view component, std::function < Component& (Entity&)> function);
-
-
-	private:
-		std::unordered_map<std::string, std::function<void(void*, const nlohmann::json&, NRegistry*, EntityID)>> m_componentReader;
-		std::unordered_map<std::string, std::function<BaseComponent* ()>> m_ComponentCreator;
-
-		static void CreateTransformComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
-		static void CreateSpriteComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
-		static void CreateRigidbody2DComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
-		static void CreateBoxCollider2DComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
 	};
 
 }

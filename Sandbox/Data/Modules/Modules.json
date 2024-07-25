@@ -1,52 +1,52 @@
 {
     "modules": [
         {
-            "type": "NWindow",
-            "Var": "something to initialize module with"
+            "type": "NWindow"
+            
         },
         {
-            "type": "NEventManager",
-            "Var": "something to initialize module with"
+            "type": "NEventManager"
+            
         },
         {
-            "type": "NCameraManager",
-            "Var": "something to initialize module with"
+            "type": "NCameraManager"
+            
         },
         {
-            "type": "NShaderManager",
-            "Var": "something to initialize module with"
+            "type": "NShaderManager"
+            
         },
         {
-            "type": "NMeshManager",
-            "Var": "something to initialize module with"
+            "type": "NMeshManager"
+            
         },
         {
-            "type": "NTextureManager",
-            "Var": "something to initialize module with"
+            "type": "NTextureManager"
+            
         },
         {
-            "type": "NSpriteSourceManager",
-            "Var": "something to initialize module with"
+            "type": "NSpriteSourceManager"
+            
         },
         {
-            "type": "NEntityFactory",
-            "Var": "something to initialize module with"
+            "type": "NEntityFactory"
+            
         },
         {
-            "type": "NComponentFactory",
-            "Var": "something to initialize module with"
+            "type": "NComponentFactory"
+            
         },
         {
-            "type": "NSceneManager",
-            "Var": "something to initialize module with"
+            "type": "NSceneManager"
+            
         },
         {
-            "type": "NRegistry",
-            "Var": "something to initialize module with"
+            "type": "NRegistry"
+            
         },
         {
-            "type": "NRenderer",
-            "Var": "something to initialize module with"
+            "type": "NRenderer"
+            
         }
     ]
 }

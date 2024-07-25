@@ -35,6 +35,10 @@ using EntityID = uint32_t;
 
 namespace NULLENGINE
 {
+
+
+	class NLE_API NRegistry;
+
 	class NLE_API Entity
 	{
 	public:
@@ -76,7 +80,7 @@ namespace NULLENGINE
 
 		void SetName(const std::string& name);
 
-		const std::string GetName() { return m_Name; };
+		std::string GetName() const { return m_Name; };
 
 		EntityID GetID() const { return m_ID; }
 

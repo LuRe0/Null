@@ -16,7 +16,6 @@
 #include "Null/Engine/Submodules/ECS/Components/IComponent.h"
 #include "Null/Engine/Modules/NEventManager.h"
 #include "glad//glad.h"
-#include "Null/Engine/Submodules/Layers/ImGuiLayer.h"
 #include "Null/Engine/Submodules/Graphics/Buffers/VAO.h"
 #include "Null/Engine/Submodules/Graphics/Buffers/VBO.h"
 #include "Null/Engine/Submodules/Graphics/Buffers/EBO.h"
@@ -37,11 +36,13 @@
 namespace NULLENGINE
 {
 
-	Application::Application()
+	Application::Application(const std::string& name)
 	{
+		m_ApplicationName = name;
+
 		IEngine& engine = NEngine::Instance();
 
-		AddCreateFunction<NWindow>([&engine]() { engine.Add<NULLENGINE::NWindow>(); });
+		AddCreateFunction<NWindow>([&engine, this]() { engine.Add<NULLENGINE::NWindow>(m_ApplicationName, 1280, 720); });
 		AddCreateFunction<NEventManager>([&engine]() { engine.Add<NULLENGINE::NEventManager>(); });
 		AddCreateFunction<NCameraManager>([&engine]() { engine.Add<NULLENGINE::NCameraManager>(); });
 		AddCreateFunction<NShaderManager>([&engine]() { engine.Add<NULLENGINE::NShaderManager>(); });
@@ -53,6 +54,10 @@ namespace NULLENGINE
 		AddCreateFunction<NComponentFactory>([&engine]() { engine.Add<NULLENGINE::NComponentFactory>(); });
 		AddCreateFunction<NEntityFactory>([&engine]() { engine.Add<NULLENGINE::NEntityFactory>(); });
 		AddCreateFunction<NRenderer>([&engine]() { engine.Add<NULLENGINE::NRenderer>(); });
+		AddCreateFunction<PhysicsSystem>([&engine]() { engine.Add<NULLENGINE::PhysicsSystem>(); });
+		AddCreateFunction<TransformSystem>([&engine]() { engine.Add<NULLENGINE::TransformSystem>(); });
+		AddCreateFunction<SpriteRenderSystem>([&engine]() { engine.Add<NULLENGINE::SpriteRenderSystem>(); });
+		AddCreateFunction<AnimationSystem>([&engine]() { engine.Add<NULLENGINE::AnimationSystem>(); });
 
 		m_NullEngine = &engine;
 
@@ -86,8 +91,8 @@ namespace NULLENGINE
 
 		m_NullEngine->Load();
 
-		m_ImGuiLayer = std::make_unique<NULLENGINE::ImGuiLayer>();
-		m_ImGuiLayer->OnAttach();
+		//m_ImGuiLayer = std::make_unique<NULLENGINE::ImGuiLayer>();
+		//m_ImGuiLayer->OnAttach();
 	}
 
 	void Application::Init()
@@ -107,16 +112,6 @@ namespace NULLENGINE
 		if (!window)
 			return;
 
-
-
-		// Create VBO
-		/*VAO vao;
-		vao.Bind();
-		VBO vbo(vertices);
-		EBO ebo(indeces);
-		vao.Attach();
-		vao.Unbind();*/
-
 		while (!window->WindowClosed() && !window->WindowMinimized())
 		{
 
@@ -128,11 +123,11 @@ namespace NULLENGINE
 
 			m_NullEngine->Update(dt);
 
-
-			m_ImGuiLayer->Begin();
-			m_ImGuiLayer->OnRender();
-			m_ImGuiLayer->End();
-
+			for (auto& layer : m_layers)
+			{
+				layer->OnUpdate(dt);
+				layer->OnRender();
+			}
 
 			glfwSwapBuffers(window->GetWinddow());
 
@@ -158,19 +153,19 @@ namespace NULLENGINE
 
 	void Application::PushLayer(std::unique_ptr<ILayer>&& layer)
 	{
-		/*	layer.get()->OnAttach();
-			m_layers.emplace(std::make_pair(LAYER, std::move(layer)));*/
+		layer.get()->OnAttach();
+		m_layers.push_back(std::move(layer));
 	}
 
 	void Application::OnEvent(const Event& e)
 	{
 		//NLE_CORE_INFO("{0}", e.Print());
-
 		Input::Instance().OnEvent(e);
 
-		/*	for (auto& layer : m_layers)
-				layer.second.get()->OnEvent(e);*/
-
+		for (auto& layer : m_layers)
+		{
+			layer->OnEvent(e);
+		}
 	}
 
 

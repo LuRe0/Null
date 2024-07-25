@@ -39,7 +39,7 @@ namespace NULLENGINE
 	class NLE_API Application
 	{
 	public:
-		Application();
+		Application(const std::string& name = "Null Engine");
 
 		virtual void Load();
 		//! Virtual Init function
@@ -63,6 +63,7 @@ namespace NULLENGINE
 			m_Createfunctions.emplace(System<T>::TypeName(), function);
 		}
 
+		const std::string Name() const { return m_ApplicationName; }
 
 		virtual ~Application();
 	private:
@@ -76,16 +77,14 @@ namespace NULLENGINE
 
 		//std::multimap<LayerType, std::unique_ptr<ILayer>> m_layers;
 
-		std::unique_ptr<ImGuiLayer> m_ImGuiLayer;
-		std::unique_ptr<Shader> m_Shader;
+		std::vector<std::unique_ptr<ILayer>> m_layers;
+
+		//std::unique_ptr<ImGuiLayer> m_ImGuiLayer;
 
 		IEngine* m_NullEngine;
-
-		unsigned int m_VertexArray, m_VertexBuffer, m_IndexBuffer;
-		
-
 		std::unordered_map<std::string, std::function<void()>> m_Createfunctions;
 
+		std::string m_ApplicationName;
 
 		Application(Application const&) = delete;
 		Application& operator=(Application const&) = delete;

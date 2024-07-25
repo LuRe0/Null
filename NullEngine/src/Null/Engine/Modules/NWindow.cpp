@@ -3,6 +3,7 @@
 #include "Null/Tools/Trace.h"
 #include "Null/Engine/Submodules/Events/IEvents.h"
 #include "imgui.h"
+#include "GLFW/glfw3.h"
 #include "backends/imgui_impl_glfw.h"
 
 #include <glad/glad.h>
@@ -10,306 +11,323 @@
 namespace NULLENGINE
 {
 
-//#define SUBSCRIBE_EVENT(EVENT_TYPE, EVENT_CALLBACK, EVENT_MANAGER) \
-//    { \
-//        EventCallback<EVENT_TYPE> callback = std::bind(EVENT_CALLBACK, this, std::placeholders::_1); \
-//        std::unique_ptr<IEventHandler> handler = std::make_unique<EventHandler<EVENT_TYPE>>(callback, EVENT_TYPE::GetStaticEventType()); \
-//        EVENT_MANAGER->Subscribe(EVENT_TYPE::GetStaticEventType(), std::move(handler)); \
-//    }
-
-    void NWindow::Load()
-    {
-        if (!InitGLFW()) {
-            NLE_ERROR("Failed to initialize GLFW");
-        }
-        else {
-            m_Window = InitializeWindow(1280, 720, "Null Engine Window");
-            if (!m_Window) {
-                NLE_ERROR("Failed to create GLFW window");
-            }
-            else {
-                //SetFramebufferSizeCallback(window, framebuffer_size_callback);
-                NLE_TRACE("Creating Window {0} ({1}, {2})", "Null Engine Window", 1280, 720);
-            }
-        }
-    }
-
-    void NWindow::Init()
-    {
-        NEventManager* eventManager = m_Parent->Get<NEventManager>();
-
-        InitializeWindowEvents(eventManager);
-
-
-
-        // Set GLFW callbacks
-        glfwSetWindowSizeCallback(m_Window, WindowResizeCallback);
-        glfwSetWindowCloseCallback(m_Window, WindowCloseCallback);
-        //glfwSetKeyCallback(m_Window, KeyCallback);
-        //glfwSetCharCallback(m_Window, KeyTypeCallback);
-        //glfwSetMouseButtonCallback(m_Window, MouseButtonCallback);
-        //glfwSetCursorPosCallback(m_Window, MouseMoveCallback);
-        //glfwSetScrollCallback(m_Window, MouseScrollCallback);
-
-
-        glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
-            ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
-            KeyCallback(window, key, scancode, action, mods);
-            });
-
-        glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods) {
-            ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
-            MouseButtonCallback(window, button, action, mods);
-            });
-
-        glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xoffset, double yoffset) {
-            ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
-            MouseScrollCallback(window, xoffset, yoffset);
-            });
-
-        glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xpos, double ypos) {
-            ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
-            MouseMoveCallback(window, xpos, ypos);
-            });
-
-
- 
-        glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int c) {
-            ImGui_ImplGlfw_CharCallback(window, c);
-            KeyTypeCallback(window, c);
-            });
-
-    }
-
-    void NWindow::Update(float dt)
-    {
-
-        if (m_Window)
-        {
-            // Update loop: render, poll events, etc.
- 
-            glfwPollEvents();
-
- 
-        }
-    }
-
-    void NWindow::Unload()
-    {
-
-    }
-
-    void NWindow::Shutdown()
-    {
-        TerminateGLFW();
-    }
-
-    bool NWindow::WindowClosed()
-    {
-        return !m_Window || glfwWindowShouldClose(m_Window);
-    }
-
-    bool NWindow::WindowMinimized()
-    {
-        return (Width() && Height() == 0);
-    }
+	//#define SUBSCRIBE_EVENT(EVENT_TYPE, EVENT_CALLBACK, EVENT_MANAGER) \
+	//    { \
+	//        EventCallback<EVENT_TYPE> callback = std::bind(EVENT_CALLBACK, this, std::placeholders::_1); \
+	//        std::unique_ptr<IEventHandler> handler = std::make_unique<EventHandler<EVENT_TYPE>>(callback, EVENT_TYPE::GetStaticEventType()); \
+	//        EVENT_MANAGER->Subscribe(EVENT_TYPE::GetStaticEventType(), std::move(handler)); \
+	//    }
+
+	NWindow::NWindow(const std::string& name, uint32_t width, uint32_t height)
+	{
+		m_Data.m_Title = name;
+		m_Data.m_Width = width;
+		m_Data.m_Height = height;
+		m_Data.m_Parent = this;
+	}
+
+	void NWindow::Load()
+	{
+		if (!InitGLFW()) {
+			NLE_ERROR("Failed to initialize GLFW");
+		}
+		else {
+			m_Window = InitializeWindow(1280, 720, m_Data.m_Title.c_str());
+			if (!m_Window) {
+				NLE_ERROR("Failed to create GLFW window");
+			}
+			else {
+				//SetFramebufferSizeCallback(window, framebuffer_size_callback);
+				NLE_TRACE("Creating Window {0} ({1}, {2})", m_Data.m_Title.c_str(), 1280, 720);
+			}
+		}
+	}
+
+	void NWindow::Init()
+	{
+		NEventManager* eventManager = m_Parent->Get<NEventManager>();
+
+		InitializeWindowEvents(eventManager);
+
+
+
+		// Set GLFW callbacks
+		glfwSetWindowSizeCallback(m_Window, WindowResizeCallback);
+		glfwSetWindowCloseCallback(m_Window, WindowCloseCallback);
+		//glfwSetKeyCallback(m_Window, KeyCallback);
+		//glfwSetCharCallback(m_Window, KeyTypeCallback);
+		//glfwSetMouseButtonCallback(m_Window, MouseButtonCallback);
+		//glfwSetCursorPosCallback(m_Window, MouseMoveCallback);
+		//glfwSetScrollCallback(m_Window, MouseScrollCallback);
+
+
+		glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+			if (ImGui::GetCurrentContext())
+				ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
+			KeyCallback(window, key, scancode, action, mods);
+			});
+
+		glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods) {
+			if (ImGui::GetCurrentContext())
+				ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
+			MouseButtonCallback(window, button, action, mods);
+			});
+
+		glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xoffset, double yoffset) {
+			if (ImGui::GetCurrentContext())
+				ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
+			MouseScrollCallback(window, xoffset, yoffset);
+			});
+
+		glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xpos, double ypos) {
+			if (ImGui::GetCurrentContext())
+				ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
+			MouseMoveCallback(window, xpos, ypos);
+			});
+
+
+
+		glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int c) {
+			if (ImGui::GetCurrentContext())
+				ImGui_ImplGlfw_CharCallback(window, c);
+			KeyTypeCallback(window, c);
+			});
+
+	}
 
-    void NWindow::InitializeWindowEvents(NEventManager* eventManager)
-    {
-        //EventCallback<WindowResizeEvent> callback = std::bind(&NWindow::OnWindowResize, this, std::placeholders::_1);;
+	void NWindow::Update(float dt)
+	{
+
+		if (m_Window)
+		{
+			// Update loop: render, poll events, etc.
+
+			glfwPollEvents();
+
+
+		}
+	}
 
-        //std::unique_ptr<IEventHandler> handler = std::make_unique<EventHandler<WindowResizeEvent>>(callback, Event::WindowResize);
-        //eventManager->Subscribe(WindowResizeEvent::GetStaticEventType(), std::move(handler));
+	void NWindow::Unload()
+	{
 
+	}
 
+	void NWindow::Shutdown()
+	{
+		TerminateGLFW();
+	}
 
-    }
+	bool NWindow::WindowClosed()
+	{
+		return !m_Window || glfwWindowShouldClose(m_Window);
+	}
 
-    bool NWindow::InitGLFW()
-    {
-        if (!glfwInit()) {
-            NLE_ERROR("Failed to create GLFW window");
-            return false;
-        }
+	bool NWindow::WindowMinimized()
+	{
+		return (Width() && Height() == 0);
+	}
 
-        return true;
-    }
+	void NWindow::CloseWindow()
+	{
+		glfwSetWindowShouldClose(m_Window, true);
+	}
 
-    GLFWwindow* NWindow::InitializeWindow(int width, int height, const char* title)
-    {
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	void NWindow::InitializeWindowEvents(NEventManager* eventManager)
+	{
+		//EventCallback<WindowResizeEvent> callback = std::bind(&NWindow::OnWindowResize, this, std::placeholders::_1);;
 
-        GLFWwindow* window = glfwCreateWindow(width, height, title, NULL, NULL);
-        if (!window) {
-            NLE_ERROR("Failed to create GLFW window");
-            glfwTerminate();
-            return nullptr;
-        }
+		//std::unique_ptr<IEventHandler> handler = std::make_unique<EventHandler<WindowResizeEvent>>(callback, Event::WindowResize);
+		//eventManager->Subscribe(WindowResizeEvent::GetStaticEventType(), std::move(handler));
 
 
-        m_Data.m_Height = height;
-        m_Data.m_Width = width;
-        m_Data.m_Parent = this;
 
-        glfwMakeContextCurrent(window);
-        glfwSetWindowUserPointer(window, &m_Data);
-        SetVSynch(true);
+	}
 
-        int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+	bool NWindow::InitGLFW()
+	{
+		if (!glfwInit()) {
+			NLE_ERROR("Failed to create GLFW window");
+			return false;
+		}
 
-        status ? NLE_CORE_TRACE("GLAD initialized successfully.") : NLE_CORE_ERROR("Failed to initialize GLAD!");
+		return true;
+	}
 
-        return window;
-    }
-
-    void NWindow::TerminateGLFW()
-    {
-    }
+	GLFWwindow* NWindow::InitializeWindow(int width, int height, const char* title)
+	{
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    void NWindow::SetVSynch(bool s)
-    {
-        glfwSwapInterval(s);
+		GLFWwindow* window = glfwCreateWindow(width, height, title, NULL, NULL);
+		if (!window) {
+			NLE_ERROR("Failed to create GLFW window");
+			glfwTerminate();
+			return nullptr;
+		}
 
-        m_Data.m_VSynch = s;
-    }
 
-    //void NWindow::SetFramebufferSizeCallback(GLFWwindow* window, GLFWframebuffersizefun callback)
-    //{
-    //    glfwSetFramebufferSizeCallback(window, callback);
-    //}
+		m_Data.m_Height = height;
+		m_Data.m_Width = width;
+		m_Data.m_Parent = this;
 
+		glfwMakeContextCurrent(window);
+		glfwSetWindowUserPointer(window, &m_Data);
+		SetVSynch(true);
 
-    ///GLFW Callbacks
-    void  NWindow::WindowResizeCallback(GLFWwindow* window, int width, int height)
-    {
-        if (!ImGui::GetIO().WantCaptureMouse)
-        {
-            Window& data = *((Window*)glfwGetWindowUserPointer(window));
+		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
-            data.m_Width = width;
-            data.m_Height = height;
+		status ? NLE_CORE_TRACE("GLAD initialized successfully.") : NLE_CORE_ERROR("Failed to initialize GLAD!");
 
-            data.m_callbackFunc(WindowResizeEvent(width, height));
-        }
-    }
+		return window;
+	}
 
-    void  NWindow::WindowCloseCallback(GLFWwindow* window)
-    {
-        if (!ImGui::GetIO().WantCaptureMouse)
-        {
-            Window& data = *((Window*)glfwGetWindowUserPointer(window));
+	void NWindow::TerminateGLFW()
+	{
+	}
 
-            data.m_callbackFunc(WindowCloseEvent());
-        }
-    }
+	void NWindow::SetVSynch(bool s)
+	{
+		glfwSwapInterval(s);
 
-    void  NWindow::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
-    {
-        if (!ImGui::GetIO().WantCaptureMouse)
-        {
-            switch (action)
-            {
-            case GLFW_PRESS:
-            {
+		m_Data.m_VSynch = s;
+	}
 
-                Window& data = *((Window*)glfwGetWindowUserPointer(window));
+	void NWindow::SetBlockEvents(bool b)
+	{
+		m_Data.m_BlockEvents = b;
+	}
 
-                data.m_callbackFunc(KeyPressEvent(key, 0));
-                break;
-            }
-            case GLFW_RELEASE:
-            {
+	//void NWindow::SetFramebufferSizeCallback(GLFWwindow* window, GLFWframebuffersizefun callback)
+	//{
+	//    glfwSetFramebufferSizeCallback(window, callback);
+	//}
 
-                Window& data = *((Window*)glfwGetWindowUserPointer(window));
 
-                data.m_callbackFunc(KeyReleaseEvent(key));
+	///GLFW Callbacks
+	void  NWindow::WindowResizeCallback(GLFWwindow* window, int width, int height)
+	{
+		Window& data = *((Window*)glfwGetWindowUserPointer(window));
 
-                break;
-            }
-            case GLFW_REPEAT:
-            {
+		data.m_Width = width;
+		data.m_Height = height;
 
-                Window& data = *((Window*)glfwGetWindowUserPointer(window));
+		data.m_callbackFunc(WindowResizeEvent(width, height));
 
-                data.m_callbackFunc(KeyHoldEvent(key));
+	}
 
-                break;
-            }
-            default:
-                break;
-            }
-        }
-        //Input::Instance().SetKeyState(key, action);
+	void  NWindow::WindowCloseCallback(GLFWwindow* window)
+	{
+		Window& data = *((Window*)glfwGetWindowUserPointer(window));
 
-    }
+		data.m_callbackFunc(WindowCloseEvent());
 
-    void NWindow::KeyTypeCallback(GLFWwindow* window, unsigned int keycode)
-    {
-        if (!ImGui::GetIO().WantCaptureMouse)
-        {
-            Window& data = *((Window*)glfwGetWindowUserPointer(window));
+	}
 
-            data.m_callbackFunc(KeyTypedEvent(keycode));
-        }
-    }
+	void  NWindow::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+	{
+		Window& data = *((Window*)glfwGetWindowUserPointer(window));
 
-    void  NWindow::MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
-    {
-        if (!ImGui::GetIO().WantCaptureMouse)
-        {
-            switch (action)
-            {
-            case GLFW_PRESS:
-            {
+		if (!data.m_BlockEvents)
+		{
 
-                Window& data = *((Window*)glfwGetWindowUserPointer(window));
 
-                data.m_callbackFunc(MouseButtonPressEvent(button));
+			switch (action)
+			{
+			case GLFW_PRESS:
+			{
 
-                break;
-            }
-            case GLFW_RELEASE:
-            {
 
-                Window& data = *((Window*)glfwGetWindowUserPointer(window));
+				data.m_callbackFunc(KeyPressEvent(key, 0));
+				break;
+			}
+			case GLFW_RELEASE:
+			{
 
-                data.m_callbackFunc(MouseButtonReleaseEvent(button));
 
-                break;
-            }
-            default:
-                break;
-            }
+				data.m_callbackFunc(KeyReleaseEvent(key));
 
-            //Input::Instance().SetMouseState(button, action);
-        }
-    }
+				break;
+			}
+			case GLFW_REPEAT:
+			{
+				data.m_callbackFunc(KeyHoldEvent(key));
 
-    void  NWindow::MouseMoveCallback(GLFWwindow* window, double xpos, double ypos)
-    {
+				break;
+			}
+			default:
+				break;
+			}
+		}
+	}
 
-        if (!ImGui::GetIO().WantCaptureMouse)
-        {
-            Window& data = *((Window*)glfwGetWindowUserPointer(window));
+	void NWindow::KeyTypeCallback(GLFWwindow* window, unsigned int keycode)
+	{
 
-            data.m_callbackFunc(MouseMoveEvent(static_cast<float>(xpos), static_cast<float>(ypos)));
+		Window& data = *((Window*)glfwGetWindowUserPointer(window));
+		if (!data.m_BlockEvents)
+		{
 
-            //Input::Instance().SetMousePos(xpos, ypos);
-        }
-    }
+			data.m_callbackFunc(KeyTypedEvent(keycode));
+		}
+	}
 
-    void  NWindow::MouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset) 
-    {
+	void  NWindow::MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
+	{
+		Window& data = *((Window*)glfwGetWindowUserPointer(window));
 
-        if (!ImGui::GetIO().WantCaptureMouse)
-        {
-            Window& data = *((Window*)glfwGetWindowUserPointer(window));
+		if (!data.m_BlockEvents)
+		{
+			switch (action)
+			{
+			case GLFW_PRESS:
+			{
 
-            data.m_callbackFunc(MouseScrolledEvent(static_cast<float>(xoffset), static_cast<float>(yoffset)));
-        }
-    }
+
+				data.m_callbackFunc(MouseButtonPressEvent(button));
+
+				break;
+			}
+			case GLFW_RELEASE:
+			{
+
+
+				data.m_callbackFunc(MouseButtonReleaseEvent(button));
+
+				break;
+			}
+			default:
+				break;
+			}
+
+			//Input::Instance().SetMouseState(button, action);
+		}
+	}
+
+	void  NWindow::MouseMoveCallback(GLFWwindow* window, double xpos, double ypos)
+	{
+		Window& data = *((Window*)glfwGetWindowUserPointer(window));
+
+		if (!data.m_BlockEvents)
+		{
+
+			data.m_callbackFunc(MouseMoveEvent(static_cast<float>(xpos), static_cast<float>(ypos)));
+
+			//Input::Instance().SetMousePos(xpos, ypos);
+		}
+	}
+
+	void  NWindow::MouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
+	{
+		Window& data = *((Window*)glfwGetWindowUserPointer(window));
+
+		if (!data.m_BlockEvents)
+		{
+
+			data.m_callbackFunc(MouseScrolledEvent(static_cast<float>(xoffset), static_cast<float>(yoffset)));
+		}
+	}
 
 
 }

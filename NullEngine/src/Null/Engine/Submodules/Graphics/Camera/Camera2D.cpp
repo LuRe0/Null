@@ -111,7 +111,7 @@ namespace NULLENGINE
 
 	}
 
-	const glm::mat4& Camera2D::GetViewMatrix() const
+	const glm::mat4 Camera2D::GetViewMatrix() const
 	{
 		return glm::inverse(m_ViewMatrix);
 	}
@@ -121,7 +121,7 @@ namespace NULLENGINE
 
 		//SetZoom(1280.0f / e.GetWidth());
 
-		m_AspectRatio = e.GetWidth() / e.GetHeight();
+		m_AspectRatio = e.GetHeight() != 0 ? e.GetWidth() / e.GetHeight() : 0;
 
 
 		float left = -static_cast<float>(e.GetWidth()) / 2.0f;

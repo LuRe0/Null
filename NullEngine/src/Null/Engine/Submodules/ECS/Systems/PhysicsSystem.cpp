@@ -23,6 +23,8 @@
 //******************************************************************************//
 
 const glm::vec3 GRAVITY(0.0f, -9.81, 0.0f);
+// Conversion factor
+const float PIXELS_PER_METER = 64.0f; // 1 meter = 64 pixels
 
 //******************************************************************************//
 // Function Declarations												        //
@@ -34,6 +36,11 @@ namespace NULLENGINE
 	{
 		Require<TransformComponent>();
 		Require<Rigidbody2DComponent>();
+
+		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
+
+		componentFactory->Register<Rigidbody2DComponent>(CreateRigidbody2DComponent);
+		componentFactory->Register<BoxCollider2DComponent>(CreateBoxCollider2DComponent);
 	}
 	void PhysicsSystem::Load()
 	{
@@ -43,6 +50,11 @@ namespace NULLENGINE
 
 	void PhysicsSystem::Init()
 	{
+		ISystem::Init();
+
+		NRegistry* m_Parent = NEngine::Instance().Get<NRegistry>();
+
+
 		for (const auto entityId : GetSystemEntities())
 		{
 			TransformComponent& transform = m_Parent->GetComponent<TransformComponent>(entityId);
@@ -87,6 +99,8 @@ namespace NULLENGINE
 
 	void PhysicsSystem::Update(float dt)
 	{
+		NRegistry* m_Parent = NEngine::Instance().Get<NRegistry>();
+
 		const int32_t velocityIterations = 6;
 		const int32_t positionIterations = 2;
 
@@ -112,7 +126,7 @@ namespace NULLENGINE
 		}
 	}
 
-	void PhysicsSystem::Render() const
+	void PhysicsSystem::Render()
 	{
 	}
 
@@ -124,18 +138,64 @@ namespace NULLENGINE
 	void PhysicsSystem::Shutdown()
 	{
 	}
+
+	// Converts pixel values to meter values
 	const glm::vec2 PhysicsSystem::PixelsToMeters(float xPixels, float yPixels)
 	{
-		float xMeters = 0.02f * xPixels;
-		float yMeters = 0.02f * yPixels;
+		float xMeters = xPixels / PIXELS_PER_METER; // Convert pixels to meters
+		float yMeters = yPixels / PIXELS_PER_METER; // Convert pixels to meters
 
 		return glm::vec2(xMeters, yMeters);
 	}
+
+	// Converts meter values to pixel values
 	const glm::vec2 PhysicsSystem::MetersToPixels(float xMeters, float yMeters)
 	{
-		float xPixels = 50.0f * xMeters;
-		float yPixels = 50.0f * yMeters;
+		float xPixels = xMeters * PIXELS_PER_METER; // Convert meters to pixels
+		float yPixels = yMeters * PIXELS_PER_METER; // Convert meters to pixels
 
 		return glm::vec2(xPixels, yPixels);
+	}
+
+
+
+
+	void PhysicsSystem::CreateRigidbody2DComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id)
+	{
+
+		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
+
+		auto* comp = static_cast<Rigidbody2DComponent*>(component);
+		JsonWrapper jsonWrapper(json);
+
+
+		if (!jsonWrapper.Empty())
+		{
+			comp->m_Type = static_cast<Rigidbody2DComponent::BodyType>(jsonWrapper.GetInt("type", 0));
+			comp->m_FixedRotation = jsonWrapper.GetBool("fixedRotation", true);
+		}
+		
+		componentFactory->AddOrUpdate<Rigidbody2DComponent>(id, comp, registry, static_cast<Rigidbody2DComponent::BodyType>(comp->m_Type), comp->m_FixedRotation);
+
+	}
+
+	void PhysicsSystem::CreateBoxCollider2DComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id)
+	{
+
+		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
+
+		auto* comp = static_cast<BoxCollider2DComponent*>(component);
+		JsonWrapper jsonWrapper(json);
+
+		if (!jsonWrapper.Empty())
+		{
+			comp->m_Offset = jsonWrapper.GetVec2("offset", { 0.0f, 0.0f });
+			comp->m_Scale = jsonWrapper.GetVec2("scale", { 1.0f, 1.0f });
+			comp->m_Density = jsonWrapper.GetFloat("density", 1.0f);
+			comp->m_Friction = jsonWrapper.GetFloat("friction", 0.5f);
+			comp->m_Restitution = jsonWrapper.GetFloat("restitution", 1.0f);
+			comp->m_RestitutionThreshold = jsonWrapper.GetFloat("restitutionThreshold", 0.5f);
+		}
+		componentFactory->AddOrUpdate<BoxCollider2DComponent>(id, comp, registry, comp->m_Offset, comp->m_Scale, comp->m_Density, comp->m_Friction, comp->m_Restitution, comp->m_RestitutionThreshold);
 	}
 }

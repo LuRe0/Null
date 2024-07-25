@@ -43,15 +43,20 @@ namespace NULLENGINE
 
 
 		InstanceMesh(const std::string& filename);
+		InstanceMesh() = default;
 		~InstanceMesh();
 
+		void Bind() const;
+		void Unbind() const;
+
 		template <typename T>
-		void SetupVertexBuffer(const std::vector<T>& vertexData) {
+		void SetupVertexBuffer(const std::vector<T>& vertexData, bool dynamic = false, size_t size = 0) {
 			m_Buffer.m_VBO.Bind();
-			m_Buffer.m_VBO.AttachBuffer(vertexData);
+			m_Buffer.m_VBO.AttachBuffer(vertexData, dynamic, size);
 		}
 		void SetupIndexBuffer(const std::vector<unsigned int>& indexData);
 		void SetupVertexAttributes();
+		void SetupInstances();
 		void Render(const SpriteSource* spriteSource) const;
 
 	private:

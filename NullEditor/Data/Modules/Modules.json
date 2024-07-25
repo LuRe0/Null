@@ -1,0 +1,52 @@
+{
+    "modules": [
+        {
+            "type": "NWindow"
+        },
+        {
+            "type": "NEventManager"
+        },
+        {
+            "type": "NCameraManager"
+        },
+        {
+            "type": "NShaderManager"
+        },
+        {
+            "type": "NMeshManager"
+        },
+        {
+            "type": "NTextureManager"
+        },
+        {
+            "type": "NSpriteSourceManager"
+        },
+        {
+            "type": "NEntityFactory"
+        },
+        {
+            "type": "NComponentFactory"
+        },
+        {
+            "type": "NRegistry"
+        },
+        {
+            "type": "NSceneManager"            
+        },
+        {
+            "type": "PhysicsSystem"
+        },
+        {
+            "type": "TransformSystem"
+        },
+        {
+            "type": "AnimationSystem"
+        },
+        {
+            "type": "SpriteRenderSystem"
+        },
+        {
+            "type": "NRenderer"
+        }
+    ]
+}

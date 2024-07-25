@@ -52,7 +52,7 @@ namespace NULLENGINE
 
         void Update(float dt) override;
 
-        const glm::mat4& GetViewMatrix() const override;
+        const glm::mat4 GetViewMatrix() const override;
 
 
         void OnWindowResize(const WindowResizeEvent& e);

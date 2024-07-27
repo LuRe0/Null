@@ -68,6 +68,8 @@ namespace NULLENGINE
 			}*/
 
 			handlers.emplace_back(std::move(handler));  // Move the handler into the vector
+			SortSubscribers(eventId);
+
 		}
 		else {
 			// Create a new vector for the eventId and move the handler into it
@@ -76,7 +78,7 @@ namespace NULLENGINE
 			auto& handlers = m_Subscribers[eventId];
 
 			handlers.emplace_back(std::move(handler));
-			//NLE_CORE_ERROR("Sum BS");
+			SortSubscribers(eventId);
 
 		}
 	}
@@ -117,5 +119,10 @@ namespace NULLENGINE
 				++eventIt;
 			}
 		}
+	}
+	void NEventManager::SortSubscribers(std::uint32_t eventId)
+	{
+		auto& handlers = m_Subscribers[eventId];
+		std::sort(handlers.begin(), handlers.end(), EventHandlerPrioritySorter());
 	}
 }

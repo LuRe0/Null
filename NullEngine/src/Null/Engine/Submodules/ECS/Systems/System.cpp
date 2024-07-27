@@ -46,10 +46,10 @@ namespace NULLENGINE
 		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
 
 
-		SUBSCRIBE_EVENT(EntityCreatedEvent, &ISystem::OnEntityCreate, eventManager, eventManager);
-		SUBSCRIBE_EVENT(EntityAddComponentEvent, &ISystem::OnEntityCreate, eventManager);
-		SUBSCRIBE_EVENT(EntityRemoveComponentEvent, &ISystem::OnEntityComponentRemoved, eventManager);
-		SUBSCRIBE_EVENT(EntityDestroyedEvent, &ISystem::OnEntityDestroyed, eventManager);
+		SUBSCRIBE_EVENT(EntityCreatedEvent, &ISystem::OnEntityCreate, eventManager, EventPriority::Low);
+		SUBSCRIBE_EVENT(EntityAddComponentEvent, &ISystem::OnEntityCreate, eventManager, EventPriority::Low);
+		SUBSCRIBE_EVENT(EntityRemoveComponentEvent, &ISystem::OnEntityComponentRemoved, eventManager, EventPriority::Low);
+		SUBSCRIBE_EVENT(EntityDestroyedEvent, &ISystem::OnEntityDestroyed, eventManager, EventPriority::Low);
 	}
 
 

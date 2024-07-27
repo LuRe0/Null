@@ -88,12 +88,20 @@ namespace NULLENGINE
 		EventCallback<Event> mEvent;
 
 		std::uint32_t m_EventId;
+
+		struct EventHandlerPrioritySorter {
+			bool operator()(const std::unique_ptr<IEventHandler>& lhs, const std::unique_ptr<IEventHandler>& rhs) const {
+				return lhs->GetPriority() > rhs->GetPriority(); // Higher priority comes first
+			}
+		};
+
+		void SortSubscribers(std::uint32_t eventId);
 	};
 
-#define SUBSCRIBE_EVENT(EVENT_TYPE, EVENT_CALLBACK, EVENT_MANAGER) \
+#define SUBSCRIBE_EVENT(EVENT_TYPE, EVENT_CALLBACK, EVENT_MANAGER, PRIORITY) \
     { \
         EventCallback<EVENT_TYPE> callback = std::bind(EVENT_CALLBACK, this, std::placeholders::_1); \
-        std::unique_ptr<IEventHandler> handler = std::make_unique<EventHandler<EVENT_TYPE>>(callback, EVENT_TYPE::GetStaticEventType()); \
+        std::unique_ptr<IEventHandler> handler = std::make_unique<EventHandler<EVENT_TYPE>>(callback, EVENT_TYPE::GetStaticEventType(), PRIORITY); \
         EVENT_MANAGER->Subscribe(EVENT_TYPE::GetStaticEventType(), std::move(handler)); \
     }
 

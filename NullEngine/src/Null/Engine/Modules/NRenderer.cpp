@@ -141,7 +141,7 @@ namespace NULLENGINE
 	{
 		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
 		NWindow* window = NEngine::Instance().Get<NWindow>();
-		SUBSCRIBE_EVENT(WindowResizeEvent, &NRenderer::OnWindowResize, eventManager, eventManager);
+		SUBSCRIBE_EVENT(WindowResizeEvent, &NRenderer::OnWindowResize, eventManager, EventPriority::Low);
 
 		m_WinWidth = window->Width();
 		m_WinHeight = window->Height();

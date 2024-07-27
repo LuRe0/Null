@@ -47,8 +47,8 @@ namespace NULLENGINE
 		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
 
 
-		SUBSCRIBE_EVENT(WindowResizeEvent, &Camera3D::OnWindowResize, eventManager);
-		SUBSCRIBE_EVENT(MouseScrolledEvent, &Camera3D::OnMouseScrolled, eventManager);
+		SUBSCRIBE_EVENT(WindowResizeEvent, &Camera3D::OnWindowResize, eventManager, EventPriority::Low);
+		SUBSCRIBE_EVENT(MouseScrolledEvent, &Camera3D::OnMouseScrolled, eventManager, EventPriority::Low);
 	}
 
 	void Camera3D::Update(float dt)

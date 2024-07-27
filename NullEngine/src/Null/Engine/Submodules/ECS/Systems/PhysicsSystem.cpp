@@ -58,8 +58,8 @@ namespace NULLENGINE
 
 		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
 
-		SUBSCRIBE_EVENT(EntityCreatedEvent, &PhysicsSystem::OnEntityCreated, eventManager, eventManager);
-		SUBSCRIBE_EVENT(EntityRemoveComponentEvent, &PhysicsSystem::OnEntityComponentRemoved, eventManager, eventManager);
+		SUBSCRIBE_EVENT(EntityCreatedEvent, &PhysicsSystem::OnEntityCreated, eventManager,EventPriority::Low);
+		SUBSCRIBE_EVENT(EntityRemoveComponentEvent, &PhysicsSystem::OnEntityComponentRemoved, eventManager, EventPriority::High);
 
 		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
 
@@ -222,6 +222,14 @@ namespace NULLENGINE
 
 	void PhysicsSystem::OnEntityComponentRemoved(const EntityRemoveComponentEvent& e)
 	{
+		NRegistry* m_Parent = NEngine::Instance().Get<NRegistry>();
+
+	
+		TransformComponent& transform = m_Parent->GetComponent<TransformComponent>(e.GetID());
+		Rigidbody2DComponent& rb2d = m_Parent->GetComponent<Rigidbody2DComponent>(e.GetID());
+
+
+
 	}
 
 	void PhysicsSystem::InitializePhysics(EntityID entityId, NRegistry* registry)

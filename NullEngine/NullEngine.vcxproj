@@ -76,7 +76,7 @@
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NLE_PLATFORM_WINDOWS;NLE_BUILD_DLL;GLFW_INCLUDE_NONE;NLE_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\JSON\include;vendor\Box2D\include;vendor\glm;vendor\stb\stb;vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\magic_enum\magic_enum\include;vendor\GLFW\include;vendor\Glad\include;vendor\JSON\include;vendor\Box2D\include;vendor\glm;vendor\stb\stb;vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <AdditionalOptions>/MDd %(AdditionalOptions)</AdditionalOptions>
@@ -100,7 +100,7 @@ IF EXIST ..\bin\Debug-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /Y 
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NLE_PLATFORM_WINDOWS;NLE_BUILD_DLL;GLFW_INCLUDE_NONE;NLE_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\JSON\include;vendor\Box2D\include;vendor\glm;vendor\stb\stb;vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\magic_enum\magic_enum\include;vendor\GLFW\include;vendor\Glad\include;vendor\JSON\include;vendor\Box2D\include;vendor\glm;vendor\stb\stb;vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <AdditionalOptions>/MD %(AdditionalOptions)</AdditionalOptions>
@@ -124,7 +124,7 @@ IF EXIST ..\bin\Release-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NLE_PLATFORM_WINDOWS;NLE_BUILD_DLL;GLFW_INCLUDE_NONE;NLE_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\JSON\include;vendor\Box2D\include;vendor\glm;vendor\stb\stb;vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\magic_enum\magic_enum\include;vendor\GLFW\include;vendor\Glad\include;vendor\JSON\include;vendor\Box2D\include;vendor\glm;vendor\stb\stb;vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <AdditionalOptions>/MT %(AdditionalOptions)</AdditionalOptions>

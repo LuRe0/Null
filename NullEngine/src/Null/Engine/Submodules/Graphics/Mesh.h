@@ -68,7 +68,7 @@ namespace NULLENGINE
 
 		Buffer m_Buffer;
 
-		float m_xHalfSize, m_yHalfSize, m_uSize, m_vSize;
+		float m_xHalfSize, m_yHalfSize;
 
 		std::string m_Name;
 	};

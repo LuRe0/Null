@@ -29,7 +29,7 @@ namespace NULLENGINE
 {
 	void NMeshManager::Load()
 	{
-		std::string filePath = std::string("Data/Meshes");
+		std::string filePath = std::string("../Data/Meshes");
 
 		for (const auto& entry : std::filesystem::directory_iterator(filePath))
 		{

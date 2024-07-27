@@ -2,7 +2,7 @@
     "components": 
     {
         "Transform": { "translation": [0, 300, 0], "scale": [50, 50, 1], "rotation": [0, 0, 0] },
-        "Sprite": {"frameindex": 0,  "texture": "titlesquished", "dimension": [1,1], "tint": [1, 1, 1, 1], "shadername": "default", "meshname": "Quad1x1" },
+        "Sprite": {"frameindex": 0,  "texture": "titlesquished", "dimension": [1,1], "tint": [1, 1, 1, 1], "shadername": "default", "meshname": "Quad" },
         "Rigidbody2D": { "type": 2, "fixedRotation": false},
         "BoxCollider2D": { "offset": [0, 0],"scale": [50, 50],"density": 1, "friction": 0.7, "restitution": 0, "restitutionThreshold": 5.6 }
     }

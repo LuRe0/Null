@@ -6,12 +6,18 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Pannels\ComponentInspectorPannel.h">
+      <Filter>Pannels</Filter>
+    </ClInclude>
     <ClInclude Include="src\Pannels\SceneHierarchyPannel.h">
       <Filter>Pannels</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\NullEditor.cpp" />
+    <ClCompile Include="src\Pannels\ComponentInspectorPannel.cpp">
+      <Filter>Pannels</Filter>
+    </ClCompile>
     <ClCompile Include="src\Pannels\SceneHierarchyPannel.cpp">
       <Filter>Pannels</Filter>
     </ClCompile>

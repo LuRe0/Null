@@ -29,7 +29,7 @@ namespace NULLENGINE
 {
 	void NTextureManager::Load()
 	{
-		std::string filePath = std::string("Data/Textures");
+		std::string filePath = std::string("../Data/Textures");
 
 		for (const auto& entry : std::filesystem::directory_iterator(filePath))
 		{

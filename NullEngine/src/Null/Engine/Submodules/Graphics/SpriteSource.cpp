@@ -54,4 +54,29 @@ namespace NULLENGINE
 
 		return glm::vec2(u, v);
 	}
+	glm::vec2 SpriteSource::GetSize() const
+	{
+		return glm::vec2(m_Rows, m_Cols);
+	}
+	int& SpriteSource::Rows()
+	{
+		// TODO: insert return statement here
+		return m_Rows;
+	}
+	int& SpriteSource::Cols()
+	{
+		// TODO: insert return statement here
+		return m_Cols;
+	}
+	const int& SpriteSource::GetRows()
+	{
+		// TODO: insert return statement here
+		return m_Rows;
+
+	}
+	const int& SpriteSource::GetCols()
+	{
+		// TODO: insert return statement here
+		return m_Cols;
+	}
 }

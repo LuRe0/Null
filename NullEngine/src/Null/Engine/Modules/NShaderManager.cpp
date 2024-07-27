@@ -29,7 +29,7 @@ namespace NULLENGINE
 {
 	void NShaderManager::Load()
 	{
-		std::string filePath = std::string("Data/Shaders/") + std::string("paths") + std::string(".json");
+		std::string filePath = std::string("../Data/Shaders/") + std::string("paths") + std::string(".json");
 
 		// Open the JSON file
 		std::ifstream inputFile(filePath);

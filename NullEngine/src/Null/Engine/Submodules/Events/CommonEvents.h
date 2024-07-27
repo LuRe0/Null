@@ -12,6 +12,7 @@
 //******************************************************************************//
 // Includes																        //
 //******************************************************************************//
+#include "stdafx.h"
 #include "Null/Core.h"
 #include "IEvents.h"
 
@@ -246,6 +247,75 @@ namespace NULLENGINE
     private:
         float m_XOffset;
         float m_YOffset;
+    };
+
+
+
+
+    
+     //Base class for all mouse button events
+    class EntityModifiedEvent : public Event 
+    {
+    public:
+        EntityModifiedEvent(uint32_t id, uint32_t componentID = 0) : m_EntityID(id), m_ComponentID(componentID) {}
+
+        uint32_t GetID () const { return m_EntityID; }
+        uint32_t GetComponentID () const { return m_ComponentID; }
+
+	protected:
+        uint32_t m_EntityID;
+        uint32_t m_ComponentID;
+	};
+
+
+    // Base class for all mouse button events
+    class EntityCreatedEvent : public EntityModifiedEvent {
+    public:
+        EntityCreatedEvent(uint32_t id) : EntityModifiedEvent(id) {}
+        std::string Print() const override
+        {
+            std::stringstream ss;
+            ss << "EntityCreatedEvent: ID=" << m_EntityID;
+            return ss.str();
+        }
+        EVENT_CLASS_TYPE(EntityCreated)
+    };
+
+    class EntityDestroyedEvent : public EntityModifiedEvent {
+    public:
+        EntityDestroyedEvent(uint32_t id) : EntityModifiedEvent(id) {}
+        std::string Print() const override
+        {
+            std::stringstream ss;
+            ss << "EntityDestroyedEvent: ID=" << m_EntityID;
+            return ss.str();
+        }
+        EVENT_CLASS_TYPE(EntityDestroyed)
+    };
+
+    // Base class for all mouse button events
+    class EntityAddComponentEvent : public EntityModifiedEvent {
+    public:
+        EntityAddComponentEvent(uint32_t id, uint32_t compID) : EntityModifiedEvent(id, compID) {}
+        std::string Print() const override
+        {
+            std::stringstream ss;
+            ss << "EntityAddComponentEvent: ID=" << m_EntityID;
+            return ss.str();
+        }
+        EVENT_CLASS_TYPE(EntityAddComponent)
+    };
+
+    class EntityRemoveComponentEvent : public EntityModifiedEvent {
+    public:
+        EntityRemoveComponentEvent(uint32_t id, uint32_t compID) : EntityModifiedEvent(id, compID) {}
+        std::string Print() const override
+        {
+            std::stringstream ss;
+            ss << "EntityRemoveComponentEvent: ID=" << m_EntityID;
+            return ss.str();
+        }
+        EVENT_CLASS_TYPE(EntityRemoveComponent)
     };
 
 }

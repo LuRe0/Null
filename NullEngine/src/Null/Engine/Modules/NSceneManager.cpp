@@ -36,7 +36,7 @@ namespace NULLENGINE
 
 	void NSceneManager::Load()
 	{
-		std::string filePath = std::string("Data/Scenes/") + std::string("TestScene") + std::string(".json");
+		std::string filePath = std::string("../Data/Scenes/") + std::string("TestScene") + std::string(".json");
 
 		// Open the JSON file
 		std::ifstream inputFile(filePath);
@@ -82,7 +82,7 @@ namespace NULLENGINE
 
 	void NSceneManager::Update(float dt)
 	{
-		//m_Scenes[m_CurrentScene].get()->Update();
+		m_Scenes[m_CurrentScene].get()->Update(dt);
 	}
 
 	void NSceneManager::Render()

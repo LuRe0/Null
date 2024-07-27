@@ -14,7 +14,7 @@
 //******************************************************************************//
 #include "Null/Core.h"
 #include "nlohmann/json.hpp"
-
+#include "Null/Engine/Modules/NRegistry.h"
 
 //******************************************************************************//
 // Definitions  														        //
@@ -35,14 +35,12 @@ using EntityID = uint32_t;
 
 namespace NULLENGINE
 {
-
-
 	class NLE_API NRegistry;
 
 	class NLE_API Entity
 	{
 	public:
-		Entity(EntityID id);
+		Entity(EntityID id, NRegistry* parent);
 
 
 		/// <summary>
@@ -51,32 +49,26 @@ namespace NULLENGINE
 		/// <typeparam name="T"></typeparam>
 		/// <returns></returns>
 		template <typename T>
-		T& Get();
+		T& Get()
+		{
+			return m_Parent->GetComponent<T>(m_ID);
+		}
 
 		/// <summary>
-		/// Attach a component to an entity
+		/// Checks if entity posseses component
 		/// </summary>
-		void Add();
+		/// <typeparam name="T"></typeparam>
+		/// <returns></returns>
+		template <typename T>
+		bool Has() const
+		{
+			return m_Parent->HasComponent<T>(m_ID);
+		}
 
-		/// <summary>
-		/// reads an entity's information from a file
-		/// </summary>
-		void Read(const JSON& entityData, NRegistry* registry);
 
-		/// <summary>
-		/// Calls components load functions
-		/// </summary>
-		void Load();
+		void SetIsDestroyed(bool d);
 
-		/// <summary>
-		/// calls attached components init functions
-		/// </summary>
-		void Init();
-
-		/// <summary>
-		/// calls attached components shutdown function.
-		/// </summary>
-		void Shutdown();
+		bool GetIsDestroyed() const;
 
 		void SetName(const std::string& name);
 
@@ -84,10 +76,32 @@ namespace NULLENGINE
 
 		EntityID GetID() const { return m_ID; }
 
+		bool operator==(EntityID id) const
+		{
+			return m_ID == id;
+		}
+
 	private:
 		std::string m_Name;
 
 		EntityID m_ID;
+
+		NRegistry* m_Parent;
+
+		bool m_isDestroyed = false;
 	};
+
+	//template<typename T>
+	//inline T& Entity::Get()
+	//{
+	//	// TODO: insert return statement here
+	//	return m_Parent->GetComponent<T>(m_ID);
+	//}
+
+	//template<typename T>
+	//inline bool Entity::Has() const
+	//{
+	//	return m_Parent->HasComponent<T>(m_ID);
+	//}
 
 }

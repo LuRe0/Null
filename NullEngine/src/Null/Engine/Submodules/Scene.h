@@ -75,6 +75,10 @@ namespace NULLENGINE
 		//!  Shutdown function
 		void Shutdown();
 
+		void DeleteEntity(EntityID entityID);
+
+		void AddEntity(const std::string& name);
+
 		const std::vector<Entity>& GetManagedEntities() { return m_Entities; }
 
 		const std::string_view GetName() { return m_Name; }
@@ -82,6 +86,8 @@ namespace NULLENGINE
     private:
 		Scene(Scene const&) = delete;
 		Scene& operator=(Scene const&) = delete;
+
+		void RemoveEntity(size_t pos);
 
 		struct Transition 
 		{

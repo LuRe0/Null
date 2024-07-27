@@ -3,6 +3,7 @@
 //#include "Layers/ImGuiLayer.h"	
 #include "Null/Engine/Submodules/Layers/ImGuiLayer.h"
 #include "Pannels/SceneHierarchyPannel.h"
+#include "Pannels/ComponentInspectorPannel.h"
 
 namespace NULLENGINE
 {
@@ -21,14 +22,14 @@ namespace NULLENGINE
 		{
 			Application::Load();
 
-			NSceneManager* scMan = NEngine::Instance().Get<NSceneManager>();
-
 			auto gui = std::make_unique<ImGuiLayer>();
 
 			auto pannel = std::make_unique<SceneHierarchyPannel>();
-			pannel.get()->SetContext(scMan->GetCurrentScene());
+			auto pannel2 = std::make_unique<ComponentInspectorPannel>();
 
 			gui.get()->AddPannel(std::move(pannel));
+			gui.get()->AddPannel(std::move(pannel2));
+			
 			PushLayer(std::move(gui));
 		}
 

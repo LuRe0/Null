@@ -12,7 +12,7 @@
 #include "stdafx.h"
 #include "System.h"
 #include "Null/Tools/Trace.h"
-
+#include "Null/Engine/Submodules/Events/IEvents.h"
 
 
 
@@ -40,17 +40,19 @@ namespace NULLENGINE
 
 		for (auto& entity : entities)
 		{
-			EntityID entityId = entity.GetID();
-			const auto& entityComponentSignatures = registry->EntitySignature(entityId);
-
-			const auto& systemComponentSignatures = GetComponentSignature();
-
-			bool match = ((entityComponentSignatures & systemComponentSignatures) == systemComponentSignatures);
-
-			if (match)
-				Add(entityId);
+			CheckEntity(entity.GetID(), registry);
 		}
+
+		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+
+
+		SUBSCRIBE_EVENT(EntityCreatedEvent, &ISystem::OnEntityCreate, eventManager, eventManager);
+		SUBSCRIBE_EVENT(EntityAddComponentEvent, &ISystem::OnEntityCreate, eventManager);
+		SUBSCRIBE_EVENT(EntityRemoveComponentEvent, &ISystem::OnEntityComponentRemoved, eventManager);
+		SUBSCRIBE_EVENT(EntityDestroyedEvent, &ISystem::OnEntityDestroyed, eventManager);
 	}
+
+
 
 	void ISystem::Update(float dt)
 	{
@@ -96,4 +98,50 @@ namespace NULLENGINE
 		// TODO: insert return statement here
 		return m_ComponentSignatures;
 	}
+
+	void ISystem::CheckEntity(EntityID entityID, NRegistry* registry)
+	{
+		const auto& entityComponentSignatures = registry->EntitySignature(entityID);
+
+		const auto& systemComponentSignatures = GetComponentSignature();
+
+		bool match = ((entityComponentSignatures & systemComponentSignatures) == systemComponentSignatures);
+
+		if (match)
+			Add(entityID);
+	}
+
+	void ISystem::UpdateEntityList(EntityID entityID, NRegistry* registry)
+	{
+		const auto& entityComponentSignatures = registry->EntitySignature(entityID);
+
+		const auto& systemComponentSignatures = GetComponentSignature();
+
+		bool match = ((entityComponentSignatures & systemComponentSignatures) == systemComponentSignatures);
+
+		if (!match)
+		{
+			Remove(entityID);
+		}
+	}
+
+	void ISystem::OnEntityCreate(const EntityModifiedEvent& e)
+	{
+		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+
+		CheckEntity(e.GetID(), registry);
+	}
+
+	void ISystem::OnEntityComponentRemoved(const EntityRemoveComponentEvent& e)
+	{
+		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+		UpdateEntityList(e.GetID(), registry);
+	}
+
+	void ISystem::OnEntityDestroyed(const EntityDestroyedEvent& e)
+	{
+		Remove(e.GetID());
+	}
+
+
 }

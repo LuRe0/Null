@@ -26,34 +26,75 @@
 
 namespace NULLENGINE
 {
-	void SceneHierarchyPannel::SetContext(Scene* scene)
-	{
-		m_Context = scene;
-	}
 
 	void SceneHierarchyPannel::OnImGUIRender()
 	{
 		ImGui::Begin("Scene Hierarchy");
 
-		auto& entities = m_Context->GetManagedEntities();
+		auto& entities = m_PannelData->m_Context->GetManagedEntities();
+
+		if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
+			m_PannelData->m_SelectedEntity = {};
+
+		// Create component
+		if (ImGui::BeginPopupContextWindow())
+		{
+			if (ImGui::MenuItem("Create Entity"))
+				m_PannelData->m_Context->AddEntity("New Entiy");
+
+			ImGui::EndPopup();
+		}
+
+
 
 		for (auto& entity : entities)
 		{
-			ImGuiTreeNodeFlags flags = (m_SelectedEntity == entity.GetID() ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
+			ImGuiTreeNodeFlags flags = (m_PannelData->m_SelectedEntity == entity.GetID() ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
 
 			bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)(entity.GetID()), flags, entity.GetName().c_str());
 
 			if (ImGui::IsItemClicked())
 			{
-				m_SelectedEntity = entity.GetID();
+				m_PannelData->m_SelectedEntity = entity.GetID();
+			}
+
+			if (ImGui::BeginPopupContextItem())
+			{
+				if (ImGui::MenuItem("Delete Entity"))
+				{
+					m_PannelData->m_Context->DeleteEntity(entity.GetID());
+
+					if (entity.GetID() == m_PannelData->m_SelectedEntity)
+					{
+						m_PannelData->m_SelectedEntity = {};
+					}
+				}
+
+				ImGui::EndPopup();
+
 			}
 
 			if (opened)
 			{
 				ImGui::TreePop();
-
 			}
+
+
 		}
+
+		//bool isDeleted = false;
+		//if (ImGui::BeginPopupContextItem())
+		//{
+
+
+		//}
+
+
+		//if (isDeleted)
+		//{
+
+		//}
+
 
 		ImGui::End();
 	}

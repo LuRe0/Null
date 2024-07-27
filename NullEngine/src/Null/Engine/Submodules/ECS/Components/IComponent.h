@@ -100,6 +100,7 @@ namespace NULLENGINE
 			Static = 0,
 			Kinematic,
 			Dynamic,
+			BodyTypes
 		};
 
 		BodyType m_Type;

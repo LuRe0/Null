@@ -75,9 +75,14 @@ namespace NULLENGINE
 
 		//m_SceneHierachyPannel = std::make_unique<SceneHierarchyPannel>();
 
+		SetPannelData(m_PannelData);
+
 	}
 	void ImGuiLayer::OnUpdate(float dt)
 	{
+		NSceneManager* scMan = NEngine::Instance().Get<NSceneManager>();
+
+		m_PannelData.m_Context = scMan->GetCurrentScene();
 	}
 
 	void ImGuiLayer::OnRender()
@@ -225,6 +230,12 @@ namespace NULLENGINE
 	void ImGuiLayer::AddPannel(std::unique_ptr<Pannel>&& pannel)
 	{
 		m_Pannels.push_back(std::move(pannel));
+	}
+
+	void ImGuiLayer::SetPannelData(const PannelData& data)
+	{
+		for (auto& pannel : m_Pannels)
+			pannel.get()->SetPannelData(m_PannelData);
 	}
 
 	void ImGuiLayer::Begin()

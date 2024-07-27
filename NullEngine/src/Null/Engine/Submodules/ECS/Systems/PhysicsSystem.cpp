@@ -11,11 +11,13 @@
 //******************************************************************************//
 #include "stdafx.h"
 #include "PhysicsSystem.h"
+#include "imgui.h"
 #include <box2d/b2_world.h>
 #include <box2d/b2_body.h>
 #include <box2d/b2_polygon_shape.h>
 #include <box2d/b2_fixture.h>
-
+#include <magic_enum/magic_enum.hpp>
+#include "Null/Engine/Submodules/Events/IEvents.h"
 
 
 //******************************************************************************//
@@ -39,8 +41,10 @@ namespace NULLENGINE
 
 		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
 
-		componentFactory->Register<Rigidbody2DComponent>(CreateRigidbody2DComponent);
-		componentFactory->Register<BoxCollider2DComponent>(CreateBoxCollider2DComponent);
+		componentFactory->Register<Rigidbody2DComponent>(CreateRigidbody2DComponent, [this](Entity& id) { this->ViewRigidbody2DComponent(id); });
+
+		componentFactory->Register<BoxCollider2DComponent>(CreateBoxCollider2DComponent, [this](Entity& id) { this->ViewBoxCollider2DComponent(id); });
+
 	}
 	void PhysicsSystem::Load()
 	{
@@ -52,49 +56,19 @@ namespace NULLENGINE
 	{
 		ISystem::Init();
 
-		NRegistry* m_Parent = NEngine::Instance().Get<NRegistry>();
+		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+
+		SUBSCRIBE_EVENT(EntityCreatedEvent, &PhysicsSystem::OnEntityCreated, eventManager, eventManager);
+		SUBSCRIBE_EVENT(EntityRemoveComponentEvent, &PhysicsSystem::OnEntityComponentRemoved, eventManager, eventManager);
+
+		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
 
 
 		for (const auto entityId : GetSystemEntities())
 		{
-			TransformComponent& transform = m_Parent->GetComponent<TransformComponent>(entityId);
-			Rigidbody2DComponent& rb2d = m_Parent->GetComponent<Rigidbody2DComponent>(entityId);
-
-			b2BodyDef bodyDef;
-
-			bodyDef.type = (b2BodyType)rb2d.m_Type;
-
-			auto pos = PixelsToMeters(transform.m_Translation.x, transform.m_Translation.y);
-
-			bodyDef.position.Set(pos.x, pos.y);
-
-			bodyDef.angle = transform.m_Rotation.z;
-
-			rb2d.m_RuntimeBody = m_PhysicsWorld->CreateBody(&bodyDef);
-
-			rb2d.m_RuntimeBody->SetFixedRotation(rb2d.m_FixedRotation);
-
-			if (m_Parent->HasComponent<BoxCollider2DComponent>(entityId))
-			{
-				BoxCollider2DComponent& bc2d = m_Parent->GetComponent<BoxCollider2DComponent>(entityId);
-
-				b2PolygonShape boxShape;
-
-				auto scale = PixelsToMeters(bc2d.m_Scale.x, bc2d.m_Scale.y/2);
-
-				boxShape.SetAsBox(scale.x, scale.y);
-
-				b2FixtureDef fixDef;
-
-				fixDef.shape = &boxShape;
-				fixDef.density = bc2d.m_Density;
-				fixDef.friction = bc2d.m_Friction;
-				fixDef.restitution = bc2d.m_Restitution;
-				fixDef.restitutionThreshold = bc2d.m_RestitutionThreshold;
-
-				bc2d.m_RuntimeFixture = rb2d.m_RuntimeBody->CreateFixture(&fixDef);
-			}
+			InitializePhysics(entityId, registry);
 		}
+
 	}
 
 	void PhysicsSystem::Update(float dt)
@@ -198,4 +172,97 @@ namespace NULLENGINE
 		}
 		componentFactory->AddOrUpdate<BoxCollider2DComponent>(id, comp, registry, comp->m_Offset, comp->m_Scale, comp->m_Density, comp->m_Friction, comp->m_Restitution, comp->m_RestitutionThreshold);
 	}
+	void PhysicsSystem::ViewRigidbody2DComponent(Entity& entity)
+	{
+		Rigidbody2DComponent& rb2d = entity.Get<Rigidbody2DComponent>();
+
+		ImGui::Checkbox("Fixed Rotation", &rb2d.m_FixedRotation);
+		ImGui::Text(magic_enum::enum_name(rb2d.m_Type).data()); ImGui::SameLine(); ImGui::DragInt("Body Type", reinterpret_cast<int*>(&(rb2d.m_Type)), 1.0f, 0, Rigidbody2DComponent::BodyType::BodyTypes - 1);
+		
+		rb2d.m_RuntimeBody->SetFixedRotation(rb2d.m_FixedRotation);
+		//update body when data changes
+	}
+	void PhysicsSystem::ViewBoxCollider2DComponent(Entity& entity)
+	{
+		BoxCollider2DComponent& bc2d = entity.Get<BoxCollider2DComponent>();
+		//TransformComponent& transform = entity.Get<TransformComponent>();
+
+		ImGui::DragFloat3("Offset", glm::value_ptr(bc2d.m_Offset), 0.5f);
+		ImGui::DragFloat3("Scale", glm::value_ptr(bc2d.m_Scale), 0.5f);
+		ImGui::DragFloat("Density", &bc2d.m_Density, 0.5f);
+		ImGui::DragFloat("Friction", &bc2d.m_Friction, 0.5f, 0, 1.0f);
+		ImGui::DragFloat("Resitution", &bc2d.m_Restitution, 0.5f);
+		ImGui::DragFloat("Resitution Threshold", &bc2d.m_RestitutionThreshold, 0.5f);
+
+		bc2d.m_RuntimeFixture->SetDensity(bc2d.m_Density);
+		bc2d.m_RuntimeFixture->SetFriction(bc2d.m_Friction);
+		bc2d.m_RuntimeFixture->SetRestitution(bc2d.m_Restitution);
+		bc2d.m_RuntimeFixture->SetRestitutionThreshold(bc2d.m_RestitutionThreshold);
+
+		//auto pos = PixelsToMeters(transform.m_Translation.x, transform.m_Translation.y);
+		//auto offset = PixelsToMeters(bc2d.m_Offset.x, bc2d.m_Offset.y);
+		//auto scale = PixelsToMeters(bc2d.m_Offset.x, bc2d.m_Offset.y);
+
+		//bc2d.m_RuntimeFixture->GetBody()->SetTransform(b2Vec2(pos.x + offset.x, pos.y + offset.y), transform.m_Rotation.z);
+		//bc2d.m_RuntimeFixture
+
+		auto scale = PixelsToMeters(bc2d.m_Scale.x, bc2d.m_Scale.y / 2);
+
+		dynamic_cast<b2PolygonShape*>(bc2d.m_RuntimeFixture->GetShape())->SetAsBox(scale.x, scale.y);
+	}
+
+	void PhysicsSystem::OnEntityCreated(const EntityCreatedEvent& e)
+	{
+		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+		const auto& entityList = GetSystemEntities();
+
+		if(std::find(entityList.begin(), entityList.end(), e.GetID()) != entityList.end())
+			InitializePhysics(e.GetID(), registry);
+	}
+
+	void PhysicsSystem::OnEntityComponentRemoved(const EntityRemoveComponentEvent& e)
+	{
+	}
+
+	void PhysicsSystem::InitializePhysics(EntityID entityId, NRegistry* registry)
+	{
+		TransformComponent& transform = registry->GetComponent<TransformComponent>(entityId);
+		Rigidbody2DComponent& rb2d = registry->GetComponent<Rigidbody2DComponent>(entityId);
+
+		b2BodyDef bodyDef;
+
+		bodyDef.type = (b2BodyType)rb2d.m_Type;
+
+		auto pos = PixelsToMeters(transform.m_Translation.x, transform.m_Translation.y);
+
+		bodyDef.position.Set(pos.x, pos.y);
+
+		bodyDef.angle = transform.m_Rotation.z;
+
+		rb2d.m_RuntimeBody = m_PhysicsWorld->CreateBody(&bodyDef);
+
+		rb2d.m_RuntimeBody->SetFixedRotation(rb2d.m_FixedRotation);
+
+		if (registry->HasComponent<BoxCollider2DComponent>(entityId))
+		{
+			BoxCollider2DComponent& bc2d = registry->GetComponent<BoxCollider2DComponent>(entityId);
+
+			b2PolygonShape boxShape;
+
+			auto scale = PixelsToMeters(bc2d.m_Scale.x, bc2d.m_Scale.y / 2);
+
+			boxShape.SetAsBox(scale.x, scale.y);
+
+			b2FixtureDef fixDef;
+
+			fixDef.shape = &boxShape;
+			fixDef.density = bc2d.m_Density;
+			fixDef.friction = bc2d.m_Friction;
+			fixDef.restitution = bc2d.m_Restitution;
+			fixDef.restitutionThreshold = bc2d.m_RestitutionThreshold;
+
+			bc2d.m_RuntimeFixture = rb2d.m_RuntimeBody->CreateFixture(&fixDef);
+		}
+	}
+
 }

@@ -59,6 +59,15 @@ namespace NULLENGINE
 
 		static void CreateRigidbody2DComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
 		static void CreateBoxCollider2DComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
+
+		void ViewRigidbody2DComponent(Entity& entityID);
+		void ViewBoxCollider2DComponent(Entity& entityID);
+
+		void InitializePhysics(EntityID entityID, NRegistry* registry);
+
+		void OnEntityCreated(const EntityCreatedEvent& e);
+		void OnEntityComponentRemoved(const EntityRemoveComponentEvent& e);
+
 	};
 
 }

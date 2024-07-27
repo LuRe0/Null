@@ -55,6 +55,9 @@ namespace NULLENGINE
 
 		static void CreateAnimationComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
 
+
+		void ViewAnimationComponent(Entity& entity);
+
 	};
 
 }

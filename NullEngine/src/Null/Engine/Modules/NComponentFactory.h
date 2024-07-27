@@ -48,6 +48,14 @@ namespace NULLENGINE
 		//! Virtual Shutdown function
 		void Shutdown() override {};
 
+
+		void ViewComponent(Entity entity, uint32_t componentId) const
+		{
+			auto it = m_ComponentInspector.find(componentId);
+			if (it != m_ComponentInspector.end()) {
+				it->second(entity);
+			}
+		}
 	
 		BaseComponent& CreateComponent(const std::string& componentName, const nlohmann::json& componentData, NRegistry* registry, EntityID id) const
 		{
@@ -111,16 +119,42 @@ namespace NULLENGINE
 
 
 		template <typename T>
-		void Register(void (*func)(void*, const nlohmann::json&, NRegistry* registry, EntityID id))
+		void Register(void (*func)(void*, const nlohmann::json&, NRegistry* registry, EntityID id), std::function<void(Entity&)> func2)
 		{
 			AddCreateFunction<T>(func);
+
+			AddViewFunction<T>(func2);
+
+			AddComponentID<T>();
+		}
+
+		std::vector<std::string> GetComponentNames() const 
+		{
+			std::vector<std::string> componentNames;
+			for (const auto& pair : m_ComponentCreator) {
+				componentNames.push_back(pair.first);
+			}
+			return componentNames;
+		}
+
+
+		uint32_t GetComponentID(const std::string& name) const
+		{
+			auto it = m_ComponentNamesToID.find(name);
+			if (it != m_ComponentNamesToID.end()) {
+				return it->second;
+			}
 		}
 
 	private:
 		std::unordered_map<std::string, std::function<void(void*, const nlohmann::json&, NRegistry*, EntityID)>> m_componentReader;
 		std::unordered_map<std::string, std::function<BaseComponent* ()>> m_ComponentCreator;
 
+
+		std::unordered_map<std::string, uint32_t> m_ComponentNamesToID;
+
 		
+		std::unordered_map<size_t, std::function<void (Entity&)>> m_ComponentInspector;
 
 		template <typename T>
 		void AddCreateFunction(void (*func)(void*, const nlohmann::json&, NRegistry* registry, EntityID id))
@@ -132,6 +166,18 @@ namespace NULLENGINE
 				};
 		}
 
+
+		template <typename T>
+		void AddViewFunction(std::function<void(Entity&)> func2)
+		{
+			m_ComponentInspector.emplace(Component<T>::GetID(), func2);
+		}
+
+		template <typename T>
+		void AddComponentID()
+		{
+			m_ComponentNamesToID.emplace(Component<T>::TypeName(), Component<T>::GetID());
+		}
 	};
 
 }

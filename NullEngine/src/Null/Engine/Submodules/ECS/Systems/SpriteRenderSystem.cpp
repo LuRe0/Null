@@ -14,7 +14,8 @@
 #include "Null/Engine/Submodules/Graphics/Mesh.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
+#include "imgui.h"
+#include <misc/cpp/imgui_stdlib.h>
 
 
 //******************************************************************************//
@@ -36,7 +37,7 @@ namespace NULLENGINE
 
 		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
 
-		componentFactory->Register<SpriteComponent>(CreateSpriteComponent);
+		componentFactory->Register<SpriteComponent>(CreateSpriteComponent, [this](Entity& id) { this->ViewSpriteComponent(id); });
 	}
 
 	void SpriteRenderSystem::Load()
@@ -67,8 +68,6 @@ namespace NULLENGINE
 			//model, mesh, spritesrc, tint, shadername, frameindex
 			renderer->AddRenderCall({ transform.m_TransformMatrix, sprite.m_Mesh,sprite.m_SpriteSource, sprite.m_Color, sprite.m_ShaderName, sprite.m_FrameIndex });
 		}
-
-
 	}
 
 	void SpriteRenderSystem::Unload()
@@ -99,12 +98,44 @@ namespace NULLENGINE
 			const std::string& meshName = jsonWrapper.GetString("meshname", "");
 
 			//if no path for mesh file, defaults to create a quad
-			comp->m_Mesh = !meshName.empty() ? meshManager->Create(meshName) : meshManager->Create("Quad", 0.5f, 0.5f, dimension.x, dimension.y);
+			comp->m_Mesh = !meshName.empty() ? meshManager->Create(meshName) : meshManager->Create("Quad");
 
 
 			comp->m_Color = jsonWrapper.GetVec4("tint", { 1.0f, 1.0f, 1.0f, 1.0f });
 		}
 
 		componentFactory->AddOrUpdate<SpriteComponent>(id, comp, registry, comp->m_FrameIndex, comp->m_SpriteSource, comp->m_Mesh, comp->m_Color, comp->m_ShaderName);
+	}
+
+	void SpriteRenderSystem::ViewSpriteComponent(Entity& entity)
+	{
+		SpriteComponent& sprite = entity.Get<SpriteComponent>();
+
+		ImGui::DragInt("Frame Index", reinterpret_cast<int*>(&(sprite.m_FrameIndex)), 0.5f, 0);
+
+		ImGui::DragInt("Rows", &sprite.m_SpriteSource->Rows(), 0.5f, 0);
+		ImGui::DragInt("Columns", &sprite.m_SpriteSource->Cols(), 0.5f, 0);
+		ImGui::DragFloat4("Tint", glm::value_ptr(sprite.m_Color), 0.5f);
+		ImGui::InputText("##Shader Name", &sprite.m_ShaderName);
+	
+		if (sprite.m_SpriteSource->GetTexture())
+		{
+			ImGui::Text("Texture\t"); ImGui::Image((void*)(__int64)sprite.m_SpriteSource->GetTexture()->GetID(), ImVec2(100, 100), {0, -1}, {1, 0}, ImVec4(1,1,1,1), ImVec4(1, 1, 1, 1));
+		}
+		else
+		{
+			ImGui::Button("Drop texture", ImVec2(100, 100));
+		}
+
+
+		//ImGui::DragFloat3("Rotation", glm::value_ptr(transform.m_Rotation), 0.5f);
+		//ImGui::DragFloat3("Scale", glm::value_ptr(transform.m_Scale), 0.5f);
+
+		//unsigned int m_FrameIndex;
+		//SpriteSource* m_SpriteSource;
+		//Mesh* m_Mesh;
+		//glm::vec4 m_Color;
+		//std::string m_ShaderName;
+
 	}
 }

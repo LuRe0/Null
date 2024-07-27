@@ -19,3 +19,6 @@
 [submodule "NullEngine/vendor/Box2D"]
 	path = NullEngine/vendor/Box2D
 	url = https://github.com/erincatto/box2d
+[submodule "NullEngine/vendor/magic_enum/magic_enum"]
+	path = NullEngine/vendor/magic_enum/magic_enum
+	url = https://github.com/Neargye/magic_enum

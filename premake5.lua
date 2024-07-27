@@ -49,6 +49,7 @@ project "NullEngine"
     {
          "%{prj.name}/src",
          "%{prj.name}/vendor/spdlog/include",
+         "%{prj.name}/vendor/magic_enum/magic_enum/include",
          "%{includeDir.GLFW}",
          "%{includeDir.Glad}",
          "%{includeDir.JSON}",
@@ -123,7 +124,12 @@ project "Sandbox"
     includedirs
     {
          "NullEngine/vendor/spdlog/include",
+         "NullEngine/vendor/magic_enum/magic_enum/include",
          "NullEngine/src",
+         "%{includeDir.GLFW}",
+         "%{includeDir.Glad}",
+         "%{includeDir.ImGui}",
+         "%{includeDir.JSON}",
          "%{includeDir.glm}"
     }
 
@@ -176,6 +182,7 @@ project "NullEditor"
     includedirs
     {
          "NullEngine/vendor/spdlog/include",
+         "NullEngine/vendor/magic_enum/magic_enum/include",
          "NullEngine/src",
          "NullEditor/src",
          "%{includeDir.GLFW}",

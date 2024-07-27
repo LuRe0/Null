@@ -51,10 +51,16 @@ namespace NULLENGINE
 		//! Virtual Shutdown function
 		void Shutdown() override;
 
+
+
+
 	private:
 		//void OnWindowResize(const WindowResizeEvent& e);
 		static void CreateTransformComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
 
+
+
+		void ViewTransformComponent(Entity& entity);
 
 	};
 

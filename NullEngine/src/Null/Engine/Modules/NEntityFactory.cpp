@@ -59,51 +59,62 @@ namespace NULLENGINE
 
     Entity NEntityFactory::CreateEntity(const JSON& entityData, NRegistry* registry)
     {
-        NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
+        Entity newEntity(registry->CreateEntity(), registry);
 
         JsonWrapper jsonWrapper(entityData);
 
-        Entity newEntity(registry->CreateEntity());
-
-        const std::string& archetype = jsonWrapper.GetString("archetype", "");
-
-
-        //if this is reading from
-        if (!archetype.empty())
+        if (!jsonWrapper.Empty())
         {
 
-            if (!HasArchetype(archetype))
+            NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
+
+
+
+            const std::string& archetype = jsonWrapper.GetString("archetype", "");
+
+
+            //if this is reading from
+            if (!archetype.empty())
             {
 
-                RegisterArchetype(archetype);
-
-                ReadArchetype(archetype, newEntity, componentFactory, registry);    
-
-                if (newEntity.GetName().empty())
+                if (!HasArchetype(archetype))
                 {
-                    const std::string& name = jsonWrapper.GetString("name", "");
 
-                    if (!name.empty())
-                        newEntity.SetName(name);
-                    else
-                        newEntity.SetName(archetype + " (Clone)");
+                    RegisterArchetype(archetype);
+
+                    ReadArchetype(archetype, newEntity, componentFactory, registry);
+
+                    if (newEntity.GetName().empty())
+                    {
+                        const std::string& name = jsonWrapper.GetString("name", "");
+
+                        if (!name.empty())
+                            newEntity.SetName(name);
+                        else
+                            newEntity.SetName(archetype + " (Clone)");
+                    }
+
+                    return newEntity;
                 }
 
-                return newEntity;
+                CloneComponents(componentFactory, archetype, registry, newEntity.GetID());
+
+                const std::string& name = jsonWrapper.GetString("name", "");
+
+                if (!name.empty())
+                    newEntity.SetName(name);
+                else
+                    newEntity.SetName(archetype + " (Clone)");
             }
-
-            CloneComponents(componentFactory, archetype, registry, newEntity.GetID());
-
-            const std::string& name = jsonWrapper.GetString("name", "");
-
-            if (!name.empty())
-                newEntity.SetName(name);
-            else
-                newEntity.SetName(archetype + " (Clone)");
         }
 
         return newEntity;
 
+    }
+
+    Entity NEntityFactory::CreateEntity(NRegistry* registry)
+    {
+        return  Entity(registry->CreateEntity(), registry);;
     }
 
 
@@ -129,7 +140,7 @@ namespace NULLENGINE
 
     void NEntityFactory::ReadArchetype(const std::string& filename, Entity& entity, NComponentFactory* componentFactory, NRegistry* registry)
     {
-        std::string filePath = std::string("Data/Archetypes/") + filename + std::string(".json");
+        std::string filePath = std::string("../Data/Archetypes/") + filename + std::string(".json");
 
         // Open the JSON file
         std::ifstream inputFile(filePath);

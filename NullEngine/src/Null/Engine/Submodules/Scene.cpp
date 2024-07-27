@@ -11,7 +11,7 @@
 //******************************************************************************//
 #include "stdafx.h"
 #include "Scene.h"
-
+#include "Null/Tools/JsonWrapper.h"
 
 
 
@@ -79,9 +79,60 @@ namespace NULLENGINE
 		}
 	}
 
+	void Scene::AddEntity(const std::string& name)
+	{
+		NEntityFactory* entityFactory = NEngine::Instance().Get<NEntityFactory>();
+		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+
+		Entity entity = entityFactory->CreateEntity(registry);
+
+		entity.SetName(name);
+
+		m_Entities.push_back(entity);
+
+		eventManager->QueueEvent(std::make_unique<EntityCreatedEvent>(entity.GetID()));
+	}
+
+	void Scene::RemoveEntity(size_t pos)
+	{
+		std::swap(m_Entities.back(), m_Entities[pos]);
+		m_Entities.pop_back();
+	}
+
+	void Scene::DeleteEntity(EntityID entityID)
+	{
+		auto it = std::find(m_Entities.begin(), m_Entities.end(), entityID);
+		if ( it != m_Entities.end())
+		{
+			it->SetIsDestroyed(true);
+		}
+	}
+
+
 	void Scene::Update(float dt)
 	{
+		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
 
+		for (size_t i = 0; i < m_Entities.size(); i++)
+		{
+			if (i < 0)
+				return;
+
+			if (m_Entities[i].GetIsDestroyed())
+			{
+				eventManager->QueueEvent(std::make_unique<EntityDestroyedEvent>(m_Entities[i].GetID()));
+				
+				RemoveEntity(i);
+
+				--i;
+			}
+		}
+		for (const auto& entity : m_Entities)
+		{
+
+		}
 	}
 
 	void Scene::Render()

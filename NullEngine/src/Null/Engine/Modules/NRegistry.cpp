@@ -11,6 +11,7 @@
 //******************************************************************************//
 #include "stdafx.h"
 #include "NRegistry.h"
+#include "Null/Engine/Submodules/Events/IEvents.h"
 
 
 
@@ -66,26 +67,20 @@ namespace NULLENGINE
 
 	void NRegistry::Init()
 	{
-		for (auto& system : m_Systems)
-		{
-			system.second.get()->Init();
-		}
+		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+
+		SUBSCRIBE_EVENT(EntityDestroyedEvent, &NRegistry::OnEntityDestroyed, eventManager);
+		SUBSCRIBE_EVENT(EntityRemoveComponentEvent, &NRegistry::OnEntityRemoveComponent, eventManager, eventManager);
 	}
 
 	void NRegistry::Update(float dt)
 	{
-		for (auto& system : m_Systems)
-		{
-			system.second.get()->Update(dt);
-		}
+
 	}
 
 	void NRegistry::Render()
 	{
-		for (auto& system : m_Systems)
-		{
-			system.second.get()->Render();
-		}
+
 	}
 
 	void NRegistry::Unload()
@@ -126,21 +121,40 @@ namespace NULLENGINE
 	}
 	void NRegistry::AddEntityToSystem(EntityID entityID)
 	{
-		const auto& entityComponentSignatures = m_EntityComponentSignatures[m_EntityToIndexMap[entityID]];
+		//const auto& entityComponentSignatures = m_EntityComponentSignatures[m_EntityToIndexMap[entityID]];
 
-		for (auto& system: m_Systems)
-		{
-			const auto& systemComponentSignatures = system.second.get()->GetComponentSignature();
+		//for (auto& system: m_Systems)
+		//{
+		//	const auto& systemComponentSignatures = system.second.get()->GetComponentSignature();
 
-			bool match = ((entityComponentSignatures & systemComponentSignatures) == systemComponentSignatures);
+		//	bool match = ((entityComponentSignatures & systemComponentSignatures) == systemComponentSignatures);
 
-			if(match)
-				system.second.get()->Add(entityID);
-		}
+		//	if(match)
+		//		system.second.get()->Add(entityID);
+		//}
 	}
 	const Signature& NRegistry::EntitySignature(EntityID entityID)
 	{
 		// TODO: insert return statement here
 		return m_EntityComponentSignatures[m_EntityToIndexMap[entityID]];
+	}
+
+	void NRegistry::OnEntityDestroyed(const EntityDestroyedEvent& e)
+	{
+		auto& signatures = EntitySignature(e.GetID());
+
+		for (size_t i = 0; i < signatures.size(); i++)
+		{
+			if (signatures.test(i))
+			{
+				RemoveComponent(e.GetID(), i);
+			}
+		}
+	}
+
+
+	void NRegistry::OnEntityRemoveComponent(const EntityRemoveComponentEvent& e)
+	{
+		RemoveComponent(e.GetID(), e.GetComponentID());
 	}
 }

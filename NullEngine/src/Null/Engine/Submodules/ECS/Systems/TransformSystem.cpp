@@ -11,6 +11,7 @@
 //******************************************************************************//
 #include "stdafx.h"
 #include "TransformSystem.h"
+#include "imgui.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -34,7 +35,8 @@ namespace NULLENGINE
 
 		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
 
-		componentFactory->Register<TransformComponent>(CreateTransformComponent);
+		componentFactory->Register<TransformComponent>(CreateTransformComponent, [this](Entity& id) { this->ViewTransformComponent(id); });
+
 	}
 
 
@@ -108,5 +110,15 @@ namespace NULLENGINE
 		}
 
 		componentFactory->AddOrUpdate<TransformComponent>(id, comp, registry, comp->m_Translation, comp->m_Scale, comp->m_Rotation);
+	}
+
+	void TransformSystem::ViewTransformComponent(Entity& entity)
+	{
+		TransformComponent& transform = entity.Get<TransformComponent>();
+
+		ImGui::DragFloat3("Translation", glm::value_ptr(transform.m_Translation), 0.5f);
+		ImGui::DragFloat3("Rotation", glm::value_ptr(transform.m_Rotation), 0.5f);
+		ImGui::DragFloat3("Scale", glm::value_ptr(transform.m_Scale), 0.5f);
+
 	}
 }

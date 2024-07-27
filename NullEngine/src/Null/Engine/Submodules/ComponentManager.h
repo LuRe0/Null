@@ -34,12 +34,14 @@
 namespace NULLENGINE
 {
 	using EntityID = uint32_t;
+	class NLE_API BaseComponent;
 
 	class NLE_API IComponentManager
 	{
 	public:
 		virtual ~IComponentManager() {};
-
+		virtual BaseComponent& Get(EntityID entityID) = 0;
+		virtual void Remove(EntityID entityID) = 0;
 	private:
 	};
 

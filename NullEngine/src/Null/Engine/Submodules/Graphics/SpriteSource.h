@@ -41,6 +41,14 @@ namespace NULLENGINE
 		~SpriteSource();
 
 		glm::vec2 GetUV(unsigned int frameIndex) const;
+		glm::vec2 GetSize() const;
+
+		int& Rows();
+		int& Cols();
+
+
+		const int& GetRows();
+		const int& GetCols();
 		
 		int GetFrameCount() { return m_Rows * m_Cols; }
 

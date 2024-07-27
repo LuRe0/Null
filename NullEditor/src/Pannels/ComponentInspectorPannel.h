@@ -4,7 +4,7 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	SceneHierarchyPannel.h
+// File Name:	ComponentInspectorPannel.h
 // Author(s):	name
 // 
 //------------------------------------------------------------------------------
@@ -34,17 +34,18 @@ namespace NULLENGINE
 {
 	class Scene;
 
-	class SceneHierarchyPannel : public Pannel
+	class ComponentInspectorPannel : public Pannel
 	{
 	public:
-		SceneHierarchyPannel() = default;
-		~SceneHierarchyPannel() = default;
+		ComponentInspectorPannel() = default;
+		~ComponentInspectorPannel() = default;
 
 		void OnImGUIRender();
 	private:
+		Scene* m_Context;
 
-		SceneHierarchyPannel(SceneHierarchyPannel const&) = delete;
-		SceneHierarchyPannel& operator=(SceneHierarchyPannel const&) = delete;
+		ComponentInspectorPannel(ComponentInspectorPannel const&) = delete;
+		ComponentInspectorPannel& operator=(ComponentInspectorPannel const&) = delete;
 	};
 
 }

@@ -103,9 +103,18 @@ namespace NULLENGINE
 		/// <summary>
 		/// entities that are modifiable by the system
 		/// </summary>
-		std::vector<EntityID> m_Entities;
+
+		void CheckEntity(EntityID entityID, NRegistry* registry);
+		void UpdateEntityList(EntityID entityID, NRegistry* registry);
+
+
+		void OnEntityCreate(const EntityModifiedEvent& e);
+		void OnEntityDestroyed(const EntityDestroyedEvent& e);
+		void OnEntityComponentRemoved(const EntityRemoveComponentEvent& e);
+
 
 	protected:
+		std::vector<EntityID> m_Entities;
 		//NRegistry* m_Parent;
 	};
 	
@@ -122,6 +131,8 @@ namespace NULLENGINE
 		}
 
 	private:
+
+	
 
 	};
 

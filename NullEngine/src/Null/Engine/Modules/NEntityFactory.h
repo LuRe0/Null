@@ -55,6 +55,8 @@ namespace NULLENGINE
 
 		Entity CreateEntity(const JSON& entityData, NRegistry* registry);
 
+		Entity CreateEntity(NRegistry* registry);
+
 		void UpdateArchetype(const std::string& archetypeName, BaseComponent* component);
 
 		bool HasArchetype(const std::string& archetypeName) const;

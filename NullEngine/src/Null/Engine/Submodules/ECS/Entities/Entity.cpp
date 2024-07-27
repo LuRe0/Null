@@ -30,27 +30,21 @@
 
 namespace NULLENGINE
 {
-	Entity::Entity(EntityID id) : m_ID(id)
-	{
-	}
-	void Entity::Add()
-	{
-	}
-	void Entity::Read(const JSON& entityData, NRegistry* registry)
-	{
-		NSpriteSourceManager* spritesrcManager = NEngine::Instance().Get<NSpriteSourceManager>();
-		NMeshManager* meshManager = NEngine::Instance().Get<NMeshManager>();
 
-	}
-	void Entity::Load()
+	Entity::Entity(EntityID id, NRegistry* parent) : m_ID(id), m_Parent(parent)
 	{
 	}
-	void Entity::Init()
+
+	void Entity::SetIsDestroyed(bool d)
 	{
+		m_isDestroyed = d;
 	}
-	void Entity::Shutdown()
+
+	bool Entity::GetIsDestroyed() const
 	{
+		return m_isDestroyed;
 	}
+
 	void Entity::SetName(const std::string& name)
 	{
 		m_Name = name;

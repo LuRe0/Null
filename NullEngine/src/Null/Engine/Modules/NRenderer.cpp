@@ -87,7 +87,9 @@ namespace NULLENGINE
 		{
 			//render.spriteSrc->GetTexture()->Bind();
 			glm::vec2 uv = render.spriteSrc->GetUV(render.frameIndex);
+			glm::vec2 textureSize = render.spriteSrc->GetSize();
 			shader->setVec2("texOffset", uv);
+			shader->setVec2("texSize", textureSize);
 		}
 
 		if (render.mesh)
@@ -111,7 +113,7 @@ namespace NULLENGINE
 		NCameraManager* cameraManager = NEngine::Instance().Get<NCameraManager>();
 
 		Shader* shader = shaderMan->Get("framebuffer");
-		Mesh* mesh = meshManager->Get("Quad1x1");
+		Mesh* mesh = meshManager->Get("Quad");
 
 		shader->Bind();
 
@@ -139,7 +141,7 @@ namespace NULLENGINE
 	{
 		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
 		NWindow* window = NEngine::Instance().Get<NWindow>();
-		SUBSCRIBE_EVENT(WindowResizeEvent, &NRenderer::OnWindowResize, eventManager);
+		SUBSCRIBE_EVENT(WindowResizeEvent, &NRenderer::OnWindowResize, eventManager, eventManager);
 
 		m_WinWidth = window->Width();
 		m_WinHeight = window->Height();

@@ -41,7 +41,7 @@ namespace NULLENGINE
 
 
 
-	Mesh::Mesh(const std::string& filename) : m_xHalfSize(.5f), m_yHalfSize(.5f), m_uSize(1), m_vSize(1), m_Name("")
+	Mesh::Mesh(const std::string& filename) : m_xHalfSize(.5f), m_yHalfSize(.5f), m_Name("")
 	{
 		// Define vertices for a triangle
 		std::vector<Vertex> vertexData;
@@ -49,7 +49,7 @@ namespace NULLENGINE
 
 		std::vector<unsigned int> indexData;
 
-		std::string filePath =std::string("Data/Meshes/") + filename + std::string(".json");
+		std::string filePath =std::string("../Data/Meshes/") + filename + std::string(".json");
 
 		std::ifstream file(filePath);
 
@@ -60,8 +60,6 @@ namespace NULLENGINE
 
 		m_xHalfSize = j["xHalfSize"];
 		m_yHalfSize = j["yHalfSize"];
-		m_uSize = j["uSize"];
-		m_vSize = j["vSize"];
 		m_Name = j["name"];
 
 		for (const auto& vertex : j["vertices"]) {
@@ -72,11 +70,6 @@ namespace NULLENGINE
 			vertexData.push_back(v);
 		}
 
-		// Update UV coordinates according to uSize and vSize
-		for (auto& vertex : vertexData) {
-			vertex.textCoords.x /= m_uSize;
-			vertex.textCoords.y /= m_vSize;
-		}
 
 		for (const auto& index : j["indices"]) {
 			indexData.push_back(index);
@@ -94,7 +87,7 @@ namespace NULLENGINE
 
 	}
 	Mesh::Mesh(const std::string& name, float xHalfSize, float yHalfSize, float uSize, float vSize) :
-		m_xHalfSize(xHalfSize), m_yHalfSize(yHalfSize), m_uSize(uSize), m_vSize(vSize), m_Name(name)
+		m_xHalfSize(xHalfSize), m_yHalfSize(yHalfSize), m_Name(name)
 	{
 		// Define vertices for a triangle
 		std::vector<Vertex> vertexData;

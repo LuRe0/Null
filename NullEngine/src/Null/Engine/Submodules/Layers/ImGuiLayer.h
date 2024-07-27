@@ -35,16 +35,25 @@
 namespace NULLENGINE
 {
 
+	struct PannelData
+	{
+		EntityID m_SelectedEntity = 0;
+		Scene* m_Context = nullptr;
+	};
+
 	class NLE_API Pannel
 	{
 	public:
 		Pannel() = default;
 		virtual ~Pannel() {};
 
-		virtual void OnImGUIRender() = 0;
-	private:
+		void SetPannelData(PannelData& data) { m_PannelData = &data; }
 
+		virtual void OnImGUIRender() = 0;
+	protected:
+		PannelData* m_PannelData;
 	};
+
 
 	class NLE_API ImGuiLayer : public ILayer
 	{
@@ -66,6 +75,8 @@ namespace NULLENGINE
 
 		 void AddPannel(std::unique_ptr<Pannel>&& overlay);
 
+		 void SetPannelData(const PannelData& data);
+
 		 void Begin();
 		 void End();
 
@@ -74,6 +85,8 @@ namespace NULLENGINE
 		ImGuiLayer& operator=(ImGuiLayer const&) = delete;
 
 		std::vector<std::unique_ptr<Pannel>> m_Pannels;
+
+		PannelData m_PannelData;
 
 		//std::unique_ptr<SceneHierarchyPannel> m_SceneHierachyPannel;
 

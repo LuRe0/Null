@@ -11,7 +11,7 @@
 //******************************************************************************//
 #include "stdafx.h"
 #include "AnimationSystem.h"
-
+#include "imgui.h"
 
 
 
@@ -34,7 +34,11 @@ namespace NULLENGINE
 
         NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
 
-        componentFactory->Register<AnimationComponent>(CreateAnimationComponent);
+        // Register the create and view functions
+        componentFactory->Register<AnimationComponent>(
+            CreateAnimationComponent,  // Free function or static member function
+            [this](Entity& entity) { this->ViewAnimationComponent(entity); } // Lambda capturing `this` for member function
+        );
     }
 
     void AnimationSystem::Load()
@@ -154,6 +158,21 @@ namespace NULLENGINE
 
         componentFactory->AddOrUpdate<AnimationComponent>(id, comp, registry, comp->m_FrameCount, comp->m_FrameOffset, comp->m_FrameDuration, comp->m_IsLooping, comp->m_IsPingPong, comp->m_IsReversed, comp->m_IsRunning);
 
+    }
+
+    void AnimationSystem::ViewAnimationComponent(Entity& entity)
+    {
+        AnimationComponent& animation = entity.Get<AnimationComponent>();
+        SpriteComponent& sprite = entity.Get<SpriteComponent>();
+
+        ImGui::DragInt("Frame Index", reinterpret_cast<int*>(&(animation.m_FrameIndex)), 0.5f, 0);
+        ImGui::DragInt("Frame Count", reinterpret_cast<int*>(&(animation.m_FrameCount)), 0.5f, 0);
+        ImGui::DragInt("Frame Offset", reinterpret_cast<int*>(&(animation.m_FrameOffset)), 0.5f, 0, sprite.m_SpriteSource->GetFrameCount());
+        ImGui::DragFloat("Frame Duration", &animation.m_FrameDuration, 0.5f, 0);
+        
+        ImGui::Checkbox("Loop", &animation.m_IsLooping);
+        ImGui::Checkbox("Reverse", &animation.m_IsReversed);
+        ImGui::Checkbox("Ping-Pong", &animation.m_IsPingPong);
     }
 
 }

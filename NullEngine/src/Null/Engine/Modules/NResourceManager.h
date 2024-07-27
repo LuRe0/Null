@@ -91,6 +91,15 @@ namespace NULLENGINE
 			return m_ResourceList.at(name);
 		}
 
+		std::vector<std::string> GetResourceNames() const
+		{
+			std::vector<std::string> componentNames;
+			for (const auto& pair : m_ResourceList) {
+				componentNames.push_back(pair.first);
+			}
+			return componentNames;
+		}
+
 	private:
 
 		std::unordered_map<std::string, T*> m_ResourceList;

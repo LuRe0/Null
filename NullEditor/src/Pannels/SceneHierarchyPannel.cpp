@@ -40,7 +40,7 @@ namespace NULLENGINE
 		if (ImGui::BeginPopupContextWindow())
 		{
 			if (ImGui::MenuItem("Create Entity"))
-				m_PannelData->m_Context->AddEntity("New Entiy");
+				m_PannelData->m_SelectedEntity = m_PannelData->m_Context->AddEntity("New Entiy");
 
 			ImGui::EndPopup();
 		}

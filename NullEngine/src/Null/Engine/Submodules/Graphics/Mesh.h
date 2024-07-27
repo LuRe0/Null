@@ -56,6 +56,7 @@ namespace NULLENGINE
 		void Render(const SpriteSource* spriteSource) const;
 		void RenderTexture(unsigned int texture) const;
 
+		const std::string& GetName() { return m_Name; }
 	private:
 		struct Buffer
 		{

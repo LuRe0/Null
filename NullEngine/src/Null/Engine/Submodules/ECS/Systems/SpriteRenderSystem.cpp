@@ -110,23 +110,131 @@ namespace NULLENGINE
 	void SpriteRenderSystem::ViewSpriteComponent(Entity& entity)
 	{
 		SpriteComponent& sprite = entity.Get<SpriteComponent>();
+		NSpriteSourceManager* spritesrcManager = NEngine::Instance().Get<NSpriteSourceManager>();
+		NMeshManager* meshManager = NEngine::Instance().Get<NMeshManager>();
+		NShaderManager* shaderManager = NEngine::Instance().Get<NShaderManager>();
+
 
 		ImGui::DragInt("Frame Index", reinterpret_cast<int*>(&(sprite.m_FrameIndex)), 0.5f, 0);
+		const auto& meshNames = meshManager->GetResourceNames();
 
-		ImGui::DragInt("Rows", &sprite.m_SpriteSource->Rows(), 0.5f, 0);
-		ImGui::DragInt("Columns", &sprite.m_SpriteSource->Cols(), 0.5f, 0);
-		ImGui::DragFloat4("Tint", glm::value_ptr(sprite.m_Color), 0.5f);
-		ImGui::InputText("##Shader Name", &sprite.m_ShaderName);
-	
-		if (sprite.m_SpriteSource->GetTexture())
+
+
+
+		if (sprite.m_Mesh)
 		{
-			ImGui::Text("Texture\t"); ImGui::Image((void*)(__int64)sprite.m_SpriteSource->GetTexture()->GetID(), ImVec2(100, 100), {0, -1}, {1, 0}, ImVec4(1,1,1,1), ImVec4(1, 1, 1, 1));
+			if (ImGui::BeginCombo("Select Mesh", sprite.m_Mesh->GetName().c_str()))
+			{
+				for (const auto& name : meshNames)
+				{
+					bool isSelected = sprite.m_Mesh->GetName() == name;
+
+					if (ImGui::Selectable(name.c_str(), isSelected)) {
+						sprite.m_Mesh = meshManager->Get(name);
+					}
+					if (isSelected) {
+						ImGui::SetItemDefaultFocus(); // Set focus on the selected item
+					}
+				}
+				ImGui::EndCombo();
+			}
 		}
 		else
 		{
-			ImGui::Button("Drop texture", ImVec2(100, 100));
+			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+			if (ImGui::BeginCombo("Select Mesh", "No Mesh Selected"))
+			{
+				ImGui::PopStyleColor();
+
+				for (const auto& name : meshNames)
+				{
+					bool isSelected = false;
+
+					if (ImGui::Selectable(name.c_str(), isSelected)) {
+						sprite.m_Mesh = meshManager->Get(name);
+					}
+					if (isSelected) {
+						ImGui::SetItemDefaultFocus(); // Set focus on the selected item
+					}
+				}
+				ImGui::EndCombo();
+			}
+			else
+			{
+				ImGui::PopStyleColor();
+			}
+
+
+		}
+		if (sprite.m_SpriteSource)
+		{
+			ImGui::DragInt("Rows", &sprite.m_SpriteSource->Rows(), 0.5f, 0);
+			ImGui::DragInt("Columns", &sprite.m_SpriteSource->Cols(), 0.5f, 0);
+
+			if (sprite.m_SpriteSource->GetTexture())
+			{
+				ImGui::Text("Texture\t"); ImGui::Image((void*)(__int64)sprite.m_SpriteSource->GetTexture()->GetID(), ImVec2(100, 100), { 0, -1 }, { 1, 0 }, ImVec4(1, 1, 1, 1), ImVec4(1, 1, 1, 1));
+				ImGui::SetCursorPos({ ImGui::GetCursorPos().x, ImGui::GetCursorPos().y - 100 }); // Move the cursor back to the position of the image
+				if (ImGui::InvisibleButton("ImageButton", ImVec2(125, 100)))
+				{
+					ImGui::OpenPopup("TexturePopup");
+				}
+			}
+
+		}
+		else
+		{
+			if (ImGui::Button("Select texture", ImVec2(125, 100)))
+				ImGui::OpenPopup("TexturePopup");
+		}
+		if (ImGui::BeginPopup("TexturePopup"))
+		{
+			ImGui::SetNextWindowSize(ImVec2(125, 100), ImGuiCond_FirstUseEver);
+			// Begin a child window to make it scrollable
+			ImGui::BeginChild("TextureList", ImVec2(125, 200), true, ImGuiWindowFlags_AlwaysUseWindowPadding);
+
+			const auto& componentsNames = spritesrcManager->GetResourceNames();
+
+			for (const auto& name : componentsNames)
+			{
+				auto texture = spritesrcManager->Get(name)->GetTexture();
+				if (texture)
+				{
+					ImGui::Text("%s :", name.c_str());
+					if (ImGui::ImageButton((void*)(__int64)texture->GetID(), ImVec2(75, 50), { 0, -1 }, { 1, 0 }))
+					{
+						sprite.m_SpriteSource = spritesrcManager->Get(name);
+						ImGui::CloseCurrentPopup();
+					}
+				}
+			}
+			ImGui::EndChild(); // End the child window
+			ImGui::EndPopup();
 		}
 
+		ImGui::DragFloat4("Tint", glm::value_ptr(sprite.m_Color), 0.5f);
+
+		const auto& shaderNames = shaderManager->GetResourceNames();
+
+		if (ImGui::BeginCombo("Select Shader", sprite.m_ShaderName.c_str()))
+		{
+			for (const auto& name : shaderNames)
+			{
+				bool isSelected = sprite.m_ShaderName == name;
+
+				if (ImGui::Selectable(name.c_str(), isSelected)) {
+					sprite.m_ShaderName = name;
+				}
+				if (isSelected) {
+					ImGui::SetItemDefaultFocus(); // Set focus on the selected item
+				}
+			}
+
+			ImGui::EndCombo();
+		}
+
+		if (!entity.Has<TransformComponent>())
+			ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Warning: Requires a Transform component");
 
 		//ImGui::DragFloat3("Rotation", glm::value_ptr(transform.m_Rotation), 0.5f);
 		//ImGui::DragFloat3("Scale", glm::value_ptr(transform.m_Scale), 0.5f);

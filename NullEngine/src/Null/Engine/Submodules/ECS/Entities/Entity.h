@@ -42,6 +42,7 @@ namespace NULLENGINE
 	public:
 		Entity(EntityID id, NRegistry* parent);
 
+		Entity() = default;
 
 		/// <summary>
 		/// Gets A component attached to the entity
@@ -81,7 +82,7 @@ namespace NULLENGINE
 			return m_ID == id;
 		}
 
-	private:
+
 		std::string m_Name;
 
 		EntityID m_ID;
@@ -89,6 +90,9 @@ namespace NULLENGINE
 		NRegistry* m_Parent;
 
 		bool m_isDestroyed = false;
+
+		friend class SceneHierarchyPannel;
+		friend class ComponentInspectorPannel;
 	};
 
 	//template<typename T>

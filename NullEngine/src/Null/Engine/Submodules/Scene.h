@@ -77,9 +77,13 @@ namespace NULLENGINE
 
 		void DeleteEntity(EntityID entityID);
 
-		void AddEntity(const std::string& name);
+		EntityID AddEntity(const std::string& name);
+
+		Entity& GetEntity(const EntityID& entityID);
 
 		const std::vector<Entity>& GetManagedEntities() { return m_Entities; }
+
+		std::vector<Entity>& ManagedEntities() { return m_Entities; }
 
 		const std::string_view GetName() { return m_Name; }
 

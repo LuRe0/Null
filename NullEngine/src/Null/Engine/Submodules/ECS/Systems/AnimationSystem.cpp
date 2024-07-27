@@ -19,7 +19,6 @@
 // Public Variables															    //
 //******************************************************************************//
 
-const glm::vec2 GRAVITY(0.0f, -9.81f);
 
 //******************************************************************************//
 // Function Declarations												        //
@@ -163,16 +162,34 @@ namespace NULLENGINE
     void AnimationSystem::ViewAnimationComponent(Entity& entity)
     {
         AnimationComponent& animation = entity.Get<AnimationComponent>();
-        SpriteComponent& sprite = entity.Get<SpriteComponent>();
 
+      
         ImGui::DragInt("Frame Index", reinterpret_cast<int*>(&(animation.m_FrameIndex)), 0.5f, 0);
         ImGui::DragInt("Frame Count", reinterpret_cast<int*>(&(animation.m_FrameCount)), 0.5f, 0);
-        ImGui::DragInt("Frame Offset", reinterpret_cast<int*>(&(animation.m_FrameOffset)), 0.5f, 0, sprite.m_SpriteSource->GetFrameCount());
+
+        bool hasSprite = entity.Has<SpriteComponent>();
+        if (hasSprite)
+        {
+            SpriteComponent& sprite = entity.Get<SpriteComponent>();
+            if(sprite.m_SpriteSource)
+              ImGui::DragInt("Frame Offset", reinterpret_cast<int*>(&(animation.m_FrameOffset)), 0.5f, 0, sprite.m_SpriteSource->GetFrameCount());
+            
+            ImGui::DragInt("Frame Offset", reinterpret_cast<int*>(&(animation.m_FrameOffset)), 0.5f, 0);
+        }
+        else
+        {
+            ImGui::DragInt("Frame Offset", reinterpret_cast<int*>(&(animation.m_FrameOffset)), 0.5f, 0);
+        }
+
         ImGui::DragFloat("Frame Duration", &animation.m_FrameDuration, 0.5f, 0);
         
         ImGui::Checkbox("Loop", &animation.m_IsLooping);
         ImGui::Checkbox("Reverse", &animation.m_IsReversed);
         ImGui::Checkbox("Ping-Pong", &animation.m_IsPingPong);
+
+        if(!hasSprite)
+            ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Warning: Requires a Sprite component");
+
     }
 
 }

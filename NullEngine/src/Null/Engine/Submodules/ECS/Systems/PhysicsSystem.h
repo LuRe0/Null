@@ -51,11 +51,15 @@ namespace NULLENGINE
 		//! Virtual Shutdown function
 		void Shutdown() override;
 
-	private:
-		b2World* m_PhysicsWorld;
+	
+		// Conversion factor
+		const float GetPixelPerMeter() { return PIXELS_PER_METER; } // 1 meter = 64 pixels
 
 		const glm::vec2 MetersToPixels(float x, float y);
 		const glm::vec2 PixelsToMeters(float x, float y);
+
+	private:
+		b2World* m_PhysicsWorld;
 
 		static void CreateRigidbody2DComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
 		static void CreateBoxCollider2DComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
@@ -67,6 +71,11 @@ namespace NULLENGINE
 
 		void OnEntityCreated(const EntityCreatedEvent& e);
 		void OnEntityComponentRemoved(const EntityRemoveComponentEvent& e);
+		void OnEntityComponentAdded(const EntityAddComponentEvent& e);
+
+		const glm::vec3 GRAVITY = glm::vec3(0.0f, -9.81, 0.0f);
+		// Conversion factor
+		const float PIXELS_PER_METER = 64.0f; // 1 meter = 64 pixels
 
 	};
 

@@ -80,7 +80,7 @@ namespace NULLENGINE
 
 		// Constructor with default values
 		TransformComponent(glm::vec3 translation = glm::vec3(0.0f),
-			glm::vec3 scale = glm::vec3(1.0f),
+			glm::vec3 scale = glm::vec3(50.0f),
 			glm::vec3 rotation = glm::vec3(0.0f),
 			bool dirty = false)
 			: m_Translation(translation),
@@ -132,7 +132,7 @@ namespace NULLENGINE
 
 		// Constructor with default values
 		BoxCollider2DComponent(glm::vec2 offset = { 0.0f, 0.0f },
-			glm::vec2 scale = { 0.0f, 0.0f },
+			glm::vec2 scale = {50, 50 },
 			float density = 1.0f,
 			float friction = 0.5f,
 			float restitution = 0.0f,

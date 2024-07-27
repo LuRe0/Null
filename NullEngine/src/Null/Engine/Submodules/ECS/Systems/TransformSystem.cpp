@@ -14,6 +14,7 @@
 #include "imgui.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <box2d/b2_body.h>
 
 
 
@@ -115,10 +116,45 @@ namespace NULLENGINE
 	void TransformSystem::ViewTransformComponent(Entity& entity)
 	{
 		TransformComponent& transform = entity.Get<TransformComponent>();
+	
+		PhysicsSystem* physicsSys = NEngine::Instance().Get<PhysicsSystem>();
 
-		ImGui::DragFloat3("Translation", glm::value_ptr(transform.m_Translation), 0.5f);
-		ImGui::DragFloat3("Rotation", glm::value_ptr(transform.m_Rotation), 0.5f);
-		ImGui::DragFloat3("Scale", glm::value_ptr(transform.m_Scale), 0.5f);
+		if (ImGui::DragFloat3("Translation", glm::value_ptr(transform.m_Translation), 0.5f))
+		{
+			// Handle the change in translation
+			if (entity.Has<Rigidbody2DComponent>())
+			{
+				Rigidbody2DComponent& rb2d = entity.Get<Rigidbody2DComponent>();
+				
+				auto pos = physicsSys->PixelsToMeters(transform.m_Translation.x, transform.m_Translation.y);
+
+				rb2d.m_RuntimeBody->SetTransform({ pos.x, pos.y }, transform.m_Rotation.z);
+			}
+
+			transform.m_Dirty = true;
+
+		}
+
+		if (ImGui::DragFloat3("Rotation", glm::value_ptr(transform.m_Rotation), 0.5f))
+		{
+			// Handle the change in rotation
+			if (entity.Has<Rigidbody2DComponent>())
+			{
+				Rigidbody2DComponent& rb2d = entity.Get<Rigidbody2DComponent>();
+
+				auto pos = physicsSys->PixelsToMeters(transform.m_Translation.x, transform.m_Translation.y);
+
+				rb2d.m_RuntimeBody->SetTransform(rb2d.m_RuntimeBody->GetPosition(), transform.m_Rotation.z);
+			}
+
+			transform.m_Dirty = true;
+		}
+
+		if (ImGui::DragFloat3("Scale", glm::value_ptr(transform.m_Scale), 0.5f))
+		{
+			// Handle the change in scale
+			transform.m_Dirty = true;
+		}
 
 	}
 }

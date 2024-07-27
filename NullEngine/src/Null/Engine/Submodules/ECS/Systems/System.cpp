@@ -69,7 +69,8 @@ namespace NULLENGINE
 	}
 	void ISystem::Add(EntityID entity)
 	{
-		m_Entities.push_back(entity);
+		if(std::find(m_Entities.begin(), m_Entities.end(), entity) == m_Entities.end())
+			m_Entities.push_back(entity);
 	}
 	void ISystem::Remove(EntityID entity)
 	{
@@ -86,7 +87,7 @@ namespace NULLENGINE
 			NLE_CORE_INFO("Entity Successfully Removed.");
 		}
 		else
-			NLE_CORE_ERROR("Entity not found in list!");
+			NLE_CORE_WARN("Entity not found in list!");
 	}
 	const std::vector<EntityID>& ISystem::GetSystemEntities() const
 	{

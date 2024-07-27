@@ -13,6 +13,8 @@
 #include "ComponentInspectorPannel.h"
 #include "Null/Engine/Submodules/Scene.h"
 #include "imgui.h"
+#include <misc/cpp/imgui_stdlib.h>
+
 //#include "backends/imgui_impl_opengl3.h"
 //#include "backends/imgui_impl_glfw.h"
 
@@ -34,6 +36,32 @@ namespace NULLENGINE
 	void ComponentInspectorPannel::OnImGUIRender()
 	{
 		ImGui::Begin("Component Inspector");
+
+		if (!m_PannelData->m_SelectedEntity)
+		{
+
+			float availableWidth = ImGui::GetContentRegionAvail().x;
+			float textWidth = ImGui::CalcTextSize("Warning: No Object Selected").x;
+			float centerPosX = (availableWidth - textWidth) * 0.5f;
+			ImGui::SetCursorPosX(centerPosX);
+
+			ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Warning: No Object Selected");
+		}
+		else
+		{
+			// display name and update if changed
+			Entity& selectedEntity = m_PannelData->m_Context->GetEntity(m_PannelData->m_SelectedEntity);
+
+			ImGui::Text("Entity Name: "); ImGui::SameLine(); 
+
+			if (ImGui::InputText("##name", &selectedEntity.m_Name))
+			{
+				if (selectedEntity.GetName().empty())
+				{
+					selectedEntity.SetName("Entity" + std::to_string(selectedEntity.GetID()));
+				}
+			}
+		}
 
 		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
 		NComponentFactory* factory = NEngine::Instance().Get<NComponentFactory>();
@@ -64,11 +92,18 @@ namespace NULLENGINE
 					ImVec2 contentRegion = ImGui::GetContentRegionAvail();
 					ImGui::SameLine(contentRegion.x + lineHeight*.75f);
 					bool removed = false;
+			
+					// Push the style color for the button
+					ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+					ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 0.5f, 0.5f, 1.0f)); 
+					ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(1.0f, 0.3f, 0.3f, 1.0f)); 
+
 					if (ImGui::Button("X", ImVec2{ lineHeight, lineHeight }))
 					{
 						removed = true;
 					}
 
+					ImGui::PopStyleColor(3);
 					if (opened)
 					{
 						factory->ViewComponent(Entity(m_PannelData->m_SelectedEntity, registry), i);
@@ -84,7 +119,14 @@ namespace NULLENGINE
 
 			ImGui::Separator();
 
-			if (ImGui::Button("Add Component"))
+
+			ImVec2 cursorPos = ImGui::GetCursorPos();
+			ImVec2 windowSize = ImGui::GetWindowSize();
+			ImVec2 buttonSize = ImVec2(150, 25); 
+			ImVec2 buttonPos = ImVec2(cursorPos.x + (windowSize.x - buttonSize.x) * 0.5f, cursorPos.y);
+			ImGui::SetCursorPos(buttonPos);
+
+			if (ImGui::Button("Add Component", buttonSize))
 				ImGui::OpenPopup("AddComponent");
 
 			if (ImGui::BeginPopup("AddComponent"))
@@ -97,6 +139,8 @@ namespace NULLENGINE
 					{
 						if (ImGui::MenuItem(name.c_str()))
 						{
+							eventManager->QueueEvent(std::make_unique<EntityAddComponentEvent>(m_PannelData->m_SelectedEntity, factory->GetComponentID(name)));
+
 							factory->CreateUniqueComponent(name, JSON(), registry, m_PannelData->m_SelectedEntity);
 							ImGui::CloseCurrentPopup();
 						}

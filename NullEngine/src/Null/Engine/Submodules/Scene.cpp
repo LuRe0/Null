@@ -79,7 +79,7 @@ namespace NULLENGINE
 		}
 	}
 
-	void Scene::AddEntity(const std::string& name)
+	EntityID Scene::AddEntity(const std::string& name)
 	{
 		NEntityFactory* entityFactory = NEngine::Instance().Get<NEntityFactory>();
 		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
@@ -92,7 +92,19 @@ namespace NULLENGINE
 		m_Entities.push_back(entity);
 
 		eventManager->QueueEvent(std::make_unique<EntityCreatedEvent>(entity.GetID()));
+
+		return entity.GetID();
 	}
+
+	Entity& Scene::GetEntity(const EntityID& entityID)
+	{
+		auto it = std::find(m_Entities.begin(), m_Entities.end(), entityID);
+
+		NLE_CORE_ASSERT(it != m_Entities.end(), "Entity not found", entityID);
+
+		return *it;
+	}
+
 
 	void Scene::RemoveEntity(size_t pos)
 	{

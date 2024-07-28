@@ -49,6 +49,7 @@ namespace NULLENGINE
 
 		const int& GetRows();
 		const int& GetCols();
+		const std::string& GetName();
 		
 		int GetFrameCount() { return m_Rows * m_Cols; }
 
@@ -58,6 +59,8 @@ namespace NULLENGINE
 		// The dimensions of the sprite sheet.
 		int	m_Rows;
 		int	m_Cols;
+
+		std::string m_Name;
 
 		// Pointer to a texture created using the NUll Engine.
 		Texture* m_Texture;

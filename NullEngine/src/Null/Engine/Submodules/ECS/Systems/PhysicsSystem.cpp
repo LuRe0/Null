@@ -38,9 +38,11 @@ namespace NULLENGINE
 
 		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
 
-		componentFactory->Register<Rigidbody2DComponent>(CreateRigidbody2DComponent, [this](Entity& id) { this->ViewRigidbody2DComponent(id); });
+		componentFactory->Register<Rigidbody2DComponent>(CreateRigidbody2DComponent, 
+			[this](Entity& id) { this->ViewRigidbody2DComponent(id); }, WriteRigidbody2DComponent);
 
-		componentFactory->Register<BoxCollider2DComponent>(CreateBoxCollider2DComponent, [this](Entity& id) { this->ViewBoxCollider2DComponent(id); });
+		componentFactory->Register<BoxCollider2DComponent>(CreateBoxCollider2DComponent, 
+			[this](Entity& id) { this->ViewBoxCollider2DComponent(id); }, WriteBoxCollider2DComponent);
 
 	}
 	void PhysicsSystem::Load()
@@ -58,6 +60,7 @@ namespace NULLENGINE
 		SUBSCRIBE_EVENT(EntityCreatedEvent, &PhysicsSystem::OnEntityCreated, eventManager, EventPriority::Low);
 		SUBSCRIBE_EVENT(EntityRemoveComponentEvent, &PhysicsSystem::OnEntityComponentRemoved, eventManager, EventPriority::High);
 		SUBSCRIBE_EVENT(EntityAddComponentEvent, &PhysicsSystem::OnEntityComponentAdded, eventManager, EventPriority::High);
+		SUBSCRIBE_EVENT(SceneSwitchEvent, &PhysicsSystem::OnSceneSwitched, eventManager, EventPriority::High);
 
 		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
 
@@ -141,7 +144,7 @@ namespace NULLENGINE
 		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
 
 		auto* comp = static_cast<Rigidbody2DComponent*>(component);
-		JsonWrapper jsonWrapper(json);
+		JsonReader jsonWrapper(json);
 
 
 		if (!jsonWrapper.Empty())
@@ -160,7 +163,7 @@ namespace NULLENGINE
 		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
 
 		auto* comp = static_cast<BoxCollider2DComponent*>(component);
-		JsonWrapper jsonWrapper(json);
+		JsonReader jsonWrapper(json);
 
 		if (!jsonWrapper.Empty())
 		{
@@ -172,6 +175,32 @@ namespace NULLENGINE
 			comp->m_RestitutionThreshold = jsonWrapper.GetFloat("restitutionThreshold", 0.5f);
 		}
 		componentFactory->AddOrUpdate<BoxCollider2DComponent>(id, comp, registry, comp->m_Offset, comp->m_Scale, comp->m_Density, comp->m_Friction, comp->m_Restitution, comp->m_RestitutionThreshold);
+	}
+	JSON PhysicsSystem::WriteRigidbody2DComponent(BaseComponent* component)
+	{
+		nlohmann::json json;
+
+		auto& rigidbody = *static_cast<Rigidbody2DComponent*>(component);
+
+		json["Rigidbody2D"]["type"] = rigidbody.m_Type;
+		json["Rigidbody2D"]["fixedRotation"] = rigidbody.m_FixedRotation;
+
+		return json;
+	}
+	JSON PhysicsSystem::WriteBoxCollider2DComponent(BaseComponent* component)
+	{
+		nlohmann::json json;
+
+		auto& collider = *static_cast<BoxCollider2DComponent*>(component);
+
+		json["BoxCollider2D"]["offset"] = { collider.m_Offset.x, collider.m_Offset.y };
+		json["BoxCollider2D"]["scale"] = { collider.m_Scale.x, collider.m_Scale.y };
+		json["BoxCollider2D"]["density"] = collider.m_Density;
+		json["BoxCollider2D"]["friction"] = collider.m_Friction;
+		json["BoxCollider2D"]["restitution"] = collider.m_Restitution;
+		json["BoxCollider2D"]["restitutionThreshold"] = collider.m_RestitutionThreshold;
+
+		return json;
 	}
 	void PhysicsSystem::ViewRigidbody2DComponent(Entity& entity)
 	{
@@ -289,6 +318,38 @@ namespace NULLENGINE
 				registry->HasComponent<BoxCollider2DComponent>(e.GetID()))
 			{
 				InitializePhysics(e.GetID(), registry);
+			}
+		}
+	}
+
+	void PhysicsSystem::OnSceneSwitched(const SceneSwitchEvent& e)
+	{
+		for (size_t i = 0; i < m_Entities.size(); i++)
+		{
+			EntityID id = m_Entities[i];
+
+			NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+
+			Rigidbody2DComponent& rb2d = registry->GetComponent<Rigidbody2DComponent>(id);
+
+			if (registry->HasComponent<BoxCollider2DComponent>(id))
+			{
+				BoxCollider2DComponent& bc2d = registry->GetComponent<BoxCollider2DComponent>(id);
+
+				if (bc2d.m_RuntimeFixture)
+				{
+					rb2d.m_RuntimeBody->DestroyFixture(bc2d.m_RuntimeFixture);
+
+					bc2d.m_RuntimeFixture = nullptr;
+				}
+
+			}
+
+			if (rb2d.m_RuntimeBody)
+			{
+				m_PhysicsWorld->DestroyBody(rb2d.m_RuntimeBody);
+
+				rb2d.m_RuntimeBody = nullptr;
 			}
 		}
 	}

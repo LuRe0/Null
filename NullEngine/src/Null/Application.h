@@ -66,6 +66,8 @@ namespace NULLENGINE
 		const std::string Name() const { return m_ApplicationName; }
 
 		virtual ~Application();
+	protected:
+		IEngine* m_NullEngine;
 	private:
 		enum LayerType
 		{
@@ -81,7 +83,6 @@ namespace NULLENGINE
 
 		//std::unique_ptr<ImGuiLayer> m_ImGuiLayer;
 
-		IEngine* m_NullEngine;
 		std::unordered_map<std::string, std::function<void()>> m_Createfunctions;
 
 		std::string m_ApplicationName;

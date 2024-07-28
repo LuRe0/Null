@@ -111,6 +111,7 @@ namespace NULLENGINE
 		void OnEntityCreate(const EntityModifiedEvent& e);
 		void OnEntityDestroyed(const EntityDestroyedEvent& e);
 		void OnEntityComponentRemoved(const EntityRemoveComponentEvent& e);
+		void OnSceneSwitch(const SceneSwitchEvent& e);
 
 
 	protected:

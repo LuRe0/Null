@@ -55,6 +55,7 @@ namespace NULLENGINE
 		std::unique_ptr<InstanceMesh> m_InstanceMesh;
 
 		static void CreateSpriteComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
+		static JSON WriteSpriteComponent(BaseComponent* component);
 
 		void ViewSpriteComponent(Entity& entityID);
 	};

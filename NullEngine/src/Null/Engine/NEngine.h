@@ -59,12 +59,15 @@ namespace NULLENGINE
 			return instance;
 		}
 
-
-		static bool editor;
+		void SetEditorEnabled(bool enable) override { m_EditorEnabled = enable; }
+		bool GetIsEditorEnabled()  override { return m_EditorEnabled;  }
 
 	private:
 		int frames = 0;
 		float framerateTimer = 0;
+
+
+		bool m_EditorEnabled = false;
 
 		NEngine() = default;
 		//! Vector containing all FLEngine Components

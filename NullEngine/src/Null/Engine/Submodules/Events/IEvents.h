@@ -41,6 +41,7 @@ namespace NULLENGINE
 			KeyPress, KeyRelease, KeyHold, KeyTyped,
 			MouseMove, MouseButtonPress, MouseButtonRelease, MouseButtonHold, MouseScrolled,
 			EntityCreated, EntityDestroyed,EntityAddComponent, EntityRemoveComponent,
+			SceneSwitch,
 		};
 
 		virtual std::unique_ptr<Event> Clone() const = 0;

@@ -268,6 +268,7 @@ namespace NULLENGINE
 
 		void OnEntityDestroyed(const EntityDestroyedEvent& e);
 		void OnEntityRemoveComponent(const EntityRemoveComponentEvent& e);
+		void OnSceneSwitch(const SceneSwitchEvent& e);
 
 
 		NRegistry(NRegistry const&);

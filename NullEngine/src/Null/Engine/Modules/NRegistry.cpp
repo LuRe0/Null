@@ -71,6 +71,7 @@ namespace NULLENGINE
 
 		SUBSCRIBE_EVENT(EntityDestroyedEvent, &NRegistry::OnEntityDestroyed, eventManager, EventPriority::Low);
 		SUBSCRIBE_EVENT(EntityRemoveComponentEvent, &NRegistry::OnEntityRemoveComponent, eventManager, EventPriority::Low);
+		SUBSCRIBE_EVENT(SceneSwitchEvent, &NRegistry::OnSceneSwitch, eventManager, EventPriority::Medium);
 	}
 
 	void NRegistry::Update(float dt)
@@ -156,5 +157,18 @@ namespace NULLENGINE
 	void NRegistry::OnEntityRemoveComponent(const EntityRemoveComponentEvent& e)
 	{
 		RemoveComponent(e.GetID(), e.GetComponentID());
+	}
+	void NRegistry::OnSceneSwitch(const SceneSwitchEvent& e)
+	{
+		std::vector<std::unique_ptr<IComponentManager>> m_ComponentManagers;
+
+		for (size_t i = 0; i < m_ComponentManagers.size(); i++)
+		{
+			m_ComponentManagers[i].get()->Clear();
+		}
+
+		m_EntityToIndexMap.clear();
+		m_IndexToEntityMap.clear();
+		m_EntityComponentSignatures.clear();
 	}
 }

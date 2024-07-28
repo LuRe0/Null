@@ -40,7 +40,7 @@ namespace NULLENGINE
 	class NLE_API NSceneManager : public IModule
 	{
 	public:
-		NSceneManager() = default;
+		NSceneManager();
 		~NSceneManager() = default;
 
 		/// <summary>
@@ -68,6 +68,8 @@ namespace NULLENGINE
 		//! Virtual Shutdown function
 		void Shutdown() override;
 
+		void SwitchScene(const std::string& nextScene);
+
 		Scene* GetCurrentScene();
 
 		static const std::string Name() { return "SceneManager"; }
@@ -76,6 +78,13 @@ namespace NULLENGINE
 		//std::vector<std::string> M_CUR = {};
 		std::unordered_map<std::string, std::unique_ptr<Scene>> m_Scenes;
 		std::string m_CurrentScene = "";
+		std::string m_DefaultScene = "";
+
+
+		void LoadScene(const std::string& scene);
+
+		void OnSceneSwitch(const SceneSwitchEvent& e);
+
 
 		NSceneManager(NSceneManager const&) = delete;
 		NSceneManager& operator=(NSceneManager const&) = delete;

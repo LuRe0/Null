@@ -37,7 +37,8 @@ namespace NULLENGINE
 
 		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
 
-		componentFactory->Register<SpriteComponent>(CreateSpriteComponent, [this](Entity& id) { this->ViewSpriteComponent(id); });
+		componentFactory->Register<SpriteComponent>(CreateSpriteComponent,
+			[this](Entity& id) { this->ViewSpriteComponent(id); }, WriteSpriteComponent);
 	}
 
 	void SpriteRenderSystem::Load()
@@ -86,7 +87,7 @@ namespace NULLENGINE
 		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
 
 		auto* comp = static_cast<SpriteComponent*>(component);
-		JsonWrapper jsonWrapper(json);
+		JsonReader jsonWrapper(json);
 
 
 		if (!jsonWrapper.Empty())
@@ -105,6 +106,23 @@ namespace NULLENGINE
 		}
 
 		componentFactory->AddOrUpdate<SpriteComponent>(id, comp, registry, comp->m_FrameIndex, comp->m_SpriteSource, comp->m_Mesh, comp->m_Color, comp->m_ShaderName);
+	}
+
+	JSON SpriteRenderSystem::WriteSpriteComponent(BaseComponent* component)
+	{
+		nlohmann::json json;
+
+		auto& sprite = *static_cast<SpriteComponent*>(component);
+
+		json["Sprite"]["frameindex"] = sprite.m_FrameIndex;
+		json["Sprite"]["texture"] = sprite.m_SpriteSource->GetName();
+		json["Sprite"]["dimension"] = { sprite.m_SpriteSource->GetRows(),  sprite.m_SpriteSource->GetCols()};
+		json["Sprite"]["tint"] = { sprite.m_Color.r, sprite.m_Color.g, sprite.m_Color.b, sprite.m_Color.a };
+		json["Sprite"]["shadername"] = sprite.m_ShaderName;
+		json["Sprite"]["meshname"] = sprite.m_Mesh->GetName();
+
+		return json;
+
 	}
 
 	void SpriteRenderSystem::ViewSpriteComponent(Entity& entity)

@@ -50,6 +50,7 @@ namespace NULLENGINE
 		SUBSCRIBE_EVENT(EntityAddComponentEvent, &ISystem::OnEntityCreate, eventManager, EventPriority::Low);
 		SUBSCRIBE_EVENT(EntityRemoveComponentEvent, &ISystem::OnEntityComponentRemoved, eventManager, EventPriority::Low);
 		SUBSCRIBE_EVENT(EntityDestroyedEvent, &ISystem::OnEntityDestroyed, eventManager, EventPriority::Low);
+		SUBSCRIBE_EVENT(SceneSwitchEvent, &ISystem::OnSceneSwitch, eventManager, EventPriority::Medium);
 	}
 
 
@@ -137,6 +138,11 @@ namespace NULLENGINE
 	{
 		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
 		UpdateEntityList(e.GetID(), registry);
+	}
+
+	void ISystem::OnSceneSwitch(const SceneSwitchEvent& e)
+	{
+		m_Entities.clear();
 	}
 
 	void ISystem::OnEntityDestroyed(const EntityDestroyedEvent& e)

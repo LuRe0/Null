@@ -56,6 +56,7 @@ namespace NULLENGINE
 		io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
 		io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;
 
+		io.FontGlobalScale = 1.25f;
 		// Setup Dear ImGui style
 		ImGui::StyleColorsDark();
 		//ImGui::StyleColorsLight();
@@ -164,12 +165,23 @@ namespace NULLENGINE
 		{
 			if (ImGui::BeginMenu("File"))
 			{
+				if (ImGui::MenuItem("Open", NULL, false))
+				{
+					NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+
+					eventManager->QueueEvent(std::make_unique<SceneSwitchEvent>(m_PannelData.m_Context->m_Name, "Some Scene"));
+				}
+
+				if (ImGui::MenuItem("Save", NULL, false))
+				{
+					m_PannelData.m_Context->Serialize();
+				}
+
 				if (ImGui::MenuItem("Exit", NULL, false))
 				{
 					NWindow* window = NEngine::Instance().Get<NWindow>();
 					window->CloseWindow();
 				}
-
 				ImGui::EndMenu();
 			}
 
@@ -197,9 +209,13 @@ namespace NULLENGINE
 			ImGui::EndMenuBar();
 		}
 
+		//ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1.0f, 1.0f));  // Reduce padding inside the frame
+		//ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(2.0f, 1.0f));   // Reduce spacing between items
 
 		for (auto& pannel : m_Pannels)
 			pannel.get()->OnImGUIRender();
+
+		//ImGui::PopStyleVar(2);
 
 		ImGui::Begin("Viewport");
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();

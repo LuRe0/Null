@@ -61,7 +61,7 @@ namespace NULLENGINE
     {
         Entity newEntity(registry->CreateEntity(), registry);
 
-        JsonWrapper jsonWrapper(entityData);
+        JsonReader jsonWrapper(entityData);
 
         if (!jsonWrapper.Empty())
         {
@@ -76,6 +76,7 @@ namespace NULLENGINE
             //if this is reading from
             if (!archetype.empty())
             {
+                newEntity.SetArchetype(archetype);
 
                 if (!HasArchetype(archetype))
                 {
@@ -172,7 +173,7 @@ namespace NULLENGINE
         }
 
 
-        JsonWrapper archetypeWrapper(entityData);
+        JsonReader archetypeWrapper(entityData);
 
        const std::string& name = archetypeWrapper.GetString("Name", "");
 

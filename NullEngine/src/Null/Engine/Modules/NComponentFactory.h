@@ -49,12 +49,27 @@ namespace NULLENGINE
 		void Shutdown() override {};
 
 
+		nlohmann::json WriteComponent(BaseComponent* component) const
+		{
+			auto it = m_componentWriter.find(component->Name());
+			if (it != m_componentWriter.end()) 
+			{
+				return it->second(component);
+			}
+
+			NLE_CORE_WARN("No Write function found for {0}", component->Name());
+
+			return JSON();
+		}
+
 		void ViewComponent(Entity entity, uint32_t componentId) const
 		{
 			auto it = m_ComponentInspector.find(componentId);
 			if (it != m_ComponentInspector.end()) {
 				it->second(entity);
 			}
+			else
+				NLE_CORE_WARN("No Inspector function found for {0}", componentId);
 		}
 	
 		BaseComponent& CreateComponent(const std::string& componentName, const nlohmann::json& componentData, NRegistry* registry, EntityID id) const
@@ -64,6 +79,10 @@ namespace NULLENGINE
 			auto it = m_componentReader.find(componentName);
 			if (it != m_componentReader.end()) {
 				it->second(component, componentData, registry, id);
+			}
+			else
+			{
+				NLE_CORE_WARN("No Read function found for {0}", component->Name());
 			}
 
 			return *component;
@@ -75,6 +94,10 @@ namespace NULLENGINE
 			if (it != m_componentReader.end()) {
 				it->second(component, componentData, registry, id);
 			}
+			else
+			{
+				NLE_CORE_WARN("No Read function found for {0}", component->Name());
+			}
 		}
 
 
@@ -85,6 +108,10 @@ namespace NULLENGINE
 			auto it = m_componentReader.find(componentName);
 			if (it != m_componentReader.end()) {
 				it->second(component, componentData, registry, id);
+			}
+			else
+			{
+				NLE_CORE_WARN("No Read function found for {0}", component->Name());
 			}
 
 			delete component;
@@ -119,12 +146,13 @@ namespace NULLENGINE
 
 
 		template <typename T>
-		void Register(void (*func)(void*, const nlohmann::json&, NRegistry* registry, EntityID id), std::function<void(Entity&)> func2)
+		void Register(void (*func)(void*, const nlohmann::json&, NRegistry* registry, EntityID id),
+									std::function<void(Entity&)> func2,
+									std::function<nlohmann::json(BaseComponent*)> func3)
 		{
 			AddCreateFunction<T>(func);
-
 			AddViewFunction<T>(func2);
-
+			AddWriteFunction<T>(func3);
 			AddComponentID<T>();
 		}
 
@@ -148,12 +176,9 @@ namespace NULLENGINE
 
 	private:
 		std::unordered_map<std::string, std::function<void(void*, const nlohmann::json&, NRegistry*, EntityID)>> m_componentReader;
+		std::unordered_map<std::string, std::function<nlohmann::json(BaseComponent*)>> m_componentWriter;
 		std::unordered_map<std::string, std::function<BaseComponent* ()>> m_ComponentCreator;
-
-
 		std::unordered_map<std::string, uint32_t> m_ComponentNamesToID;
-
-		
 		std::unordered_map<size_t, std::function<void (Entity&)>> m_ComponentInspector;
 
 		template <typename T>
@@ -166,6 +191,12 @@ namespace NULLENGINE
 				};
 		}
 
+
+		template <typename T>
+		void AddWriteFunction(std::function<nlohmann::json(BaseComponent*)> func)
+		{
+			m_componentWriter.emplace(Component<T>::TypeName(), func);
+		}
 
 		template <typename T>
 		void AddViewFunction(std::function<void(Entity&)> func2)

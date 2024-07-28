@@ -64,6 +64,11 @@ namespace NULLENGINE
 		static void CreateRigidbody2DComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
 		static void CreateBoxCollider2DComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
 
+		static JSON WriteRigidbody2DComponent(BaseComponent* component);
+
+		static JSON WriteBoxCollider2DComponent(BaseComponent* component);
+
+
 		void ViewRigidbody2DComponent(Entity& entityID);
 		void ViewBoxCollider2DComponent(Entity& entityID);
 
@@ -72,6 +77,7 @@ namespace NULLENGINE
 		void OnEntityCreated(const EntityCreatedEvent& e);
 		void OnEntityComponentRemoved(const EntityRemoveComponentEvent& e);
 		void OnEntityComponentAdded(const EntityAddComponentEvent& e);
+		void OnSceneSwitched(const SceneSwitchEvent& e);
 
 		const glm::vec3 GRAVITY = glm::vec3(0.0f, -9.81, 0.0f);
 		// Conversion factor

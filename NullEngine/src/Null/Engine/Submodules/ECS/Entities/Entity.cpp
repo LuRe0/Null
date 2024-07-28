@@ -49,4 +49,8 @@ namespace NULLENGINE
 	{
 		m_Name = name;
 	}
+	void Entity::SetArchetype(const std::string& name)
+	{
+		m_Archetype = name;
+	}
 }

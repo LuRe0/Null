@@ -60,7 +60,7 @@ namespace NULLENGINE
 
 		m_xHalfSize = j["xHalfSize"];
 		m_yHalfSize = j["yHalfSize"];
-		m_Name = j["name"];
+		m_Name = filename;
 
 		for (const auto& vertex : j["vertices"]) {
 			Vertex v;

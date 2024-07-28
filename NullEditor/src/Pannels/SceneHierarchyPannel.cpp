@@ -13,6 +13,8 @@
 #include "SceneHierarchyPannel.h"
 #include "Null/Engine/Submodules/Scene.h"
 #include "imgui.h"
+#include <misc/cpp/imgui_stdlib.h>
+
 //#include "backends/imgui_impl_opengl3.h"
 //#include "backends/imgui_impl_glfw.h"
 
@@ -26,10 +28,19 @@
 
 namespace NULLENGINE
 {
-
 	void SceneHierarchyPannel::OnImGUIRender()
 	{
 		ImGui::Begin("Scene Hierarchy");
+
+		ImGui::Text("Scene Name: "); ImGui::SameLine();
+
+		if (ImGui::InputText("##name", &m_PannelData->m_Context->m_Name))
+		{
+			if (m_PannelData->m_Context->m_Name.empty())
+			{
+				m_PannelData->m_Context->m_Name = "New Scene";
+			}
+		}
 
 		auto& entities = m_PannelData->m_Context->GetManagedEntities();
 

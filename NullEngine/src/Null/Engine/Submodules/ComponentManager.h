@@ -42,6 +42,7 @@ namespace NULLENGINE
 		virtual ~IComponentManager() {};
 		virtual BaseComponent& Get(EntityID entityID) = 0;
 		virtual void Remove(EntityID entityID) = 0;
+		virtual void Clear() = 0;
 	private:
 	};
 
@@ -71,9 +72,11 @@ namespace NULLENGINE
 			m_InternalComponents.resize(s);
 		}
 
-		void Clear()
+		void Clear() override
 		{
 			m_InternalComponents.clear();
+			m_EntityToIndexMap.clear();
+			m_IndexToEntityMap.clear();
 		}
 
 		void Add(EntityID entityID, std::unique_ptr<T>&& component)

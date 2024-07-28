@@ -33,16 +33,16 @@ namespace NULLENGINE
 		NEntityFactory* entityFactory = NEngine::Instance().Get<NEntityFactory>();
 		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
 
-		for (const auto& transitionData : sceneData["transitions"]) {
+		//for (const auto& transitionData : sceneData["transitions"]) {
 
-			Transition transition(transitionData["from"], transitionData["to"], transitionData["trigger"]);
+		//	Transition transition(transitionData["from"], transitionData["to"], transitionData["trigger"]);
 
-			m_Transitions.push_back(transition);
-		}
+		//	m_Transitions.push_back(transition);
+		//}
 
 		for (const auto& entityData : sceneData["entities"]) 
 		{
-			JsonWrapper jsonWrapper(entityData);
+			JsonReader jsonWrapper(entityData);
 
 			Entity entity = entityFactory->CreateEntity(entityData, registry);
 	
@@ -105,6 +105,87 @@ namespace NULLENGINE
 		return *it;
 	}
 
+	void Scene::Serialize()
+	{
+
+		std::string filePath = std::string("../Data/Scenes/Paths/") + std::string("scene") + std::string(".json");
+
+		std::ofstream outFile(filePath);
+
+		NLE_CORE_ASSERT(outFile, "Error opening file for writing");
+
+		// Write the JSON object to the file
+		//outFile << json.dump(4); // Pretty-print with an indent of 4 spaces
+		
+		JSON json;
+		JSON entitiesJson = JSON::array();
+
+		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+		NComponentFactory* compFactory = NEngine::Instance().Get<NComponentFactory>();
+
+		for (auto& entity : m_Entities)
+		{
+			JSON entityJson;
+			entityJson["name"] = entity.GetName();
+
+			if(!entity.m_Archetype.empty())
+				entityJson["archetype"] = entity.m_Archetype;
+
+			JSON componentsJson;
+			auto& signature = registry->EntitySignature(entity.GetID());
+
+			for (size_t i = 0; i < signature.size(); i++)
+			{
+				if (signature.test(i))
+				{
+					BaseComponent& component = registry->GetComponent(entity.GetID(), i);
+					JSON compJson = compFactory->WriteComponent(&component);
+					componentsJson.merge_patch(compJson); // Merge component JSON into the entity's components JSON
+				}
+			}
+
+			entityJson["components"] = componentsJson;
+			entitiesJson.push_back(entityJson);	 
+		}
+
+		json["entities"] = entitiesJson;
+		json["sceneName"] = m_Name;
+
+		outFile << json.dump(4);
+
+		outFile.close();
+	}
+
+	void Scene::SetAsStartScene()
+	{
+		std::string filePath = std::string("../Data/Scenes/") + std::string("Init") + std::string(".json");
+		JSON initData;
+
+		// Define the JSON content
+		initData["startScene"] = m_Name;
+
+		// Open the JSON file
+		std::ofstream outputFile(filePath);
+		if (!outputFile.is_open()) {
+			NLE_CORE_ERROR("Error: Could not create or open file");
+			return;
+		}
+
+		// Write the JSON content to the file
+		outputFile << initData.dump(4); // Dump with indentation of 4 spaces for readability
+
+		// Check if the content was written successfully
+		if (outputFile.fail()) {
+			NLE_CORE_ERROR("Error: Failed to write JSON content to file");
+		}
+		else {
+			NLE_CORE_ERROR("Successfully wrote JSON content to {0}", filePath);
+		}
+
+		// Close the file
+		outputFile.close();
+	}
+
 
 	void Scene::RemoveEntity(size_t pos)
 	{
@@ -141,10 +222,7 @@ namespace NULLENGINE
 				--i;
 			}
 		}
-		for (const auto& entity : m_Entities)
-		{
 
-		}
 	}
 
 	void Scene::Render()
@@ -154,10 +232,12 @@ namespace NULLENGINE
 
 	void Scene::Unload()
 	{
+
 	}
 
 	void Scene::Shutdown()
 	{
+		m_Entities.clear();
 	}
 
 }

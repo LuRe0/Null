@@ -32,9 +32,9 @@
 
 namespace NULLENGINE
 {
-    class JsonWrapper {
+    class JsonReader {
     public:
-        JsonWrapper(const nlohmann::json& jsonData);
+        JsonReader(const nlohmann::json& jsonData);
 
         glm::vec2 GetVec2(const std::string& key, const glm::vec2& defaultValue = { 0.0f, 0.0f }) const;
         glm::vec3 GetVec3(const std::string& key, const glm::vec3& defaultValue = { 0.0f, 0.0f, 0.0f }) const;
@@ -45,12 +45,46 @@ namespace NULLENGINE
         bool GetBool(const std::string& key, bool defaultValue = false) const;
         std::string GetString(const std::string& key, const std::string& defaultValue = "") const;
 
+
         bool HasData(const std::string& key) const;
 
         bool Empty() const;
 
     private:
         const nlohmann::json& data;
+
+        
     };
+
+
+    class JsonWriter {
+    public:
+        JsonWriter(nlohmann::json& jsonData);
+
+
+        // Setter methods
+        void SetVec2(const std::string& key, const glm::vec2& value);
+        void SetVec3(const std::string& key, const glm::vec3& value);
+        void SetVec4(const std::string& key, const glm::vec4& value);
+
+        template <typename T>
+        void SetValue(const std::string& key, T value);
+
+
+        bool HasData(const std::string& key) const;
+
+        bool Empty() const;
+
+    private:
+        nlohmann::json& data;
+
+
+    };
+
+    template<typename T>
+    inline void JsonWriter::SetValue(const std::string& key, T value)
+    {
+        data[key] = value;
+    }
 
 }

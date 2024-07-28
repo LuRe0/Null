@@ -45,6 +45,9 @@ namespace NULLENGINE
 		virtual void Update(float dt) = 0;
 		virtual void Unload() {};
 		virtual void Shutdown() = 0;
+
+		virtual void SetEditorEnabled(bool enable) = 0;
+		virtual bool GetIsEditorEnabled()  = 0;
 		template<typename T>
 		T* Get() const
 		{

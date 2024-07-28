@@ -36,7 +36,8 @@ namespace NULLENGINE
         // Register the create and view functions
         componentFactory->Register<AnimationComponent>(
             CreateAnimationComponent,  // Free function or static member function
-            [this](Entity& entity) { this->ViewAnimationComponent(entity); } // Lambda capturing `this` for member function
+            [this](Entity& entity) { this->ViewAnimationComponent(entity); },
+            WriteAnimationComponent // Lambda capturing `this` for member function
         );
     }
 
@@ -140,7 +141,7 @@ namespace NULLENGINE
         NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
 
         auto* comp = static_cast<AnimationComponent*>(component);
-        JsonWrapper jsonWrapper(json);
+        JsonReader jsonWrapper(json);
 
 
         if (!jsonWrapper.Empty())
@@ -157,6 +158,23 @@ namespace NULLENGINE
 
         componentFactory->AddOrUpdate<AnimationComponent>(id, comp, registry, comp->m_FrameCount, comp->m_FrameOffset, comp->m_FrameDuration, comp->m_IsLooping, comp->m_IsPingPong, comp->m_IsReversed, comp->m_IsRunning);
 
+    }
+
+    JSON AnimationSystem::WriteAnimationComponent(BaseComponent* component)
+    {
+        nlohmann::json json;
+
+        auto& animation = *static_cast<AnimationComponent*>(component);
+
+        json["Animation"]["startFrame"] = animation.m_FrameOffset;
+        json["Animation"]["frameCount"] = animation.m_FrameCount;
+        json["Animation"]["frameDuration"] = animation.m_FrameDuration;
+        json["Animation"]["loop"] = animation.m_IsLooping;
+        json["Animation"]["pingPong"] = animation.m_IsPingPong;
+        json["Animation"]["reverse"] = animation.m_IsReversed;
+        json["Animation"]["run"] = animation.m_IsRunning;
+
+        return json;
     }
 
     void AnimationSystem::ViewAnimationComponent(Entity& entity)

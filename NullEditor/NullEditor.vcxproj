@@ -77,8 +77,8 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>NLE_PLATFORM_WINDOWS;NLE_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\NullEngine\vendor\spdlog\include;..\NullEngine\vendor\magic_enum\magic_enum\include;..\NullEngine\src;src;..\NullEngine\vendor\GLFW\include;..\NullEngine\vendor\Glad\include;..\NullEngine\vendor\imgui;..\NullEngine\vendor\JSON\include;..\NullEngine\vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NLE_PLATFORM_WINDOWS;EDITOR;NLE_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\NullEngine\vendor\spdlog\include;..\NullEngine\vendor\magic_enum\magic_enum\include;..\NullEngine\src;src;..\NullEngine\vendor\GLFW\include;..\NullEngine\vendor\Glad\include;..\NullEngine\vendor\imgui;..\NullEngine\vendor\JSON\include;..\NullEngine\vendor\tinyfiledialogs;..\NullEngine\vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <LanguageStandard>stdcpplatest</LanguageStandard>
@@ -92,8 +92,8 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>NLE_PLATFORM_WINDOWS;NLE_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\NullEngine\vendor\spdlog\include;..\NullEngine\vendor\magic_enum\magic_enum\include;..\NullEngine\src;src;..\NullEngine\vendor\GLFW\include;..\NullEngine\vendor\Glad\include;..\NullEngine\vendor\imgui;..\NullEngine\vendor\JSON\include;..\NullEngine\vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NLE_PLATFORM_WINDOWS;EDITOR;NLE_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\NullEngine\vendor\spdlog\include;..\NullEngine\vendor\magic_enum\magic_enum\include;..\NullEngine\src;src;..\NullEngine\vendor\GLFW\include;..\NullEngine\vendor\Glad\include;..\NullEngine\vendor\imgui;..\NullEngine\vendor\JSON\include;..\NullEngine\vendor\tinyfiledialogs;..\NullEngine\vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <LanguageStandard>stdcpplatest</LanguageStandard>
@@ -107,8 +107,8 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>NLE_PLATFORM_WINDOWS;NLE_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\NullEngine\vendor\spdlog\include;..\NullEngine\vendor\magic_enum\magic_enum\include;..\NullEngine\src;src;..\NullEngine\vendor\GLFW\include;..\NullEngine\vendor\Glad\include;..\NullEngine\vendor\imgui;..\NullEngine\vendor\JSON\include;..\NullEngine\vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NLE_PLATFORM_WINDOWS;EDITOR;NLE_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\NullEngine\vendor\spdlog\include;..\NullEngine\vendor\magic_enum\magic_enum\include;..\NullEngine\src;src;..\NullEngine\vendor\GLFW\include;..\NullEngine\vendor\Glad\include;..\NullEngine\vendor\imgui;..\NullEngine\vendor\JSON\include;..\NullEngine\vendor\tinyfiledialogs;..\NullEngine\vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <LanguageStandard>stdcpplatest</LanguageStandard>

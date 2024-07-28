@@ -80,12 +80,16 @@ namespace NULLENGINE
 		EntityID AddEntity(const std::string& name);
 
 		Entity& GetEntity(const EntityID& entityID);
+		
+		void Serialize();
+
+		void SetAsStartScene();
 
 		const std::vector<Entity>& GetManagedEntities() { return m_Entities; }
 
 		std::vector<Entity>& ManagedEntities() { return m_Entities; }
 
-		const std::string_view GetName() { return m_Name; }
+		const std::string& GetName() { return m_Name; }
 
     private:
 		Scene(Scene const&) = delete;
@@ -110,6 +114,9 @@ namespace NULLENGINE
 
         std::vector<Transition> m_Transitions;
 
+
+		friend class SceneHierarchyPannel;
+		friend class ImGuiLayer;
 		//std::unique_ptr<ComponentManager> mComponentManager;
 		//std::unique_ptr<EntityManager> m_EntityManager;
 		//std::unique_ptr<SystemManager> mSystemManager;

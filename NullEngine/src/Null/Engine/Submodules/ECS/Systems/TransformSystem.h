@@ -58,10 +58,10 @@ namespace NULLENGINE
 		//void OnWindowResize(const WindowResizeEvent& e);
 		static void CreateTransformComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
 
+		static JSON WriteTransformComponent(BaseComponent* component);
+
 		const glm::vec2 MetersToPixels(float x, float y);
 		const glm::vec2 PixelsToMeters(float x, float y);
-
-
 
 		void ViewTransformComponent(Entity& entity);
 

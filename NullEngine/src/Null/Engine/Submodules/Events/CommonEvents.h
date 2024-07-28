@@ -318,4 +318,27 @@ namespace NULLENGINE
         EVENT_CLASS_TYPE(EntityRemoveComponent)
     };
 
+    class SceneSwitchEvent : public Event {
+    public:
+        SceneSwitchEvent(const std::string& from, const std::string& to)
+        : m_CurrentScene(from)
+        , m_NextScene(to) {}
+
+        std::string Print() const override
+        {
+            std::stringstream ss;
+            ss << "SceneSwitchEvent: from: " << m_CurrentScene << ", to: " << m_NextScene;
+            return ss.str();
+        }
+
+        const std::string& GetCurrentScene() const { return m_CurrentScene; }
+        const std::string& GetNextScene() const { return m_NextScene; }
+
+        EVENT_CLASS_TYPE(SceneSwitch)
+
+    private:
+        const std::string m_CurrentScene;
+        const std::string m_NextScene;
+    };
+
 }

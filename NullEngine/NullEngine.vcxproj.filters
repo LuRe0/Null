@@ -209,6 +209,9 @@
     <ClInclude Include="src\Null\EntryPoint.h">
       <Filter>Null</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Tools\FileDialog.h">
+      <Filter>Null\Tools</Filter>
+    </ClInclude>
     <ClInclude Include="src\Null\Tools\JsonWrapper.h">
       <Filter>Null\Tools</Filter>
     </ClInclude>
@@ -355,6 +358,9 @@
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\Scene.cpp">
       <Filter>Null\Engine\Submodules</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Tools\FileDialog.cpp">
+      <Filter>Null\Tools</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Tools\JsonWrapper.cpp">
       <Filter>Null\Tools</Filter>

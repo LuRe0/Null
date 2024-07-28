@@ -36,7 +36,8 @@ namespace NULLENGINE
 
 		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
 
-		componentFactory->Register<TransformComponent>(CreateTransformComponent, [this](Entity& id) { this->ViewTransformComponent(id); });
+		componentFactory->Register<TransformComponent>(CreateTransformComponent, 
+			[this](Entity& id) { this->ViewTransformComponent(id); }, WriteTransformComponent);
 
 	}
 
@@ -101,7 +102,7 @@ namespace NULLENGINE
 		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
 
 		auto* comp = static_cast<TransformComponent*>(component);
-		JsonWrapper jsonWrapper(json);
+		JsonReader jsonWrapper(json);
 
 		if (!jsonWrapper.Empty())
 		{
@@ -111,6 +112,19 @@ namespace NULLENGINE
 		}
 
 		componentFactory->AddOrUpdate<TransformComponent>(id, comp, registry, comp->m_Translation, comp->m_Scale, comp->m_Rotation);
+	}
+
+	JSON TransformSystem::WriteTransformComponent(BaseComponent* component)
+	{
+		nlohmann::json json;
+
+		auto& transform = *static_cast<TransformComponent*>(component);
+
+		json["Transform"]["translation"] = { transform.m_Translation.x, transform.m_Translation.y, transform.m_Translation.z };
+		json["Transform"]["scale"] = { transform.m_Scale.x, transform.m_Scale.y, transform.m_Scale.z };
+		json["Transform"]["rotation"] = { transform.m_Rotation.x, transform.m_Rotation.y, transform.m_Rotation.z };
+
+		return json;
 	}
 
 	void TransformSystem::ViewTransformComponent(Entity& entity)

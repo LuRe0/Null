@@ -32,6 +32,7 @@ namespace NULLENGINE
 		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
 		NEntityFactory* entityFactory = NEngine::Instance().Get<NEntityFactory>();
 		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
+		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
 
 		//for (const auto& transitionData : sceneData["transitions"]) {
 
@@ -61,6 +62,7 @@ namespace NULLENGINE
 			}
 
 			m_Entities.push_back(entity);
+			eventManager->TriggerEvent(EntityCreatedEvent(entity.GetID()));
 
 		}
 
@@ -105,10 +107,13 @@ namespace NULLENGINE
 		return *it;
 	}
 
-	void Scene::Serialize()
+	void Scene::Serialize(const std::string& name)
 	{
-
-		std::string filePath = std::string("../Data/Scenes/Paths/") + std::string("scene") + std::string(".json");
+		std::string filePath = "";
+		if(name.empty())
+			filePath = std::string("../Data/Scenes/Paths/") + m_Name + std::string(".json");
+		else
+			filePath = std::string("../Data/Scenes/Paths/") + name + std::string(".json");
 
 		std::ofstream outFile(filePath);
 
@@ -149,7 +154,6 @@ namespace NULLENGINE
 		}
 
 		json["entities"] = entitiesJson;
-		json["sceneName"] = m_Name;
 
 		outFile << json.dump(4);
 

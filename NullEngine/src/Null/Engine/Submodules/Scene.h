@@ -81,7 +81,7 @@ namespace NULLENGINE
 
 		Entity& GetEntity(const EntityID& entityID);
 		
-		void Serialize();
+		void Serialize(const std::string& name = "");
 
 		void SetAsStartScene();
 

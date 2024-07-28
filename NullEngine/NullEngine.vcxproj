@@ -87,7 +87,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;comdlg32.lib; ole32.lib;user32.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <PostBuildEvent>
       <Command>IF EXIST ..\bin\Debug-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /Y /I ..\bin\Debug-windows-x86_64\NullEngine\NullEngine.lib ..\bin\Debug-windows-x86_64\sandbox &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Debug-windows-x86_64\NullEngine\NullEngine.lib ..\bin\Debug-windows-x86_64\sandbox &gt; nul)
@@ -111,7 +111,7 @@ IF EXIST ..\bin\Debug-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /Y 
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;comdlg32.lib; ole32.lib;user32.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <PostBuildEvent>
       <Command>IF EXIST ..\bin\Release-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /Y /I ..\bin\Release-windows-x86_64\NullEngine\NullEngine.lib ..\bin\Release-windows-x86_64\sandbox &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Release-windows-x86_64\NullEngine\NullEngine.lib ..\bin\Release-windows-x86_64\sandbox &gt; nul)
@@ -135,7 +135,7 @@ IF EXIST ..\bin\Release-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;comdlg32.lib; ole32.lib;user32.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <PostBuildEvent>
       <Command>IF EXIST ..\bin\Dist-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /Y /I ..\bin\Dist-windows-x86_64\NullEngine\NullEngine.lib ..\bin\Dist-windows-x86_64\sandbox &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Dist-windows-x86_64\NullEngine\NullEngine.lib ..\bin\Dist-windows-x86_64\sandbox &gt; nul)

@@ -149,7 +149,7 @@ namespace NULLENGINE
 		}
 
 
-		std::string sceneName = sceneData["sceneName"];
+		std::string sceneName = nextScene;
 
 		std::unique_ptr<Scene> scene = std::make_unique<Scene>(sceneName);
 

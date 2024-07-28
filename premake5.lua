@@ -19,7 +19,6 @@ includeDir["Box2D"] = "NullEngine/vendor/Box2D/include"
 includeDir["glm"] = "NullEngine/vendor/glm" 
 includeDir["ImGui"] = "NullEngine/vendor/imgui" 
 includeDir["stb"] = "NullEngine/vendor/stb/stb" 
-includeDir["tinyfiledialogs"] = "NullEngine/vendor/tinyfiledialogs" 
 
 group "Depenencies"
     include "NullEngine/vendor/GLFW"
@@ -57,7 +56,6 @@ project "NullEngine"
          "%{includeDir.Box2D}",
          "%{includeDir.glm}",
          "%{includeDir.stb}",
-         "%{includeDir.tinyfiledialogs}",
          "%{includeDir.ImGui}"
     }
 
@@ -132,7 +130,6 @@ project "Sandbox"
          "%{includeDir.Glad}",
          "%{includeDir.ImGui}",
          "%{includeDir.JSON}",
-         "%{includeDir.tinyfiledialogs}",
          "%{includeDir.glm}"
     }
 
@@ -192,7 +189,6 @@ project "NullEditor"
          "%{includeDir.Glad}",
          "%{includeDir.ImGui}",
          "%{includeDir.JSON}",
-         "%{includeDir.tinyfiledialogs}",
          "%{includeDir.glm}"
     }
 

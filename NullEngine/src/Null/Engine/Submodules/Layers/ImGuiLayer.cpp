@@ -20,6 +20,8 @@
 
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_glfw.h"
+#include "Null/Tools/FileDialog.h"
+
 
 //******************************************************************************//
 // Public Variables															    //
@@ -165,16 +167,36 @@ namespace NULLENGINE
 		{
 			if (ImGui::BeginMenu("File"))
 			{
-				if (ImGui::MenuItem("Open", NULL, false))
+				if (ImGui::MenuItem("New Scene", NULL, false))
 				{
 					NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
 
-					eventManager->QueueEvent(std::make_unique<SceneSwitchEvent>(m_PannelData.m_Context->m_Name, "Some Scene"));
+					eventManager->QueueEvent(std::make_unique<SceneSwitchEvent>(m_PannelData.m_Context->m_Name, "New Scene"));
 				}
 
-				if (ImGui::MenuItem("Save", NULL, false))
+				if (ImGui::MenuItem("Open", NULL, false))
+				{
+
+					const std::string& nextScene = FileDialog::OpenFile("Null Engine Scene (*.json)\0*.json\0");
+
+					if (!nextScene.empty())
+					{
+						NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+
+						eventManager->QueueEvent(std::make_unique<SceneSwitchEvent>(m_PannelData.m_Context->m_Name, nextScene));
+					}
+				}
+
+				if (ImGui::MenuItem("Save Scene", NULL, false))
 				{
 					m_PannelData.m_Context->Serialize();
+				}
+
+				if (ImGui::MenuItem("Save Scene As", NULL, false))
+				{
+					const std::string& nextScene = FileDialog::SaveFile("Null Engine Scene (*.json)\0*.json\0");
+
+					m_PannelData.m_Context->Serialize(nextScene);
 				}
 
 				if (ImGui::MenuItem("Exit", NULL, false))

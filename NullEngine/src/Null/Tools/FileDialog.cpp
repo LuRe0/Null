@@ -11,8 +11,11 @@
 //******************************************************************************//
 #include "stdafx.h"
 #include "FileDialog.h"
-#include "tinyfiledialogs.h"
+#include <commdlg.h>
 
+#include <GLFW/glfw3.h>
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include<GLFW/glfw3native.h>
 
 
 //******************************************************************************//
@@ -25,44 +28,70 @@
 
 namespace NULLENGINE
 {
-	std::string FileDialog::OpenFile(const std::string& title, const char* filterPatterns[], const std::string& description)
-	{
-        //const char* filterPatterns[] = { "*.png", "*.jpg", "*.bmp", "*.tga" };
-        const char* selectedFile = tinyfd_openFileDialog(
-            title.c_str(),   // Dialog title
-            "",                  // Default path
-            4,                   // Number of filter patterns
-            filterPatterns,      // Filter patterns
-            description.c_str(),                // Single filter description
-            0                    // Allow multiple selections (0 or 1)
-        );
 
-        if (selectedFile) {
-            // Do something with the selected file
-            // For example, you can store the path in a variable or load the file
-            std::string filePath = selectedFile;
-            return filePath;
-        }
-
-        return "";
-	}
-    std::string FileDialog::SaveFile(const std::string& title, const char* filterPatterns[], const std::string& description)
+    std::string FileDialog::OpenFile(const char* filter)
     {
-        //const char* filterPatterns[] = { "*.png", "*.jpg", "*.bmp", "*.tga" };
+        OPENFILENAMEA ofn;
+        CHAR szFile[260] = { 0 };
 
-        const char* saveFileName = tinyfd_saveFileDialog(
-            title.c_str(),   // Dialog title
-            "",                  // Default path
-            4,                   // Number of filter patterns
-            filterPatterns,      // Filter patterns
-            description.c_str()                 // Single filter description
-        );
+        // Initialize OPENFILENAMEA
+        ZeroMemory(&ofn, sizeof(OPENFILENAMEA));
+        ofn.lStructSize = sizeof(OPENFILENAMEA);
+        ofn.hwndOwner = glfwGetWin32Window(NEngine::Instance().Get<NWindow>()->GetWinddow()); // If you have a window handle, replace nullptr with it
+        ofn.lpstrFile = szFile;
+        ofn.nMaxFile = sizeof(szFile);
+        ofn.lpstrFilter = filter;
+        ofn.nFilterIndex = 1;
+        ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
 
-        if (saveFileName) {
-            // Do something with the selected file
-            std::string filePath = saveFileName;
-            return saveFileName;
+        // Display the Open dialog box
+        if (GetOpenFileNameA(&ofn) == TRUE) 
+        {
+            std::string path = std::string(ofn.lpstrFile);
+
+            auto pos = path.find_last_of('\\');
+            path = (pos == std::string::npos) ? path : path.substr(pos + 1);
+
+            auto dotPos = path.find_last_of('.');
+            path = (pos == std::string::npos) ? path : path.substr(0, dotPos);
+
+            return path;
         }
+
         return std::string();
     }
+
+    std::string FileDialog::SaveFile(const char* filter)
+    {
+        OPENFILENAMEA ofn;
+        CHAR szFile[260] = { 0 };
+
+        // Initialize OPENFILENAMEA
+        ZeroMemory(&ofn, sizeof(OPENFILENAMEA));
+        ofn.lStructSize = sizeof(OPENFILENAMEA);
+        ofn.hwndOwner = glfwGetWin32Window(NEngine::Instance().Get<NWindow>()->GetWinddow()); // If you have a window handle, replace nullptr with it
+        ofn.lpstrFile = szFile;
+        ofn.nMaxFile = sizeof(szFile);
+        ofn.lpstrFilter = filter;
+        ofn.nFilterIndex = 1;
+        ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
+
+        // Display the Open dialog box
+        if (GetSaveFileNameA(&ofn) == TRUE)
+        {
+            std::string path = std::string(ofn.lpstrFile);
+
+            auto pos = path.find_last_of('\\');
+            path = (pos == std::string::npos) ? path : path.substr(pos + 1);
+
+            auto dotPos = path.find_last_of('.');
+            path = (pos == std::string::npos) ? path : path.substr(0, dotPos);
+
+            return path;
+        }
+
+        return std::string();
+    }
+
+
 }

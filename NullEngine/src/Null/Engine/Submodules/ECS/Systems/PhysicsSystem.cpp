@@ -88,6 +88,8 @@ namespace NULLENGINE
 
 			b2Body* body = rb2d.m_RuntimeBody;
 
+			body->SetAwake(rb2d.m_Enabled);
+
 			if (body)
 			{
 				const auto& position = body->GetPosition();

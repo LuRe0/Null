@@ -12,6 +12,7 @@
 #include "stdafx.h"
 #include "SceneHierarchyPannel.h"
 #include "Null/Engine/Submodules/Scene.h"
+#include "Null/Tools/FileDialog.h"
 #include "imgui.h"
 #include <misc/cpp/imgui_stdlib.h>
 
@@ -51,8 +52,15 @@ namespace NULLENGINE
 		if (ImGui::BeginPopupContextWindow())
 		{
 			if (ImGui::MenuItem("Create Entity"))
-				m_PannelData->m_SelectedEntity = m_PannelData->m_Context->AddEntity("New Entiy");
+				m_PannelData->m_SelectedEntity = m_PannelData->m_Context->CreateEmptyEntity("New Entiy");
 
+
+			if (ImGui::MenuItem("Load Archetype"))
+			{
+				const std::string& archetype = FileDialog::OpenFile("Null Engine archetype (*.json)\0*.json\0");
+				if (!archetype.empty())
+					m_PannelData->m_SelectedEntity = m_PannelData->m_Context->LoadArchetype(archetype);
+			}
 			ImGui::EndPopup();
 		}
 
@@ -79,6 +87,13 @@ namespace NULLENGINE
 					{
 						m_PannelData->m_SelectedEntity = {};
 					}
+				}
+
+				if (ImGui::MenuItem("Save as Archetype"))
+				{
+					const std::string& archetype = FileDialog::SaveFile("Null Engine Archetype (*.json)\0*.json\0");
+					if(!archetype.empty())
+						m_PannelData->m_Context->SerializeArchetype(archetype, m_PannelData->m_SelectedEntity);
 				}
 
 				ImGui::EndPopup();

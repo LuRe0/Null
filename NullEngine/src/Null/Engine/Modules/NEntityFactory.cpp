@@ -68,45 +68,9 @@ namespace NULLENGINE
 
             NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
 
-
-
             const std::string& archetype = jsonWrapper.GetString("archetype", "");
 
-
-            //if this is reading from
-            if (!archetype.empty())
-            {
-                newEntity.SetArchetype(archetype);
-
-                if (!HasArchetype(archetype))
-                {
-
-                    RegisterArchetype(archetype);
-
-                    ReadArchetype(archetype, newEntity, componentFactory, registry);
-
-                    if (newEntity.GetName().empty())
-                    {
-                        const std::string& name = jsonWrapper.GetString("name", "");
-
-                        if (!name.empty())
-                            newEntity.SetName(name);
-                        else
-                            newEntity.SetName(archetype + " (Clone)");
-                    }
-
-                    return newEntity;
-                }
-
-                CloneComponents(componentFactory, archetype, registry, newEntity.GetID());
-
-                const std::string& name = jsonWrapper.GetString("name", "");
-
-                if (!name.empty())
-                    newEntity.SetName(name);
-                else
-                    newEntity.SetName(archetype + " (Clone)");
-            }
+            CloneOrCreateArchetype(archetype, newEntity, componentFactory, registry, entityData);
         }
 
         return newEntity;
@@ -116,6 +80,50 @@ namespace NULLENGINE
     Entity NEntityFactory::CreateEntity(NRegistry* registry)
     {
         return  Entity(registry->CreateEntity(), registry);;
+    }
+
+    void NEntityFactory::CloneOrCreateArchetype(const std::string& archetype, Entity& newEntity,
+        NComponentFactory* componentFactory, NRegistry* registry, const JSON& entityData)
+    {
+        //if this is reading from
+        if (!archetype.empty())
+        {
+            JsonReader jsonWrapper(entityData);
+
+            newEntity.SetArchetype(archetype);
+
+            if (!HasArchetype(archetype))
+            {
+
+                RegisterArchetype(archetype);
+
+                ReadArchetype(archetype, newEntity, componentFactory, registry);
+
+                if (newEntity.GetName().empty())
+                {
+                    const std::string& name = jsonWrapper.GetString("name", "");
+
+                    if (!name.empty())
+                        newEntity.SetName(name);
+                    else
+                        newEntity.SetName(archetype + " (Clone)");
+                }
+
+                return;
+            }
+
+            CloneComponents(componentFactory, archetype, registry, newEntity.GetID());
+
+            if (newEntity.GetName().empty())
+            {
+                const std::string& name = jsonWrapper.GetString("name", "");
+
+                if (!name.empty())
+                    newEntity.SetName(name);
+                else
+                    newEntity.SetName(archetype + " (Clone)");
+            }
+        }
     }
 
 

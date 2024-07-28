@@ -172,6 +172,8 @@ namespace NULLENGINE
 					NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
 
 					eventManager->QueueEvent(std::make_unique<SceneSwitchEvent>(m_PannelData.m_Context->m_Name, "New Scene"));
+
+					m_PannelData.m_SelectedEntity = {};
 				}
 
 				if (ImGui::MenuItem("Open", NULL, false))
@@ -184,6 +186,8 @@ namespace NULLENGINE
 						NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
 
 						eventManager->QueueEvent(std::make_unique<SceneSwitchEvent>(m_PannelData.m_Context->m_Name, nextScene));
+						
+						m_PannelData.m_SelectedEntity = {};
 					}
 				}
 
@@ -199,11 +203,17 @@ namespace NULLENGINE
 					m_PannelData.m_Context->Serialize(nextScene);
 				}
 
+				if (ImGui::MenuItem("Set As Start Scene", NULL, false))
+				{
+					m_PannelData.m_Context->SetAsStartScene();
+				}
+
 				if (ImGui::MenuItem("Exit", NULL, false))
 				{
 					NWindow* window = NEngine::Instance().Get<NWindow>();
 					window->CloseWindow();
 				}
+
 				ImGui::EndMenu();
 			}
 

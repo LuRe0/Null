@@ -66,6 +66,8 @@ namespace NULLENGINE
 		virtual ~BaseComponent() = default;
 		virtual const std::string Name() = 0;
 		BaseComponent() = default;
+
+		bool m_Enabled = true;
 	};
 
 	struct  TransformComponent : public BaseComponent

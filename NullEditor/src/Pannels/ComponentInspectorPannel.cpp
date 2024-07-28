@@ -87,10 +87,19 @@ namespace NULLENGINE
 					BaseComponent& component = registry->GetComponent(m_PannelData->m_SelectedEntity, i);
 					ImGui::Separator();
 
+					ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(3, 0));
+					std::string checkboxLabel = "##Enable Component" + std::to_string(i);
+					ImGui::Checkbox(checkboxLabel.c_str(), &component.m_Enabled);
+
+					ImGui::SameLine();
+
 					bool opened = ImGui::TreeNodeEx(component.Name().data(), flags);
+
+					ImGui::PopStyleVar();
+
 					float lineHeight = ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2.0f;
 					ImVec2 contentRegion = ImGui::GetContentRegionAvail();
-					ImGui::SameLine(contentRegion.x + lineHeight*.75f);
+					ImGui::SameLine(contentRegion.x + lineHeight*.55f);
 					bool removed = false;
 			
 					// Push the style color for the button

@@ -81,7 +81,7 @@ namespace NULLENGINE
 		}
 	}
 
-	EntityID Scene::AddEntity(const std::string& name)
+	EntityID Scene::CreateEmptyEntity(const std::string& name)
 	{
 		NEntityFactory* entityFactory = NEngine::Instance().Get<NEntityFactory>();
 		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
@@ -94,6 +94,22 @@ namespace NULLENGINE
 		m_Entities.push_back(entity);
 
 		eventManager->QueueEvent(std::make_unique<EntityCreatedEvent>(entity.GetID()));
+
+		return entity.GetID();
+	}
+
+	EntityID Scene::LoadArchetype(const std::string& name)
+	{
+		NEntityFactory* entityFactory = NEngine::Instance().Get<NEntityFactory>();
+		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
+		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+
+		Entity& entity = GetEntity(CreateEmptyEntity(name + " (Clone"));
+
+		entity.SetArchetype(name);
+
+		entityFactory->CloneOrCreateArchetype(name, entity, componentFactory, registry, JSON());
 
 		return entity.GetID();
 	}
@@ -160,6 +176,49 @@ namespace NULLENGINE
 		outFile.close();
 	}
 
+
+	void Scene::SerializeArchetype(const std::string& archetype, EntityID entityID)
+	{
+		std::string filePath = std::string("../Data/Archetypes/") + archetype + std::string(".json");
+
+		std::ofstream outFile(filePath);
+
+		NLE_CORE_ASSERT(outFile, "Error opening file for writing");
+
+		// Write the JSON object to the file
+		//outFile << json.dump(4); // Pretty-print with an indent of 4 spaces
+
+
+		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+		NComponentFactory* compFactory = NEngine::Instance().Get<NComponentFactory>();
+
+		Entity& entity = GetEntity(entityID);
+
+		JSON entityJson;
+
+		entityJson["name"] = entity.GetName();
+
+
+		JSON componentsJson;
+		auto& signature = registry->EntitySignature(entity.GetID());
+
+		for (size_t i = 0; i < signature.size(); i++)
+		{
+			if (signature.test(i))
+			{
+				BaseComponent& component = registry->GetComponent(entity.GetID(), i);
+				JSON compJson = compFactory->WriteComponent(&component);
+				componentsJson.merge_patch(compJson); // Merge component JSON into the entity's components JSON
+			}
+		}
+
+		entityJson["components"] = componentsJson;
+
+		outFile << entityJson.dump(4);
+
+		outFile.close();
+	}
+
 	void Scene::SetAsStartScene()
 	{
 		std::string filePath = std::string("../Data/Scenes/") + std::string("Init") + std::string(".json");
@@ -183,7 +242,7 @@ namespace NULLENGINE
 			NLE_CORE_ERROR("Error: Failed to write JSON content to file");
 		}
 		else {
-			NLE_CORE_ERROR("Successfully wrote JSON content to {0}", filePath);
+			NLE_CORE_INFO("Successfully wrote JSON content to {0}", filePath);
 		}
 
 		// Close the file

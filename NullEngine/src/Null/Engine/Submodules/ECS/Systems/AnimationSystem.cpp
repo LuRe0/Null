@@ -64,6 +64,10 @@ namespace NULLENGINE
 			AnimationComponent& anim = m_Parent->GetComponent<AnimationComponent>(entityId);
 			SpriteComponent& sprite = m_Parent->GetComponent<SpriteComponent>(entityId);
 
+
+            if (!anim.m_Enabled)
+                continue;
+
             if (!anim.m_IsRunning || anim.m_IsDone) return;
 
             anim.m_FrameDelay -= dt;

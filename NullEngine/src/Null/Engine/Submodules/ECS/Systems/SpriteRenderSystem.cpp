@@ -66,6 +66,9 @@ namespace NULLENGINE
 			TransformComponent& transform = m_Parent->GetComponent<TransformComponent>(entityId);
 			SpriteComponent& sprite = m_Parent->GetComponent<SpriteComponent>(entityId);
 
+			if (!sprite.m_Enabled)
+				continue;
+
 			//model, mesh, spritesrc, tint, shadername, frameindex
 			renderer->AddRenderCall({ transform.m_TransformMatrix, sprite.m_Mesh,sprite.m_SpriteSource, sprite.m_Color, sprite.m_ShaderName, sprite.m_FrameIndex });
 		}

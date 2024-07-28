@@ -77,11 +77,16 @@ namespace NULLENGINE
 
 		void DeleteEntity(EntityID entityID);
 
-		EntityID AddEntity(const std::string& name);
+		EntityID CreateEmptyEntity(const std::string& name);
+
+		EntityID LoadArchetype(const std::string& name);
 
 		Entity& GetEntity(const EntityID& entityID);
 		
 		void Serialize(const std::string& name = "");
+
+
+		void SerializeArchetype(const std::string& name, EntityID entityID);
 
 		void SetAsStartScene();
 

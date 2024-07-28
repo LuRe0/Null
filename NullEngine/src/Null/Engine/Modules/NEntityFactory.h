@@ -57,6 +57,9 @@ namespace NULLENGINE
 
 		Entity CreateEntity(NRegistry* registry);
 
+		void CloneOrCreateArchetype(const std::string& filename, Entity& entity, NComponentFactory* componentFactory, NRegistry* registry, const JSON& entityData);
+
+
 		void UpdateArchetype(const std::string& archetypeName, BaseComponent* component);
 
 		bool HasArchetype(const std::string& archetypeName) const;

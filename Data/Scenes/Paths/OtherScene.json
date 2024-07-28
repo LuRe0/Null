@@ -1,0 +1,516 @@
+{
+    "entities": [
+        {
+            "archetype": "Player",
+            "components": {
+                "BoxCollider2D": {
+                    "density": 1.0,
+                    "friction": 0.699999988079071,
+                    "offset": [
+                        0.0,
+                        0.0
+                    ],
+                    "restitution": 0.0,
+                    "restitutionThreshold": 5.599999904632568,
+                    "scale": [
+                        50.0,
+                        50.0
+                    ]
+                },
+                "Rigidbody2D": {
+                    "fixedRotation": false,
+                    "type": 2
+                },
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "titlesquished",
+                    "tint": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.0,
+                        0.0020139466505497694
+                    ],
+                    "scale": [
+                        50.0,
+                        50.0,
+                        1.0
+                    ],
+                    "translation": [
+                        7.0589375495910645,
+                        152.4718475341797,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Player"
+        },
+        {
+            "archetype": "Baguette",
+            "components": {
+                "Animation": {
+                    "frameCount": 6,
+                    "frameDuration": 0.05000000074505806,
+                    "loop": true,
+                    "pingPong": false,
+                    "reverse": false,
+                    "run": true,
+                    "startFrame": 0
+                },
+                "BoxCollider2D": {
+                    "density": 1.0,
+                    "friction": 0.699999988079071,
+                    "offset": [
+                        0.0,
+                        0.0
+                    ],
+                    "restitution": 0.0,
+                    "restitutionThreshold": 5.599999904632568,
+                    "scale": [
+                        50.0,
+                        50.0
+                    ]
+                },
+                "Rigidbody2D": {
+                    "fixedRotation": false,
+                    "type": 2
+                },
+                "Sprite": {
+                    "dimension": [
+                        2,
+                        3
+                    ],
+                    "frameindex": 2,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "baguetteIdle",
+                    "tint": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.0,
+                        -0.18561485409736633
+                    ],
+                    "scale": [
+                        50.0,
+                        50.0,
+                        1.0
+                    ],
+                    "translation": [
+                        -148.65145874023438,
+                        109.89430236816406,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Baguette (Clone)"
+        },
+        {
+            "archetype": "Rune",
+            "components": {
+                "Animation": {
+                    "frameCount": 8,
+                    "frameDuration": 0.05000000074505806,
+                    "loop": true,
+                    "pingPong": false,
+                    "reverse": false,
+                    "run": true,
+                    "startFrame": 0
+                },
+                "BoxCollider2D": {
+                    "density": 1.0,
+                    "friction": 0.699999988079071,
+                    "offset": [
+                        0.0,
+                        0.0
+                    ],
+                    "restitution": 0.0,
+                    "restitutionThreshold": 5.599999904632568,
+                    "scale": [
+                        50.0,
+                        50.0
+                    ]
+                },
+                "Rigidbody2D": {
+                    "fixedRotation": false,
+                    "type": 2
+                },
+                "Sprite": {
+                    "dimension": [
+                        3,
+                        3
+                    ],
+                    "frameindex": 4,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "rune",
+                    "tint": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.0,
+                        3.118503400401096e-06
+                    ],
+                    "scale": [
+                        50.0,
+                        50.0,
+                        1.0
+                    ],
+                    "translation": [
+                        0.654895007610321,
+                        101.27977752685547,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Rune (Clone)"
+        },
+        {
+            "archetype": "Player",
+            "components": {
+                "BoxCollider2D": {
+                    "density": 1.0,
+                    "friction": 0.699999988079071,
+                    "offset": [
+                        0.0,
+                        0.0
+                    ],
+                    "restitution": 0.30000001192092896,
+                    "restitutionThreshold": 10.0,
+                    "scale": [
+                        50.0,
+                        50.0
+                    ]
+                },
+                "Rigidbody2D": {
+                    "fixedRotation": false,
+                    "type": 2
+                },
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "titlesquished",
+                    "tint": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        50.0,
+                        50.0,
+                        1.0
+                    ],
+                    "translation": [
+                        150.0,
+                        101.27993774414063,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Player2"
+        },
+        {
+            "components": {
+                "BoxCollider2D": {
+                    "density": 1.5,
+                    "friction": 0.699999988079071,
+                    "offset": [
+                        0.0,
+                        0.0
+                    ],
+                    "restitution": 0.0,
+                    "restitutionThreshold": 0.6000000238418579,
+                    "scale": [
+                        250.0,
+                        150.0
+                    ]
+                },
+                "Rigidbody2D": {
+                    "fixedRotation": true,
+                    "type": 0
+                },
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "debugRect",
+                    "tint": [
+                        0.5,
+                        0.20000000298023224,
+                        0.30000001192092896,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        500.0,
+                        150.0,
+                        1.0
+                    ],
+                    "translation": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Player3"
+        },
+        {
+            "components": {
+                "BoxCollider2D": {
+                    "density": 1.0,
+                    "friction": 0.699999988079071,
+                    "offset": [
+                        0.0,
+                        0.0
+                    ],
+                    "restitution": 0.10000000149011612,
+                    "restitutionThreshold": 5.599999904632568,
+                    "scale": [
+                        15.0,
+                        15.0
+                    ]
+                },
+                "Rigidbody2D": {
+                    "fixedRotation": false,
+                    "type": 2
+                },
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "frameindex": 0,
+                    "meshname": "Cube",
+                    "shadername": "default",
+                    "texture": "ChargeParticle",
+                    "tint": [
+                        0.5,
+                        0.20000000298023224,
+                        0.30000001192092896,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.0,
+                        0.0002239526220364496
+                    ],
+                    "scale": [
+                        15.0,
+                        15.0,
+                        1.0
+                    ],
+                    "translation": [
+                        -206.658447265625,
+                        83.72842407226563,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Player4"
+        },
+        {
+            "archetype": "Rune",
+            "components": {
+                "Animation": {
+                    "frameCount": 8,
+                    "frameDuration": 0.05000000074505806,
+                    "loop": true,
+                    "pingPong": false,
+                    "reverse": false,
+                    "run": true,
+                    "startFrame": 0
+                },
+                "BoxCollider2D": {
+                    "density": 1.0,
+                    "friction": 0.699999988079071,
+                    "offset": [
+                        0.0,
+                        0.0
+                    ],
+                    "restitution": 0.0,
+                    "restitutionThreshold": 5.599999904632568,
+                    "scale": [
+                        50.0,
+                        50.0
+                    ]
+                },
+                "Rigidbody2D": {
+                    "fixedRotation": false,
+                    "type": 2
+                },
+                "Sprite": {
+                    "dimension": [
+                        3,
+                        3
+                    ],
+                    "frameindex": 4,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "rune",
+                    "tint": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.0,
+                        0.0020683540496975183
+                    ],
+                    "scale": [
+                        50.0,
+                        50.0,
+                        1.0
+                    ],
+                    "translation": [
+                        -0.5236048102378845,
+                        203.7337646484375,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Rune (Clone"
+        },
+        {
+            "archetype": "Rune",
+            "components": {
+                "Animation": {
+                    "frameCount": 8,
+                    "frameDuration": 0.05000000074505806,
+                    "loop": true,
+                    "pingPong": false,
+                    "reverse": false,
+                    "run": true,
+                    "startFrame": 0
+                },
+                "BoxCollider2D": {
+                    "density": 1.0,
+                    "friction": 0.699999988079071,
+                    "offset": [
+                        0.0,
+                        0.0
+                    ],
+                    "restitution": 0.0,
+                    "restitutionThreshold": 5.599999904632568,
+                    "scale": [
+                        50.0,
+                        50.0
+                    ]
+                },
+                "Rigidbody2D": {
+                    "fixedRotation": false,
+                    "type": 2
+                },
+                "Sprite": {
+                    "dimension": [
+                        3,
+                        3
+                    ],
+                    "frameindex": 5,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "rune",
+                    "tint": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.0,
+                        0.0040454682894051075
+                    ],
+                    "scale": [
+                        50.0,
+                        50.0,
+                        1.0
+                    ],
+                    "translation": [
+                        -0.7491624355316162,
+                        254.91302490234375,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Rune (Clone"
+        },
+        {
+            "components": {
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        50.0,
+                        50.0,
+                        50.0
+                    ],
+                    "translation": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "New Entiy"
+        }
+    ]
+}

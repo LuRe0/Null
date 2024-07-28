@@ -64,6 +64,9 @@ namespace NULLENGINE
 		{
 			TransformComponent& transform = m_Parent->GetComponent<TransformComponent>(entityId);
 
+			if (!transform.m_Enabled)
+				continue;
+
 			if (transform.m_Dirty) 
 			{
 				glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), transform.m_Translation);

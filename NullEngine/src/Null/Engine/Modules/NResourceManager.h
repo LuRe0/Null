@@ -75,6 +75,11 @@ namespace NULLENGINE
 			return m_ResourceList.at(name);
 		}
 
+		bool Has(const std::string& name) const
+		{
+			return m_ResourceList.contains(name);
+		}
+
 		template <typename ...TArgs>
 		T* Create(const std::string& name, TArgs&& ...args)
 		{

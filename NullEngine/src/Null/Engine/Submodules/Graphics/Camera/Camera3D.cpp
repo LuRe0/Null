@@ -38,7 +38,7 @@ namespace NULLENGINE
 		m_Yaw = yaw;
 		m_Pitch = pitch;
 		m_Aspect = static_cast<float>(winWidth) / static_cast<float>(winHeight);
-
+		m_CameraType = PERSPECTIVE;
 		m_IsDirty = true;
 	}
 

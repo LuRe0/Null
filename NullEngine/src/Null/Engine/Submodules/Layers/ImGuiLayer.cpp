@@ -12,7 +12,6 @@
 #include "stdafx.h"
 #include "ImGuiLayer.h"
 
-
 // temporary
 //#include "imgui.h"
 #include <glad/glad.h>
@@ -21,6 +20,12 @@
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_glfw.h"
 #include "Null/Tools/FileDialog.h"
+
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/matrix_decompose.hpp>
+
+#include <ImGuizmo/ImGuizmo.h>
+#include <box2d/b2_body.h>
 
 
 //******************************************************************************//
@@ -33,6 +38,7 @@
 
 namespace NULLENGINE
 {
+	bool DecomposeTransform(const glm::mat4& transform, glm::vec3& translation, glm::vec3& rotation, glm::vec3& scale);
 
 	ImGuiLayer::ImGuiLayer()
 	{
@@ -78,6 +84,12 @@ namespace NULLENGINE
 
 		//m_SceneHierachyPannel = std::make_unique<SceneHierarchyPannel>();
 
+
+		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+
+
+		SUBSCRIBE_EVENT(KeyPressEvent, &ImGuiLayer::OnKeyPressed, eventManager, EventPriority::Low);
+
 		SetPannelData(m_PannelData);
 
 	}
@@ -86,6 +98,24 @@ namespace NULLENGINE
 		NSceneManager* scMan = NEngine::Instance().Get<NSceneManager>();
 
 		m_PannelData.m_Context = scMan->GetCurrentScene();
+
+		//if (Input::KeyDown(GLFW_KEY_Q))
+		//{
+		//	m_GuizmoType = -1;
+
+		//}
+		//if (Input::KeyDown(GLFW_KEY_W))
+		//{
+		//	m_GuizmoType = ImGuizmo::OPERATION::TRANSLATE;
+		//}
+		//if (Input::KeyDown(GLFW_KEY_E))
+		//{
+		//	m_GuizmoType = ImGuizmo::OPERATION::ROTATE;
+		//}
+		//if (Input::KeyDown(GLFW_KEY_R))
+		//{
+		//	m_GuizmoType = ImGuizmo::OPERATION::SCALE;
+		//}
 	}
 
 	void ImGuiLayer::OnRender()
@@ -253,9 +283,15 @@ namespace NULLENGINE
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 		uint32_t texture = renderer->GetFramebuffer("Scene").GetColorAttachment();
 
-		window->SetBlockEvents(!ImGui::IsWindowHovered() || !ImGui::IsWindowFocused());
+		window->SetBlockEvents(!ImGui::IsWindowHovered() && !ImGui::IsWindowFocused());
 
 		ImGui::Image((void*)(intptr_t)texture, viewportPanelSize, { 0, 1 }, { 1, 0 });
+
+
+		/// IMGUIZMO
+		ImGuizmoImpl();
+
+
 
 		ImGui::End();
 
@@ -292,6 +328,7 @@ namespace NULLENGINE
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
+		ImGuizmo::BeginFrame();
 	}
 
 	void ImGuiLayer::End()
@@ -321,6 +358,96 @@ namespace NULLENGINE
 
 
 
+	void ImGuiLayer::ImGuizmoImpl()
+	{
+
+		if (m_PannelData.m_SelectedEntity)
+		{
+			Entity& entity = m_PannelData.m_Context->GetEntity(m_PannelData.m_SelectedEntity);
+			NCameraManager* camManager = NEngine::Instance().Get<NCameraManager>();
+			NWindow* window = NEngine::Instance().Get<NWindow>();
+			Camera* mainCam = camManager->GetCurrentCamera();
+
+			ImGuizmo::SetOrthographic(mainCam->GetCameraType() == Camera::ORTHOGRAPHIC);
+			ImGuizmo::SetDrawlist();
+			
+			float winWidth = (float)ImGui::GetWindowWidth();
+			float winHeight = (float)ImGui::GetWindowHeight();
+			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, winWidth, winHeight);
+
+
+			glm::mat4 view = mainCam->GetViewMatrix();
+			const glm::mat4& projectionMatrix = mainCam->GetProjectionMatrix();
+
+			if (entity.Has<TransformComponent>())
+			{
+				TransformComponent& transform = entity.Get<TransformComponent>();
+
+				glm::mat4 transformMatrix = transform.m_TransformMatrix;
+
+				bool snap = Input::KeyDown(GLFW_KEY_LEFT_CONTROL);
+				float snapValue = 0.5f;
+				/*		if (m_GuizmoType == ImGuizmo::OPERATION::ROTATE)
+							snapValue = 45.0f;*/
+
+				float snapValues[3] = { snapValue, snapValue, snapValue };
+
+				ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(projectionMatrix), (ImGuizmo::OPERATION(m_GuizmoType)),
+					ImGuizmo::LOCAL, glm::value_ptr(transformMatrix), nullptr, snap ? snapValues : nullptr);
+
+
+
+				if (ImGuizmo::IsUsing())
+				{
+				
+					glm::vec3 translation, rotation, scale;
+					DecomposeTransform(transformMatrix, translation, rotation, scale);
+
+					glm::vec3 deltaRotation = glm::degrees(rotation) - transform.m_Rotation;
+
+		
+					transform.m_Translation = translation;
+					transform.m_Rotation += deltaRotation;
+					transform.m_Scale = scale;
+
+					if (entity.Has<Rigidbody2DComponent>())
+					{
+						PhysicsSystem* physicsSys = NEngine::Instance().Get<PhysicsSystem>();
+
+						Rigidbody2DComponent& rb2d = entity.Get<Rigidbody2DComponent>();
+
+						auto pos = physicsSys->PixelsToMeters(transform.m_Translation.x, transform.m_Translation.y);
+
+						if(rb2d.m_RuntimeBody)
+							rb2d.m_RuntimeBody->SetTransform({ pos.x, pos.y }, transform.m_Rotation.z);
+					}
+
+					transform.m_Dirty = true;
+
+				}
+			}
+		}
+	}
+
+	void ImGuiLayer::KeyboardShortcuts(const KeyPressEvent& e)
+	{
+		switch (e.GetKeyCode())
+		{
+		case GLFW_KEY_Q:
+			m_GuizmoType = -1;
+			break;
+		case GLFW_KEY_W:
+			m_GuizmoType = ImGuizmo::OPERATION::TRANSLATE;
+			break;
+		case GLFW_KEY_E:
+			m_GuizmoType = ImGuizmo::OPERATION::ROTATE;
+			break;
+		case GLFW_KEY_R:
+			m_GuizmoType = ImGuizmo::OPERATION::SCALE;
+			break;
+		}
+	}
+
 	void ImGuiLayer::OnWindowResize(const WindowResizeEvent& e)
 	{
 		//ImGuiIO& io = ImGui::GetIO();
@@ -337,15 +464,7 @@ namespace NULLENGINE
 
 	void ImGuiLayer::OnKeyPressed(const KeyPressEvent& e)
 	{
-		ImGuiIO& io = ImGui::GetIO();
-
-		io.KeysDown[e.GetKeyCode()] = true;
-
-		io.KeyCtrl = io.KeysDown[GLFW_KEY_LEFT_CONTROL] || io.KeysDown[GLFW_KEY_RIGHT_CONTROL];
-		io.KeyShift = io.KeysDown[GLFW_KEY_LEFT_SHIFT] || io.KeysDown[GLFW_KEY_RIGHT_SHIFT];
-		io.KeyAlt = io.KeysDown[GLFW_KEY_LEFT_ALT] || io.KeysDown[GLFW_KEY_RIGHT_ALT];
-		io.KeySuper = io.KeysDown[GLFW_KEY_LEFT_SUPER] || io.KeysDown[GLFW_KEY_RIGHT_SUPER];
-
+		KeyboardShortcuts(e);
 	}
 
 	void ImGuiLayer::OnKeyReleased(const KeyReleaseEvent& e)
@@ -398,4 +517,81 @@ namespace NULLENGINE
 		io.MouseWheel += e.GetYOffset();
 
 	}
+
+	bool DecomposeTransform(const glm::mat4& transform, glm::vec3& translation, glm::vec3& rotation, glm::vec3& scale)
+	{
+		// From glm::decompose in matrix_decompose.inl
+
+		using namespace glm;
+		using T = float;
+
+		mat4 LocalMatrix(transform);
+
+		// Normalize the matrix.
+		if (epsilonEqual(LocalMatrix[3][3], static_cast<float>(0), epsilon<T>()))
+			return false;
+
+		// First, isolate perspective.  This is the messiest.
+		if (
+			epsilonNotEqual(LocalMatrix[0][3], static_cast<T>(0), epsilon<T>()) ||
+			epsilonNotEqual(LocalMatrix[1][3], static_cast<T>(0), epsilon<T>()) ||
+			epsilonNotEqual(LocalMatrix[2][3], static_cast<T>(0), epsilon<T>()))
+		{
+			// Clear the perspective partition
+			LocalMatrix[0][3] = LocalMatrix[1][3] = LocalMatrix[2][3] = static_cast<T>(0);
+			LocalMatrix[3][3] = static_cast<T>(1);
+		}
+
+		// Next take care of translation (easy).
+		translation = vec3(LocalMatrix[3]);
+		LocalMatrix[3] = vec4(0, 0, 0, LocalMatrix[3].w);
+
+		vec3 Row[3], Pdum3;
+
+		// Now get scale and shear.
+		for (length_t i = 0; i < 3; ++i)
+			for (length_t j = 0; j < 3; ++j)
+				Row[i][j] = LocalMatrix[i][j];
+
+		// Compute X scale factor and normalize first row.
+		scale.x = length(Row[0]);
+		Row[0] = detail::scale(Row[0], static_cast<T>(1));
+		scale.y = length(Row[1]);
+		Row[1] = detail::scale(Row[1], static_cast<T>(1));
+		scale.z = length(Row[2]);
+		Row[2] = detail::scale(Row[2], static_cast<T>(1));
+
+		// At this point, the matrix (in rows[]) is orthonormal.
+		// Check for a coordinate system flip.  If the determinant
+		// is -1, then negate the matrix and the scaling factors.
+#if 0
+		Pdum3 = cross(Row[1], Row[2]); // v3Cross(row[1], row[2], Pdum3);
+		if (dot(Row[0], Pdum3) < 0)
+		{
+			for (length_t i = 0; i < 3; i++)
+			{
+				scale[i] *= static_cast<T>(-1);
+				Row[i] *= static_cast<T>(-1);
+			}
+		}
+#endif
+
+		rotation.y = asin(-Row[0][2]);
+		if (cos(rotation.y) != 0) {
+			rotation.x = atan2(Row[1][2], Row[2][2]);
+			rotation.z = atan2(Row[0][1], Row[0][0]);
+		}
+		else {
+			rotation.x = atan2(-Row[2][0], Row[1][1]);
+			rotation.z = 0;
+		}
+
+
+		return true;
+
+
+		return true;
+	}
+
+
 }

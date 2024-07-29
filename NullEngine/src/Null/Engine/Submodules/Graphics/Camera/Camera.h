@@ -32,8 +32,17 @@
 
 namespace NULLENGINE
 {
-    class Camera {
+    
+    class Camera 
+    {
     public:
+        enum CameraType
+        {
+            INVALID = -1,
+            ORTHOGRAPHIC,
+            PERSPECTIVE,
+        };
+
         virtual ~Camera() = default;
 
         virtual void Update(float dt) = 0;
@@ -45,11 +54,13 @@ namespace NULLENGINE
         virtual const glm::mat4 GetViewMatrix() const = 0;
 
         const glm::mat4& GetProjectionMatrix() const { return m_ProjectionMatrix; }
+        const CameraType& GetCameraType() const { return m_CameraType; }
 
+  
     protected:
         glm::mat4 m_ProjectionMatrix = glm::mat4(1.0f);
         glm::mat4 m_ViewMatrix = glm::mat4(1.0f);
-
+        CameraType m_CameraType;
         bool m_IsDirty;
     };
 

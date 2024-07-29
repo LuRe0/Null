@@ -108,33 +108,40 @@ namespace NULLENGINE
 
 		ClearRender();
 
-		NShaderManager* shaderMan = NEngine::Instance().Get<NShaderManager>();
-		NMeshManager* meshManager = NEngine::Instance().Get<NMeshManager>();
-		NCameraManager* cameraManager = NEngine::Instance().Get<NCameraManager>();
+		RenderToScreen();
+	}
 
-		Shader* shader = shaderMan->Get("framebuffer");
-		Mesh* mesh = meshManager->Get("Quad");
+	void NRenderer::RenderToScreen()
+	{
+		if (!m_Parent->GetIsEditorEnabled())
+		{
+			NShaderManager* shaderMan = NEngine::Instance().Get<NShaderManager>();
+			NMeshManager* meshManager = NEngine::Instance().Get<NMeshManager>();
+			NCameraManager* cameraManager = NEngine::Instance().Get<NCameraManager>();
 
-		shader->Bind();
+			Shader* shader = shaderMan->Get("framebuffer");
+			Mesh* mesh = meshManager->Get("Quad");
 
-		Camera* camera = cameraManager->GetCamera<Camera2D>("Default2D");
+			shader->Bind();
 
-
-		glm::mat4 projection = camera->GetProjectionMatrix();
-
-		const auto translate = glm::mat4(1.0f);
-		glm::mat4 scale = glm::scale(glm::mat4(1), glm::vec3(m_WinWidth, -m_WinHeight, 1));;
-	
+			Camera* camera = cameraManager->GetCamera<Camera2D>("Default2D");
 
 
-		shader->setFullTransform(translate * scale, glm::mat4(1.0f), projection);
+			glm::mat4 projection = camera->GetProjectionMatrix();
 
-		shader->setInt("screenTexture", 0);
-		uint32_t texture = m_Framebuffers.at("Scene").GetColorAttachment();
-		mesh->RenderTexture(texture);
+			const auto translate = glm::mat4(1.0f);
+			glm::mat4 scale = glm::scale(glm::mat4(1), glm::vec3(m_WinWidth, -m_WinHeight, 1));;
 
-		shader->Unbind();
 
+
+			shader->setFullTransform(translate * scale, glm::mat4(1.0f), projection);
+
+			shader->setInt("screenTexture", 0);
+			uint32_t texture = m_Framebuffers.at("Scene").GetColorAttachment();
+			mesh->RenderTexture(texture);
+
+			shader->Unbind();
+		}
 	}
 
 	void NRenderer::Init()

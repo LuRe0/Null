@@ -84,7 +84,7 @@ namespace NULLENGINE
 		TransformComponent(glm::vec3 translation = glm::vec3(0.0f),
 			glm::vec3 scale = glm::vec3(50.0f),
 			glm::vec3 rotation = glm::vec3(0.0f),
-			bool dirty = false)
+			bool dirty = true)
 			: m_Translation(translation),
 			m_Scale(scale),
 			m_Rotation(rotation),

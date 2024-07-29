@@ -88,10 +88,12 @@ namespace NULLENGINE
 
 			b2Body* body = rb2d.m_RuntimeBody;
 
-			body->SetAwake(rb2d.m_Enabled);
 
 			if (body)
 			{
+
+				body->SetAwake(rb2d.m_Enabled);
+
 				const auto& position = body->GetPosition();
 
 				auto newPos = MetersToPixels(position.x, position.y);

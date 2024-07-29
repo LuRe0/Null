@@ -88,19 +88,25 @@ namespace NULLENGINE
 
 		PannelData m_PannelData;
 
+		int m_GuizmoType = -1;
+
+		void ImGuizmoImpl();
+
+		void KeyboardShortcuts(const KeyPressEvent& e);
+
 		//std::unique_ptr<SceneHierarchyPannel> m_SceneHierachyPannel;
 
 		// Member functions for handling events
-		void OnWindowResize(const WindowResizeEvent& event);
-		void OnWindowClose(const WindowCloseEvent& event);
-		void OnKeyPressed(const KeyPressEvent& event);
-		void OnKeyReleased(const KeyReleaseEvent& event);
-		void OnKeyTyped(const KeyTypedEvent& event);
+		void OnWindowResize(const WindowResizeEvent& e);
+		void OnWindowClose(const WindowCloseEvent& e);
+		void OnKeyPressed(const KeyPressEvent& e);
+		void OnKeyReleased(const KeyReleaseEvent& e);
+		void OnKeyTyped(const KeyTypedEvent& e);
 		//void OnKeyHold(const KeyHoldEvent& event);
-		void OnMousePressed(const MouseButtonPressEvent& event);
-		void OnMouseReleased(const MouseButtonReleaseEvent& event);
-		void OnMouseMove(const MouseMoveEvent& event);
-		void OnMouseScroll(const MouseScrolledEvent& event);
+		void OnMousePressed(const MouseButtonPressEvent& e);
+		void OnMouseReleased(const MouseButtonReleaseEvent& e);
+		void OnMouseMove(const MouseMoveEvent& e);
+		void OnMouseScroll(const MouseScrolledEvent& e);
 	};
 
 }

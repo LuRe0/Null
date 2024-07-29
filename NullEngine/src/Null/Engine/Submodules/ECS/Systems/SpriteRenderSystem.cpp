@@ -132,6 +132,7 @@ namespace NULLENGINE
 	{
 		SpriteComponent& sprite = entity.Get<SpriteComponent>();
 		NSpriteSourceManager* spritesrcManager = NEngine::Instance().Get<NSpriteSourceManager>();
+		NTextureManager* texureManager = NEngine::Instance().Get<NTextureManager>();
 		NMeshManager* meshManager = NEngine::Instance().Get<NMeshManager>();
 		NShaderManager* shaderManager = NEngine::Instance().Get<NShaderManager>();
 
@@ -214,17 +215,17 @@ namespace NULLENGINE
 			// Begin a child window to make it scrollable
 			ImGui::BeginChild("TextureList", ImVec2(125, 200), true, ImGuiWindowFlags_AlwaysUseWindowPadding);
 
-			const auto& componentsNames = spritesrcManager->GetResourceNames();
+			const auto& componentsNames = texureManager->GetResourceNames();
 
 			for (const auto& name : componentsNames)
 			{
-				auto texture = spritesrcManager->Get(name)->GetTexture();
+				auto texture = texureManager->Get(name);
 				if (texture)
 				{
 					ImGui::Text("%s :", name.c_str());
 					if (ImGui::ImageButton((void*)(__int64)texture->GetID(), ImVec2(75, 50), { 0, -1 }, { 1, 0 }))
 					{
-						sprite.m_SpriteSource = spritesrcManager->Get(name);
+						sprite.m_SpriteSource = spritesrcManager->Has(name) ? spritesrcManager->Get(name) : spritesrcManager->Create(name,1,1);
 						ImGui::CloseCurrentPopup();
 					}
 				}
@@ -233,7 +234,7 @@ namespace NULLENGINE
 			ImGui::EndPopup();
 		}
 
-		ImGui::DragFloat4("Tint", glm::value_ptr(sprite.m_Color), 0.5f);
+		ImGui::ColorEdit4("Tint", glm::value_ptr(sprite.m_Color), 0.5f);
 
 		const auto& shaderNames = shaderManager->GetResourceNames();
 

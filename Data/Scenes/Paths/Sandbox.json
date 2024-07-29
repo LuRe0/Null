@@ -1,0 +1,42 @@
+{
+    "entities": [
+        {
+            "components": {
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "ChargeParticle",
+                    "tint": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        -117.3175277709961,
+                        0.00016733961820136756,
+                        113.25924682617188
+                    ],
+                    "scale": [
+                        102.77742767333984,
+                        310.02691650390625,
+                        0.04999990016222
+                    ],
+                    "translation": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Quad"
+        }
+    ]
+}

@@ -57,8 +57,8 @@ namespace NULLENGINE
 
 	private:
 		// The dimensions of the sprite sheet.
-		int	m_Rows;
-		int	m_Cols;
+		int	m_Rows = 1;
+		int	m_Cols = 1;
 
 		std::string m_Name;
 

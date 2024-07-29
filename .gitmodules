@@ -22,3 +22,6 @@
 [submodule "NullEngine/vendor/magic_enum/magic_enum"]
 	path = NullEngine/vendor/magic_enum/magic_enum
 	url = https://github.com/Neargye/magic_enum
+[submodule "NullEngine/vendor/ImGuizmo/ImGuizmo"]
+	path = NullEngine/vendor/ImGuizmo/ImGuizmo
+	url = https://github.com/CedricGuillemet/ImGuizmo

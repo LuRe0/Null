@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="NullEngine">
+      <UniqueIdentifier>{36F0117C-22A8-53C9-8BAF-2C257786EEB9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NullEngine\vendor">
+      <UniqueIdentifier>{D36DFAE8-3F84-F87E-88FB-83A0F450C906}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NullEngine\vendor\ImGuizmo">
+      <UniqueIdentifier>{931D04AD-7F2D-B07D-E8E6-149CD4159F16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\NullEngine\vendor\ImGuizmo\ImGuizmo.h">
+      <Filter>NullEngine\vendor\ImGuizmo</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\NullEngine\vendor\ImGuizmo\ImGuizmo.cpp">
+      <Filter>NullEngine\vendor\ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Sandbox.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

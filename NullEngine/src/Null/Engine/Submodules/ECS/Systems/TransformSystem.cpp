@@ -14,6 +14,9 @@
 #include "imgui.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
+
 #include <box2d/b2_body.h>
 
 
@@ -71,11 +74,7 @@ namespace NULLENGINE
 			{
 				glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), transform.m_Translation);
 				// Calculate rotation matrix (assuming Euler angles in radians)
-				glm::mat4 rotationMatrix = glm::mat4(1.0f);
-
-				rotationMatrix = glm::rotate(rotationMatrix, glm::radians(transform.m_Rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
-				rotationMatrix = glm::rotate(rotationMatrix, glm::radians(transform.m_Rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-				rotationMatrix = glm::rotate(rotationMatrix, glm::radians(transform.m_Rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+				glm::mat4 rotationMatrix = glm::toMat4(glm::quat(glm::radians(transform.m_Rotation)));
 
 				glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), transform.m_Scale);
 
@@ -144,8 +143,8 @@ namespace NULLENGINE
 				Rigidbody2DComponent& rb2d = entity.Get<Rigidbody2DComponent>();
 				
 				auto pos = physicsSys->PixelsToMeters(transform.m_Translation.x, transform.m_Translation.y);
-
-				rb2d.m_RuntimeBody->SetTransform({ pos.x, pos.y }, transform.m_Rotation.z);
+				if(rb2d.m_RuntimeBody)
+					rb2d.m_RuntimeBody->SetTransform({ pos.x, pos.y }, transform.m_Rotation.z);
 			}
 
 			transform.m_Dirty = true;
@@ -160,8 +159,8 @@ namespace NULLENGINE
 				Rigidbody2DComponent& rb2d = entity.Get<Rigidbody2DComponent>();
 
 				auto pos = physicsSys->PixelsToMeters(transform.m_Translation.x, transform.m_Translation.y);
-
-				rb2d.m_RuntimeBody->SetTransform(rb2d.m_RuntimeBody->GetPosition(), transform.m_Rotation.z);
+				if(rb2d.m_RuntimeBody)
+					rb2d.m_RuntimeBody->SetTransform(rb2d.m_RuntimeBody->GetPosition(), transform.m_Rotation.z);
 			}
 
 			transform.m_Dirty = true;

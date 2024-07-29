@@ -35,7 +35,7 @@ namespace NULLENGINE
 		float top = static_cast<float>(windowHeight) / 2.0f;
 
 		m_ProjectionMatrix = glm::ortho(left, right, bottom, top);
-
+		m_CameraType = ORTHOGRAPHIC;
 		m_IsDirty = true;
 	}
 	void Camera2D::SetPosition(const glm::vec2& position)

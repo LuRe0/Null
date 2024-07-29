@@ -49,10 +49,7 @@ namespace NULLENGINE
 		/// </summary>
 		void Load() override;
 
-		void BeginRender();
-		void RenderScene(const RenderData& render);
-		void EndRender();
-
+	
 
 		//! Virtual Init function
 		void Init() override;
@@ -85,6 +82,12 @@ namespace NULLENGINE
 		NRenderer(NRenderer const&) = delete;
 		NRenderer& operator=(NRenderer const&) = delete;
 
+
+		void BeginRender();
+		void RenderScene(const RenderData& render);
+		void EndRender();
+
+		void RenderToScreen();
 
 		float m_WinWidth;
 		float m_WinHeight;

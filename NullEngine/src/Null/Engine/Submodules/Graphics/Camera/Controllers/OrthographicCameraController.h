@@ -4,7 +4,7 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	Camera.h
+// File Name:	OrthographicCameraController.h
 // Author(s):	name
 // 
 //------------------------------------------------------------------------------
@@ -13,10 +13,7 @@
 // Includes																        //
 //******************************************************************************//
 #include "Null/Core.h"
-#include "Camera.h"
-#include <WinUser.h>
-
-
+#include "CameraController.h"
 
 //******************************************************************************//
 // Definitions  														        //
@@ -35,44 +32,33 @@
 
 namespace NULLENGINE
 {
-    class Camera2D : public Camera {
+    class NLE_API Camera2D;
+
+    class NLE_API OrthographicCameraController : public CameraController
+    {
     public:
-        Camera2D(int windowWidth, int windowHeight, float zoom = 1.0f, float rotation = 0);
 
-        void SetPosition(const glm::vec2& position);
+        OrthographicCameraController(float movementSpeed = SPEED, float mouseSensitivity = SENSITIVITY, float scrollSensitivity = SENSITIVITY*0.5f, Camera2D* camera = nullptr);
+        ~OrthographicCameraController() override;
+  
 
-        void SetRotation(float rotation);
+        void Init() override;
 
-        void SetZoom(float zoom);
-
-
-        virtual void Init();
-
-        virtual void Shudown() {};
-
+        // Add additional methods specific to orthographic camera control
         void Update(float dt) override;
+   
+        void Shutdown() override;
 
-        const glm::mat4 GetViewMatrix() const override;
+        void SetCamera(Camera* camera) override;
 
-        const glm::vec2 GetPosition() const;
-        float GetZoom() const;
-
-
-        void OnWindowResize(const WindowResizeEvent& e);
-        void OnMouseScrolled(const MouseScrolledEvent& e);
-
-        //static void OnMouseMoved(const MouseMoveEvent& event);
-
+        Camera* GetCamera() const override;
     private:
-        glm::vec2 m_Position;
+        void ProcessKeyboardInput(float dt);
+        void ProcessMouseInput(float dt);
 
-        float m_MovementSpeed;
-        float m_Zoom;
-        float m_Rotation;
-        float m_AspectRatio;
+        void OnMouseScrolled(const MouseScrolledEvent& e);
+        void OnMouseMove(const MouseMoveEvent& e);
 
-        void SetProjection(float left,float right,float bottom,float top);
+        Camera2D* m_Camera;
     };
-
-
 }

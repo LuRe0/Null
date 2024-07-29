@@ -186,6 +186,9 @@ IF EXIST ..\bin\Dist-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /Y /
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\Camera.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\Camera2D.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\Camera3D.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\Controllers\CameraController.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\Controllers\OrthographicCameraController.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\Controllers\PerspectiveCameraController.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\InstanceMesh.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Mesh.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Shader\Shader.h" />
@@ -239,6 +242,9 @@ IF EXIST ..\bin\Dist-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /Y /
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\Camera.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\Camera2D.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\Camera3D.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\Controllers\CameraController.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\Controllers\OrthographicCameraController.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\Controllers\PerspectiveCameraController.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\InstanceMesh.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Mesh.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Shader\Shader.cpp" />

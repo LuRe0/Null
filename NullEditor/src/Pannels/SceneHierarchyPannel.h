@@ -42,7 +42,7 @@ namespace NULLENGINE
 
 		void OnImGUIRender();
 	private:
-
+	
 		SceneHierarchyPannel(SceneHierarchyPannel const&) = delete;
 		SceneHierarchyPannel& operator=(SceneHierarchyPannel const&) = delete;
 	};

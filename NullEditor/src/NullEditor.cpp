@@ -4,6 +4,7 @@
 #include "Null/Engine/Submodules/Layers/ImGuiLayer.h"
 #include "Pannels/SceneHierarchyPannel.h"
 #include "Pannels/ComponentInspectorPannel.h"
+#include "Pannels/ScenePropertyPannel.h"
 
 namespace NULLENGINE
 {
@@ -16,7 +17,7 @@ namespace NULLENGINE
 			m_NullEngine->SetEditorEnabled(true);
 		}
 		~NullEditor()
-		{
+		{ 
 
 		}
 		void Load() override
@@ -27,9 +28,11 @@ namespace NULLENGINE
 
 			auto pannel = std::make_unique<SceneHierarchyPannel>();
 			auto pannel2 = std::make_unique<ComponentInspectorPannel>();
+			auto pannel3 = std::make_unique<ScenePropertyPannel>();
 
 			gui.get()->AddPannel(std::move(pannel));
 			gui.get()->AddPannel(std::move(pannel2));
+			gui.get()->AddPannel(std::move(pannel3));
 			
 			PushLayer(std::move(gui));
 		}

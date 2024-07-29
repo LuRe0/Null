@@ -42,7 +42,6 @@ namespace NULLENGINE
 
 		void OnImGUIRender();
 	private:
-		Scene* m_Context;
 
 		ComponentInspectorPannel(ComponentInspectorPannel const&) = delete;
 		ComponentInspectorPannel& operator=(ComponentInspectorPannel const&) = delete;

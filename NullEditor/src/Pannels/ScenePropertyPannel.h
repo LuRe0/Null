@@ -4,7 +4,7 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	Camera.h
+// File Name:	ScenePropertyPannel.h
 // Author(s):	name
 // 
 //------------------------------------------------------------------------------
@@ -13,10 +13,7 @@
 // Includes																        //
 //******************************************************************************//
 #include "Null/Core.h"
-#include "Camera.h"
-#include <WinUser.h>
-
-
+#include "Null/Engine/Submodules/Layers/ImGuiLayer.h"
 
 //******************************************************************************//
 // Definitions  														        //
@@ -35,44 +32,18 @@
 
 namespace NULLENGINE
 {
-    class Camera2D : public Camera {
-    public:
-        Camera2D(int windowWidth, int windowHeight, float zoom = 1.0f, float rotation = 0);
+	class Scene;
 
-        void SetPosition(const glm::vec2& position);
+	class ScenePropertyPannel : public Pannel
+	{
+	public:
+		ScenePropertyPannel() = default;
+		~ScenePropertyPannel() = default;
 
-        void SetRotation(float rotation);
-
-        void SetZoom(float zoom);
-
-
-        virtual void Init();
-
-        virtual void Shudown() {};
-
-        void Update(float dt) override;
-
-        const glm::mat4 GetViewMatrix() const override;
-
-        const glm::vec2 GetPosition() const;
-        float GetZoom() const;
-
-
-        void OnWindowResize(const WindowResizeEvent& e);
-        void OnMouseScrolled(const MouseScrolledEvent& e);
-
-        //static void OnMouseMoved(const MouseMoveEvent& event);
-
-    private:
-        glm::vec2 m_Position;
-
-        float m_MovementSpeed;
-        float m_Zoom;
-        float m_Rotation;
-        float m_AspectRatio;
-
-        void SetProjection(float left,float right,float bottom,float top);
-    };
-
+		void OnImGUIRender();
+	private:
+		ScenePropertyPannel(ScenePropertyPannel const&) = delete;
+		ScenePropertyPannel& operator=(ScenePropertyPannel const&) = delete;
+	};
 
 }

@@ -45,27 +45,29 @@ namespace NULLENGINE
         for (auto& cameraJson : j["cameras"]) {
      
             std::string type = cameraJson["type"];
+            std::string name = cameraJson["name"];
             NLE_CORE_ASSERT((type == "Camera2D" || type == "Camera3D"), "Camera type not reckognized: ", type);
 
-
+            Camera* camera;
             if (type == "Camera2D")
             {
-                AddCamera<Camera2D>("Default2D", window->Width(), window->Height(), cameraJson.value("zoom", 1.0f), cameraJson.value("rotation", 0.0f));
+                camera = AddCamera<Camera2D>(name, window->Width(), window->Height(), cameraJson.value("zoom", 1.0f), cameraJson.value("rotation", 0.0f));
             }
             else
             {
-                AddCamera<Camera3D>("Default3D", window->Width(), window->Height(), glm::vec3(cameraJson["position"][0], cameraJson["position"][1], cameraJson["position"][2]), 
+                camera = AddCamera<Camera3D>(name, window->Width(), window->Height(), glm::vec3(cameraJson["position"][0], cameraJson["position"][1], cameraJson["position"][2]),
                                      glm::vec3(cameraJson["up"][0], cameraJson["up"][1], cameraJson["up"][2]), cameraJson.value("yaw", YAW), cameraJson.value("pitch", PITCH),
-                                     cameraJson.value("movementSpeed", SPEED), cameraJson.value("mouseSensitivity", SENSITIVITY), cameraJson.value("zoom", ZOOM),
-                                     cameraJson.value("nearclip", 0.1f), cameraJson.value("farclip", 5000.0f));
+                                     cameraJson.value("zoom", ZOOM), cameraJson.value("fov", FOV), cameraJson.value("nearclip", 0.1f), cameraJson.value("farclip", 5000.0f));
             }
 
-             
+            camera->SetName(name);
         }
 
         std::string defaultCam = j.value("DefaultCamera", "Default3D");
 
         m_CurrentCamera = GetCamera<Camera3D>(defaultCam);
+
+        m_CurrentCamera = m_CurrentCamera == nullptr ? GetCamera<Camera2D>(defaultCam) : m_CurrentCamera;
 
         m_CurrentCamera = m_CurrentCamera == nullptr ? GetCamera<Camera3D>("Default3D") : m_CurrentCamera;
 
@@ -128,8 +130,11 @@ namespace NULLENGINE
         else if (auto camera3D = GetCamera<Camera3D>(name)) {
             m_CurrentCamera = camera3D;
         }
-        else {
-            m_CurrentCamera = nullptr;
+        else 
+        {
+            //m_CurrentCamera = nullptr;
+
+            NLE_CORE_WARN("Target Camera not found");
         }
     }
 

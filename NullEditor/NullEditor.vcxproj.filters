@@ -12,6 +12,7 @@
     <ClInclude Include="src\Pannels\SceneHierarchyPannel.h">
       <Filter>Pannels</Filter>
     </ClInclude>
+    <ClInclude Include="src\Pannels\ScenePropertyPannel.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\NullEditor.cpp" />
@@ -21,5 +22,6 @@
     <ClCompile Include="src\Pannels\SceneHierarchyPannel.cpp">
       <Filter>Pannels</Filter>
     </ClCompile>
+    <ClCompile Include="src\Pannels\ScenePropertyPannel.cpp" />
   </ItemGroup>
 </Project>

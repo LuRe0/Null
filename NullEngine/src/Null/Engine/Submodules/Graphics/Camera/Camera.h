@@ -55,12 +55,14 @@ namespace NULLENGINE
 
         const glm::mat4& GetProjectionMatrix() const { return m_ProjectionMatrix; }
         const CameraType& GetCameraType() const { return m_CameraType; }
-
+        const std::string& GetName() const { return m_Name; }
+        void SetName(const std::string& name) { m_Name = name; }
   
     protected:
         glm::mat4 m_ProjectionMatrix = glm::mat4(1.0f);
         glm::mat4 m_ViewMatrix = glm::mat4(1.0f);
         CameraType m_CameraType;
+        std::string m_Name = "";
         bool m_IsDirty;
     };
 

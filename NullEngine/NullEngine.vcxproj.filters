@@ -219,6 +219,11 @@
       <Filter>Null\Tools</Filter>
     </ClInclude>
     <ClInclude Include="src\stdafx.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\Controllers\CameraController.h">
+      <Filter>Null\Engine\Submodules\Graphics\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\Controllers\OrthographicCameraController.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\Controllers\PerspectiveCameraController.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Null\Application.cpp">
@@ -369,5 +374,10 @@
       <Filter>Null\Tools</Filter>
     </ClCompile>
     <ClCompile Include="src\stdafx.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\Controllers\CameraController.cpp">
+      <Filter>Null\Engine\Submodules\Graphics\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\Controllers\OrthographicCameraController.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\Controllers\PerspectiveCameraController.cpp" />
   </ItemGroup>
 </Project>

@@ -11,7 +11,6 @@
 //******************************************************************************//
 #include "stdafx.h"
 #include "ImGuiLayer.h"
-
 // temporary
 //#include "imgui.h"
 #include <glad/glad.h>
@@ -26,6 +25,7 @@
 
 #include <ImGuizmo/ImGuizmo.h>
 #include <box2d/b2_body.h>
+#include <magic_enum/magic_enum.hpp>
 
 
 //******************************************************************************//
@@ -81,8 +81,8 @@ namespace NULLENGINE
 		ImGui_ImplGlfw_InitForOpenGL(window->GetWinddow(), true);
 		ImGui_ImplOpenGL3_Init("#version 410");
 
-
-		//m_SceneHierachyPannel = std::make_unique<SceneHierarchyPannel>();
+		SetPannelData(m_PannelData);
+		SetPannelParent();
 
 
 		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
@@ -90,32 +90,18 @@ namespace NULLENGINE
 
 		SUBSCRIBE_EVENT(KeyPressEvent, &ImGuiLayer::OnKeyPressed, eventManager, EventPriority::Low);
 
-		SetPannelData(m_PannelData);
-
+		InitCameraControllers();
 	}
 	void ImGuiLayer::OnUpdate(float dt)
 	{
+		m_FlyMode = Input::MouseHold(GLFW_MOUSE_BUTTON_2);
+
 		NSceneManager* scMan = NEngine::Instance().Get<NSceneManager>();
 
 		m_PannelData.m_Context = scMan->GetCurrentScene();
 
-		//if (Input::KeyDown(GLFW_KEY_Q))
-		//{
-		//	m_GuizmoType = -1;
-
-		//}
-		//if (Input::KeyDown(GLFW_KEY_W))
-		//{
-		//	m_GuizmoType = ImGuizmo::OPERATION::TRANSLATE;
-		//}
-		//if (Input::KeyDown(GLFW_KEY_E))
-		//{
-		//	m_GuizmoType = ImGuizmo::OPERATION::ROTATE;
-		//}
-		//if (Input::KeyDown(GLFW_KEY_R))
-		//{
-		//	m_GuizmoType = ImGuizmo::OPERATION::SCALE;
-		//}
+		if(m_FlyMode)
+			m_CameraController->Update(dt);
 	}
 
 	void ImGuiLayer::OnRender()
@@ -279,13 +265,85 @@ namespace NULLENGINE
 
 		//ImGui::PopStyleVar(2);
 
-		ImGui::Begin("Viewport");
+		ImGui::Begin("Scene");
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 		uint32_t texture = renderer->GetFramebuffer("Scene").GetColorAttachment();
 
 		window->SetBlockEvents(!ImGui::IsWindowHovered() && !ImGui::IsWindowFocused());
 
+		m_CameraController->SetEnabled(!(!ImGui::IsWindowHovered() && !ImGui::IsWindowFocused()));
+
+
+	
 		ImGui::Image((void*)(intptr_t)texture, viewportPanelSize, { 0, 1 }, { 1, 0 });
+
+		ImVec2 buttonSize = { 32,32 };
+		ImGui::SetCursorPos({ 9, 31 });
+
+		// set background color
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
+		ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 1.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 4));
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+
+
+		ImGui::BeginChild("TOOLS", ImVec2{ 48, 200 }, true);
+
+
+		ImGui::BeginGroup();
+
+		ImVec4 normalColor = ImGui::GetStyleColorVec4(ImGuiCol_Button);
+		ImVec4 selectedColor = ImVec4(0.26f, 0.59f, 0.98f, 1.0f); // Blue color
+
+
+		ImGui::PushStyleColor(ImGuiCol_Button, m_GuizmoType == -1 || m_FlyMode ? selectedColor : normalColor);
+		if (ImGui::Button(m_FlyMode ? "F" : "V", buttonSize))
+		{
+			SetGuizmo(-1);
+		}
+		ImGui::PopStyleColor();
+
+
+		// Button for Translate
+		ImGui::PushStyleColor(ImGuiCol_Button, m_GuizmoType == ImGuizmo::OPERATION::TRANSLATE && !m_FlyMode ? selectedColor : normalColor);
+		if (ImGui::Button("M", buttonSize))
+		{
+			SetGuizmo(ImGuizmo::OPERATION::TRANSLATE);
+		}
+		ImGui::PopStyleColor();
+		// Button for Rotate
+		ImGui::PushStyleColor(ImGuiCol_Button, m_GuizmoType == ImGuizmo::OPERATION::ROTATE && !m_FlyMode ? selectedColor : normalColor);
+		if (ImGui::Button("R", buttonSize))
+		{
+			SetGuizmo(ImGuizmo::OPERATION::ROTATE);
+
+		}
+		ImGui::PopStyleColor();
+
+		// Button for Scale
+		ImGui::PushStyleColor(ImGuiCol_Button, m_GuizmoType == ImGuizmo::OPERATION::SCALE  && !m_FlyMode ? selectedColor : normalColor);
+		if (ImGui::Button("S", buttonSize))
+		{
+			SetGuizmo(ImGuizmo::OPERATION::SCALE);
+		}
+		ImGui::PopStyleColor();
+
+		ImGui::PushStyleColor(ImGuiCol_Button, m_GuizmoType == ImGuizmo::OPERATION::UNIVERSAL && !m_FlyMode ? selectedColor : normalColor);
+		if (ImGui::Button("T", buttonSize))
+		{
+			SetGuizmo(ImGuizmo::OPERATION::UNIVERSAL);
+
+		}
+		ImGui::PopStyleColor();
+
+
+		ImGui::EndGroup();
+		ImGui::EndChild();
+		ImGui::PopStyleColor();
+		ImGui::PopStyleVar(3);
+
+
+		
 
 
 		/// IMGUIZMO
@@ -319,7 +377,58 @@ namespace NULLENGINE
 	void ImGuiLayer::SetPannelData(const PannelData& data)
 	{
 		for (auto& pannel : m_Pannels)
-			pannel.get()->SetPannelData(m_PannelData);
+	
+		pannel.get()->SetPannelData(m_PannelData);
+	}
+	void ImGuiLayer::SetPannelParent()
+	{
+		for (auto& pannel : m_Pannels)
+			pannel.get()->SetPannelParent(this);
+	}
+
+	void ImGuiLayer::SetCamera(Camera::CameraType type)
+	{
+		if (m_CameraController->GetCamera()->GetCameraType() == type)
+			return;
+
+		NCameraManager* cameraManager = NEngine::Instance().Get<NCameraManager>();
+
+		if (type == Camera::ORTHOGRAPHIC)
+		{
+			m_CameraController->SetEnabled(false);
+			m_CameraController = m_CameraController2D.get();
+			m_CameraController->SetEnabled(true);
+		}
+		else if (type == Camera::PERSPECTIVE)
+		{
+			m_CameraController->SetEnabled(false);
+			m_CameraController = m_CameraController3D.get();
+			m_CameraController->SetEnabled(true);
+		}
+		else
+		{
+			NLE_CORE_ASSERT(false, "Invalid Camera Type", magic_enum::enum_name(type).data());
+		}
+
+
+		cameraManager->SetCurrentCamera(m_CameraController->GetCamera()->GetName());
+	}
+
+	void ImGuiLayer::SetGuizmo(int g)
+	{
+		m_GuizmoType = g;
+	
+		//m_FlyMode = !(g > 0);
+	}
+
+	CameraController* ImGuiLayer::GetCameraController()
+	{
+		return m_CameraController;
+	}
+
+	Camera* ImGuiLayer::GetCurrentCamera()
+	{
+		return m_CameraController->GetCamera();
 	}
 
 	void ImGuiLayer::Begin()
@@ -360,6 +469,8 @@ namespace NULLENGINE
 
 	void ImGuiLayer::ImGuizmoImpl()
 	{
+		if (m_GuizmoType == -1)
+			return;
 
 		if (m_PannelData.m_SelectedEntity)
 		{
@@ -429,21 +540,51 @@ namespace NULLENGINE
 		}
 	}
 
+	void ImGuiLayer::InitCameraControllers()
+	{
+		NCameraManager* cameraManager = NEngine::Instance().Get<NCameraManager>();
+
+		m_CameraController2D = std::make_unique<OrthographicCameraController>();
+		m_CameraController3D = std::make_unique<PerspectiveCameraController>();
+
+		Camera* camera3D = cameraManager->GetCamera<Camera3D>("Editor3D");
+		Camera* camera2D = cameraManager->GetCamera<Camera2D>("Editor2D");
+
+
+		NLE_CORE_ASSERT(camera3D != nullptr || camera2D != nullptr, "Missing necessary Editor!");
+
+
+		m_CameraController = m_CameraController2D.get();
+		m_CameraController->SetCamera(camera2D);
+		m_CameraController->SetEnabled(false);
+		m_CameraController->Init();
+
+		m_CameraController = m_CameraController3D.get();
+		m_CameraController->SetCamera(camera3D);
+		m_CameraController->Init();
+	}
+
 	void ImGuiLayer::KeyboardShortcuts(const KeyPressEvent& e)
 	{
+		if (m_FlyMode)
+			return;
+
 		switch (e.GetKeyCode())
 		{
 		case GLFW_KEY_Q:
-			m_GuizmoType = -1;
+			SetGuizmo(-1);
 			break;
 		case GLFW_KEY_W:
-			m_GuizmoType = ImGuizmo::OPERATION::TRANSLATE;
+			SetGuizmo(ImGuizmo::OPERATION::TRANSLATE);
 			break;
 		case GLFW_KEY_E:
-			m_GuizmoType = ImGuizmo::OPERATION::ROTATE;
+			SetGuizmo(ImGuizmo::OPERATION::ROTATE);
 			break;
 		case GLFW_KEY_R:
-			m_GuizmoType = ImGuizmo::OPERATION::SCALE;
+			SetGuizmo(ImGuizmo::OPERATION::SCALE);
+			break;
+		case GLFW_KEY_T:
+			SetGuizmo(ImGuizmo::OPERATION::UNIVERSAL);
 			break;
 		}
 	}

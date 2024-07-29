@@ -14,6 +14,10 @@
 //******************************************************************************//
 #include "Null/Core.h"
 #include "Null/Engine/Submodules/Layers/Layer.h"
+
+#include "Null/Engine/Submodules/Graphics/Camera/Controllers/OrthographicCameraController.h"
+#include "Null/Engine/Submodules/Graphics/Camera/Controllers/PerspectiveCameraController.h"
+
 //#include "Pannels/SceneHierarchyPannel.h"
 
 
@@ -41,6 +45,10 @@ namespace NULLENGINE
 		Scene* m_Context = nullptr;
 	};
 
+	class NLE_API CameraController;
+	class NLE_API OrthographicCameraController;
+	class NLE_API PerspectiveCameraController;
+
 	class NLE_API Pannel
 	{
 	public:
@@ -48,10 +56,13 @@ namespace NULLENGINE
 		virtual ~Pannel() {};
 
 		void SetPannelData(PannelData& data) { m_PannelData = &data; }
+		void SetPannelParent(ImGuiLayer* parent) { m_Parent = parent; }
 
 		virtual void OnImGUIRender() = 0;
 	protected:
 		PannelData* m_PannelData;
+
+		ImGuiLayer* m_Parent;
 	};
 
 
@@ -76,6 +87,15 @@ namespace NULLENGINE
 		 void AddPannel(std::unique_ptr<Pannel>&& overlay);
 
 		 void SetPannelData(const PannelData& data);
+		 void SetPannelParent();
+
+		 void SetCamera(Camera::CameraType type);
+
+		 void SetGuizmo(int g);
+
+		 Camera* GetCurrentCamera();
+
+		 CameraController* GetCameraController();
 
 		 void Begin();
 		 void End();
@@ -88,9 +108,19 @@ namespace NULLENGINE
 
 		PannelData m_PannelData;
 
+		CameraController* m_CameraController;
+
+		std::unique_ptr<OrthographicCameraController> m_CameraController2D;
+		std::unique_ptr<PerspectiveCameraController> m_CameraController3D;
+
+
 		int m_GuizmoType = -1;
 
+		bool m_FlyMode;
+
 		void ImGuizmoImpl();
+
+		void InitCameraControllers();
 
 		void KeyboardShortcuts(const KeyPressEvent& e);
 

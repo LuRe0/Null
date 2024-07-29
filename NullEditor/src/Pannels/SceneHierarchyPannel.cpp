@@ -33,6 +33,7 @@ namespace NULLENGINE
 	{
 		ImGui::Begin("Scene Hierarchy");
 
+		ImGui::PushItemWidth(100);
 		ImGui::Text("Scene Name: "); ImGui::SameLine();
 
 		if (ImGui::InputText("##name", &m_PannelData->m_Context->m_Name))
@@ -42,6 +43,7 @@ namespace NULLENGINE
 				m_PannelData->m_Context->m_Name = "New Scene";
 			}
 		}
+		ImGui::PopItemWidth();
 
 		auto& entities = m_PannelData->m_Context->GetManagedEntities();
 

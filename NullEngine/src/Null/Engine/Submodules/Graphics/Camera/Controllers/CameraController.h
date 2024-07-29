@@ -4,7 +4,7 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	Camera.h
+// File Name:	CameraController.h
 // Author(s):	name
 // 
 //------------------------------------------------------------------------------
@@ -13,9 +13,6 @@
 // Includes																        //
 //******************************************************************************//
 #include "Null/Core.h"
-#include "Camera.h"
-#include <WinUser.h>
-
 
 
 //******************************************************************************//
@@ -27,6 +24,13 @@
 //******************************************************************************//
 // Private constants														    //
 //******************************************************************************//
+const float SENSITIVITY = 0.1f;
+const float SPEED = 250.5f;
+
+
+const float MAXSPEED = 500;
+const float MAXSENSITIVITY = 1.0f;
+const float MAXSCALE = 10.0f;
 
 //******************************************************************************//
 // Private structures													        //
@@ -35,44 +39,41 @@
 
 namespace NULLENGINE
 {
-    class Camera2D : public Camera {
+    
+    class NLE_API CameraController 
+    {
     public:
-        Camera2D(int windowWidth, int windowHeight, float zoom = 1.0f, float rotation = 0);
 
-        void SetPosition(const glm::vec2& position);
+        virtual ~CameraController() = default;
 
-        void SetRotation(float rotation);
+        virtual void Init() = 0;
 
-        void SetZoom(float zoom);
+        virtual void Update(float dt)  = 0;
 
+        virtual void Shutdown() = 0;
 
-        virtual void Init();
-
-        virtual void Shudown() {};
-
-        void Update(float dt) override;
-
-        const glm::mat4 GetViewMatrix() const override;
-
-        const glm::vec2 GetPosition() const;
-        float GetZoom() const;
+        virtual void SetCamera(Camera* camera) = 0;
 
 
-        void OnWindowResize(const WindowResizeEvent& e);
-        void OnMouseScrolled(const MouseScrolledEvent& e);
+        virtual Camera* GetCamera() const = 0;
 
-        //static void OnMouseMoved(const MouseMoveEvent& event);
-
-    private:
-        glm::vec2 m_Position;
-
+        void SetEnabled(bool enable) { m_Enabled = enable; if(!enable) m_FirstMouse = true; };
+  
+    protected:
         float m_MovementSpeed;
-        float m_Zoom;
-        float m_Rotation;
-        float m_AspectRatio;
 
-        void SetProjection(float left,float right,float bottom,float top);
+        float m_MouseSensitivity;
+
+        float m_ScrollSensitivity;
+
+        float m_SpeedScale = 2.0f;
+
+        glm::vec2 m_LastMousePos;
+
+        bool m_FirstMouse;
+
+        bool m_Enabled = true;
+
+        friend class ScenePropertyPannel;
     };
-
-
 }

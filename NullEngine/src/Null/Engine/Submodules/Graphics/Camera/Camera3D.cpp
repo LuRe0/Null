@@ -27,11 +27,9 @@
 namespace NULLENGINE
 {
 	Camera3D::Camera3D(int winWidth, int winHeight, glm::vec3 position, glm::vec3 up,
-		float yaw, float pitch, float movementSpeed, float mouseSensitivity,
-		float zoom, float nearclip, float farclip)
+		float yaw, float pitch, float zoom, float fov, float nearclip, float farclip)
 		: m_Position(position), m_Up(up), m_Yaw(yaw), m_Pitch(pitch),
-		m_MovementSpeed(movementSpeed), m_MouseSensitivity(mouseSensitivity),
-		m_Zoom(zoom), m_NearClip(nearclip), m_FarClip(farclip)
+		m_Zoom(zoom), m_FOV(fov), m_NearClip(nearclip), m_FarClip(farclip)
 	{
 		m_Position = position;
 		m_WorldUp = up;
@@ -48,7 +46,7 @@ namespace NULLENGINE
 
 
 		SUBSCRIBE_EVENT(WindowResizeEvent, &Camera3D::OnWindowResize, eventManager, EventPriority::Low);
-		SUBSCRIBE_EVENT(MouseScrolledEvent, &Camera3D::OnMouseScrolled, eventManager, EventPriority::Low);
+		//SUBSCRIBE_EVENT(MouseScrolledEvent, &Camera3D::OnMouseScrolled, eventManager, EventPriority::Low);
 	}
 
 	void Camera3D::Update(float dt)
@@ -64,41 +62,93 @@ namespace NULLENGINE
 			m_IsDirty = false;
 		}
 
-		float velocity = m_MovementSpeed * dt;
 
-		if (Input::KeyDown(GLFW_KEY_W))
-		{
-			m_Position += m_Front * velocity;
-			m_IsDirty = true;
+	}
 
-		}
-		if (Input::KeyDown(GLFW_KEY_S))
-		{
-			m_Position -= m_Front * velocity;
-			m_IsDirty = true;
+	void Camera3D::SetPosition(const glm::vec3& position)
+	{
+		m_Position = position;
+		m_IsDirty = true;
+	}
 
-		}
-		if (Input::KeyDown(GLFW_KEY_A))
-		{
-			m_Position -= m_Right * velocity;
-			m_IsDirty = true;
+	void Camera3D::SetFront(const glm::vec3& front)
+	{
+		m_Front = front;
+		m_IsDirty = true;
+	}
 
-		}
-		if (Input::KeyDown(GLFW_KEY_D))
-		{
-			m_Position += m_Right * velocity;
-			m_IsDirty = true;
-		}
+	void Camera3D::SetUp(const glm::vec3& up)
+	{
+		m_Up = up;
+		m_IsDirty = true;
+	}
+
+	void Camera3D::SetRight(const glm::vec3& right)
+	{
+		m_Right = right;
+		m_IsDirty = true;
 	}
 
 	void Camera3D::SetZoom(float zoom)
 	{
+
 		m_Zoom = zoom;
+
+		m_Zoom = std::clamp(m_Zoom, (1.0f/ m_FOV), 1.0f);
+
+		m_IsDirty = true;
+	}
+
+	void Camera3D::SetYaw(float yaw)
+	{
+		m_Yaw = yaw;
+		m_IsDirty = true;
+	}
+
+	void Camera3D::SetPitch(float pitch)
+	{
+		m_Pitch = pitch;
+		m_IsDirty = true;
 	}
 
 	const glm::mat4 Camera3D::GetViewMatrix() const
 	{
 		return m_ViewMatrix;
+	}
+
+	const glm::vec3 Camera3D::GetPosition() const
+	{
+		return m_Position;
+	}
+
+	const glm::vec3 Camera3D::GetUp() const
+	{
+		return m_Up;
+	}
+
+	const glm::vec3 Camera3D::GetFront() const
+	{
+		return glm::vec3(m_Front);
+	}
+
+	const glm::vec3 Camera3D::GetRight() const
+	{
+		return glm::vec3(m_Right);
+	}
+
+	const float Camera3D::GetPitch() const
+	{
+		return m_Pitch;
+	}
+
+	const float Camera3D::GetYaw() const
+	{
+		return m_Yaw;
+	}
+
+	const float Camera3D::GetZoom() const
+	{
+		return m_Zoom; //to do????
 	}
 
 
@@ -115,14 +165,13 @@ namespace NULLENGINE
 	{
 	    m_Zoom -= (float)e.GetYOffset();
 
-		m_Zoom = std::clamp(m_Zoom, 1.0f, 45.0f);
 
 		m_IsDirty = true;
 	}
 
 	void Camera3D::UpdateProjectionMatrix()
 	{
-		m_ProjectionMatrix = glm::perspective(glm::radians(m_Zoom), m_Aspect, m_NearClip, m_FarClip);
+		m_ProjectionMatrix = glm::perspective(glm::radians(m_FOV*m_Zoom), m_Aspect, m_NearClip, m_FarClip);
 	}
 
 	void Camera3D::UpdateCameraVectors()

@@ -27,9 +27,8 @@
 // Default camera values
 const float YAW = -90.0f;
 const float PITCH = 0.0f;
-const float SPEED = 250.5f;
-const float SENSITIVITY = 0.1f;
-const float ZOOM = 45.0f;
+const float ZOOM = 1.0f;
+const float FOV = 45.0f;
 //******************************************************************************//
 // Private structures													        //
 //******************************************************************************//
@@ -41,7 +40,7 @@ namespace NULLENGINE
     public:
         // constructor with vectors
         Camera3D(int winWidth, int winHeight, glm::vec3 position = glm::vec3(0.0f, 0.0f, 1000.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW,
-                 float pitch = PITCH, float movementSpeed = SPEED, float mouseSensitivity = SENSITIVITY, float zoom = ZOOM, float nearclip = 0.1f, float farclip = 5000.0f);
+                 float pitch = PITCH, float zoom = ZOOM, float fov = FOV, float nearclip = 0.1f, float farclip = 5000.0f);
 
 
         virtual void Init();
@@ -53,10 +52,21 @@ namespace NULLENGINE
         void SetPosition(const glm::vec3& position);
         void SetFront(const glm::vec3& front);
         void SetUp(const glm::vec3& up);
+        void SetRight(const glm::vec3& right);
         void SetZoom(float zoom);
+        void SetYaw(float yaw);
+        void SetPitch(float pitch);
         // returns the view matrix calculated using Euler Angles and the LookAt Matrix
         const glm::mat4 GetViewMatrix() const override;
 
+
+        const glm::vec3 GetPosition() const;
+        const glm::vec3 GetUp() const;
+        const glm::vec3 GetFront() const;
+        const glm::vec3 GetRight() const;
+        const float GetPitch() const;
+        const float GetYaw() const;
+        const float GetZoom() const;
 
         void OnWindowResize(const WindowResizeEvent& e);
         void OnMouseScrolled(const MouseScrolledEvent& e);
@@ -74,9 +84,7 @@ namespace NULLENGINE
         // euler Angles
         float m_Yaw;
         float m_Pitch;
-        // camera options
-        float m_MovementSpeed;
-        float m_MouseSensitivity;
+
         float m_Zoom;
 
         float m_FOV;

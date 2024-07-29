@@ -67,7 +67,7 @@ namespace NULLENGINE
 
 
 		SUBSCRIBE_EVENT(WindowResizeEvent, &Camera2D::OnWindowResize, eventManager, EventPriority::Low);
-		SUBSCRIBE_EVENT(MouseScrolledEvent, &Camera2D::OnMouseScrolled, eventManager, EventPriority::Low);
+		//SUBSCRIBE_EVENT(MouseScrolledEvent, &Camera2D::OnMouseScrolled, eventManager, EventPriority::Low);
 	}
 	void Camera2D::Update(float dt)
 	{
@@ -82,33 +82,6 @@ namespace NULLENGINE
 
 			m_IsDirty = false;
 		}
-
-		float velocity = m_MovementSpeed * m_Zoom * dt;
-
-		if (Input::KeyDown(GLFW_KEY_W))
-		{
-			m_Position.y += velocity;
-			m_IsDirty = true;
-
-		}
-		if (Input::KeyDown(GLFW_KEY_S))
-		{
-			m_Position.y -= velocity;
-			m_IsDirty = true;
-
-		}
-		if (Input::KeyDown(GLFW_KEY_A))
-		{
-			m_Position.x -= velocity;
-			m_IsDirty = true;
-
-		}
-		if (Input::KeyDown(GLFW_KEY_D))
-		{
-			m_Position.x += velocity;
-			m_IsDirty = true;
-		}
-
 	}
 
 	const glm::mat4 Camera2D::GetViewMatrix() const
@@ -116,13 +89,22 @@ namespace NULLENGINE
 		return glm::inverse(m_ViewMatrix);
 	}
 
+	const glm::vec2 Camera2D::GetPosition() const
+	{
+		return m_Position;
+	}
+
+	float Camera2D::GetZoom() const
+	{
+		return m_Zoom;
+	}
+
 	void Camera2D::OnWindowResize(const WindowResizeEvent& e)
 	{
 
-		//SetZoom(1280.0f / e.GetWidth());
+		SetZoom(1280.0f / e.GetWidth());
 
-		m_AspectRatio = e.GetHeight() != 0 ? e.GetWidth() / e.GetHeight() : 0;
-
+		m_AspectRatio = e.GetHeight() != 0 ? e.GetWidth() / e.GetHeight() : m_AspectRatio;
 
 		float left = -static_cast<float>(e.GetWidth()) / 2.0f;
 		float right = static_cast<float>(e.GetWidth()) / 2.0f;
@@ -136,9 +118,9 @@ namespace NULLENGINE
 
 	void Camera2D::OnMouseScrolled(const MouseScrolledEvent& e)
 	{
-		m_Zoom -= e.GetYOffset() * 0.25f;
+		//m_Zoom -= e.GetYOffset() * 0.25f;
 
-		SetZoom(m_Zoom);
+		//SetZoom(m_Zoom);
 	}
 
 }

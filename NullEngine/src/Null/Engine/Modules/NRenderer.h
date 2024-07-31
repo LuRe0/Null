@@ -69,6 +69,8 @@ namespace NULLENGINE
 
 		const Framebuffer& GetFramebuffer(const std::string& buffer) const;
 
+		void ResizeFramebuffer(unsigned int width, unsigned int height);
+
 		void ClearRender(float r = 0.1f, float g = 0.1f, float b = 0.1f, float a = 1.0f);
 		static void ClearRenderS();
 	private:

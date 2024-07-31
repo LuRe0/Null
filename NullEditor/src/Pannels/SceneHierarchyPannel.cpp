@@ -74,7 +74,7 @@ namespace NULLENGINE
 
 			bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)(entity.GetID()), flags, entity.GetName().c_str());
 
-			if (ImGui::IsItemClicked())
+			if (ImGui::IsItemClicked() || ImGui::IsItemClicked(1))
 			{
 				m_PannelData->m_SelectedEntity = entity.GetID();
 			}

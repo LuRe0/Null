@@ -94,7 +94,7 @@ namespace NULLENGINE
 
 		m_Zoom = zoom;
 
-		m_Zoom = std::clamp(m_Zoom, (1.0f/ m_FOV), 1.0f);
+		m_Zoom = std::clamp(m_Zoom, (1.0f/ m_FOV), 3.0f);
 
 		m_IsDirty = true;
 	}
@@ -156,7 +156,7 @@ namespace NULLENGINE
 	{
 		//SetZoom(1280.0f / e.GetWidth());
 
-		m_Aspect = e.GetHeight() != 0 ? e.GetWidth() / e.GetHeight() : 0;
+		m_Aspect = e.GetHeight() != 0 ? static_cast<float>(e.GetWidth()) / static_cast<float>(e.GetHeight()) : m_Aspect;
 
 		m_IsDirty = true;
 	}

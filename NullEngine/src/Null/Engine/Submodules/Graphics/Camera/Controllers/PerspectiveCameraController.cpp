@@ -70,6 +70,11 @@ namespace NULLENGINE
 		return m_Camera;
 	}
 
+	void PerspectiveCameraController::OnResize(unsigned int width, unsigned int height)
+	{
+		m_Camera->OnWindowResize(WindowResizeEvent(width, height));
+	}
+
 	void PerspectiveCameraController::ProcessKeyboardInput(float dt)
 	{
 		float velocity = m_MovementSpeed * m_SpeedScale * dt;

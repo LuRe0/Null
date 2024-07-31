@@ -156,8 +156,8 @@ namespace NULLENGINE
 
 	GLFWwindow* NWindow::InitializeWindow(int width, int height, const char* title)
 	{
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 		GLFWwindow* window = glfwCreateWindow(width, height, title, NULL, NULL);
@@ -308,6 +308,8 @@ namespace NULLENGINE
 	void  NWindow::MouseMoveCallback(GLFWwindow* window, double xpos, double ypos)
 	{
 		Window& data = *((Window*)glfwGetWindowUserPointer(window));
+
+		//NLE_CORE_WARN("Mouse Pos = {0}, {1}", (int)xpos, (int)ypos);
 
 		if (!data.m_BlockEvents)
 		{

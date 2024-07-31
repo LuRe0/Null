@@ -100,7 +100,7 @@ namespace NULLENGINE
 
 		m_PannelData.m_Context = scMan->GetCurrentScene();
 
-		if(m_FlyMode)
+		if (m_FlyMode)
 			m_CameraController->Update(dt);
 	}
 
@@ -202,7 +202,7 @@ namespace NULLENGINE
 						NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
 
 						eventManager->QueueEvent(std::make_unique<SceneSwitchEvent>(m_PannelData.m_Context->m_Name, nextScene));
-						
+
 						m_PannelData.m_SelectedEntity = {};
 					}
 				}
@@ -267,15 +267,66 @@ namespace NULLENGINE
 
 		ImGui::Begin("Scene");
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
-		uint32_t texture = renderer->GetFramebuffer("Scene").GetColorAttachment();
+
+		const Framebuffer& buffer = renderer->GetFramebuffer("Scene");
+		uint32_t texture = buffer.GetColorAttachment(0);
 
 		window->SetBlockEvents(!ImGui::IsWindowHovered() && !ImGui::IsWindowFocused());
 
 		m_CameraController->SetEnabled(!(!ImGui::IsWindowHovered() && !ImGui::IsWindowFocused()));
 
+		auto viewportOffet = ImGui::GetCursorPos();
+
+		if (m_ViewportSize != *((glm::vec2*)&viewportPanelSize))
+		{
+			renderer->ResizeFramebuffer(viewportPanelSize.x, viewportPanelSize.y);
+			m_CameraController->OnResize(viewportPanelSize.x, viewportPanelSize.y);
+			m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
+		}
+
+		ImGui::Image((void*)(intptr_t)texture, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, { 0, 1 }, { 1, 0 });
+
+
+		auto windowSize = ImGui::GetWindowSize();
+		ImVec2 windowPos = ImGui::GetWindowPos();
+
+		// Get the content region position and size
+		ImVec2 contentRegionMin = ImGui::GetWindowContentRegionMin();
+		ImVec2 contentRegionMax = ImGui::GetWindowContentRegionMax();
+
+		// Calculate the actual bounds of the viewport within the window
+		ImVec2 minBound = { windowPos.x + contentRegionMin.x, windowPos.y + contentRegionMin.y };
+		ImVec2 maxBound = { windowPos.x + contentRegionMax.x, windowPos.y + contentRegionMax.y };
+
+		m_viewportBounds[0] = { minBound.x, minBound.y };
+		m_viewportBounds[1] = { maxBound.x, maxBound.y };
+
+		glm::vec2 viewportSize = m_viewportBounds[1] - m_viewportBounds[0];
+
+		auto mousePos = ImGui::GetMousePos();
+
+		mousePos.x -= m_viewportBounds[0].x;
+		mousePos.y -= m_viewportBounds[0].y;
+
+
+		int mouseX = static_cast<int>(mousePos.x);
+		int mouseY = static_cast<int>(mousePos.y);
+
 
 	
-		ImGui::Image((void*)(intptr_t)texture, viewportPanelSize, { 0, 1 }, { 1, 0 });
+		if (mouseX >= 0 && mouseY > 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y)
+		{
+			buffer.Bind();
+	
+			auto pixel = buffer.ReadPixels(1, mouseX, mouseY);
+			NLE_CORE_WARN("PixelData = {0}", pixel);
+			buffer.Unbind();
+			if (ImGui::IsItemClicked() && pixel > 0)
+			{
+				m_PannelData.m_SelectedEntity = pixel;
+			}
+		}
+
 
 		ImVec2 buttonSize = { 32,32 };
 		ImGui::SetCursorPos({ 9, 31 });
@@ -321,7 +372,7 @@ namespace NULLENGINE
 		ImGui::PopStyleColor();
 
 		// Button for Scale
-		ImGui::PushStyleColor(ImGuiCol_Button, m_GuizmoType == ImGuizmo::OPERATION::SCALE  && !m_FlyMode ? selectedColor : normalColor);
+		ImGui::PushStyleColor(ImGuiCol_Button, m_GuizmoType == ImGuizmo::OPERATION::SCALE && !m_FlyMode ? selectedColor : normalColor);
 		if (ImGui::Button("S", buttonSize))
 		{
 			SetGuizmo(ImGuizmo::OPERATION::SCALE);
@@ -343,7 +394,7 @@ namespace NULLENGINE
 		ImGui::PopStyleVar(3);
 
 
-		
+
 
 
 		/// IMGUIZMO
@@ -377,8 +428,8 @@ namespace NULLENGINE
 	void ImGuiLayer::SetPannelData(const PannelData& data)
 	{
 		for (auto& pannel : m_Pannels)
-	
-		pannel.get()->SetPannelData(m_PannelData);
+
+			pannel.get()->SetPannelData(m_PannelData);
 	}
 	void ImGuiLayer::SetPannelParent()
 	{
@@ -417,7 +468,7 @@ namespace NULLENGINE
 	void ImGuiLayer::SetGuizmo(int g)
 	{
 		m_GuizmoType = g;
-	
+
 		//m_FlyMode = !(g > 0);
 	}
 
@@ -481,7 +532,7 @@ namespace NULLENGINE
 
 			ImGuizmo::SetOrthographic(mainCam->GetCameraType() == Camera::ORTHOGRAPHIC);
 			ImGuizmo::SetDrawlist();
-			
+
 			float winWidth = (float)ImGui::GetWindowWidth();
 			float winHeight = (float)ImGui::GetWindowHeight();
 			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, winWidth, winHeight);
@@ -510,13 +561,13 @@ namespace NULLENGINE
 
 				if (ImGuizmo::IsUsing())
 				{
-				
+
 					glm::vec3 translation, rotation, scale;
 					DecomposeTransform(transformMatrix, translation, rotation, scale);
 
 					glm::vec3 deltaRotation = glm::degrees(rotation) - transform.m_Rotation;
 
-		
+
 					transform.m_Translation = translation;
 					transform.m_Rotation += deltaRotation;
 					transform.m_Scale = scale;
@@ -529,7 +580,7 @@ namespace NULLENGINE
 
 						auto pos = physicsSys->PixelsToMeters(transform.m_Translation.x, transform.m_Translation.y);
 
-						if(rb2d.m_RuntimeBody)
+						if (rb2d.m_RuntimeBody)
 							rb2d.m_RuntimeBody->SetTransform({ pos.x, pos.y }, transform.m_Rotation.z);
 					}
 

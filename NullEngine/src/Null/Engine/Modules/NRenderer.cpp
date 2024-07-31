@@ -46,10 +46,13 @@ namespace NULLENGINE
 
 		m_Framebuffers.at("Scene").Bind();
 
+		
+
 		ClearRender();
 
 
-
+		int nean = -1;
+		m_Framebuffers.at("Scene").ClearColorAttachment(1, &nean);
 	}
 
 	void NRenderer::RenderScene(const RenderData& render) 
@@ -83,6 +86,8 @@ namespace NULLENGINE
 
 		shader->setVec4("tintColor", render.tintColor);
 
+		shader->setInt("entityID", render.entity);
+
 		if (render.spriteSrc && render.spriteSrc->GetTexture())
 		{
 			//render.spriteSrc->GetTexture()->Bind();
@@ -106,7 +111,7 @@ namespace NULLENGINE
 
 		m_Framebuffers.at("Scene").Unbind();
 
-		ClearRender();
+	
 
 		RenderToScreen();
 	}
@@ -115,6 +120,8 @@ namespace NULLENGINE
 	{
 		if (!m_Parent->GetIsEditorEnabled())
 		{
+			ClearRender();
+
 			NShaderManager* shaderMan = NEngine::Instance().Get<NShaderManager>();
 			NMeshManager* meshManager = NEngine::Instance().Get<NMeshManager>();
 			NCameraManager* cameraManager = NEngine::Instance().Get<NCameraManager>();
@@ -159,14 +166,21 @@ namespace NULLENGINE
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LESS);
 
+
 		m_Framebuffers.insert(std::make_pair("Scene", Framebuffer(m_WinWidth, m_WinHeight)));
 
-		for (auto& fb : m_Framebuffers)
+		Framebuffer& buffer = m_Framebuffers.at("Scene");
+
+		buffer.Init();
+
+		buffer.AddColorAttachment({ Framebuffer::Format(GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE), Framebuffer::Format(GL_R32I, GL_RED_INTEGER, GL_INT) });
+
+	/*	for (auto& fb : m_Framebuffers)
 		{
 			fb.second.Init();
-		}
+		}*/
 
-		SetViewport(0, 0, m_WinWidth, m_WinHeight);
+		//SetViewport(0, 0, m_WinWidth, m_WinHeight);
 	}
 
 	void NRenderer::Update(float dt)
@@ -213,6 +227,14 @@ namespace NULLENGINE
 		return m_Framebuffers.at(buffer);
 	}
 
+	void NRenderer::ResizeFramebuffer(unsigned int width, unsigned int height)
+	{
+		for (auto& fb : m_Framebuffers)
+		{
+			fb.second.Resize(width, height);
+		}
+	}
+
 	void NRenderer::ClearRender(float r, float g, float b, float a)
 	{
 		glClearColor(r, g, b, a);
@@ -227,14 +249,17 @@ namespace NULLENGINE
 
 	void NRenderer::OnWindowResize(const WindowResizeEvent& e)
 	{
-		m_WinWidth = e.GetWidth();
-		m_WinHeight = e.GetHeight();
-
-		for (auto& fb : m_Framebuffers)
+		if (!m_Parent->GetIsEditorEnabled())
 		{
-			fb.second.Resize(m_WinWidth, m_WinHeight);
-		}
+			m_WinWidth = e.GetWidth();
+			m_WinHeight = e.GetHeight();
 
-		SetViewport(0, 0, m_WinWidth, m_WinHeight);
+			for (auto& fb : m_Framebuffers)
+			{
+				fb.second.Resize(m_WinWidth, m_WinHeight);
+			}
+
+			SetViewport(0, 0, m_WinWidth, m_WinHeight);
+		}
 	}
 }

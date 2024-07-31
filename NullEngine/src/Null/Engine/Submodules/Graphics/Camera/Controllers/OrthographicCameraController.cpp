@@ -71,6 +71,11 @@ namespace NULLENGINE
 		return m_Camera;
 	}
 
+	void OrthographicCameraController::OnResize(unsigned int width, unsigned int height)
+	{
+		m_Camera->OnWindowResize(WindowResizeEvent(width, height));
+	}
+
 	void OrthographicCameraController::ProcessKeyboardInput(float dt)
 	{
 		float velocity = m_MovementSpeed * m_SpeedScale * dt;

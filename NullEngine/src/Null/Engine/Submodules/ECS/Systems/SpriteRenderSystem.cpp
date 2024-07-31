@@ -69,8 +69,8 @@ namespace NULLENGINE
 			if (!sprite.m_Enabled)
 				continue;
 
-			//model, mesh, spritesrc, tint, shadername, frameindex
-			renderer->AddRenderCall({ transform.m_TransformMatrix, sprite.m_Mesh,sprite.m_SpriteSource, sprite.m_Color, sprite.m_ShaderName, sprite.m_FrameIndex });
+			//model, mesh, spritesrc, tint, shadername, frameindex, entity
+			renderer->AddRenderCall({ transform.m_TransformMatrix, sprite.m_Mesh,sprite.m_SpriteSource, sprite.m_Color, sprite.m_ShaderName, sprite.m_FrameIndex, entityId });
 		}
 	}
 
@@ -190,8 +190,8 @@ namespace NULLENGINE
 		}
 		if (sprite.m_SpriteSource)
 		{
-			ImGui::DragInt("Rows", &sprite.m_SpriteSource->Rows(), 0.5f, 0);
-			ImGui::DragInt("Columns", &sprite.m_SpriteSource->Cols(), 0.5f, 0);
+			ImGui::DragInt("Rows", &sprite.m_SpriteSource->Rows(), 0.5f, 1);
+			ImGui::DragInt("Columns", &sprite.m_SpriteSource->Cols(), 0.5f, 1);
 
 			if (sprite.m_SpriteSource->GetTexture())
 			{

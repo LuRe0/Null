@@ -41,6 +41,7 @@ struct RenderData
 	const glm::vec4 tintColor;           // 16 bytes
 	const std::string shaderName;            // 24 bytes (approx., depends on the implementation)
 	const unsigned int frameIndex;                // 4 bytes
+	EntityID entity;
 
-	const std::vector<unsigned int> m_textureIDs;
+	//const std::vector<unsigned int> m_textureIDs;
 };

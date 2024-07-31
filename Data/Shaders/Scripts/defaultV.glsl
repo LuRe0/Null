@@ -6,6 +6,7 @@ layout (location = 2) in vec2 aTexCoord;
 
 uniform vec2 texSize;
 uniform vec2 texOffset;
+uniform int entityID;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -13,6 +14,7 @@ uniform mat4 projection;
 
 out vec2 TexCoord;
 out vec4 color;
+flat out int vIntValue;
 
 void main()
 {
@@ -23,4 +25,5 @@ void main()
     TexCoord = texOffset + adjustedCoords;
 
     color = aColor;
+    vIntValue = entityID;
 }

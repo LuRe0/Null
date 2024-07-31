@@ -54,6 +54,7 @@ namespace NULLENGINE
 
         virtual void SetCamera(Camera* camera) = 0;
 
+        virtual void OnResize(unsigned int width, unsigned int height) = 0;
 
         virtual Camera* GetCamera() const = 0;
 

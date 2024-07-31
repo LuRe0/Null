@@ -1,8 +1,10 @@
 #version 330 core
-out vec4 FragColor;     // Output color
+layout (location = 0) out vec4 FragColor;     // Output color
+layout (location = 1) out int FragColor1;     // Output color
 
 in vec2 TexCoord;
 in vec4 color;
+flat in int vIntValue;
 
 uniform sampler2D texture0;
 uniform vec4 tintColor;
@@ -23,5 +25,6 @@ void main()
 	}
 	
 	FragColor = resultColor;
-	
+
+	FragColor1 = int(vIntValue);
 }

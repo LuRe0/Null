@@ -52,6 +52,9 @@ namespace NULLENGINE
         void SetCamera(Camera* camera) override;
 
         Camera* GetCamera() const override;
+
+        void OnResize(unsigned int width, unsigned int height) override;
+
     private:
         void ProcessKeyboardInput(float dt);
         void ProcessMouseInput(float dt);

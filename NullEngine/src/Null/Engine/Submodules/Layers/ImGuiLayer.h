@@ -113,6 +113,8 @@ namespace NULLENGINE
 		std::unique_ptr<OrthographicCameraController> m_CameraController2D;
 		std::unique_ptr<PerspectiveCameraController> m_CameraController3D;
 
+		glm::vec2 m_ViewportSize = {0,0};
+		glm::vec2 m_viewportBounds[2];
 
 		int m_GuizmoType = -1;
 

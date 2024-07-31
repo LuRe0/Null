@@ -102,9 +102,13 @@ namespace NULLENGINE
 	void Camera2D::OnWindowResize(const WindowResizeEvent& e)
 	{
 
-		SetZoom(1280.0f / e.GetWidth());
+		m_AspectRatio = e.GetHeight() != 0 ? static_cast<float>(e.GetWidth()) / static_cast<float>(e.GetHeight()) : m_AspectRatio;
 
-		m_AspectRatio = e.GetHeight() != 0 ? e.GetWidth() / e.GetHeight() : m_AspectRatio;
+		float deltaZoom = 1 - m_Zoom;
+
+		float newZoom = e.GetHeight() != 0 ? (1280.0f / static_cast<float>(e.GetWidth()))+deltaZoom : m_Zoom;
+
+		SetZoom(newZoom);
 
 		float left = -static_cast<float>(e.GetWidth()) / 2.0f;
 		float right = static_cast<float>(e.GetWidth()) / 2.0f;

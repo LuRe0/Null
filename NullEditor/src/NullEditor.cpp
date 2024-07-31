@@ -5,6 +5,7 @@
 #include "Pannels/SceneHierarchyPannel.h"
 #include "Pannels/ComponentInspectorPannel.h"
 #include "Pannels/ScenePropertyPannel.h"
+#include "Pannels/ContentBrowserPannel.h"
 
 namespace NULLENGINE
 {
@@ -29,10 +30,12 @@ namespace NULLENGINE
 			auto pannel = std::make_unique<SceneHierarchyPannel>();
 			auto pannel2 = std::make_unique<ComponentInspectorPannel>();
 			auto pannel3 = std::make_unique<ScenePropertyPannel>();
+			auto pannel4 = std::make_unique<ContentBrowserPannel>();
 
 			gui.get()->AddPannel(std::move(pannel));
 			gui.get()->AddPannel(std::move(pannel2));
 			gui.get()->AddPannel(std::move(pannel3));
+			gui.get()->AddPannel(std::move(pannel4));
 			
 			PushLayer(std::move(gui));
 		}

@@ -27,7 +27,7 @@ namespace NULLENGINE
 {
     void NCameraManager::Load()
     {
-        std::string filePath = std::string("../Data/Cameras/") + std::string("Cameras") + std::string(".json");
+        std::string filePath = std::string("../Assets/Cameras/") + std::string("Cameras") + std::string(".json");
         // Open the JSON file
         std::ifstream file(filePath);
         if (!file.is_open()) {

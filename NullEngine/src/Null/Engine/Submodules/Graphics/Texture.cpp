@@ -29,7 +29,7 @@ namespace NULLENGINE
 {
 	Texture::Texture(const std::string& filePath)
 	{
-        m_FilePath = std::string("../Data/Textures/") + filePath + std::string(".png");
+        m_FilePath = std::string("../Assets/Textures/") + filePath + std::string(".png");
 
         glGenTextures(1, &m_TextureID);
         glBindTexture(GL_TEXTURE_2D, m_TextureID);

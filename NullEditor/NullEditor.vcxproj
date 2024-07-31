@@ -120,12 +120,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\Pannels\ComponentInspectorPannel.h" />
+    <ClInclude Include="src\Pannels\ContentBrowserPannel.h" />
     <ClInclude Include="src\Pannels\SceneHierarchyPannel.h" />
     <ClInclude Include="src\Pannels\ScenePropertyPannel.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\NullEditor.cpp" />
     <ClCompile Include="src\Pannels\ComponentInspectorPannel.cpp" />
+    <ClCompile Include="src\Pannels\ContentBrowserPannel.cpp" />
     <ClCompile Include="src\Pannels\SceneHierarchyPannel.cpp" />
     <ClCompile Include="src\Pannels\ScenePropertyPannel.cpp" />
   </ItemGroup>

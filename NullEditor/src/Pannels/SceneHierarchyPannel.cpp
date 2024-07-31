@@ -33,6 +33,10 @@ namespace NULLENGINE
 	{
 		ImGui::Begin("Scene Hierarchy");
 
+
+
+	
+
 		ImGui::PushItemWidth(100);
 		ImGui::Text("Scene Name: "); ImGui::SameLine();
 
@@ -44,6 +48,12 @@ namespace NULLENGINE
 			}
 		}
 		ImGui::PopItemWidth();
+
+
+
+
+
+		ImGui::BeginChild("##target");
 
 		auto& entities = m_PannelData->m_Context->GetManagedEntities();
 
@@ -59,7 +69,7 @@ namespace NULLENGINE
 
 			if (ImGui::MenuItem("Load Archetype"))
 			{
-				const std::string& archetype = FileDialog::OpenFile("Null Engine archetype (*.json)\0*.json\0");
+				const std::string& archetype = FileDialog::OpenFile("Null Engine archetype (*.ent)\0*.ent\0");
 				if (!archetype.empty())
 					m_PannelData->m_SelectedEntity = m_PannelData->m_Context->LoadArchetype(archetype);
 			}
@@ -93,8 +103,8 @@ namespace NULLENGINE
 
 				if (ImGui::MenuItem("Save as Archetype"))
 				{
-					const std::string& archetype = FileDialog::SaveFile("Null Engine Archetype (*.json)\0*.json\0");
-					if(!archetype.empty())
+					const std::string& archetype = FileDialog::SaveFile("Null Engine Archetype (*.ent)\0*.ent\0");
+					if (!archetype.empty())
 						m_PannelData->m_Context->SerializeArchetype(archetype, m_PannelData->m_SelectedEntity);
 				}
 
@@ -122,6 +132,21 @@ namespace NULLENGINE
 		//{
 
 		//}
+
+
+
+		ImGui::EndChild();
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ENTITY_FILE"))
+			{
+				std::string filename((const char*)payload->Data);
+
+				if (!filename.empty())
+					m_PannelData->m_SelectedEntity = m_PannelData->m_Context->LoadArchetype(filename);
+			}
+			ImGui::EndDragDropTarget();
+		}
 
 
 		ImGui::End();

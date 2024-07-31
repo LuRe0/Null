@@ -1,23 +1,19 @@
-  #pragma once
+#pragma once
 
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 //
-// File Name:	VAO.h
+// File Name:	ContentBrowserPannel.h
 // Author(s):	name
 // 
 //------------------------------------------------------------------------------
-/*
-Code adapted from https://learnopengl.com
-Made by Joey de Vries https://twitter.com/JoeyDeVriez\
-LearnOpenGl license: https://creativecommons.org/licenses/by/4.0/legalcode
-*/
+
 //******************************************************************************//
 // Includes																        //
 //******************************************************************************//
 #include "Null/Core.h"
-
+#include "Null/Engine/Submodules/Layers/ImGuiLayer.h"
 
 //******************************************************************************//
 // Definitions  														        //
@@ -36,30 +32,21 @@ LearnOpenGl license: https://creativecommons.org/licenses/by/4.0/legalcode
 
 namespace NULLENGINE
 {
+	class Scene;
 
-	class VBO;
-
-	class VAO
+	class ContentBrowserPannel : public Pannel
 	{
 	public:
-		VAO();
-		~VAO();
+		ContentBrowserPannel();
+		~ContentBrowserPannel() = default;
 
-		void Bind() const;
-		void Unbind() const;
-
-		const unsigned int GetID() const { return m_ID; }
-
-		//void Attach() const;
-
-		void AttachVBO(const VBO& vbo);
-
-		void AttachEBO(const VBO& vbo);
-
+		void OnImGUIRender();
 	private:
-		unsigned int m_ID;
+		ContentBrowserPannel(ContentBrowserPannel const&) = delete;
+		ContentBrowserPannel& operator=(ContentBrowserPannel const&) = delete;
+
+		std::filesystem::path m_CurrentDirectory;
 
 	};
-
 
 }

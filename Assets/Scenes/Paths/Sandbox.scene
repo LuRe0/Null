@@ -46,7 +46,7 @@
                         1
                     ],
                     "frameindex": 0,
-                    "meshname": "Quad",
+                    "meshname": "Triangle",
                     "shadername": "default",
                     "texture": "ChargeParticle",
                     "tint": [

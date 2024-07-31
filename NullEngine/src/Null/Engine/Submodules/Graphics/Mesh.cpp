@@ -49,7 +49,7 @@ namespace NULLENGINE
 
 		std::vector<unsigned int> indexData;
 
-		std::string filePath =std::string("../Data/Meshes/") + filename + std::string(".json");
+		std::string filePath =std::string("../Assets/Meshes/") + filename + std::string(".json");
 
 		std::ifstream file(filePath);
 

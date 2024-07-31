@@ -105,7 +105,7 @@ namespace NULLENGINE
 		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
 		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
 
-		Entity& entity = GetEntity(CreateEmptyEntity(name + " (Clone"));
+		Entity& entity = GetEntity(CreateEmptyEntity(name + " (Clone)"));
 
 		entity.SetArchetype(name);
 
@@ -127,9 +127,9 @@ namespace NULLENGINE
 	{
 		std::string filePath = "";
 		if(name.empty())
-			filePath = std::string("../Data/Scenes/Paths/") + m_Name + std::string(".json");
+			filePath = std::string("../Assets/Scenes/Paths/") + m_Name + std::string(".scene");
 		else
-			filePath = std::string("../Data/Scenes/Paths/") + name + std::string(".json");
+			filePath = std::string("../Assets/Scenes/Paths/") + name + std::string(".scene");
 
 		std::ofstream outFile(filePath);
 
@@ -179,7 +179,7 @@ namespace NULLENGINE
 
 	void Scene::SerializeArchetype(const std::string& archetype, EntityID entityID)
 	{
-		std::string filePath = std::string("../Data/Archetypes/") + archetype + std::string(".json");
+		std::string filePath = std::string("../Assets/Archetypes/") + archetype + std::string(".ent");
 
 		std::ofstream outFile(filePath);
 
@@ -221,7 +221,7 @@ namespace NULLENGINE
 
 	void Scene::SetAsStartScene()
 	{
-		std::string filePath = std::string("../Data/Scenes/") + std::string("Init") + std::string(".json");
+		std::string filePath = std::string("../Assets/Scenes/") + std::string("Init") + std::string(".json");
 		JSON initData;
 
 		// Define the JSON content

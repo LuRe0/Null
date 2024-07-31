@@ -149,7 +149,7 @@ namespace NULLENGINE
 
     void NEntityFactory::ReadArchetype(const std::string& filename, Entity& entity, NComponentFactory* componentFactory, NRegistry* registry)
     {
-        std::string filePath = std::string("../Data/Archetypes/") + filename + std::string(".json");
+        std::string filePath = std::string("../Assets/Archetypes/") + filename + std::string(".ent");
 
         // Open the JSON file
         std::ifstream inputFile(filePath);
@@ -185,7 +185,8 @@ namespace NULLENGINE
 
        const std::string& name = archetypeWrapper.GetString("Name", "");
 
-        entity.SetName(name);
+       if(entity.GetName().empty())
+            entity.SetName(name);
     }
 
     void NEntityFactory::CloneComponents(NComponentFactory* componentFactory, const std::string& archetype, NRegistry* registry, EntityID id)

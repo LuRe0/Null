@@ -30,7 +30,7 @@ namespace NULLENGINE
 {
 	NSceneManager::NSceneManager() : m_DefaultScene("")
 	{
-		std::string filePath = std::string("../Data/Scenes/") + std::string("Init") + std::string(".json");
+		std::string filePath = std::string("../Assets/Scenes/") + std::string("Init") + std::string(".json");
 
 		// Open the JSON file
 		std::ifstream inputFile(filePath);
@@ -115,7 +115,7 @@ namespace NULLENGINE
 
 	void NSceneManager::SwitchScene(const std::string& nextScene)
 	{
-		std::string filePath = std::string("../Data/Scenes/Paths/") + nextScene + std::string(".json");
+		std::string filePath = std::string("../Assets/Scenes/Paths/") + nextScene + std::string(".scene");
 
 		// Open the JSON file
 		std::ifstream inputFile(filePath);

@@ -8,7 +8,11 @@
 // Author(s):	name
 // 
 //------------------------------------------------------------------------------
-
+/*
+Code adapted from https://learnopengl.com
+Made by Joey de Vries https://twitter.com/JoeyDeVriez\
+LearnOpenGl license: https://creativecommons.org/licenses/by/4.0/legalcode
+*/
 //******************************************************************************//
 // Includes																        //
 //******************************************************************************//

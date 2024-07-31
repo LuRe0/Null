@@ -23,14 +23,17 @@
 #include <functional>
 #include <sstream>
 #include <tuple>
+#include <set>
 #include <fstream>
 #include <string_view>
 #include <typeinfo>
 #include <typeindex>
 #include <cstdint>
+#include <filesystem>
 #include <iomanip>
 #include <utility> // For std::forward
 #include <queue>
+#include <cstdio>
 #include <unordered_map>
 #include <glm/glm.hpp>
 #include "NIncludes.h"
@@ -50,6 +53,7 @@
 
 #ifdef NLE_PLATFORM_WINDOWS
 #include <Windows.h>
+#include <windows.h>
 #endif // NLE_PLATFORM_WINDOWS
 
 using JSON = nlohmann::json;

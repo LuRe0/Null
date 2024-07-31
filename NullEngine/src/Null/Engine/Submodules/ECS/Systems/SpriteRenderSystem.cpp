@@ -195,7 +195,7 @@ namespace NULLENGINE
 
 			if (sprite.m_SpriteSource->GetTexture())
 			{
-				ImGui::Text("Texture\t"); ImGui::Image((void*)(__int64)sprite.m_SpriteSource->GetTexture()->GetID(), ImVec2(100, 100), { 0, -1 }, { 1, 0 }, ImVec4(1, 1, 1, 1), ImVec4(1, 1, 1, 1));
+				ImGui::Text("Texture\t"); ImGui::Image((void*)(__int64)sprite.m_SpriteSource->GetTexture()->GetID(), ImVec2(125, 100), { 0, -1 }, { 1, 0 }, ImVec4(1, 1, 1, 1), ImVec4(1, 1, 1, 1));
 				ImGui::SetCursorPos({ ImGui::GetCursorPos().x, ImGui::GetCursorPos().y - 100 }); // Move the cursor back to the position of the image
 				if (ImGui::InvisibleButton("ImageButton", ImVec2(125, 100)))
 				{
@@ -209,6 +209,22 @@ namespace NULLENGINE
 			if (ImGui::Button("Select texture", ImVec2(125, 100)))
 				ImGui::OpenPopup("TexturePopup");
 		}
+
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("TEXTURE_FILE"))
+			{
+				std::string filename((const char*)payload->Data);
+
+				if (!filename.empty())
+					sprite.m_SpriteSource = spritesrcManager->Has(filename) ? spritesrcManager->Get(filename) : spritesrcManager->Create(filename, 1, 1);
+
+			}
+			ImGui::EndDragDropTarget();
+		}
+
+
+
 		if (ImGui::BeginPopup("TexturePopup"))
 		{
 			ImGui::SetNextWindowSize(ImVec2(125, 100), ImGuiCond_FirstUseEver);

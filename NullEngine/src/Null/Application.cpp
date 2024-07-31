@@ -69,7 +69,7 @@ namespace NULLENGINE
 
 	void Application::Load()
 	{
-		std::string filePath = std::string("../Data/Modules/") + std::string("Modules") + std::string(".json");
+		std::string filePath = std::string("../Assets/Modules/") + std::string("Modules") + std::string(".json");
 		// Open the JSON file
 		std::ifstream file(filePath);
 		if (!file.is_open()) {

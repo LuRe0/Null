@@ -51,12 +51,12 @@ namespace NULLENGINE
 		void Unbind() const;
 
 		const unsigned int GetID() const { return m_ID; }
-		const unsigned int GetSize() const { return m_Size; }
-
-
+		inline unsigned int Count() const { return m_Count; }
+		inline unsigned int Type() const { return m_Type; }
 	private:
 		unsigned int m_ID;
-		unsigned int m_Size;
+		unsigned int m_Count = 0;
+		unsigned int m_Type;
 	};
 
 

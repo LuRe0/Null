@@ -79,7 +79,7 @@ namespace NULLENGINE
 		// TODO: insert return statement here
 		return m_Cols;
 	}
-	const std::string& SpriteSource::GetName()
+	const std::string& SpriteSource::GetName() const
 	{
 		// TODO: insert return statement here
 		return m_Name;

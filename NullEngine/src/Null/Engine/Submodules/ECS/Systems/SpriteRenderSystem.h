@@ -52,7 +52,6 @@ namespace NULLENGINE
 		void Shutdown() override;
 
 	private:
-		std::unique_ptr<InstanceMesh> m_InstanceMesh;
 
 		static void CreateSpriteComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
 		static JSON WriteSpriteComponent(BaseComponent* component);

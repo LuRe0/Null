@@ -50,14 +50,19 @@ namespace NULLENGINE
 
 		void Bind() const;
 		void Unbind() const;
-		unsigned int Count() const;
+		inline unsigned int Count() const { return m_Count; }
+		inline const std::vector<Layout>& Layouts() const { return m_Layouts; }
+		unsigned int Stride() const;
+		unsigned int Instances() const { return m_Instances; }
 
 
-		void AttachBuffer(const std::vector<float>& vertices, bool dynamic = false, size_t size = 0);
+		void AttachBuffer(const std::vector<float>& vertices, std::vector<Layout>& layouts,bool dynamic = false, size_t size = 0);
 
-		void AttachBuffer(const std::vector<Vertex>& vertices, bool dynamic = false, size_t size = 0);
+		void AttachBuffer(const std::vector<Vertex>& vertices, std::vector<Layout>& layouts, bool dynamic = false, size_t size = 0);
 
-		void AttachBuffer(const std::vector<Instance>& vertices, bool dynamic = false, size_t size = 0);
+		void AttachBuffer(const std::vector<Instance>& vertices, std::vector<Layout>& layouts, bool dynamic = false, size_t size = 0);
+
+		void UpdateBuffer(const std::vector<Instance>& vertices);
 
 		const unsigned int GetID() const { return m_ID; }
 
@@ -65,6 +70,8 @@ namespace NULLENGINE
 	private:
 		unsigned int m_ID;
 		unsigned int m_Count = 0;
+		std::vector<Layout> m_Layouts;
+		unsigned int m_Instances = 0;
 	};
 
 }

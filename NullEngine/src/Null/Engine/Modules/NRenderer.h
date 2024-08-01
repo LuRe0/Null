@@ -65,7 +65,12 @@ namespace NULLENGINE
 
 		void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
 
-		void AddRenderCall(const RenderData& render);
+		void AddRenderCall(std::unique_ptr<RenderData>&& render);
+
+
+		const uint32_t MaxQuads() { return m_RenderStorage.MaxQuads; }
+		const uint32_t MaxVertices() { return m_RenderStorage.MaxVertices; }
+		const uint32_t MaxIndices() { return m_RenderStorage.MaxIndices; }
 
 		const Framebuffer& GetFramebuffer(const std::string& buffer) const;
 
@@ -75,9 +80,29 @@ namespace NULLENGINE
 		static void ClearRenderS();
 	private:
 
+		struct RenderStorage
+		{
+			const uint32_t MaxQuads = 10000;
+			const uint32_t MaxVertices = MaxQuads * 4;
+			const uint32_t MaxIndices = MaxQuads * 6;
+			const uint32_t MaxTextures = 64;
+
+
+			uint32_t QuadIndexCount = 0;
+
+			std::vector<Instance> QuadInstanceBuffer;
+
+			std::unique_ptr<InstanceMesh> m_QuadInstanceMesh;
+			std::unique_ptr<InstanceMesh> m_TriInstanceMesh;
+			std::unique_ptr<InstanceMesh> m_CubeInstanceMesh;
+		};
+		
+
+		RenderStorage m_RenderStorage;
+
 		void OnWindowResize(const WindowResizeEvent& e);
 
-		std::vector<RenderData> m_RenderQueue;
+		std::vector<std::unique_ptr<RenderData>> m_RenderQueue;
 
 		std::unordered_map<std::string, Framebuffer> m_Framebuffers;
 
@@ -86,8 +111,11 @@ namespace NULLENGINE
 
 
 		void BeginRender();
-		void RenderScene(const RenderData& render);
+		void RenderScene(const RenderData* renderData);
+		void RenderElement(const ElementData& renderData);
+		void RenderInstances(const ElementData& renderData);
 		void EndRender();
+		void Flush();
 
 		void RenderToScreen();
 

@@ -208,13 +208,17 @@ namespace NULLENGINE
 	{
 		glUniform1i(glGetUniformLocation(m_RendererID, name.c_str()), value);
 	}
+	void Shader::setInt1fv(const std::string& name, size_t size, const int* value) const
+	{
+		glUniform1iv(glGetUniformLocation(m_RendererID, name.c_str()), size, value);
+	}
 	void Shader::setFloat(const std::string& name, float value) const
 	{
 		glUniform1f(glGetUniformLocation(m_RendererID, name.c_str()), value);
 	}
-	void Shader::setFloat2fv(const std::string& name, const float* value) const
+	void Shader::setFloat2fv(const std::string& name, size_t size, const float* value) const
 	{
-		glUniform2fv(glGetUniformLocation(m_RendererID, name.c_str()),1, value);
+		glUniform2fv(glGetUniformLocation(m_RendererID, name.c_str()), size, value);
 	}
 
 
@@ -238,7 +242,7 @@ namespace NULLENGINE
 		GLfloat texOffset[2] = { 0,0 };
 		texOffset[0] = uSize;
 		texOffset[1] = vSize;
-		setFloat2fv("texOffset", texOffset);
+		setFloat2fv("texOffset",1, texOffset);
 	}
 
 	void Shader::setVec4(const std::string& name, const glm::vec4& value) const
@@ -249,6 +253,11 @@ namespace NULLENGINE
 	void Shader::setVec2(const std::string& name, const glm::vec2& value) const
 	{
 		glUniform2fv(glGetUniformLocation(m_RendererID, name.c_str()), 1, glm::value_ptr(value));
+	}
+
+	auto Shader::GetUniformLocation(const std::string& name)
+	{
+		return glGetUniformLocation(m_RendererID, name.c_str());
 	}
 
 	void Shader::setFullTransform(glm::mat4 model, glm::mat4 view, glm::mat4 projection) const

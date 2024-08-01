@@ -39,16 +39,35 @@
             "name": "Quad"
         },
         {
+            "archetype": "Player",
             "components": {
+                "BoxCollider2D": {
+                    "density": 1.0,
+                    "friction": 0.699999988079071,
+                    "offset": [
+                        0.0,
+                        0.0
+                    ],
+                    "restitution": 0.0,
+                    "restitutionThreshold": 5.599999904632568,
+                    "scale": [
+                        50.0,
+                        50.0
+                    ]
+                },
+                "Rigidbody2D": {
+                    "fixedRotation": false,
+                    "type": 2
+                },
                 "Sprite": {
                     "dimension": [
                         1,
                         1
                     ],
                     "frameindex": 0,
-                    "meshname": "Triangle",
+                    "meshname": "Quad",
                     "shadername": "default",
-                    "texture": "ChargeParticle",
+                    "texture": "titlesquished",
                     "tint": [
                         1.0,
                         1.0,
@@ -65,16 +84,16 @@
                     "scale": [
                         50.0,
                         50.0,
-                        50.0
+                        1.0
                     ],
                     "translation": [
-                        -168.53765869140625,
-                        2.8683929443359375,
+                        0.0,
+                        48.17164993286133,
                         0.0
                     ]
                 }
             },
-            "name": "Triangle"
+            "name": "Player (Clone)"
         }
     ]
 }

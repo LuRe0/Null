@@ -47,6 +47,13 @@ namespace NULLENGINE
 
 		std::filesystem::path m_CurrentDirectory;
 
+
+		float m_Padding = 16.0f;
+		float m_ThumbnailSize = 100.0f;
+
+		float m_Scale = 1.0f;
+
+		//ImGuiTextFilter& m_Filter;
 	};
 
 }

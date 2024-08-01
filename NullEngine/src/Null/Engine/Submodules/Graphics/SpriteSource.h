@@ -49,7 +49,7 @@ namespace NULLENGINE
 
 		const int& GetRows();
 		const int& GetCols();
-		const std::string& GetName();
+		const std::string& GetName() const ;
 		
 		int GetFrameCount() { return m_Rows * m_Cols; }
 

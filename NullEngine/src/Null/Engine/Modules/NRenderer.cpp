@@ -5,7 +5,9 @@
 // Author(s):	Anthon Reid
 // 
 //------------------------------------------------------------------------------
-
+/*
+Batch Rendering Code adapted from https://www.youtube.com/watch?v=biGF6oLxgtQ&list=PLlrATfBNZ98dC-V-N3m0Go4deliWHPFwT&index=61
+*/
 //******************************************************************************//
 // Includes																        //
 //******************************************************************************//
@@ -31,12 +33,13 @@ using JSON = nlohmann::json;
 
 namespace NULLENGINE
 {
+
 	void NRenderer::Load()
 	{
 
 	}
 
-	void NRenderer::BeginRender() 
+	void NRenderer::BeginRender()
 	{
 
 		//for (auto& fb : m_Framebuffers)
@@ -46,7 +49,9 @@ namespace NULLENGINE
 
 		m_Framebuffers.at("Scene").Bind();
 
-		
+
+		m_RenderStorage.QuadInstanceBuffer.clear();
+		m_RenderStorage.QuadIndexCount = 0;
 
 		ClearRender();
 
@@ -55,10 +60,16 @@ namespace NULLENGINE
 		m_Framebuffers.at("Scene").ClearColorAttachment(1, &nean);
 	}
 
-	void NRenderer::RenderScene(const RenderData& render) 
+	void NRenderer::RenderScene(const RenderData* renderData)
 	{
 		//SetBlendMode(BlendMode::DEFAULT);
+	/*	renderData->m_Type == RenderData::ELEMENT ?
+			RenderElement(*(static_cast<const ElementData*>(renderData))) :*/
+		RenderInstances(*(static_cast<const ElementData*>(renderData)));
+	}
 
+	void NRenderer::RenderElement(const ElementData& render)
+	{
 		NShaderManager* shaderMan = NEngine::Instance().Get<NShaderManager>();
 		NCameraManager* cameraManager = NEngine::Instance().Get<NCameraManager>();
 
@@ -105,15 +116,77 @@ namespace NULLENGINE
 		shader->Unbind();
 	}
 
+	void NRenderer::RenderInstances(const ElementData& render)
+	{
+		NTextureManager* texMan = NEngine::Instance().Get<NTextureManager>();
+
+
+		if (render.mesh->GetName() == "Quad")
+		{
+			const auto& verts = render.mesh->Vertices();
+
+			for (size_t i = 0; i < verts.size(); i++)
+			{
+				m_RenderStorage.QuadInstanceBuffer.push_back({ verts[i].position, verts[i].color, verts[i].textCoords, render.model, render.tintColor,
+				render.spriteSrc != nullptr ? render.spriteSrc->GetUV(render.frameIndex) : glm::vec2(0,0),
+				render.spriteSrc != nullptr ? render.spriteSrc->GetSize() : glm::vec2(1,1),
+				render.spriteSrc != nullptr ? texMan->GetTextureIndex(render.spriteSrc->GetName()) : -1,
+				render.entity });
+
+				m_RenderStorage.QuadIndexCount += 6;
+			}
+		}
+
+	}
+
 	void NRenderer::EndRender()
 	{
 		m_RenderQueue.clear();
 
+
+		Flush();
+
+
 		m_Framebuffers.at("Scene").Unbind();
 
-	
+
 
 		RenderToScreen();
+	}
+
+	void NRenderer::Flush()
+	{
+		m_RenderStorage.m_QuadInstanceMesh.get()->UpdateInstances(m_RenderStorage.QuadInstanceBuffer, m_RenderStorage.QuadInstanceBuffer.size());
+
+		NShaderManager* shaderMan = NEngine::Instance().Get<NShaderManager>();
+		NCameraManager* cameraManager = NEngine::Instance().Get<NCameraManager>();
+
+		std::string shaderName = "objInstance";
+
+		Shader* shader = shaderMan->Get(shaderName);
+
+
+		shader->Bind();
+
+
+		Camera* camera = cameraManager->GetCurrentCamera();
+
+		NLE_CORE_ASSERT(camera != nullptr, "No valid camera in use");
+
+
+		glm::mat4 projection = camera->GetProjectionMatrix();
+
+
+		glm::mat4 view = camera->GetViewMatrix();
+
+
+		shader->setMat4("view", view);
+		shader->setMat4("projection", projection);
+
+		m_RenderStorage.m_QuadInstanceMesh.get()->Render(m_RenderStorage.QuadIndexCount);
+
+		shader->Unbind();
+
 	}
 
 	void NRenderer::RenderToScreen()
@@ -167,6 +240,9 @@ namespace NULLENGINE
 		glDepthFunc(GL_LESS);
 
 
+		m_RenderStorage.m_QuadInstanceMesh = std::make_unique<InstanceMesh>("Quad", m_RenderStorage.MaxVertices, m_RenderStorage.MaxIndices);
+
+
 		m_Framebuffers.insert(std::make_pair("Scene", Framebuffer(m_WinWidth, m_WinHeight)));
 
 		Framebuffer& buffer = m_Framebuffers.at("Scene");
@@ -175,12 +251,25 @@ namespace NULLENGINE
 
 		buffer.AddColorAttachment({ Framebuffer::Format(GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE), Framebuffer::Format(GL_R32I, GL_RED_INTEGER, GL_INT) });
 
-	/*	for (auto& fb : m_Framebuffers)
-		{
-			fb.second.Init();
-		}*/
+		NShaderManager* shaderMan = NEngine::Instance().Get<NShaderManager>();
+		NTextureManager* textureMan = NEngine::Instance().Get<NTextureManager>();
 
-		//SetViewport(0, 0, m_WinWidth, m_WinHeight);
+		Shader* shader = shaderMan->Get("objInstance");
+
+		shader->Bind();
+		const auto& textureNames = textureMan->GetResourceNames();
+		std::vector<int> samplers;
+		for (size_t i = 0; i < textureNames.size(); i++)
+		{
+			//Texture* texture = textureMan->Get(textureNames[i]);
+
+			samplers.push_back(i);
+		}
+
+		shader->setInt1fv("textures", textureNames.size(), samplers.data());
+
+		shader->Unbind();
+
 	}
 
 	void NRenderer::Update(float dt)
@@ -193,7 +282,7 @@ namespace NULLENGINE
 
 		for (size_t i = 0; i < m_RenderQueue.size(); i++)
 		{
-			RenderScene(m_RenderQueue[i]);
+			RenderScene(m_RenderQueue[i].get());
 		}
 
 		EndRender();
@@ -216,10 +305,20 @@ namespace NULLENGINE
 		glViewport(x, y, width, height);
 	}
 
-	void NRenderer::AddRenderCall(const RenderData& render)
+	void NRenderer::AddRenderCall(std::unique_ptr<RenderData>&& render)
 	{
-		m_RenderQueue.push_back(render);
+		m_RenderQueue.push_back(std::move(render));
 	}
+
+	//void NRenderer::AddElementRenderCall(const ElementData& render)
+	//{
+	//	m_RenderQueue.push_back(render);
+	//}
+
+	//void NRenderer::AddInstancedRenderCall(std::unique_ptr<IEventHandler>&& render)
+	//{
+	//	m_RenderQueue.push_back(render);
+	//}
 
 	const Framebuffer& NRenderer::GetFramebuffer(const std::string& buffer) const
 	{

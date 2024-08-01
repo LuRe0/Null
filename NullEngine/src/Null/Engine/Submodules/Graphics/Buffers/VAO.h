@@ -38,6 +38,7 @@ namespace NULLENGINE
 {
 
 	class VBO;
+	class EBO;
 
 	class VAO
 	{
@@ -54,11 +55,25 @@ namespace NULLENGINE
 
 		void AttachVBO(const VBO& vbo);
 
-		void AttachEBO(const VBO& vbo);
+		void UpdateVBO(const VBO& vbo);
+
+		void AttachEBO(const EBO& ebo);
+
+		unsigned int ElementCount() const { return m_ElementCount; };
+		unsigned int DrawType() const { return m_DrawType; }
+		unsigned int Instances() const { return m_Instances; }
+
 
 	private:
 		unsigned int m_ID;
 
+		unsigned int m_LayoutCounter = 0;
+
+		unsigned m_ElementCount = 0;
+
+		unsigned int m_DrawType;
+
+		unsigned int m_Instances = 0;
 	};
 
 

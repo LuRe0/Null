@@ -44,7 +44,7 @@ namespace NULLENGINE
 	Mesh::Mesh(const std::string& filename) : m_xHalfSize(.5f), m_yHalfSize(.5f), m_Name("")
 	{
 		// Define vertices for a triangle
-		std::vector<Vertex> vertexData;
+		//std::vector<Vertex> vertexData;
 
 
 		std::vector<unsigned int> indexData;
@@ -67,7 +67,7 @@ namespace NULLENGINE
 			v.position = glm::vec3(vertex["position"][0], vertex["position"][1], vertex["position"][2]);
 			v.color = glm::vec4(vertex["color"][0], vertex["color"][1], vertex["color"][2], vertex["color"][3]);
 			v.textCoords = glm::vec2(vertex["texCoords"][0], vertex["texCoords"][1]);
-			vertexData.push_back(v);
+			m_VertexData.push_back(v);
 		}
 
 
@@ -75,16 +75,18 @@ namespace NULLENGINE
 			indexData.push_back(index);
 		}
 
-		m_Buffer.m_VAO.Bind();
+		std::vector<Layout> meshLayouts;
 
-		SetupVertexBuffer(vertexData);
+		meshLayouts.push_back({ 3, GL_FLOAT, 3 * sizeof(float) });
+		meshLayouts.push_back({ 4, GL_FLOAT, 4 * sizeof(float) });
+		meshLayouts.push_back({ 2, GL_FLOAT, 2 * sizeof(float) });
+
+		SetupVertexBuffer(m_VertexData, meshLayouts, false, m_VertexData.size());
+
 		SetupIndexBuffer(indexData);
-		SetupVertexAttributes();
 
-		m_Buffer.m_EBO.Unbind();
-		m_Buffer.m_VBO.Unbind();
-		m_Buffer.m_VAO.Unbind();
-
+		m_Buffer.m_VAO.AttachVBO(m_Buffer.m_VBO);
+		m_Buffer.m_VAO.AttachEBO(m_Buffer.m_EBO);
 	}
 	Mesh::Mesh(const std::string& name, float xHalfSize, float yHalfSize, float uSize, float vSize) :
 		m_xHalfSize(xHalfSize), m_yHalfSize(yHalfSize), m_Name(name)
@@ -112,8 +114,14 @@ namespace NULLENGINE
 
 
 		m_Buffer.m_VAO.Bind();
+		std::vector<Layout> meshLayouts;
 
-		SetupVertexBuffer(vertexData);
+		meshLayouts.push_back({ 3, GL_FLOAT, 3 * sizeof(float) });
+		meshLayouts.push_back({ 4, GL_FLOAT, 4 * sizeof(float) });
+		meshLayouts.push_back({ 2, GL_FLOAT, 2 * sizeof(float) });
+
+		SetupVertexBuffer(m_VertexData, meshLayouts, false, m_VertexData.size());
+
 		SetupIndexBuffer(indexData);
 		SetupVertexAttributes();
 
@@ -128,9 +136,43 @@ namespace NULLENGINE
 
 	}
 
+	void Mesh::Read(const std::string& filename)
+	{
+
+		std::vector<unsigned int> indexData;
+
+		std::string filePath = std::string("../Assets/Meshes/") + filename + std::string(".json");
+
+		std::ifstream file(filePath);
+
+		NLE_CORE_ASSERT(file.is_open(), "Could not open file ", filePath);
+
+		JSON j;
+		file >> j;
+
+		m_xHalfSize = j["xHalfSize"];
+		m_yHalfSize = j["yHalfSize"];
+		m_Name = filename;
+
+		for (const auto& vertex : j["vertices"]) {
+			Vertex v;
+			v.position = glm::vec3(vertex["position"][0], vertex["position"][1], vertex["position"][2]);
+			v.color = glm::vec4(vertex["color"][0], vertex["color"][1], vertex["color"][2], vertex["color"][3]);
+			v.textCoords = glm::vec2(vertex["texCoords"][0], vertex["texCoords"][1]);
+			m_VertexData.push_back(v);
+		}
+
+
+		for (const auto& index : j["indices"]) {
+			indexData.push_back(index);
+		}
+	}
+
 	void Mesh::SetupIndexBuffer(const std::vector<unsigned int>& indexData) {
 		m_Buffer.m_EBO.Bind();
 		m_Buffer.m_EBO.AttachBuffer(indexData);
+		m_Buffer.m_EBO.Unbind();
+
 	}
 
 	void Mesh::SetupVertexAttributes() {
@@ -157,13 +199,9 @@ namespace NULLENGINE
 		}
 
 		m_Buffer.m_VAO.Bind();
-		m_Buffer.m_VBO.Bind();
-		m_Buffer.m_EBO.Bind();
+	
+		glDrawElements(m_Buffer.m_VAO.DrawType(), m_Buffer.m_VAO.ElementCount(), GL_UNSIGNED_INT, 0);
 
-		glDrawElements(GL_TRIANGLES, m_Buffer.m_EBO.GetSize(), GL_UNSIGNED_INT, 0);
-
-		m_Buffer.m_EBO.Unbind();
-		m_Buffer.m_VBO.Unbind();
 		m_Buffer.m_VAO.Unbind();
 
 		// Unbind the texture if it was bound
@@ -186,7 +224,7 @@ namespace NULLENGINE
 		m_Buffer.m_VBO.Bind();
 		m_Buffer.m_EBO.Bind();
 
-		glDrawElements(GL_TRIANGLES, m_Buffer.m_EBO.GetSize(), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, m_Buffer.m_VAO.ElementCount(), GL_UNSIGNED_INT, 0);
 
 		m_Buffer.m_EBO.Unbind();
 		m_Buffer.m_VBO.Unbind();

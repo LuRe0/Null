@@ -19,10 +19,6 @@
 using JSON = nlohmann::json;
 
 
-static const size_t MAXQUADCOUNT = 1000;
-static const size_t MAXVERTEXCOUNT = MAXQUADCOUNT * 4;
-static const size_t MAXINDEXCOUNT = MAXQUADCOUNT * 6;
-static const size_t MAXTEXTURES = 64;
 
 //******************************************************************************//
 // Public Variables															    //
@@ -46,60 +42,60 @@ namespace NULLENGINE
 
 
 
-	InstanceMesh::InstanceMesh(const std::string& filename) : m_xHalfSize(.5f), m_yHalfSize(.5f), m_uSize(1), m_vSize(1), m_Name("")
+	InstanceMesh::InstanceMesh(const std::string& filename,const uint32_t vertexCount, const uint32_t indexCount) : Mesh()
 	{
-		// Define vertices for a triangle
-		std::vector<Vertex> vertexData;
+		Read(filename);
+
+		std::vector<Layout> instancesLayouts;
+
+		instancesLayouts.push_back({ 3, GL_FLOAT, 3 * sizeof(float) });
+		instancesLayouts.push_back({ 4, GL_FLOAT, 4 * sizeof(float) });
+		instancesLayouts.push_back({ 2, GL_FLOAT, 2 * sizeof(float) });
+
+		instancesLayouts.push_back({ 4, GL_FLOAT, 4 * sizeof(float) });
+		instancesLayouts.push_back({ 4, GL_FLOAT, 4 * sizeof(float) });
+		instancesLayouts.push_back({ 4, GL_FLOAT, 4 * sizeof(float) });
+		instancesLayouts.push_back({ 4, GL_FLOAT, 4 * sizeof(float) });
+
+		// glm::vec4 color
+		instancesLayouts.push_back({ 4, GL_FLOAT, 4 * sizeof(float) });
+
+		// glm::vec2 texCoords
+		instancesLayouts.push_back({ 2, GL_FLOAT, 2 * sizeof(float) });
+
+		// glm::vec2 texSize
+		instancesLayouts.push_back({ 2, GL_FLOAT, 2 * sizeof(float) });
+
+		// unsigned int texIndex
+		instancesLayouts.push_back({ 1, GL_UNSIGNED_INT, sizeof(unsigned int) });
+
+		// uint32_t entityID
+		instancesLayouts.push_back({ 1, GL_UNSIGNED_INT, sizeof(uint32_t) });
+
+		SetupVertexBuffer(std::vector<Instance>(), instancesLayouts, true, vertexCount);
 
 
-		std::vector<unsigned int> indexData;
+		m_Buffer.m_VAO.AttachVBO(m_Buffer.m_VBO);
 
-		std::string filePath =std::string("Data/Meshes/") + filename + std::string(".json");
+		//to do
+		std::vector<unsigned int> indexData(indexCount);
+		uint32_t offset = 0;
+		for (size_t i = 0; i < indexData.size(); i += 6)
+		{
+			indexData[i + 0] = offset + 0;
+			indexData[i + 1] = offset + 1;
+			indexData[i + 2] = offset + 2;
 
-		std::ifstream file(filePath);
+			indexData[i + 3] = offset + 2;
+			indexData[i + 4] = offset + 3;
+			indexData[i + 5] = offset + 0;
 
-		NLE_CORE_ASSERT(file.is_open(), "Could not open file ", filePath);
-
-		JSON j;
-		file >> j;
-
-		m_xHalfSize = j["xHalfSize"];
-		m_yHalfSize = j["yHalfSize"];
-		m_uSize = j["uSize"];
-		m_vSize = j["vSize"];
-		m_Name = j["name"];
-
-		for (const auto& vertex : j["vertices"]) {
-			Vertex v;
-			v.position = glm::vec3(vertex["position"][0], vertex["position"][1], vertex["position"][2]);
-			v.color = glm::vec4(vertex["color"][0], vertex["color"][1], vertex["color"][2], vertex["color"][3]);
-			v.textCoords = glm::vec2(vertex["texCoords"][0], vertex["texCoords"][1]);
-			vertexData.push_back(v);
+			offset += 4;
 		}
 
-		// Update UV coordinates according to uSize and vSize
-		for (auto& vertex : vertexData) {
-			vertex.textCoords.x /= m_uSize;
-			vertex.textCoords.y /= m_vSize;
-		}
-
-		for (const auto& index : j["indices"]) {
-			indexData.push_back(index);
-		}
-
-		m_Buffer.m_VAO.Bind();
-
-		SetupVertexBuffer(vertexData);
 		SetupIndexBuffer(indexData);
-		SetupVertexAttributes();
 
-
-		
-
-		m_Buffer.m_EBO.Unbind();
-		m_Buffer.m_VBO.Unbind();
-		m_Buffer.m_VAO.Unbind();
-
+		m_Buffer.m_VAO.AttachEBO(m_Buffer.m_EBO);
 	}
 	InstanceMesh::~InstanceMesh()
 	{
@@ -115,106 +111,89 @@ namespace NULLENGINE
 
 	void InstanceMesh::Unbind() const
 	{
-		m_Buffer.m_VAO.Unbind();
-		m_Buffer.m_VBO.Unbind();
 		m_Buffer.m_EBO.Unbind();
+		m_Buffer.m_VBO.Bind();
+		m_Buffer.m_VAO.Unbind();
 	}
 
 	void InstanceMesh::SetupIndexBuffer(const std::vector<unsigned int>& indexData) {
 		m_Buffer.m_EBO.Bind();
 		m_Buffer.m_EBO.AttachBuffer(indexData);
+		m_Buffer.m_EBO.Unbind();
 	}
 
-	void InstanceMesh::SetupVertexAttributes() {
-		// Position attribute
+	void InstanceMesh::SetupVertexAttributes() 
+	{
+		// Vertex struct attributes
+		// Vertex Position attribute
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)0);
-		glVertexAttribDivisor(0, 1);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
 
+		// Vertex Color attribute
 		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(1 * sizeof(glm::vec4)));
-		glVertexAttribDivisor(1, 1);
+		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
 
-		glEnableVertexAttribArray(5);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(2 * sizeof(glm::vec4)));
-		glVertexAttribDivisor(2, 1);
+		// Vertex texture coords
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, textCoords));
 
-		glEnableVertexAttribArray(3);
-		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(3 * sizeof(glm::vec4)));
-		glVertexAttribDivisor(3, 1);
 
-		// Color attribute
-		glEnableVertexAttribArray(4);
-		glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(Instance), (void*)offsetof(Instance, color));
-		glVertexAttribDivisor(4, 1);
+	
 
-		// vertex texture coords
-		glEnableVertexAttribArray(5);
-		glVertexAttribPointer(5, 2, GL_FLOAT, GL_FALSE, sizeof(Instance), (void*)offsetof(Instance, textCoords));
-		glVertexAttribDivisor(5, 1);
-
-		// vertex texture coords
-		glEnableVertexAttribArray(6);
-		glVertexAttribPointer(6, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof(Instance), (void*)offsetof(Instance, textIndex));
-		glVertexAttribDivisor(6, 1);
-
+		//m_Buffer.m_VAO.AttachVBO()
 	}
 
 	void InstanceMesh::SetupInstances()
 	{
-		std::vector<unsigned int> indices(MAXINDEXCOUNT);
-		uint32_t offset = 0;
+	/*	m_Buffer.m_InstanceVBO.Bind();*/
+		std::vector<Layout> instancesLayouts;
 
-		for (size_t i = 0; i < MAXINDEXCOUNT; i+=6)
-		{
-			indices[i + 0] = 0 + offset;
-			indices[i + 1] = 1 + offset;
-			indices[i + 2] = 2 + offset;
+		// glm::mat4 position (4 x vec4)
+		instancesLayouts.push_back({ 4, GL_FLOAT, 4 * sizeof(float) });
+		instancesLayouts.push_back({ 4, GL_FLOAT, 4 * sizeof(float) });
+		instancesLayouts.push_back({ 4, GL_FLOAT, 4 * sizeof(float) });
+		instancesLayouts.push_back({ 4, GL_FLOAT, 4 * sizeof(float) });
 
-			indices[i + 3] = 2 + offset;
-			indices[i + 4] = 3 + offset;
-			indices[i + 5] = 0 + offset;
+		// glm::vec4 color
+		instancesLayouts.push_back({ 4, GL_FLOAT, 4 * sizeof(float) });
 
-			offset += 4;
+		// glm::vec2 texCoords
+		instancesLayouts.push_back({ 2, GL_FLOAT, 2 * sizeof(float) });
 
-		}
-		m_Buffer.m_VAO.Bind();
+		// glm::vec2 texSize
+		instancesLayouts.push_back({ 2, GL_FLOAT, 2 * sizeof(float) });
 
-		SetupVertexBuffer(std::vector<Instance>(), true, MAXVERTEXCOUNT);
-		SetupIndexBuffer(indices);
-		SetupVertexAttributes();
+		// unsigned int texIndex
+		instancesLayouts.push_back({ 1, GL_UNSIGNED_INT, sizeof(unsigned int) });
 
+		// uint32_t entityID
+		instancesLayouts.push_back({ 1, GL_UNSIGNED_INT, sizeof(uint32_t) });
 
-		m_Buffer.m_EBO.Unbind();
-		m_Buffer.m_VBO.Unbind();
-		m_Buffer.m_VAO.Unbind();
-
+		//SetupInstanceBuffer(std::vector<Instance>(), instancesLayouts, true, MAXVERTEXCOUNT);
 	}
 
 
-	void InstanceMesh::Render(const SpriteSource* spriteSource) const
+	void InstanceMesh::Render(uint32_t count) const
 	{
+		NTextureManager* textureMan = NEngine::Instance().Get<NTextureManager>();
+		
+		const auto& textureNames = textureMan->GetResourceNames();
 
-		if (spriteSource && spriteSource->GetTexture())
-		{
-			spriteSource->GetTexture()->Bind();
-		}
+	
 
 		m_Buffer.m_VAO.Bind();
-		m_Buffer.m_VBO.Bind();
-		m_Buffer.m_EBO.Bind();
 
-		glDrawElements(GL_TRIANGLES, m_Buffer.m_EBO.GetSize(), GL_UNSIGNED_INT, 0);
+		//for (size_t i = 0; i < textureNames.size(); i++)
+		//{
+		//	Texture* texture = textureMan->Get(textureNames[i]);
+		//	uint32_t index = textureMan->GetTextureIndex(textureNames[i]);
+		//	glBindTextureUnit(index, texture->GetID());
+		//}
 
-		m_Buffer.m_EBO.Unbind();
-		m_Buffer.m_VBO.Unbind();
+		glDrawElements(m_Buffer.m_VAO.DrawType(), count, GL_UNSIGNED_INT, nullptr);
+
+
 		m_Buffer.m_VAO.Unbind();
-
-		// Unbind the texture if it was bound
-		if (spriteSource && spriteSource->GetTexture())
-		{
-			spriteSource->GetTexture()->Unbind();
-		}
 
 	}
 

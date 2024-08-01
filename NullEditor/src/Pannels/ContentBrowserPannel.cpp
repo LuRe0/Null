@@ -54,6 +54,25 @@ namespace NULLENGINE
 			}
 
 		}
+
+		float cellSize = (m_ThumbnailSize + m_Padding) * m_Scale;
+
+		float pannelWidth = ImGui::GetContentRegionAvail().x;
+
+		int colCount = (int)(pannelWidth / cellSize);
+
+		colCount = std::max(1, colCount);
+
+
+		ImGui::PushItemWidth(100);
+		static ImGuiTextFilter filter;
+		ImGui::SameLine(ImGui::GetWindowWidth() - 450 - 50);
+		ImGui::Text("Search:");
+		ImGui::SameLine(ImGui::GetWindowWidth() - 350);
+		filter.Draw("##searchbar", 340.f);
+		ImGui::PopItemWidth();
+
+		ImGui::Columns(colCount, 0, false);
 		for (auto& p : std::filesystem::directory_iterator(m_CurrentDirectory))
 		{
 
@@ -61,62 +80,67 @@ namespace NULLENGINE
 			const std::string& stem = p.path().stem().string();
 			const std::string& filename = p.path().filename().string();
 
-			ImGui::PushID(filename.c_str());
-
-			ImGui::Button(filename.c_str()) && ImGui::IsMouseDoubleClicked(0);
-
-			std::filesystem::relative(p.path(), s_AssetsPath);
-
-			std::string extension = p.path().extension().string();
-
-			if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+			if (filter.PassFilter(filename.c_str()))
 			{
-				if (p.is_directory())
-				{
-					m_CurrentDirectory /= filename;
-				}
-				else
-				{
+				ImGui::PushID(filename.c_str());
 
-					std::string fileP = std::filesystem::absolute(p.path()).string();
-					ShellExecuteA(0, 0, fileP.c_str(), 0, 0, SW_SHOW);
-				}
-			}
+				ImGui::Button(filename.c_str()) && ImGui::IsMouseDoubleClicked(0);
 
-			if (extension == ".ent")
-			{
-				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+				std::filesystem::relative(p.path(), s_AssetsPath);
+
+				std::string extension = p.path().extension().string();
+
+				if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 				{
-					ImGui::SetDragDropPayload("ENTITY_FILE", stem.c_str(), stem.size() + 1);
-					ImGui::Text("Dragging %s", filename.c_str());
-					ImGui::EndDragDropSource();
+					if (p.is_directory())
+					{
+						m_CurrentDirectory /= filename;
+					}
+					else
+					{
+
+						std::string fileP = std::filesystem::absolute(p.path()).string();
+						ShellExecuteA(0, 0, fileP.c_str(), 0, 0, SW_SHOW);
+					}
 				}
-			}
-			else if (extension == ".scene")
-			{
-				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+
+				if (extension == ".ent")
 				{
-					ImGui::SetDragDropPayload("SCENE_FILE", stem.c_str(), stem.size() + 1);
-					ImGui::Text("Dragging %s", filename.c_str());
-					ImGui::EndDragDropSource();
+					if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+					{
+						ImGui::SetDragDropPayload("ENTITY_FILE", stem.c_str(), stem.size() + 1);
+						ImGui::Text("Dragging %s", filename.c_str());
+						ImGui::EndDragDropSource();
+					}
 				}
-			}
-			else if (IsImageFile(extension))
-			{
-				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+				else if (extension == ".scene")
 				{
-					ImGui::SetDragDropPayload("TEXTURE_FILE", stem.c_str(), stem.size() + 1);
-					ImGui::Text("Dragging %s", filename.c_str());
-					ImGui::EndDragDropSource();
+					if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+					{
+						ImGui::SetDragDropPayload("SCENE_FILE", stem.c_str(), stem.size() + 1);
+						ImGui::Text("Dragging %s", filename.c_str());
+						ImGui::EndDragDropSource();
+					}
 				}
-			}
+				else if (IsImageFile(extension))
+				{
+					if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+					{
+						ImGui::SetDragDropPayload("TEXTURE_FILE", stem.c_str(), stem.size() + 1);
+						ImGui::Text("Dragging %s", filename.c_str());
+						ImGui::EndDragDropSource();
+					}
+				}
 
 
-			ImGui::PopID();
-			ImGui::NextColumn();
+				ImGui::PopID();
+
+				ImGui::NextColumn();
+			}
 
 		}
 
+		ImGui::Columns(1);
 		ImGui::End();
 	}
 }

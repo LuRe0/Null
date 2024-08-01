@@ -42,40 +42,41 @@ namespace NULLENGINE
 	public:
 
 
-		InstanceMesh(const std::string& filename);
+		InstanceMesh(const std::string& filename, const uint32_t vertexCount, const uint32_t indexCount);
 		InstanceMesh() = default;
 		~InstanceMesh();
 
 		void Bind() const;
 		void Unbind() const;
 
+
 		template <typename T>
-		void SetupVertexBuffer(const std::vector<T>& vertexData, bool dynamic = false, size_t size = 0) {
+		void SetupInstanceBuffer(const std::vector<T>& vertexData, std::vector<Layout> layouts, bool dynamic = false, size_t size = 0) {
 			m_Buffer.m_VBO.Bind();
-			m_Buffer.m_VBO.AttachBuffer(vertexData, dynamic, size);
+			m_Buffer.m_VBO.AttachBuffer(vertexData, layouts, dynamic, size);
+			m_Buffer.m_VBO.Unbind();
 		}
+
 		void SetupIndexBuffer(const std::vector<unsigned int>& indexData);
+
 		void SetupVertexAttributes();
 		void SetupInstances();
-		void Render(const SpriteSource* spriteSource) const;
 
-	private:
-		struct Buffer
+		template <typename T>
+		void UpdateInstances(const std::vector<T>& vertexData, size_t size)
 		{
-			Buffer() = default;
+	
+			m_Buffer.m_VBO.Bind();
 
-			VAO m_VAO;
-			VBO m_VBO;
-			EBO m_EBO;
-		};
+			m_Buffer.m_VBO.UpdateBuffer(vertexData);
+			m_Buffer.m_VAO.UpdateVBO(m_Buffer.m_VBO);
 
-		Buffer m_Buffer;
+			m_Buffer.m_VBO.Unbind();
 
-		float m_xHalfSize, m_yHalfSize, m_uSize, m_vSize;
+		}
 
-		std::string m_Name;
+		void Render(uint32_t count) const;
+		
+	private:
 	};
-
-
-
 }

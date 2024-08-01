@@ -62,10 +62,54 @@ namespace NULLENGINE
     void VAO::AttachVBO(const VBO& vbo)
     {
         Bind();
+        vbo.Bind();
+
+        //m_Instances += vbo.Instances();
+
+        size_t offset = 0;
+        for (const Layout& layout : vbo.Layouts())
+        {
+            if (layout.glType == GL_INT)
+            {
+                GL(glVertexAttribIPointer(m_LayoutCounter,
+                    layout.count, layout.glType, vbo.Stride(), (void*)offset));
+            }
+            else
+            {
+                GL(glVertexAttribPointer(m_LayoutCounter,
+                    layout.count, layout.glType, GL_FALSE, vbo.Stride(), (void*)offset));
+            }
+
+            offset += layout.size;
+            GL(glEnableVertexAttribArray(m_LayoutCounter));
+
+            if (vbo.Instances())
+            {
+                GL(glVertexAttribDivisor(m_LayoutCounter, 1));
+            }
+
+            m_LayoutCounter++;
+        }
+        Unbind();
+        vbo.Unbind();
     }
 
-    void VAO::AttachEBO(const VBO& vbo)
+    void VAO::UpdateVBO(const VBO& vbo)
     {
+        m_Instances = vbo.Instances();
+    }
+
+    void VAO::AttachEBO(const EBO& ebo)
+    {
+        Bind();
+        ebo.Bind();
+
+
+        m_ElementCount = ebo.Count();
+        m_DrawType = GL_TRIANGLES;
+
+        Unbind();
+        ebo.Unbind();
     }
 
     //void VAO::Attach() const

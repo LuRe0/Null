@@ -61,6 +61,10 @@ namespace NULLENGINE
 		NRenderer* renderer = NEngine::Instance().Get<NRenderer>();
 		NRegistry* m_Parent = NEngine::Instance().Get<NRegistry>();
 
+		std::vector<Instance> QuadInstances;
+		std::vector<Instance> TriInstances;
+		std::vector<Instance> CubeInstances;
+
 		for (const auto entityId : GetSystemEntities())
 		{
 			TransformComponent& transform = m_Parent->GetComponent<TransformComponent>(entityId);
@@ -69,8 +73,14 @@ namespace NULLENGINE
 			if (!sprite.m_Enabled)
 				continue;
 
+
 			//model, mesh, spritesrc, tint, shadername, frameindex, entity
-			renderer->AddRenderCall({ transform.m_TransformMatrix, sprite.m_Mesh,sprite.m_SpriteSource, sprite.m_Color, sprite.m_ShaderName, sprite.m_FrameIndex, entityId });
+			renderer->AddRenderCall(std::make_unique<ElementData>(transform.m_TransformMatrix, sprite.m_Mesh, sprite.m_SpriteSource, sprite.m_Color, sprite.m_ShaderName, sprite.m_FrameIndex, entityId));
+		}
+
+		if (!QuadInstances.empty())
+		{
+			//renderer->AddRenderCall(std::make_unique<InstanceData>(QuadInstances, m_QuadInstanceMesh.get(), "objInstance"));
 		}
 	}
 
@@ -119,7 +129,7 @@ namespace NULLENGINE
 
 		json["Sprite"]["frameindex"] = sprite.m_FrameIndex;
 		json["Sprite"]["texture"] = sprite.m_SpriteSource->GetName();
-		json["Sprite"]["dimension"] = { sprite.m_SpriteSource->GetRows(),  sprite.m_SpriteSource->GetCols()};
+		json["Sprite"]["dimension"] = { sprite.m_SpriteSource->GetRows(),  sprite.m_SpriteSource->GetCols() };
 		json["Sprite"]["tint"] = { sprite.m_Color.r, sprite.m_Color.g, sprite.m_Color.b, sprite.m_Color.a };
 		json["Sprite"]["shadername"] = sprite.m_ShaderName;
 		json["Sprite"]["meshname"] = sprite.m_Mesh->GetName();
@@ -241,7 +251,7 @@ namespace NULLENGINE
 					ImGui::Text("%s :", name.c_str());
 					if (ImGui::ImageButton((void*)(__int64)texture->GetID(), ImVec2(75, 50), { 0, -1 }, { 1, 0 }))
 					{
-						sprite.m_SpriteSource = spritesrcManager->Has(name) ? spritesrcManager->Get(name) : spritesrcManager->Create(name,1,1);
+						sprite.m_SpriteSource = spritesrcManager->Has(name) ? spritesrcManager->Get(name) : spritesrcManager->Create(name, 1, 1);
 						ImGui::CloseCurrentPopup();
 					}
 				}

@@ -51,16 +51,23 @@ namespace NULLENGINE
 		~Mesh();
 
 		template <typename T>
-		void SetupVertexBuffer(const std::vector<T>& vertexData) {
+		void SetupVertexBuffer(const std::vector<T>& vertexData, std::vector<Layout>& layouts, bool dynamic, uint32_t count)
+		{
 			m_Buffer.m_VBO.Bind();
-			m_Buffer.m_VBO.AttachBuffer(vertexData);
+			m_Buffer.m_VBO.AttachBuffer(vertexData, layouts, dynamic, count);
+			m_Buffer.m_VBO.Unbind();
 		}
+
 		void SetupIndexBuffer(const std::vector<unsigned int>& indexData);
 		void SetupVertexAttributes();
 		void Render(const SpriteSource* spriteSource) const;
 		void RenderTexture(unsigned int texture) const;
 
-		const std::string& GetName() { return m_Name; }
+		void Read(const std::string& filename);
+
+		const std::string& GetName() const { return m_Name; }
+
+		const std::vector<Vertex>& Vertices() const { return m_VertexData; }
 	private:
 		struct Buffer
 		{
@@ -70,12 +77,14 @@ namespace NULLENGINE
 			VBO m_VBO;
 			EBO m_EBO;
 		};
-
+	protected:
 		Buffer m_Buffer;
 
 		float m_xHalfSize, m_yHalfSize;
 
 		std::string m_Name;
+
+		std::vector<Vertex> m_VertexData;
 	};
 
 

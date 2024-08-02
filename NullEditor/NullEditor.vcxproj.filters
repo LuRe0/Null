@@ -14,6 +14,7 @@
     </ClInclude>
     <ClInclude Include="src\Pannels\ScenePropertyPannel.h" />
     <ClInclude Include="src\Pannels\ContentBrowserPannel.h" />
+    <ClInclude Include="src\Pannels\ModuleStatsPannel.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\NullEditor.cpp" />
@@ -25,5 +26,6 @@
     </ClCompile>
     <ClCompile Include="src\Pannels\ScenePropertyPannel.cpp" />
     <ClCompile Include="src\Pannels\ContentBrowserPannel.cpp" />
+    <ClCompile Include="src\Pannels\ModuleStatsPannel.cpp" />
   </ItemGroup>
 </Project>

@@ -4,7 +4,7 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	IModule.h
+// File Name:	ModuleStatsPannel.h
 // Author(s):	name
 // 
 //------------------------------------------------------------------------------
@@ -12,10 +12,8 @@
 //******************************************************************************//
 // Includes																        //
 //******************************************************************************//
-#include "stdafx.h"
 #include "Null/Core.h"
-#include "Null/Engine/Base/IEngine.h"
-
+#include "Null/Engine/Submodules/Layers/ImGuiLayer.h"
 
 //******************************************************************************//
 // Definitions  														        //
@@ -32,50 +30,20 @@
 //******************************************************************************//
 
 
-
 namespace NULLENGINE
 {
-	//! Base Module for systems
-	class NLE_API IModule
+	class Scene;
+
+	class ModuleStatsPannel : public Pannel
 	{
 	public:
-		IModule() :m_Parent(nullptr) {}
+		ModuleStatsPannel() = default;
+		~ModuleStatsPannel() = default;
 
-		virtual void Load() {};
-		//! Virtual Init function
-		virtual void Init() = 0;
-		//! Virtual Update function
-		virtual void Update(float dt) = 0;
-
-		virtual void Render() {};
-
-		virtual void RenderImGuI() {};
-
-		virtual void Unload() {};
-		//! Virtual Shutdown function
-		virtual void Shutdown() = 0;
-
-		void SetParent(IEngine* engine) { m_Parent = engine; };
-
-		IEngine* GetParent(void) const
-		{
-			return m_Parent;
-		}
-
-		template<typename T>
-		T* Get() const
-		{
-			return GetParent()->Get<T>();
-		}
-
-
-		virtual void RenderImGui() {}
-		virtual bool HasRenderImGui() const { return false; }
-
-		//! Virtual Deconstructor function
-		virtual ~IModule() = default;
-
-	protected:
-		IEngine* m_Parent;
+		void OnImGUIRender();
+	private:
+		ModuleStatsPannel(ModuleStatsPannel const&) = delete;
+		ModuleStatsPannel& operator=(ModuleStatsPannel const&) = delete;
 	};
+
 }

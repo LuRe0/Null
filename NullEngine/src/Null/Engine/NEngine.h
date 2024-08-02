@@ -62,6 +62,8 @@ namespace NULLENGINE
 		void SetEditorEnabled(bool enable) override { m_EditorEnabled = enable; }
 		bool GetIsEditorEnabled()  override { return m_EditorEnabled;  }
 
+
+		const std::vector<std::pair<IModule*, std::string>>& GetModules() const override { return m_Modules; }
 	private:
 		int frames = 0;
 		float framerateTimer = 0;

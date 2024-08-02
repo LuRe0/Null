@@ -20,7 +20,7 @@ Batch Rendering Code adapted from https://www.youtube.com/watch?v=biGF6oLxgtQ&li
 #include "Null/Engine/Submodules/Graphics/SpriteSource.h"
 #include "Null/Engine/Submodules/Graphics/Mesh.h"
 #include "Null/Engine/Submodules/Graphics/Buffers/Framebuffer.h"
-
+#include "imgui.h"
 using JSON = nlohmann::json;
 
 //******************************************************************************//
@@ -160,6 +160,7 @@ namespace NULLENGINE
 				++m_RenderStorage.TextureSlotIndex;
 			}
 		}
+
 		if (render.mesh->GetName() == "Quad")
 		{
 			const auto& verts = render.mesh->Vertices();
@@ -175,6 +176,8 @@ namespace NULLENGINE
 			}
 
 			m_RenderStorage.QuadIndexCount += 6;
+
+			m_RenderStorage.Stats.QuadCount++;
 		}
 
 	}
@@ -251,10 +254,26 @@ namespace NULLENGINE
 
 		m_RenderStorage.m_QuadInstanceMesh.get()->Render(m_RenderStorage.QuadIndexCount);
 
+		m_RenderStorage.Stats.DrawCalls++;
+		m_RenderStorage.Stats.TextureCount += m_RenderStorage.TextureSlotIndex;
+
 		shader->Unbind();
 
 		//EndBatch();
 
+	}
+
+	void NRenderer::ResetStats()
+	{
+		m_RenderStorage.Stats.DrawCalls = 0;
+		m_RenderStorage.Stats.QuadCount = 0;
+		m_RenderStorage.Stats.TextureCount = 0;
+	}
+
+	const NRenderer::RenderStorage::RendererStats& NRenderer::GetStats() const
+	{
+		// TODO: insert return statement here
+		return m_RenderStorage.Stats;
 	}
 
 	void NRenderer::RenderToScreen()
@@ -341,6 +360,7 @@ namespace NULLENGINE
 
 	void NRenderer::Update(float dt)
 	{
+		ResetStats();
 	}
 
 	void NRenderer::Render()
@@ -353,6 +373,15 @@ namespace NULLENGINE
 		}
 
 		EndRender();
+	}
+
+	void NRenderer::RenderImGui()
+	{
+		ImGui::Text("Draw Calls: %d", m_RenderStorage.Stats.DrawCalls);
+		ImGui::Text("Quads: %d", m_RenderStorage.Stats.QuadCount);
+		ImGui::Text("Vertices Calls: %d", m_RenderStorage.Stats.GetTotalVertexCount());
+		ImGui::Text("Indices Calls: %d", m_RenderStorage.Stats.GetTotalIndexCount());
+		ImGui::Text("Textures Rendered: %d", m_RenderStorage.Stats.TextureCount);
 	}
 
 	void NRenderer::Unload()

@@ -59,6 +59,9 @@ namespace NULLENGINE
 		//! render function
 		void Render() override;
 
+		void RenderImGui() override;
+
+
 		void Unload() override;
 		//! Virtual Shutdown function
 		void Shutdown() override;
@@ -67,6 +70,7 @@ namespace NULLENGINE
 
 		void AddRenderCall(std::unique_ptr<RenderData>&& render);
 
+		bool HasRenderImGui() const override { return true; }
 
 		const uint32_t MaxQuads() { return m_RenderStorage.MaxQuads; }
 		const uint32_t MaxVertices() { return m_RenderStorage.MaxVertices; }
@@ -97,6 +101,18 @@ namespace NULLENGINE
 			std::unique_ptr<InstanceMesh> m_QuadInstanceMesh;
 			std::unique_ptr<InstanceMesh> m_TriInstanceMesh;
 			std::unique_ptr<InstanceMesh> m_CubeInstanceMesh;
+
+			struct RendererStats
+			{
+				uint32_t DrawCalls = 0;
+				uint32_t QuadCount = 0;
+				uint32_t TextureCount = 0;
+
+				uint32_t GetTotalVertexCount() { return QuadCount * 4; }
+				uint32_t GetTotalIndexCount() { return QuadCount * 6; }
+			};
+
+			RendererStats Stats;
 		};
 		
 
@@ -121,6 +137,9 @@ namespace NULLENGINE
 		void EndRender();
 		void NextBatch();
 		void Flush();
+
+		void ResetStats();
+		const RenderStorage::RendererStats& GetStats() const;
 
 		void RenderToScreen();
 

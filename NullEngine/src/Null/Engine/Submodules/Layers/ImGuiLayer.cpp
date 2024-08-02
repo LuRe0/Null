@@ -281,26 +281,9 @@ namespace NULLENGINE
 			renderer->ResizeFramebuffer(viewportPanelSize.x, viewportPanelSize.y);
 			m_CameraController->OnResize(viewportPanelSize.x, viewportPanelSize.y);
 			m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
-			renderer->SetViewport(0, 0, viewportPanelSize.x, viewportPanelSize.y);
 		}
 
-		
 		ImGui::Image((void*)(intptr_t)texture, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, { 0, 1 }, { 1, 0 });
-
-
-		if (ImGui::BeginDragDropTarget())
-		{
-			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCENE_FILE"))
-			{
-				std::string filename((const char*)payload->Data);
-				NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
-
-				eventManager->QueueEvent(std::make_unique<SceneSwitchEvent>(m_PannelData.m_Context->m_Name, filename));
-
-				m_PannelData.m_SelectedEntity = {};
-			}
-			ImGui::EndDragDropTarget();
-		}
 
 
 		auto windowSize = ImGui::GetWindowSize();
@@ -329,10 +312,11 @@ namespace NULLENGINE
 		int mouseY = static_cast<int>(mousePos.y);
 
 
-	
-		if (mouseX >= 0 && mouseY >= 0 && mouseX <= (int)viewportSize.x && mouseY <= (int)viewportSize.y)
+
+		if (mouseX >= 0 && mouseY > 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y)
 		{
 			buffer.Bind();
+
 			auto pixel = buffer.ReadPixels(1, mouseX, mouseY);
 			NLE_CORE_WARN("PixelData = {0}", pixel);
 			buffer.Unbind();

@@ -75,7 +75,7 @@ namespace NULLENGINE
 
 
 			//model, mesh, spritesrc, tint, shadername, frameindex, entity
-			renderer->AddRenderCall(std::make_unique<ElementData>(transform.m_TransformMatrix, sprite.m_Mesh, sprite.m_SpriteSource, sprite.m_Color, sprite.m_ShaderName, sprite.m_FrameIndex, entityId));
+			renderer->AddRenderCall(std::make_unique<ElementData>(transform.m_TransformMatrix, sprite.m_Mesh, sprite.m_SpriteSource, sprite.m_Color, sprite.m_ShaderName, sprite.m_FrameIndex, entityId, RenderData::ELEMENT));
 		}
 	}
 

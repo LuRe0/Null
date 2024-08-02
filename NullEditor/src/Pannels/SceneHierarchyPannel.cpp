@@ -82,7 +82,7 @@ namespace NULLENGINE
 		{
 			ImGuiTreeNodeFlags flags = (m_PannelData->m_SelectedEntity == entity.GetID() ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
 
-			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
+			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 100);
 			std::string id = "ID:" + std::to_string(entity.GetID());
 			ImGui::Text(id.c_str());
 			ImGui::SameLine();

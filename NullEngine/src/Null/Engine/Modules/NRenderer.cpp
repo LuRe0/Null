@@ -67,8 +67,8 @@ namespace NULLENGINE
 	void NRenderer::RenderScene(const RenderData* renderData)
 	{
 		//SetBlendMode(BlendMode::DEFAULT);
-	/*	renderData->m_Type == RenderData::ELEMENT ?
-			RenderElement(*(static_cast<const ElementData*>(renderData))) :*/
+		renderData->m_Type == RenderData::ELEMENT ?
+			RenderElement(*(static_cast<const ElementData*>(renderData))) :
 		RenderInstances(*(static_cast<const ElementData*>(renderData)));
 	}
 

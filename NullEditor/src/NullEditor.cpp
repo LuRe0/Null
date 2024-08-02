@@ -32,13 +32,13 @@ namespace NULLENGINE
 			auto pannel2 = std::make_unique<ComponentInspectorPannel>();
 			auto pannel3 = std::make_unique<ScenePropertyPannel>();
 			auto pannel4 = std::make_unique<ContentBrowserPannel>();
-			auto pannel5 = std::make_unique<ModuleStatsPannel>();
+			//auto pannel5 = std::make_unique<ModuleStatsPannel>();
 
 			gui.get()->AddPannel(std::move(pannel));
 			gui.get()->AddPannel(std::move(pannel2));
 			gui.get()->AddPannel(std::move(pannel3));
 			gui.get()->AddPannel(std::move(pannel4));
-			gui.get()->AddPannel(std::move(pannel5));
+			//gui.get()->AddPannel(std::move(pannel5));
 			
 			PushLayer(std::move(gui));
 		}

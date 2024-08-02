@@ -71,11 +71,11 @@ namespace NULLENGINE
         // Parameterized constructor
         ElementData(const glm::mat4& model, const Mesh* mesh,
             const SpriteSource* spriteSrc, const glm::vec4& tintColor,
-            const std::string& shaderName, unsigned int frameIndex, EntityID entity)
+            const std::string& shaderName, unsigned int frameIndex, EntityID entity, RenderType type)
             : model(model), mesh(mesh), spriteSrc(spriteSrc), tintColor(tintColor),
             shaderName(shaderName), frameIndex(frameIndex), entity(entity)
         {
-            m_Type = RenderType::ELEMENT;
+            m_Type = type;
         }
     };
 

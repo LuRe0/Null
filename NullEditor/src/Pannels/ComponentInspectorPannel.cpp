@@ -52,7 +52,7 @@ namespace NULLENGINE
 			// display name and update if changed
 			Entity& selectedEntity = m_PannelData->m_Context->GetEntity(m_PannelData->m_SelectedEntity);
 
-			ImGui::Text("Entity Name: "); ImGui::SameLine(); 
+			ImGui::Text("Entity Name: "); ImGui::SameLine();
 
 			if (ImGui::InputText("##name", &selectedEntity.m_Name))
 			{
@@ -66,64 +66,62 @@ namespace NULLENGINE
 		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
 		NComponentFactory* factory = NEngine::Instance().Get<NComponentFactory>();
 		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
-	
+
 		if (m_PannelData->m_SelectedEntity)
 		{
-			const auto& entityComponentSignatures = registry->EntitySignature(m_PannelData->m_SelectedEntity);
+			const auto& entityComponents = registry->EntityComponents(m_PannelData->m_SelectedEntity);
 
 			ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_FramePadding;
 			flags |= ImGuiTreeNodeFlags_OpenOnDoubleClick;
 			flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
 
-			for (size_t i = 0; i < entityComponentSignatures.size(); i++)
+			for (const auto& comp : entityComponents)
 			{
 
 				//ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{ 4,4 });
 				float lineHeight = ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2.0f;
 				ImVec2 contentRegion = ImGui::GetContentRegionAvail();
 
-				if (entityComponentSignatures.test(i))
-				{
-					BaseComponent& component = registry->GetComponent(m_PannelData->m_SelectedEntity, i);
-					ImGui::Separator();
 
-					ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(3, 0));
-					std::string checkboxLabel = "##Enable Component" + std::to_string(i);
-					ImGui::Checkbox(checkboxLabel.c_str(), &component.m_Enabled);
+				BaseComponent& component = registry->GetComponent(m_PannelData->m_SelectedEntity, comp);
+				ImGui::Separator();
 
-					ImGui::SameLine();
+				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(3, 0));
+				std::string checkboxLabel = "##Enable Component" + std::to_string(comp);
+				ImGui::Checkbox(checkboxLabel.c_str(), &component.m_Enabled);
 
-					bool opened = ImGui::TreeNodeEx(component.Name().data(), flags);
+				ImGui::SameLine();
 
-					ImGui::PopStyleVar();
+				bool opened = ImGui::TreeNodeEx(component.Name().data(), flags);
 
-					float lineHeight = ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2.0f;
-					ImVec2 contentRegion = ImGui::GetContentRegionAvail();
-					ImGui::SameLine(contentRegion.x + lineHeight*.55f);
-					bool removed = false;
+				ImGui::PopStyleVar();
+
 			
-					// Push the style color for the button
-					ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
-					ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 0.5f, 0.5f, 1.0f)); 
-					ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(1.0f, 0.3f, 0.3f, 1.0f)); 
+				ImGui::SameLine(contentRegion.x + lineHeight * .55f);
+				bool removed = false;
 
-					if (ImGui::Button("X", ImVec2{ lineHeight, lineHeight }))
-					{
-						removed = true;
-					}
+				// Push the style color for the button
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 0.5f, 0.5f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(1.0f, 0.3f, 0.3f, 1.0f));
 
-					ImGui::PopStyleColor(3);
-					if (opened)
-					{
-						factory->ViewComponent(Entity(m_PannelData->m_SelectedEntity, registry), i);
-						ImGui::TreePop();
-					}
-
-					if (removed)
-					{
-						eventManager->QueueEvent(std::make_unique<EntityRemoveComponentEvent>(m_PannelData->m_SelectedEntity, i));
-					}
+				if (ImGui::Button("X", ImVec2{ lineHeight, lineHeight }))
+				{
+					removed = true;
 				}
+
+				ImGui::PopStyleColor(3);
+				if (opened)
+				{
+					factory->ViewComponent(Entity(m_PannelData->m_SelectedEntity, registry), comp);
+					ImGui::TreePop();
+				}
+
+				if (removed)
+				{
+					eventManager->QueueEvent(std::make_unique<EntityRemoveComponentEvent>(m_PannelData->m_SelectedEntity, comp));
+				}
+
 			}
 
 			ImGui::Separator();
@@ -131,7 +129,7 @@ namespace NULLENGINE
 
 			ImVec2 cursorPos = ImGui::GetCursorPos();
 			ImVec2 windowSize = ImGui::GetWindowSize();
-			ImVec2 buttonSize = ImVec2(150, 25); 
+			ImVec2 buttonSize = ImVec2(150, 25);
 			ImVec2 buttonPos = ImVec2(cursorPos.x + (windowSize.x - buttonSize.x) * 0.5f, cursorPos.y);
 			ImGui::SetCursorPos(buttonPos);
 

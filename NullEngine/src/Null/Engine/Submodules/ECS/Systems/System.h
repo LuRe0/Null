@@ -35,9 +35,44 @@
 namespace NULLENGINE
 {
 	const unsigned int MAX_COMPONENTS = 32;
-	typedef std::bitset<MAX_COMPONENTS> Signature;
+	typedef std::bitset<MAX_COMPONENTS> SignatureBits;
+	typedef std::vector<size_t> OwnedComponents;
 
 	using EntityID = uint32_t;
+
+
+
+	class NLE_API Signature {
+	public:
+		Signature() : m_Bitset(), m_Indices() {}
+
+		void set(size_t index, bool value = true);
+
+		void reset(size_t index);
+
+		bool test(size_t index) const;
+
+		size_t size();
+
+		size_t count();
+	
+
+		const std::bitset<MAX_COMPONENTS>& GetBitset() const
+		{
+			return m_Bitset;
+		}
+
+		const OwnedComponents& GetSetIndices() const
+		{
+			return m_Indices;
+		}
+
+
+
+	private:
+		std::bitset<MAX_COMPONENTS> m_Bitset;  // Adjust the size as needed
+		OwnedComponents m_Indices;
+	};
 
 	class NLE_API NRegistry;
 
@@ -54,9 +89,15 @@ namespace NULLENGINE
 
 		virtual void Render() override = 0;
 
+		void RenderImGui() override;
+
 		virtual void Unload()override = 0;
 		//! Virtual Shutdown function
 		virtual void Shutdown() override = 0;
+
+
+		bool HasRenderImGui() const override { return !m_Entities.empty(); }
+
 
 		/// <summary>
 		/// Adds entity to system
@@ -77,7 +118,7 @@ namespace NULLENGINE
 		const std::vector<EntityID>& GetSystemEntities() const;
 
 
-		const Signature& GetComponentSignature() const;
+		const SignatureBits& GetComponentSignature() const;
 
 		/// <summary>
 		/// Defines which components an entity must possess to be modified by system
@@ -98,7 +139,7 @@ namespace NULLENGINE
 		/// <summary>
 		/// the componets an entity must possess in order to be modified by the system
 		/// </summary>
-		Signature m_ComponentSignatures;
+		SignatureBits m_ComponentSignatures;
 
 		/// <summary>
 		/// entities that are modifiable by the system

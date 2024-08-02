@@ -9,7 +9,7 @@ in vec4 v_Color;
 in vec4 v_Tint;
 in vec2 v_TexCoord;
 flat in int v_TexIndex;
-flat in uint v_EntityID;
+flat in int v_EntityID;
 
 
 uniform sampler2D u_Textures[32];
@@ -65,5 +65,5 @@ void main()
     else
         FragColor = v_Color * v_Tint;
 
-	FragID = int(v_EntityID);
+	FragID = v_EntityID;
 }

@@ -235,7 +235,8 @@ namespace NULLENGINE
 
 
 
-		const Signature& EntitySignature(EntityID id);
+		const SignatureBits& EntitySignature(EntityID id);
+		const OwnedComponents& EntityComponents(EntityID id);
 
 		static const std::string Name() { return "Registry"; }
 

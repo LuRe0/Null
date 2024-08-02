@@ -49,13 +49,12 @@ namespace NULLENGINE
 
 		m_Framebuffers.at("Scene").Bind();
 
-		BeginBatch();
-
-
 		ClearRender();
 
 		int nean = -1;
 		m_Framebuffers.at("Scene").ClearColorAttachment(1, &nean);
+
+		BeginBatch();
 	}
 
 	void NRenderer::BeginBatch()

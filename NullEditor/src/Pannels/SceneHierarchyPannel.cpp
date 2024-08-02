@@ -82,6 +82,11 @@ namespace NULLENGINE
 		{
 			ImGuiTreeNodeFlags flags = (m_PannelData->m_SelectedEntity == entity.GetID() ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
 
+			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
+			std::string id = "ID:" + std::to_string(entity.GetID());
+			ImGui::Text(id.c_str());
+			ImGui::SameLine();
+			ImGui::SetCursorPosX(0);
 			bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)(entity.GetID()), flags, entity.GetName().c_str());
 
 			if (ImGui::IsItemClicked() || ImGui::IsItemClicked(1))

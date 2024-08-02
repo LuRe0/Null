@@ -134,10 +134,16 @@ namespace NULLENGINE
 		//		system.second.get()->Add(entityID);
 		//}
 	}
-	const Signature& NRegistry::EntitySignature(EntityID entityID)
+	const SignatureBits& NRegistry::EntitySignature(EntityID entityID)
 	{
 		// TODO: insert return statement here
-		return m_EntityComponentSignatures[m_EntityToIndexMap[entityID]];
+		return m_EntityComponentSignatures[m_EntityToIndexMap[entityID]].GetBitset();
+	}
+
+	const OwnedComponents& NRegistry::EntityComponents(EntityID entityID)
+	{
+		// TODO: insert return statement here
+		return m_EntityComponentSignatures[m_EntityToIndexMap[entityID]].GetSetIndices();
 	}
 
 	void NRegistry::OnEntityDestroyed(const EntityDestroyedEvent& e)

@@ -10,7 +10,7 @@ layout(location = 7) in vec4 a_InstanceColor;    // Instance color
 layout(location = 8) in vec2 a_InstanceTexCoords;// Instance texture coordinates
 layout(location = 9) in vec2 a_InstanceTextSize; // Instance texture size
 layout(location = 10) in int a_InstanceTexIndex; // Instance texture index
-layout(location = 11) in uint a_EntityID;        // Instance entity ID
+layout(location = 11) in int a_EntityID;        // Instance entity ID
 
 // Uniforms
 uniform mat4 view;
@@ -21,7 +21,7 @@ out vec4 v_Color;
 out vec4 v_Tint;
 out vec2 v_TexCoord; 
 flat out int v_TexIndex;
-flat out uint v_EntityID;
+flat out int v_EntityID;
 
 void main()
 {

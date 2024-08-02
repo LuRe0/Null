@@ -281,6 +281,7 @@ namespace NULLENGINE
 			renderer->ResizeFramebuffer(viewportPanelSize.x, viewportPanelSize.y);
 			m_CameraController->OnResize(viewportPanelSize.x, viewportPanelSize.y);
 			m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
+			renderer->SetViewport(0, 0, viewportPanelSize.x, viewportPanelSize.y);
 		}
 
 		
@@ -329,10 +330,9 @@ namespace NULLENGINE
 
 
 	
-		if (mouseX >= 0 && mouseY > 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y)
+		if (mouseX >= 0 && mouseY >= 0 && mouseX <= (int)viewportSize.x && mouseY <= (int)viewportSize.y)
 		{
 			buffer.Bind();
-	
 			auto pixel = buffer.ReadPixels(1, mouseX, mouseY);
 			NLE_CORE_WARN("PixelData = {0}", pixel);
 			buffer.Unbind();

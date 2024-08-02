@@ -57,14 +57,14 @@ namespace NULLENGINE
 
 	void NTextureManager::AddTextureIndex(const std::string& texture)
 	{
-		m_TextureIndexes.emplace(texture, CreateIndex());
+		m_TextureSlots.emplace(texture, CreateIndex());
 	}
 
 	uint32_t NTextureManager::GetTextureIndex(const std::string& texture)
 	{
-		NLE_CORE_ASSERT(m_TextureIndexes.contains(texture), "resource {0} does not exist", texture);
+		NLE_CORE_ASSERT(m_TextureSlots.contains(texture), "resource {0} does not exist", texture);
 
-		return m_TextureIndexes.at(texture);
+		return m_TextureSlots.at(texture);
 	}
 
 }

@@ -64,6 +64,8 @@ namespace NULLENGINE
 
 		void UpdateBuffer(const std::vector<Instance>& vertices);
 
+		void UpdateBuffer(const std::vector<Vertex>& vertices);
+
 		const unsigned int GetID() const { return m_ID; }
 
 

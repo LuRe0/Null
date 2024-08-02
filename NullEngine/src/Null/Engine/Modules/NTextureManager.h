@@ -76,13 +76,15 @@ namespace NULLENGINE
 
 		uint32_t GetTextureIndex(const std::string& texture);
 
+		const std::unordered_map<std::string, uint32_t>& GetTextureSlots() { return m_TextureSlots; }
+
 	private:
 		uint32_t CreateIndex() 
 		{
 			return m_NextIndex++;
 		}
 		
-		std::unordered_map<std::string, uint32_t> m_TextureIndexes;
+		std::unordered_map<std::string, uint32_t> m_TextureSlots;
 		uint32_t m_NextIndex;
 	};
 

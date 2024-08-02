@@ -79,18 +79,20 @@ namespace NULLENGINE
 		void ClearRender(float r = 0.1f, float g = 0.1f, float b = 0.1f, float a = 1.0f);
 		static void ClearRenderS();
 	private:
-
 		struct RenderStorage
 		{
 			const uint32_t MaxQuads = 10000;
 			const uint32_t MaxVertices = MaxQuads * 4;
 			const uint32_t MaxIndices = MaxQuads * 6;
-			const uint32_t MaxTextures = 64;
+			static const uint32_t MaxTextureSlots = 32;
 
 
 			uint32_t QuadIndexCount = 0;
+			uint32_t TextureSlotIndex = 0;
 
 			std::vector<Instance> QuadInstanceBuffer;
+
+			std::array<Texture*, MaxTextureSlots> TextureSlots;
 
 			std::unique_ptr<InstanceMesh> m_QuadInstanceMesh;
 			std::unique_ptr<InstanceMesh> m_TriInstanceMesh;
@@ -111,10 +113,13 @@ namespace NULLENGINE
 
 
 		void BeginRender();
+		void BeginBatch();
 		void RenderScene(const RenderData* renderData);
 		void RenderElement(const ElementData& renderData);
 		void RenderInstances(const ElementData& renderData);
+		//void EndBatch();
 		void EndRender();
+		void NextBatch();
 		void Flush();
 
 		void RenderToScreen();

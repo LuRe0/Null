@@ -82,27 +82,14 @@ namespace NULLENGINE
 
     struct InstanceData : public RenderData
     {
-        glm::mat4 model;                // 64 bytes
-        const SpriteSource* spriteSrc; // 8 bytes (assuming 64-bit pointers)
-        glm::vec4 tintColor;            // 16 bytes
-        std::string shaderName;         // 24 bytes (approx., depends on the implementation)
-        unsigned int frameIndex;        // 4 bytes
-        EntityID entity;
+        const std::vector<Instance> instances;
+
 
         // Default constructor
-        InstanceData()
-            : model(glm::mat4(1.0f)), spriteSrc(nullptr),
-            tintColor(glm::vec4(1.0f)), shaderName(""), frameIndex(0), entity(0)
-        {
-            m_Type = RenderType::ELEMENT;
-        }
+        InstanceData() = default;
 
-        // Parameterized constructor
-        InstanceData(const glm::mat4& model, 
-            const SpriteSource* spriteSrc, const glm::vec4& tintColor,
-            const std::string& shaderName, unsigned int frameIndex, EntityID entity)
-            : model(model), spriteSrc(spriteSrc), tintColor(tintColor),
-            shaderName(shaderName), frameIndex(frameIndex), entity(entity)
+        // Constructor that takes a vector of Instance
+        InstanceData(const std::vector<Instance>& instances) : instances(instances)
         {
             m_Type = RenderType::ELEMENT;
         }

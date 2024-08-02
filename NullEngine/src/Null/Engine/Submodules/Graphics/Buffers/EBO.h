@@ -41,7 +41,7 @@ namespace NULLENGINE
 	class EBO
 	{
 	public:
-		void AttachBuffer(std::vector<unsigned int> data, bool dynamic = false);
+		void AttachBuffer(const std::vector<unsigned int>& data, bool dynamic = false);
 
 		EBO();
 

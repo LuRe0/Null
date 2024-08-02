@@ -68,9 +68,9 @@ struct Instance
 
 	glm::vec2 textSize;
 
-	unsigned int textIndex;
+	int textIndex;
 
-	uint32_t entityID;
+	int entityID;
 };
 
 

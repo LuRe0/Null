@@ -103,4 +103,11 @@ namespace NULLENGINE
 		m_Instances = vertices.size();
 		glBufferSubData(GL_ARRAY_BUFFER, 0, m_Instances * sizeof(Instance), vertices.data());
 	}
+
+
+	void VBO::UpdateBuffer(const std::vector<Vertex>& vertices)
+	{
+		m_Instances = vertices.size();
+		glBufferSubData(GL_ARRAY_BUFFER, 0, m_Instances * sizeof(Vertex), vertices.data());
+	}
 }

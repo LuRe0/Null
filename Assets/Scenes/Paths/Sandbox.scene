@@ -10,11 +10,11 @@
                     "frameindex": 0,
                     "meshname": "Quad",
                     "shadername": "default",
-                    "texture": "debugRect",
+                    "texture": "DigiPen_WHITE",
                     "tint": [
-                        1.0,
-                        1.0,
-                        1.0,
+                        0.2885470986366272,
+                        0.47445255517959595,
+                        0.011378937400877476,
                         1.0
                     ]
                 },
@@ -25,40 +25,21 @@
                         0.0
                     ],
                     "scale": [
-                        102.77742767333984,
-                        310.02691650390625,
+                        288.2770080566406,
+                        271.5270080566406,
                         0.04999990016222
                     ],
                     "translation": [
-                        0.0,
-                        0.0,
-                        0.0
+                        407.8957824707031,
+                        -195.53045654296875,
+                        -0.0010511215077713132
                     ]
                 }
             },
             "name": "Quad"
         },
         {
-            "archetype": "Player",
             "components": {
-                "BoxCollider2D": {
-                    "density": 1.0,
-                    "friction": 0.699999988079071,
-                    "offset": [
-                        0.0,
-                        0.0
-                    ],
-                    "restitution": 0.0,
-                    "restitutionThreshold": 5.599999904632568,
-                    "scale": [
-                        50.0,
-                        50.0
-                    ]
-                },
-                "Rigidbody2D": {
-                    "fixedRotation": false,
-                    "type": 2
-                },
                 "Sprite": {
                     "dimension": [
                         1,
@@ -67,11 +48,11 @@
                     "frameindex": 0,
                     "meshname": "Quad",
                     "shadername": "default",
-                    "texture": "titlesquished",
+                    "texture": "DoorClosed",
                     "tint": [
                         1.0,
-                        1.0,
-                        1.0,
+                        0.420229434967041,
+                        0.8954116702079773,
                         1.0
                     ]
                 },
@@ -84,16 +65,1232 @@
                     "scale": [
                         50.0,
                         50.0,
-                        1.0
+                        50.0
                     ],
                     "translation": [
+                        -186.8247833251953,
                         0.0,
-                        48.17164993286133,
                         0.0
                     ]
                 }
             },
-            "name": "Player (Clone)"
+            "name": "something"
+        },
+        {
+            "components": {
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "cage",
+                    "tint": [
+                        0.2885470986366272,
+                        0.47445255517959595,
+                        0.011378937400877476,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.00016733961820136756,
+                        0.0
+                    ],
+                    "scale": [
+                        288.2770080566406,
+                        271.5270080566406,
+                        0.04999990016222
+                    ],
+                    "translation": [
+                        48.0,
+                        -288.1887512207031,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Quad"
+        },
+        {
+            "components": {
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "baguetteIdle",
+                    "tint": [
+                        0.2885470986366272,
+                        0.47445255517959595,
+                        0.011378937400877476,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.00016733961820136756,
+                        0.0
+                    ],
+                    "scale": [
+                        288.2770080566406,
+                        271.5270080566406,
+                        0.04999990016222
+                    ],
+                    "translation": [
+                        48.0,
+                        287.849853515625,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Quad"
+        },
+        {
+            "components": {
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "CandleOff",
+                    "tint": [
+                        0.2885470986366272,
+                        0.47445255517959595,
+                        0.011378937400877476,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.00016733961820136756,
+                        0.0
+                    ],
+                    "scale": [
+                        288.2770080566406,
+                        271.5270080566406,
+                        0.04999990016222
+                    ],
+                    "translation": [
+                        48.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Quad"
+        },
+        {
+            "components": {
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "cages1",
+                    "tint": [
+                        0.2885470986366272,
+                        0.47445255517959595,
+                        0.011378937400877476,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.00016733961820136756,
+                        0.0
+                    ],
+                    "scale": [
+                        288.2770080566406,
+                        271.5270080566406,
+                        0.04999990016222
+                    ],
+                    "translation": [
+                        48.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Quad"
+        },
+        {
+            "components": {
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "ui_Panel2",
+                    "tint": [
+                        0.2885470986366272,
+                        0.47445255517959595,
+                        0.011378937400877476,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.00016733961820136756,
+                        0.0
+                    ],
+                    "scale": [
+                        288.2770080566406,
+                        271.5270080566406,
+                        0.04999990016222
+                    ],
+                    "translation": [
+                        48.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Quad"
+        },
+        {
+            "components": {
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "cages2",
+                    "tint": [
+                        0.2885470986366272,
+                        0.47445255517959595,
+                        0.011378937400877476,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.00016733961820136756,
+                        0.0
+                    ],
+                    "scale": [
+                        288.2770080566406,
+                        271.5270080566406,
+                        0.04999990016222
+                    ],
+                    "translation": [
+                        48.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Quad"
+        },
+        {
+            "components": {
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "PlankButton",
+                    "tint": [
+                        0.2885470986366272,
+                        0.47445255517959595,
+                        0.011378937400877476,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.00016733961820136756,
+                        0.0
+                    ],
+                    "scale": [
+                        288.2770080566406,
+                        271.5270080566406,
+                        0.04999990016222
+                    ],
+                    "translation": [
+                        48.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Quad"
+        },
+        {
+            "components": {
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "ChargeParticle",
+                    "tint": [
+                        0.2885470986366272,
+                        0.47445255517959595,
+                        0.011378937400877476,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.00016733961820136756,
+                        0.0
+                    ],
+                    "scale": [
+                        288.2770080566406,
+                        271.5270080566406,
+                        0.04999990016222
+                    ],
+                    "translation": [
+                        48.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Quad"
+        },
+        {
+            "components": {
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "ui_button1",
+                    "tint": [
+                        0.2885470986366272,
+                        0.47445255517959595,
+                        0.011378937400877476,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.00016733961820136756,
+                        0.0
+                    ],
+                    "scale": [
+                        288.2770080566406,
+                        271.5270080566406,
+                        0.04999990016222
+                    ],
+                    "translation": [
+                        48.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Quad"
+        },
+        {
+            "components": {
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "cages3",
+                    "tint": [
+                        0.2885470986366272,
+                        0.47445255517959595,
+                        0.011378937400877476,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.00016733961820136756,
+                        0.0
+                    ],
+                    "scale": [
+                        288.2770080566406,
+                        271.5270080566406,
+                        0.04999990016222
+                    ],
+                    "translation": [
+                        48.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Quad"
+        },
+        {
+            "components": {
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "debugRect",
+                    "tint": [
+                        0.2885470986366272,
+                        0.47445255517959595,
+                        0.011378937400877476,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.00016733961820136756,
+                        0.0
+                    ],
+                    "scale": [
+                        288.2770080566406,
+                        271.5270080566406,
+                        0.04999990016222
+                    ],
+                    "translation": [
+                        48.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Quad"
+        },
+        {
+            "components": {
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "Flasks1",
+                    "tint": [
+                        0.2885470986366272,
+                        0.47445255517959595,
+                        0.011378937400877476,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.00016733961820136756,
+                        0.0
+                    ],
+                    "scale": [
+                        288.2770080566406,
+                        271.5270080566406,
+                        0.04999990016222
+                    ],
+                    "translation": [
+                        48.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Quad"
+        },
+        {
+            "components": {
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "Earth_Rune",
+                    "tint": [
+                        0.2885470986366272,
+                        0.47445255517959595,
+                        0.011378937400877476,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.00016733961820136756,
+                        0.0
+                    ],
+                    "scale": [
+                        288.2770080566406,
+                        271.5270080566406,
+                        0.04999990016222
+                    ],
+                    "translation": [
+                        48.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Quad"
+        },
+        {
+            "components": {
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "Explosion_Bullet_Indicator",
+                    "tint": [
+                        0.2885470986366272,
+                        0.47445255517959595,
+                        0.011378937400877476,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.00016733961820136756,
+                        0.0
+                    ],
+                    "scale": [
+                        288.2770080566406,
+                        271.5270080566406,
+                        0.04999990016222
+                    ],
+                    "translation": [
+                        48.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Quad"
+        },
+        {
+            "components": {
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "Fire_Rune",
+                    "tint": [
+                        0.2885470986366272,
+                        0.47445255517959595,
+                        0.011378937400877476,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.00016733961820136756,
+                        0.0
+                    ],
+                    "scale": [
+                        288.2770080566406,
+                        271.5270080566406,
+                        0.04999990016222
+                    ],
+                    "translation": [
+                        48.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Quad"
+        },
+        {
+            "components": {
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "Flasks2",
+                    "tint": [
+                        0.2885470986366272,
+                        0.47445255517959595,
+                        0.011378937400877476,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.00016733961820136756,
+                        0.0
+                    ],
+                    "scale": [
+                        288.2770080566406,
+                        271.5270080566406,
+                        0.04999990016222
+                    ],
+                    "translation": [
+                        48.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Quad"
+        },
+        {
+            "components": {
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "Flasks3",
+                    "tint": [
+                        0.2885470986366272,
+                        0.47445255517959595,
+                        0.011378937400877476,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.00016733961820136756,
+                        0.0
+                    ],
+                    "scale": [
+                        288.2770080566406,
+                        271.5270080566406,
+                        0.04999990016222
+                    ],
+                    "translation": [
+                        48.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Quad"
+        },
+        {
+            "components": {
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "Lightning_Rune",
+                    "tint": [
+                        0.2885470986366272,
+                        0.47445255517959595,
+                        0.011378937400877476,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.00016733961820136756,
+                        0.0
+                    ],
+                    "scale": [
+                        288.2770080566406,
+                        271.5270080566406,
+                        0.04999990016222
+                    ],
+                    "translation": [
+                        48.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Quad"
+        },
+        {
+            "components": {
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "playBtn",
+                    "tint": [
+                        0.2885470986366272,
+                        0.47445255517959595,
+                        0.011378937400877476,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.00016733961820136756,
+                        0.0
+                    ],
+                    "scale": [
+                        288.2770080566406,
+                        271.5270080566406,
+                        0.04999990016222
+                    ],
+                    "translation": [
+                        48.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Quad"
+        },
+        {
+            "components": {
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "Prx_HealthFlask",
+                    "tint": [
+                        0.2885470986366272,
+                        0.47445255517959595,
+                        0.011378937400877476,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.00016733961820136756,
+                        0.0
+                    ],
+                    "scale": [
+                        288.2770080566406,
+                        271.5270080566406,
+                        0.04999990016222
+                    ],
+                    "translation": [
+                        48.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Quad"
+        },
+        {
+            "components": {
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "Prx_ManaFlask",
+                    "tint": [
+                        0.2885470986366272,
+                        0.47445255517959595,
+                        0.011378937400877476,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.00016733961820136756,
+                        0.0
+                    ],
+                    "scale": [
+                        288.2770080566406,
+                        271.5270080566406,
+                        0.04999990016222
+                    ],
+                    "translation": [
+                        48.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Quad"
+        },
+        {
+            "components": {
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "RainParticle",
+                    "tint": [
+                        0.2885470986366272,
+                        0.47445255517959595,
+                        0.011378937400877476,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.00016733961820136756,
+                        0.0
+                    ],
+                    "scale": [
+                        288.2770080566406,
+                        271.5270080566406,
+                        0.04999990016222
+                    ],
+                    "translation": [
+                        48.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Quad"
+        },
+        {
+            "components": {
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "rune",
+                    "tint": [
+                        0.2885470986366272,
+                        0.47445255517959595,
+                        0.011378937400877476,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.00016733961820136756,
+                        0.0
+                    ],
+                    "scale": [
+                        288.2770080566406,
+                        271.5270080566406,
+                        0.04999990016222
+                    ],
+                    "translation": [
+                        48.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Quad"
+        },
+        {
+            "components": {
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "Skull",
+                    "tint": [
+                        0.2885470986366272,
+                        0.47445255517959595,
+                        0.011378937400877476,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.00016733961820136756,
+                        0.0
+                    ],
+                    "scale": [
+                        288.2770080566406,
+                        271.5270080566406,
+                        0.04999990016222
+                    ],
+                    "translation": [
+                        48.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Quad"
+        },
+        {
+            "components": {
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "titlesquished",
+                    "tint": [
+                        0.2885470986366272,
+                        0.47445255517959595,
+                        0.011378937400877476,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.00016733961820136756,
+                        0.0
+                    ],
+                    "scale": [
+                        288.2770080566406,
+                        271.5270080566406,
+                        0.04999990016222
+                    ],
+                    "translation": [
+                        48.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Quad"
+        },
+        {
+            "components": {
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "ui_button2",
+                    "tint": [
+                        0.2885470986366272,
+                        0.47445255517959595,
+                        0.011378937400877476,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.00016733961820136756,
+                        0.0
+                    ],
+                    "scale": [
+                        288.2770080566406,
+                        271.5270080566406,
+                        0.04999990016222
+                    ],
+                    "translation": [
+                        48.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Quad"
+        },
+        {
+            "components": {
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "ui_buttonPlate",
+                    "tint": [
+                        0.2885470986366272,
+                        0.47445255517959595,
+                        0.011378937400877476,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.00016733961820136756,
+                        0.0
+                    ],
+                    "scale": [
+                        288.2770080566406,
+                        271.5270080566406,
+                        0.04999990016222
+                    ],
+                    "translation": [
+                        48.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Quad"
+        },
+        {
+            "components": {
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "ui_clickbox",
+                    "tint": [
+                        0.2885470986366272,
+                        0.47445255517959595,
+                        0.011378937400877476,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.00016733961820136756,
+                        0.0
+                    ],
+                    "scale": [
+                        288.2770080566406,
+                        271.5270080566406,
+                        0.04999990016222
+                    ],
+                    "translation": [
+                        48.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Quad"
+        },
+        {
+            "components": {
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "ui_panel",
+                    "tint": [
+                        0.2885470986366272,
+                        0.47445255517959595,
+                        0.011378937400877476,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.00016733961820136756,
+                        0.0
+                    ],
+                    "scale": [
+                        288.2770080566406,
+                        271.5270080566406,
+                        0.04999990016222
+                    ],
+                    "translation": [
+                        48.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Quad"
+        },
+        {
+            "components": {
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "ui_panel3",
+                    "tint": [
+                        0.2885470986366272,
+                        0.47445255517959595,
+                        0.011378937400877476,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.00016733961820136756,
+                        0.0
+                    ],
+                    "scale": [
+                        288.2770080566406,
+                        271.5270080566406,
+                        0.04999990016222
+                    ],
+                    "translation": [
+                        48.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Quad"
+        },
+        {
+            "components": {
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "DigiPen_RED",
+                    "tint": [
+                        0.2885470986366272,
+                        0.47445255517959595,
+                        0.011378937400877476,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.00016733961820136756,
+                        0.0
+                    ],
+                    "scale": [
+                        288.2770080566406,
+                        271.5270080566406,
+                        0.04999990016222
+                    ],
+                    "translation": [
+                        48.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Quad"
+        },
+        {
+            "components": {
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "DigiPen_BLACK",
+                    "tint": [
+                        0.2885470986366272,
+                        0.47445255517959595,
+                        0.011378937400877476,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.00016733961820136756,
+                        0.0
+                    ],
+                    "scale": [
+                        288.2770080566406,
+                        271.5270080566406,
+                        0.04999990016222
+                    ],
+                    "translation": [
+                        48.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Quad"
         }
     ]
 }

@@ -40,7 +40,7 @@ namespace NULLENGINE
 
 
 
-    void EBO::AttachBuffer(std::vector<unsigned int> data, bool dynamic)
+    void EBO::AttachBuffer(const std::vector<unsigned int>& data, bool dynamic)
     {
    
         //set buffer data with edges given
@@ -49,7 +49,7 @@ namespace NULLENGINE
    /*    dynamic ? glBufferData(GL_ELEMENT_ARRAY_BUFFER, data.size() * sizeof(float), data.data(), GL_DYNAMIC_DRAW)
                : glBufferData(GL_ELEMENT_ARRAY_BUFFER, data.size() * sizeof(float), data.data(), GL_STATIC_DRAW);*/
 
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, data.size() * sizeof(float), data.data(), GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, data.size() * sizeof(unsigned int), data.data(), GL_STATIC_DRAW);
 
         m_Count = data.size();
     }

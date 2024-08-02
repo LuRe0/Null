@@ -44,9 +44,23 @@ namespace NULLENGINE
         // Load the texture image
         //stbi_set_flip_vertically_on_load(true);
         m_Data = stbi_load(m_FilePath.c_str(), &m_Width, &m_Height, &m_NrChannels, 0);
-        if (m_Data) {
-            GLenum format = (m_NrChannels == 4) ? GL_RGBA : GL_RGB;
-            glTexImage2D(GL_TEXTURE_2D, 0, format, m_Width, m_Height, 0, format, GL_UNSIGNED_BYTE, m_Data);
+        if (m_Data) 
+        {
+            GLenum format = 0;
+            switch (m_NrChannels)
+            {
+            case 1:
+                format = GL_RED;
+                break;
+            case 3:
+                format = GL_RGB;
+                break;
+            case 4:
+                format = GL_RGBA;
+                break;
+            };
+
+            glTexImage2D(GL_TEXTURE_2D, 0, GLint(format), m_Width, m_Height, 0, format, GL_UNSIGNED_BYTE, m_Data);
             glGenerateMipmap(GL_TEXTURE_2D);
         }
         else 
@@ -63,6 +77,12 @@ namespace NULLENGINE
     void Texture::Bind() const
     {
         glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, m_TextureID);
+    }
+
+    void Texture::BindUnit(uint32_t slot) const
+    {
+        glActiveTexture(GL_TEXTURE0+slot);
         glBindTexture(GL_TEXTURE_2D, m_TextureID);
     }
 

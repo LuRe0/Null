@@ -77,11 +77,6 @@ namespace NULLENGINE
 			//model, mesh, spritesrc, tint, shadername, frameindex, entity
 			renderer->AddRenderCall(std::make_unique<ElementData>(transform.m_TransformMatrix, sprite.m_Mesh, sprite.m_SpriteSource, sprite.m_Color, sprite.m_ShaderName, sprite.m_FrameIndex, entityId));
 		}
-
-		if (!QuadInstances.empty())
-		{
-			//renderer->AddRenderCall(std::make_unique<InstanceData>(QuadInstances, m_QuadInstanceMesh.get(), "objInstance"));
-		}
 	}
 
 	void SpriteRenderSystem::Unload()

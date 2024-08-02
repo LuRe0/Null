@@ -53,9 +53,11 @@ namespace NULLENGINE
 		template <typename T>
 		void SetupVertexBuffer(const std::vector<T>& vertexData, std::vector<Layout>& layouts, bool dynamic, uint32_t count)
 		{
+			m_Buffer.m_VAO.Bind();
 			m_Buffer.m_VBO.Bind();
 			m_Buffer.m_VBO.AttachBuffer(vertexData, layouts, dynamic, count);
 			m_Buffer.m_VBO.Unbind();
+			m_Buffer.m_VAO.Unbind();
 		}
 
 		void SetupIndexBuffer(const std::vector<unsigned int>& indexData);

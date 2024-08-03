@@ -34,6 +34,10 @@ class b2World;
 
 namespace NULLENGINE
 {
+
+	class BoxCollider2DComponent;
+	class Rigidbody2DComponent;
+
 	class NLE_API PhysicsSystem : public ISystem
 	{
 	public:
@@ -52,7 +56,17 @@ namespace NULLENGINE
 		void Shutdown() override;
 
 		void RegisterToScripAPI(sol::state& lua) override;
+		
+		BoxCollider2DComponent* BoxCollider2D(Entity& entity);
 
+		Rigidbody2DComponent* Rigidbody2D(Entity& entity);
+
+		void SetLinearVelocity(Entity& entity, glm::vec2 velocity);
+		void SetAngularVelocity(Entity& entity, float velocity);
+		void SetGravityScale(Entity& entity, float scale);
+
+		void SetBoxCollider2DOffset(Entity& entity, glm::vec2 offset);
+		void SetBoxCollider2DScale(Entity& entity, glm::vec2 scale);
 	
 		// Conversion factor
 		const float GetPixelPerMeter() { return PIXELS_PER_METER; } // 1 meter = 64 pixels

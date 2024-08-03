@@ -1,7 +1,50 @@
 {
     "entities": [
         {
-            "archetype": "ScriptablePlayer"
+            "archetype": "ScriptablePlayer",
+            "components": {
+                "Script": {
+                    "scripts": {
+                        "Player_Behavior": {
+
+                        }
+                    }
+                },
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "ChargeParticle",
+                    "tint": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        50.0,
+                        50.0,
+                        50.0
+                    ],
+                    "translation": [
+                        5.9179840087890625,
+                        2.8683929443359375,
+                        0.0
+                    ]
+                }
+            },
+            "name": "ScriptablePlayer (Clone)"
         },
         {
             "components": {

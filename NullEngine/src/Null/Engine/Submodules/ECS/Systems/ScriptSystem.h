@@ -55,6 +55,7 @@ namespace NULLENGINE
 		void RegisterToScripAPI(sol::state& lua) override;
 
 	private:
+
 		//void OnWindowResize(const WindowResizeEvent& e);
 		static void CreateScriptComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
 
@@ -65,6 +66,11 @@ namespace NULLENGINE
 		void InitializeScripts(EntityID id);
 
 		const std::string GetScriptPaths(const std::string& scriptDirectory, const std::string& scriptName);
+
+
+
+
+
 
 	};
 

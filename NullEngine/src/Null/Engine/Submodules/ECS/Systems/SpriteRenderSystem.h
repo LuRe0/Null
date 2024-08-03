@@ -34,6 +34,7 @@
 
 namespace NULLENGINE
 {
+	class SpriteComponent;
 	class NLE_API SpriteRenderSystem : public ISystem
 	{
 	public:
@@ -51,6 +52,10 @@ namespace NULLENGINE
 		//! Virtual Shutdown function
 		void Shutdown() override;
 
+
+		SpriteComponent* Sprite(Entity entity);
+
+		void SetColor(Entity entity, glm::vec4 color);
 
 		void RegisterToScripAPI(sol::state& lua) override;
 

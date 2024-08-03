@@ -33,6 +33,8 @@
 
 namespace NULLENGINE
 {
+	class AnimationComponent;
+
 	class NLE_API AnimationSystem : public ISystem
 	{
 	public:
@@ -51,7 +53,15 @@ namespace NULLENGINE
 		//! Virtual Shutdown function
 		void Shutdown() override;
 
-	
+
+		AnimationComponent* Animation(Entity& entity);
+
+		void Play(Entity& entity, bool state);
+		void Pause(Entity& entity,  bool state);
+		void Restart(Entity& entity,  bool state);
+		void Stop(Entity& entity,  bool state);
+
+		
 		void RegisterToScripAPI(sol::state& lua) override;
 
 	private:

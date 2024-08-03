@@ -200,16 +200,15 @@ namespace NULLENGINE
 
 
 		JSON componentsJson;
-		auto& signature = registry->EntitySignature(entity.GetID());
+		auto& signature = registry->EntityComponents(entity.GetID());
 
 		for (size_t i = 0; i < signature.size(); i++)
 		{
-			if (signature.test(i))
-			{
-				BaseComponent& component = registry->GetComponent(entity.GetID(), i);
+
+				BaseComponent& component = registry->GetComponent(entity.GetID(), signature[i]);
 				JSON compJson = compFactory->WriteComponent(&component);
 				componentsJson.merge_patch(compJson); // Merge component JSON into the entity's components JSON
-			}
+			
 		}
 
 		entityJson["components"] = componentsJson;

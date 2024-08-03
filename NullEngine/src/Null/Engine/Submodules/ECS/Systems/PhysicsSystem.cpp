@@ -38,10 +38,10 @@ namespace NULLENGINE
 
 		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
 
-		componentFactory->Register<Rigidbody2DComponent>(CreateRigidbody2DComponent, 
+		componentFactory->Register<Rigidbody2DComponent>(CreateRigidbody2DComponent,
 			[this](Entity& id) { this->ViewRigidbody2DComponent(id); }, WriteRigidbody2DComponent);
 
-		componentFactory->Register<BoxCollider2DComponent>(CreateBoxCollider2DComponent, 
+		componentFactory->Register<BoxCollider2DComponent>(CreateBoxCollider2DComponent,
 			[this](Entity& id) { this->ViewBoxCollider2DComponent(id); }, WriteBoxCollider2DComponent);
 
 	}
@@ -146,6 +146,125 @@ namespace NULLENGINE
 			//"Restitution", &BoxCollider2DComponent::m_Restitution,
 			//"RestitutionThreshold", &BoxCollider2DComponent::m_RestitutionThreshold
 		);
+
+		lua.new_usertype<BoxCollider2DComponent>(
+			"BoxCollider2DComponent",
+			// Members
+			//"Offset", &BoxCollider2DComponent::m_Offset,
+			"Scale", &BoxCollider2DComponent::m_Scale
+			//"Density", &BoxCollider2DComponent::m_Density,
+			//"Friction", &BoxCollider2DComponent::m_Friction,
+			//"Restitution", &BoxCollider2DComponent::m_Restitution,
+			//"RestitutionThreshold", &BoxCollider2DComponent::m_RestitutionThreshold
+		);
+
+		lua.new_usertype<PhysicsSystem>(
+			"PhysicsSystem",
+			"BoxCollider2D", &PhysicsSystem::BoxCollider2D,
+			"Rigidbody2D", &PhysicsSystem::Rigidbody2D,
+			"SetAngularVelocity", &PhysicsSystem::SetAngularVelocity,
+			"SetGravityScale", &PhysicsSystem::SetGravityScale,
+			"SetLinearVelocity", &PhysicsSystem::SetLinearVelocity,
+			"SetBoxCollider2DOffset", &PhysicsSystem::SetBoxCollider2DOffset,
+			"SetBoxCollider2DScale", &PhysicsSystem::SetBoxCollider2DScale
+		);
+
+
+		lua["Physics"] = this;
+	}
+
+	BoxCollider2DComponent* PhysicsSystem::BoxCollider2D(Entity& entity)
+	{
+		if (entity.Has<BoxCollider2DComponent>())
+			return &entity.Get<BoxCollider2DComponent>();
+	}
+
+	Rigidbody2DComponent* PhysicsSystem::Rigidbody2D(Entity& entity)
+	{
+		if (entity.Has<Rigidbody2DComponent>())
+			return &entity.Get<Rigidbody2DComponent>();
+	}
+
+	void PhysicsSystem::SetLinearVelocity(Entity& entity, glm::vec2 velocity)
+	{
+		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+
+		if (entity.Has<Rigidbody2DComponent>())
+		{
+			auto& rb2d = entity.Get<Rigidbody2DComponent>();
+			rb2d.m_LinearVelocity = velocity;
+			auto vel = PixelsToMeters(rb2d.m_LinearVelocity.x, rb2d.m_LinearVelocity.y);
+
+			if (rb2d.m_RuntimeBody)
+				rb2d.m_RuntimeBody->SetLinearVelocity({ vel.x, vel.y });
+		}
+		else
+			NLE_CORE_ERROR("No {0} Found", Component<Rigidbody2DComponent>::TypeName());
+	}
+
+	void PhysicsSystem::SetAngularVelocity(Entity& entity, float velocity)
+	{
+
+		if (entity.Has<Rigidbody2DComponent>())
+		{
+			auto& rb2d = entity.Get<Rigidbody2DComponent>();
+			rb2d.m_AngularVelocity = velocity;
+			if (rb2d.m_RuntimeBody)
+				rb2d.m_RuntimeBody->SetAngularVelocity(velocity);
+		}
+		else
+			NLE_CORE_ERROR("No {0} Found", Component<Rigidbody2DComponent>::TypeName());
+	}
+
+	void PhysicsSystem::SetGravityScale(Entity& entity, float scale)
+	{
+
+		if (entity.Has<Rigidbody2DComponent>())
+		{
+			auto& rb2d = entity.Get<Rigidbody2DComponent>();
+			rb2d.m_GravityScale = scale;
+			if (rb2d.m_RuntimeBody)
+				rb2d.m_RuntimeBody->SetGravityScale(scale);
+		}
+		else
+			NLE_CORE_ERROR("No {0} Found", Component<Rigidbody2DComponent>::TypeName());
+	}
+
+	void PhysicsSystem::SetBoxCollider2DScale(Entity& entity, glm::vec2 scale)
+	{
+
+		if (entity.Has<BoxCollider2DComponent>())
+		{
+
+			auto& bc2d = entity.Get<BoxCollider2DComponent>();
+			bc2d.m_Scale = scale;
+			if (bc2d.m_RuntimeFixture)
+			{
+				auto sc = PixelsToMeters(bc2d.m_Scale.x, bc2d.m_Scale.y / 2);
+
+				dynamic_cast<b2PolygonShape*>(bc2d.m_RuntimeFixture->GetShape())->SetAsBox(sc.x, sc.y);
+			}
+		}
+		else
+			NLE_CORE_ERROR("No {0} Found", Component<BoxCollider2DComponent>::TypeName());
+	}
+
+	void PhysicsSystem::SetBoxCollider2DOffset(Entity& entity, glm::vec2 offset)
+	{
+
+		if (entity.Has<BoxCollider2DComponent>())
+		{
+			auto& bc2d = entity.Get<BoxCollider2DComponent>();
+			bc2d.m_Offset = offset;
+			if (bc2d.m_RuntimeFixture)
+			{
+				auto ofs = PixelsToMeters(bc2d.m_Scale.x, bc2d.m_Scale.y / 2);
+
+				dynamic_cast<b2PolygonShape*>(bc2d.m_RuntimeFixture->GetShape())->SetAsBox(ofs.x, ofs.y);
+			}
+		}
+		else
+			NLE_CORE_ERROR("No {0} Found", Component<BoxCollider2DComponent>::TypeName());
 	}
 
 	// Converts pixel values to meter values
@@ -238,21 +357,54 @@ namespace NULLENGINE
 		Rigidbody2DComponent& rb2d = entity.Get<Rigidbody2DComponent>();
 		if (rb2d.m_RuntimeBody)
 		{
-			if(ImGui::Checkbox("Fixed Rotation", &rb2d.m_FixedRotation))
+			if (ImGui::Checkbox("Fixed Rotation", &rb2d.m_FixedRotation))
 				rb2d.m_RuntimeBody->SetFixedRotation(rb2d.m_FixedRotation);
 
-			ImGui::Text(magic_enum::enum_name(rb2d.m_Type).data()); ImGui::SameLine(); 
+			ImGui::Text(magic_enum::enum_name(rb2d.m_Type).data()); ImGui::SameLine();
 
-			if(ImGui::DragInt("Body Type", reinterpret_cast<int*>(&(rb2d.m_Type)), 1.0f, 0, Rigidbody2DComponent::BodyType::BodyTypes - 1))
+			if (ImGui::DragInt("Body Type", reinterpret_cast<int*>(&(rb2d.m_Type)), 1.0f, 0, Rigidbody2DComponent::BodyType::BodyTypes - 1))
 
 				if (rb2d.m_Type > Rigidbody2DComponent::BodyType::BodyTypes - 1)
 				{
 					rb2d.m_Type = (Rigidbody2DComponent::BodyType)static_cast<int>(Rigidbody2DComponent::BodyType::BodyTypes - 1);
 				}
 
-				rb2d.m_RuntimeBody->SetType(static_cast<b2BodyType>(rb2d.m_Type));	
+			rb2d.m_RuntimeBody->SetType(static_cast<b2BodyType>(rb2d.m_Type));
 
 
+			if (ImGui::DragFloat3("Linear Velocity", glm::value_ptr(rb2d.m_LinearVelocity), 0.5f))
+			{
+				// Handle the change in translation
+				auto vel = PixelsToMeters(rb2d.m_LinearVelocity.x, rb2d.m_LinearVelocity.y);
+
+				if (rb2d.m_RuntimeBody)
+					rb2d.m_RuntimeBody->SetLinearVelocity({ vel.x, vel.y });
+
+			}
+
+			if (ImGui::DragFloat3("Linear Damping", &rb2d.m_LinearDamping, 0.5f))
+			{
+				if (rb2d.m_RuntimeBody)
+					rb2d.m_RuntimeBody->SetLinearDamping(rb2d.m_LinearDamping);
+			}
+
+			if (ImGui::DragFloat3("Angular Velocity", &rb2d.m_AngularVelocity, 0.5f))
+			{
+				if (rb2d.m_RuntimeBody)
+					rb2d.m_RuntimeBody->SetAngularVelocity(rb2d.m_AngularVelocity);
+			}
+
+			if (ImGui::DragFloat3("Angular Damping", &rb2d.m_AngularDamping, 0.5f))
+			{
+				if (rb2d.m_RuntimeBody)
+					rb2d.m_RuntimeBody->SetLinearDamping(rb2d.m_AngularDamping);
+			}
+
+			if (ImGui::DragFloat3("Gravity Scale", &rb2d.m_GravityScale, 0.5f))
+			{
+				if (rb2d.m_RuntimeBody)
+					rb2d.m_RuntimeBody->SetGravityScale(rb2d.m_GravityScale);
+			}
 		}
 		else
 		{
@@ -395,9 +547,14 @@ namespace NULLENGINE
 		bodyDef.type = (b2BodyType)rb2d.m_Type;
 
 		auto pos = PixelsToMeters(transform.m_Translation.x, transform.m_Translation.y);
+		auto vel = PixelsToMeters(rb2d.m_LinearVelocity.x, rb2d.m_LinearVelocity.y);
 
 		bodyDef.position.Set(pos.x, pos.y);
-
+		bodyDef.linearVelocity.Set(vel.x, vel.y);
+		bodyDef.angularVelocity = rb2d.m_AngularVelocity;
+		bodyDef.angularDamping = rb2d.m_AngularDamping;
+		bodyDef.linearDamping = rb2d.m_LinearDamping;
+		bodyDef.gravityScale = rb2d.m_GravityScale;
 		bodyDef.angle = transform.m_Rotation.z;
 
 

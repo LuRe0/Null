@@ -26,6 +26,8 @@
 #include <set>
 #include <unordered_set>
 #include <fstream>
+#include <sstream>
+#include <regex>
 #include <string_view>
 #include <typeinfo>
 #include <typeindex>

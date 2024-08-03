@@ -106,6 +106,76 @@ namespace NULLENGINE
 			"Scale", &TransformComponent::m_Scale,
 			"Rotation", &TransformComponent::m_Rotation
 		);
+
+		lua.new_usertype<TransformSystem>(
+			"TransformSystem",
+			"SetTranslation", &TransformSystem::SetTranslation,
+			"SetRotation", &TransformSystem::SetRotation,
+			"SetScale", &TransformSystem::SetScale
+		);
+
+		lua["Transform"] = this;
+	}
+
+	TransformComponent* TransformSystem::Transform(Entity& entity)
+	{
+		if (entity.Has<TransformComponent>());
+			return &entity.Get<TransformComponent>();
+	}
+
+	void TransformSystem::SetTranslation(Entity& entity, glm::vec3 position)
+	{
+		if (entity.Has<TransformComponent>())
+		{
+			auto& transform = entity.Get<TransformComponent>();
+			transform.m_Translation = position;
+			if (entity.Has<Rigidbody2DComponent>())
+			{
+				Rigidbody2DComponent& rb2d = entity.Get<Rigidbody2DComponent>();
+
+				if (rb2d.m_RuntimeBody)
+				{
+					PhysicsSystem* physicsSys = NEngine::Instance().Get<PhysicsSystem>();
+					auto pos = physicsSys->PixelsToMeters(transform.m_Translation.x, transform.m_Translation.y);
+					rb2d.m_RuntimeBody->SetTransform({ pos.x, pos.y }, transform.m_Rotation.z);
+				}
+			}
+
+		}
+		else
+			NLE_CORE_ERROR("No {0} Found", Component<TransformComponent>::TypeName());
+	}
+
+	void TransformSystem::SetRotation(Entity& entity, glm::vec3 rotation)
+	{
+
+		if (entity.Has<TransformComponent>())
+		{
+			auto& transform = entity.Get<TransformComponent>();
+			transform.m_Rotation = rotation;
+			if (entity.Has<Rigidbody2DComponent>())
+			{
+				Rigidbody2DComponent& rb2d = entity.Get<Rigidbody2DComponent>();
+
+				if (rb2d.m_RuntimeBody)
+				{
+					PhysicsSystem* physicsSys = NEngine::Instance().Get<PhysicsSystem>();
+					auto pos = physicsSys->PixelsToMeters(transform.m_Translation.x, transform.m_Translation.y);
+					rb2d.m_RuntimeBody->SetTransform(rb2d.m_RuntimeBody->GetPosition(), transform.m_Rotation.z);
+				}
+			}
+
+		}
+		else
+			NLE_CORE_ERROR("No {0} Found", Component<TransformComponent>::TypeName());
+	}
+
+	void TransformSystem::SetScale(Entity& entity, glm::vec3 scale)
+	{
+		if (entity.Has<TransformComponent>())
+			entity.Get<TransformComponent>().m_Scale = scale;
+		else
+			NLE_CORE_ERROR("No {0} Found", Component<TransformComponent>::TypeName());
 	}
 
 

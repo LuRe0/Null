@@ -198,4 +198,20 @@ namespace NULLENGINE
             componentFactory->CloneComponent(component.first, component.second, JSON(), registry, id);
         }
     }
+    void NEntityFactory::RegisterToScripAPI(sol::state& lua)
+    {
+        lua.new_usertype<Entity>("Entity",
+            sol::no_constructor,  // Disable direct construction
+            "GetTransform", [](Entity& obj) -> TransformComponent* { return &obj.Get<TransformComponent>(); },
+            "GetSprite", [](Entity& obj) -> SpriteComponent* { return &obj.Get<SpriteComponent>(); },
+            "GetBoxCollider2D", [](Entity& obj) -> BoxCollider2DComponent* { return &obj.Get<BoxCollider2DComponent>(); },
+            "GetRigidbody2D", [](Entity& obj) -> Rigidbody2DComponent* { return &obj.Get<Rigidbody2DComponent>(); },
+            "GetTag", [](Entity& obj) -> TagComponent* { return &obj.Get<TagComponent>(); },
+            "GetAnimation", [](Entity& obj) -> AnimationComponent* { return &obj.Get<AnimationComponent>(); },
+            "HasComponent", &Entity::HasComponent,
+            "Destroy", &Entity::SetIsDestroyed,
+            "ID", &Entity::m_ID,
+            "Name", &Entity::m_Name
+        );
+    }
 }

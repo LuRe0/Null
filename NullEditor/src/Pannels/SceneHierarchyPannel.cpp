@@ -106,11 +106,18 @@ namespace NULLENGINE
 					}
 				}
 
-				if (ImGui::MenuItem("Save as Archetype"))
+				if (ImGui::MenuItem("Save as new Archetype"))
 				{
 					const std::string& archetype = FileDialog::SaveFile("Null Engine Archetype (*.ent)\0*.ent\0");
 					if (!archetype.empty())
 						m_PannelData->m_Context->SerializeArchetype(archetype, m_PannelData->m_SelectedEntity);
+				}
+
+				if (ImGui::MenuItem("Save Archetype"))
+				{
+					Entity& entity = m_PannelData->m_Context->GetEntity(m_PannelData->m_SelectedEntity);
+					if (!entity.m_Archetype.empty())
+						m_PannelData->m_Context->SerializeArchetype(entity.m_Archetype, m_PannelData->m_SelectedEntity);
 				}
 
 				ImGui::EndPopup();

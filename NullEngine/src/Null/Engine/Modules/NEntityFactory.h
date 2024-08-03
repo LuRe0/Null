@@ -70,7 +70,7 @@ namespace NULLENGINE
 
 		void CloneComponents(NComponentFactory* componentFactory, const std::string& archetype, NRegistry* registry, EntityID id);
 
-		void RegisterToScripAPI(sol::state& lua) override {};
+		void RegisterToScripAPI(sol::state& lua) override;
 
 	private:
 		std::unordered_map<std::string, std::unordered_map<std::string, BaseComponent*>> m_Archetypes;

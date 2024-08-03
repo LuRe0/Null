@@ -87,6 +87,20 @@ namespace NULLENGINE
 	{
 	}
 
+	SpriteComponent* SpriteRenderSystem::Sprite(Entity entity)
+	{
+		if (entity.Has<SpriteComponent>())
+			return &entity.Get<SpriteComponent>();
+	}
+
+	void SpriteRenderSystem::SetColor(Entity entity,glm::vec4 color)
+	{
+		if (entity.Has<SpriteComponent>())
+			entity.Get<SpriteComponent>().m_Color = color;
+		else
+			NLE_CORE_ERROR("No {0} Found", Component<SpriteComponent>::TypeName());
+	}
+
 	void SpriteRenderSystem::RegisterToScripAPI(sol::state& lua)
 	{
 		NTextureManager* textMan = NEngine::Instance().Get<NTextureManager>();
@@ -103,6 +117,15 @@ namespace NULLENGINE
 			"Sprite", &SpriteComponent::m_SpriteSource,
 			"Tint", &SpriteComponent::m_Color
 		);
+
+
+		lua.new_usertype<SpriteRenderSystem>(
+			"SpriteRenderSystem",
+			"Sprite", &SpriteRenderSystem::Sprite,
+			"SetColor", &SpriteRenderSystem::SetColor
+		);
+
+		lua["SpriteRender"] = this;
 	}
 
 

@@ -139,6 +139,66 @@ namespace NULLENGINE
 	{
 	}
 
+    AnimationComponent* AnimationSystem::Animation(Entity& entity)
+    {
+        if (entity.Has<AnimationComponent>())
+            return &entity.Get<AnimationComponent>();
+    }
+
+    void AnimationSystem::Play(Entity& entity, bool state)
+    {
+        if (entity.Has<AnimationComponent>())
+        {
+            auto& anim = entity.Get<AnimationComponent>();
+            anim.m_IsRunning = true;
+        }
+        else
+            NLE_CORE_ERROR("No {0} Found", Component<AnimationSystem>::TypeName());
+    }
+
+    void AnimationSystem::Pause(Entity& entity, bool state)
+    {
+        if (entity.Has<AnimationComponent>())
+        {
+            auto& anim = entity.Get<AnimationComponent>();
+            anim.m_IsRunning = false;
+        }
+        else
+            NLE_CORE_ERROR("No {0} Found", Component<AnimationSystem>::TypeName());
+    }
+
+    void AnimationSystem::Restart(Entity& entity, bool state)
+    {
+        if (entity.Has<AnimationComponent>())
+        {
+            auto& anim = entity.Get<AnimationComponent>();
+            anim.m_IsRunning = true;
+
+            if (anim.m_IsReversed)
+                anim.m_FrameIndex = anim.m_FrameCount - 1;
+            else
+                anim.m_FrameIndex = 0;
+        }
+        else
+            NLE_CORE_ERROR("No {0} Found", Component<AnimationSystem>::TypeName());
+    }
+
+    void AnimationSystem::Stop(Entity& entity, bool state)
+    {
+        if (entity.Has<AnimationComponent>())
+        {
+           auto& anim = entity.Get<AnimationComponent>();
+           anim.m_IsRunning = false;
+
+           if(anim.m_IsReversed)
+            anim.m_FrameIndex = anim.m_FrameCount - 1;
+           else
+               anim.m_FrameIndex = 0;
+        }
+        else
+            NLE_CORE_ERROR("No {0} Found", Component<AnimationSystem>::TypeName());
+    }
+
     void AnimationSystem::RegisterToScripAPI(sol::state& lua)
     {
         lua.new_usertype<NULLENGINE::AnimationComponent>(
@@ -155,6 +215,18 @@ namespace NULLENGINE
             "IsDone", &NULLENGINE::AnimationComponent::m_IsDone
             //"IsReversed", &NULLENGINE::AnimationComponent::m_IsReversed
         );
+
+        lua.new_usertype<AnimationSystem>(
+            "AnimationSystem",
+            "GetAnimation", &AnimationSystem::Animation,
+            "Stop", &AnimationSystem::Stop,
+            "Restart", &AnimationSystem::Restart,
+            "Play", &AnimationSystem::Play,
+            "Pause", &AnimationSystem::Pause
+        );
+
+
+        lua["Animation"] = this;
     }
 
 

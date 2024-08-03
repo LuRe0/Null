@@ -88,6 +88,10 @@ namespace NULLENGINE
             return nullptr;
         }
 
+
+
+        void RegisterToScripAPI(sol::state& lua) override {};
+
         //const Camera* GetCurrentCamera() const;
 
         void SetCurrentCamera(const std::string& name);

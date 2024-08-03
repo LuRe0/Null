@@ -15,6 +15,7 @@
 #include "stdafx.h"
 #include "Null/Core.h"
 #include "Null/Engine/Base/IEngine.h"
+#include <sol/sol.hpp>  // Include Sol header where sol::state is defined
 
 
 //******************************************************************************//
@@ -55,6 +56,8 @@ namespace NULLENGINE
 		//! Virtual Shutdown function
 		virtual void Shutdown() = 0;
 
+		virtual void RegisterToScripAPI(sol::state& lua) = 0;
+
 		void SetParent(IEngine* engine) { m_Parent = engine; };
 
 		IEngine* GetParent(void) const
@@ -72,10 +75,27 @@ namespace NULLENGINE
 		virtual void RenderImGui() {}
 		virtual bool HasRenderImGui() const { return false; }
 
+
+
+
 		//! Virtual Deconstructor function
 		virtual ~IModule() = default;
 
 	protected:
 		IEngine* m_Parent;
+	};
+
+
+	template <typename T>
+	class NLE_API Module
+	{
+	public:
+		static std::string TypeName() {
+			std::string fullName = typeid(T).name();
+			// Manual parsing: adjust based on compiler output
+			auto pos = fullName.find_last_of(':');
+			return fullName.substr(pos + 1);
+		}
+	private:
 	};
 }

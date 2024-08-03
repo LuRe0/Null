@@ -60,7 +60,7 @@ namespace NULLENGINE
 			{
 				Texture* resource = new Texture(name, std::forward<TArgs>(args)...);
 
-				AddTextureIndex(name);
+				//AddTextureIndex(name);
 
 				Add(name, resource);
 

@@ -80,6 +80,8 @@ namespace NULLENGINE
 
 		void SetEventCallback(EnventCallbackFn func) { m_Data.m_callbackFunc = func; };
 
+		void RegisterToScripAPI(sol::state& lua) override;
+
 
 	private:
 		// Private data members

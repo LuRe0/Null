@@ -78,7 +78,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NLE_PLATFORM_WINDOWS;NLE_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\NullEngine\vendor\spdlog\include;..\NullEngine\vendor\magic_enum\magic_enum\include;..\NullEngine\src;..\NullEngine\vendor\GLFW\include;..\NullEngine\vendor\Glad\include;..\NullEngine\vendor\imgui;..\NullEngine\vendor\imGuizmo;..\NullEngine\vendor\JSON\include;..\NullEngine\vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\NullEngine\vendor\spdlog\include;..\NullEngine\vendor\magic_enum\magic_enum\include;..\NullEngine\src;..\NullEngine\vendor\GLFW\include;..\NullEngine\vendor\Glad\include;..\NullEngine\vendor\imgui;..\NullEngine\vendor\imGuizmo;..\NullEngine\vendor\JSON\include;..\NullEngine\vendor\glm;..\NullEngine\vendor\sol2\sol2\include;..\NullEngine\vendor\lua\lua\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <LanguageStandard>stdcpplatest</LanguageStandard>
@@ -93,7 +93,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NLE_PLATFORM_WINDOWS;NLE_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\NullEngine\vendor\spdlog\include;..\NullEngine\vendor\magic_enum\magic_enum\include;..\NullEngine\src;..\NullEngine\vendor\GLFW\include;..\NullEngine\vendor\Glad\include;..\NullEngine\vendor\imgui;..\NullEngine\vendor\imGuizmo;..\NullEngine\vendor\JSON\include;..\NullEngine\vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\NullEngine\vendor\spdlog\include;..\NullEngine\vendor\magic_enum\magic_enum\include;..\NullEngine\src;..\NullEngine\vendor\GLFW\include;..\NullEngine\vendor\Glad\include;..\NullEngine\vendor\imgui;..\NullEngine\vendor\imGuizmo;..\NullEngine\vendor\JSON\include;..\NullEngine\vendor\glm;..\NullEngine\vendor\sol2\sol2\include;..\NullEngine\vendor\lua\lua\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <LanguageStandard>stdcpplatest</LanguageStandard>
@@ -108,7 +108,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NLE_PLATFORM_WINDOWS;NLE_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\NullEngine\vendor\spdlog\include;..\NullEngine\vendor\magic_enum\magic_enum\include;..\NullEngine\src;..\NullEngine\vendor\GLFW\include;..\NullEngine\vendor\Glad\include;..\NullEngine\vendor\imgui;..\NullEngine\vendor\imGuizmo;..\NullEngine\vendor\JSON\include;..\NullEngine\vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\NullEngine\vendor\spdlog\include;..\NullEngine\vendor\magic_enum\magic_enum\include;..\NullEngine\src;..\NullEngine\vendor\GLFW\include;..\NullEngine\vendor\Glad\include;..\NullEngine\vendor\imgui;..\NullEngine\vendor\imGuizmo;..\NullEngine\vendor\JSON\include;..\NullEngine\vendor\glm;..\NullEngine\vendor\sol2\sol2\include;..\NullEngine\vendor\lua\lua\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <LanguageStandard>stdcpplatest</LanguageStandard>

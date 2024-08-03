@@ -139,6 +139,24 @@ namespace NULLENGINE
 	{
 	}
 
+    void AnimationSystem::RegisterToScripAPI(sol::state& lua)
+    {
+        lua.new_usertype<NULLENGINE::AnimationComponent>(
+            "AnimationComponent",
+            // Expose members
+            //"FrameIndex", &NULLENGINE::AnimationComponent::m_FrameIndex,
+            "FrameCount", &NULLENGINE::AnimationComponent::m_FrameCount,
+ //           "FrameOffset", &NULLENGINE::AnimationComponent::m_FrameOffset,
+ //           "FrameDelay", &NULLENGINE::AnimationComponent::m_FrameDelay,
+ //           "FrameDuration", &NULLENGINE::AnimationComponent::m_FrameDuration,
+ //           "IsRunning", &NULLENGINE::AnimationComponent::m_IsRunning,
+ ///*           "IsLooping", &NULLENGINE::AnimationComponent::m_IsLooping,
+ //           "IsPingPong", &NULLENGINE::AnimationComponent::m_IsPingPong,*/
+            "IsDone", &NULLENGINE::AnimationComponent::m_IsDone
+            //"IsReversed", &NULLENGINE::AnimationComponent::m_IsReversed
+        );
+    }
+
 
     void AnimationSystem::CreateAnimationComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id)
     {

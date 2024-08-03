@@ -46,6 +46,9 @@
     <Filter Include="Null\Engine\Submodules\Graphics\Camera">
       <UniqueIdentifier>{0FF5A573-FB46-7D63-E465-BA73D056964C}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Null\Engine\Submodules\Graphics\Camera\Controllers">
+      <UniqueIdentifier>{F581DDBF-E115-D367-4ADA-2C1C368D0D5A}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Null\Engine\Submodules\Graphics\Shader">
       <UniqueIdentifier>{3D907099-29E2-4789-1201-8599FEF16072}</UniqueIdentifier>
     </Filter>
@@ -182,6 +185,15 @@
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\Camera3D.h">
       <Filter>Null\Engine\Submodules\Graphics\Camera</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\Controllers\CameraController.h">
+      <Filter>Null\Engine\Submodules\Graphics\Camera\Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\Controllers\OrthographicCameraController.h">
+      <Filter>Null\Engine\Submodules\Graphics\Camera\Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\Controllers\PerspectiveCameraController.h">
+      <Filter>Null\Engine\Submodules\Graphics\Camera\Controllers</Filter>
+    </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\InstanceMesh.h">
       <Filter>Null\Engine\Submodules\Graphics</Filter>
     </ClInclude>
@@ -219,11 +231,6 @@
       <Filter>Null\Tools</Filter>
     </ClInclude>
     <ClInclude Include="src\stdafx.h" />
-    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\Controllers\CameraController.h">
-      <Filter>Null\Engine\Submodules\Graphics\Camera</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\Controllers\OrthographicCameraController.h" />
-    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\Controllers\PerspectiveCameraController.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Null\Application.cpp">
@@ -340,6 +347,15 @@
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\Camera3D.cpp">
       <Filter>Null\Engine\Submodules\Graphics\Camera</Filter>
     </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\Controllers\CameraController.cpp">
+      <Filter>Null\Engine\Submodules\Graphics\Camera\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\Controllers\OrthographicCameraController.cpp">
+      <Filter>Null\Engine\Submodules\Graphics\Camera\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\Controllers\PerspectiveCameraController.cpp">
+      <Filter>Null\Engine\Submodules\Graphics\Camera\Controllers</Filter>
+    </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\InstanceMesh.cpp">
       <Filter>Null\Engine\Submodules\Graphics</Filter>
     </ClCompile>
@@ -374,10 +390,5 @@
       <Filter>Null\Tools</Filter>
     </ClCompile>
     <ClCompile Include="src\stdafx.cpp" />
-    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\Controllers\CameraController.cpp">
-      <Filter>Null\Engine\Submodules\Graphics\Camera</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\Controllers\OrthographicCameraController.cpp" />
-    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\Controllers\PerspectiveCameraController.cpp" />
   </ItemGroup>
 </Project>

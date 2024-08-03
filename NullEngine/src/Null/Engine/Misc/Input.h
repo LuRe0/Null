@@ -52,8 +52,9 @@ namespace NULLENGINE
 		//! Update current delta Input
 		static void Update();
 
-		static bool KeyPressed(int keycode, int keycode2 = -1);
-		static bool KeyReleased(int keycode, int keycode2 = -1);
+		static bool KeyPressed(int keycode);
+		static bool KeyReleased(int keycode);
+
 		static bool KeyDown(int keycode);
 		static bool KeyTriggered(int keycode);
 		static bool KeyHold(int keycode);
@@ -67,6 +68,11 @@ namespace NULLENGINE
 		static float GetMouseY();
 
 		static glm::vec2 GetMouseXY();
+
+		static void RegisterToScripAPI(sol::state& lua);
+
+
+
 
 		//void SetKeyState(int key, int action);
 		//void SetMouseState(int button, int action);
@@ -92,6 +98,8 @@ namespace NULLENGINE
 		static std::unordered_map<int, bool> m_KeyRepeatState;
 		static std::unordered_map<int, bool> m_MouseState;
 		static std::unordered_map<int, bool> m_PrevMouseState;
+
+		static void RegisterGLFWKeys(sol::state& lua);
 
 	};
 

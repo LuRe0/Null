@@ -20,12 +20,16 @@ includeDir["glm"] = "NullEngine/vendor/glm"
 includeDir["ImGui"] = "NullEngine/vendor/imgui" 
 includeDir["ImGuizmo"] = "NullEngine/vendor/imGuizmo" 
 includeDir["stb"] = "NullEngine/vendor/stb/stb" 
+includeDir["sol2"] = "NullEngine/vendor/sol2/sol2/include" 
+includeDir["lua"] = "NullEngine/vendor/lua/lua/src" 
 
 group "Depenencies"
     include "NullEngine/vendor/GLFW"
     include "NullEngine/vendor/Glad"
     include "NullEngine/vendor/imgui"
     include "NullEngine/vendor/ImGuizmo/ImGuizmo"
+    include "NullEngine/vendor/sol2/sol2"
+    include "NullEngine/vendor/lua/lua"
     include "NullEngine/vendor/Box2D"
 group ""
 
@@ -60,7 +64,9 @@ project "NullEngine"
          "%{includeDir.stb}",
          "%{includeDir.ImGui}",
          "%{includeDir.ImGuizmo}",
-    
+         "%{includeDir.sol2}",
+         "%{includeDir.lua}"
+
     }
 
     defines
@@ -78,6 +84,7 @@ project "NullEngine"
         "Box2D",
         "ImGui",
         "ImGuizmo",
+        "Lua",
         "opengl32.lib"
     }
 
@@ -136,7 +143,10 @@ project "Sandbox"
          "%{includeDir.ImGui}",
          "%{includeDir.ImGuizmo}",
          "%{includeDir.JSON}",
-         "%{includeDir.glm}"
+         "%{includeDir.glm}",
+         "%{includeDir.sol2}",
+         "%{includeDir.lua}"
+
     }
 
     defines
@@ -196,7 +206,9 @@ project "NullEditor"
          "%{includeDir.ImGui}",
          "%{includeDir.ImGuizmo}",
          "%{includeDir.JSON}",
-         "%{includeDir.glm}"
+         "%{includeDir.glm}",
+         "%{includeDir.sol2}",
+         "%{includeDir.lua}"
     }
 
     defines

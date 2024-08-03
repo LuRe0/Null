@@ -72,6 +72,10 @@ namespace NULLENGINE
 
 		Scene* GetCurrentScene();
 
+
+		void RegisterToScripAPI(sol::state& lua) override;
+
+
 		static const std::string Name() { return "SceneManager"; }
 
 	private:

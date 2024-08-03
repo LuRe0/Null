@@ -14,6 +14,8 @@
 //******************************************************************************//
 #include "Application.h"
 #include "stdafx.h"
+#define SOL_ALL_SAFETIES_ON 1
+#include <sol/sol.hpp>
 
 //******************************************************************************//
 // Definitions  														        //
@@ -45,6 +47,7 @@ extern NULLENGINE::Application* NULLENGINE::CreateApplication();
 
 		NLE_CORE_WARN("Initialized Log!");
 		NLE_INFO("Initialized Log!");
+
 
 		auto app = NULLENGINE::CreateApplication();
 	

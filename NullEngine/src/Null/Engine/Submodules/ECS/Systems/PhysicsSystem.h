@@ -51,6 +51,8 @@ namespace NULLENGINE
 		//! Virtual Shutdown function
 		void Shutdown() override;
 
+		void RegisterToScripAPI(sol::state& lua) override;
+
 	
 		// Conversion factor
 		const float GetPixelPerMeter() { return PIXELS_PER_METER; } // 1 meter = 64 pixels

@@ -84,8 +84,23 @@ namespace NULLENGINE
 		return m_Scenes[m_CurrentScene].get();
 	}
 
+	void NSceneManager::RegisterToScripAPI(sol::state& lua)
+	{
+		lua.new_usertype<NSceneManager>(
+			"NSceneManager",
+			"CurrentScene", &NSceneManager::GetCurrentScene,
+			"LoadScene", &NSceneManager::LoadScene
+		);
+
+		// Expose the existing instance to Lua under a different global variable
+		lua["SceneManager"] = this;
+	}
+
 	void NSceneManager::LoadScene(const std::string& scene)
 	{
+		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+
+		eventManager->QueueEvent(std::make_unique<SceneSwitchEvent>(m_CurrentScene, scene));
 	}
 
 	void NSceneManager::OnSceneSwitch(const SceneSwitchEvent& e)

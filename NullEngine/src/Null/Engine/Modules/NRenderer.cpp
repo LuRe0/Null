@@ -21,6 +21,9 @@ Batch Rendering Code adapted from https://www.youtube.com/watch?v=biGF6oLxgtQ&li
 #include "Null/Engine/Submodules/Graphics/Mesh.h"
 #include "Null/Engine/Submodules/Graphics/Buffers/Framebuffer.h"
 #include "imgui.h"
+#include "magic_enum/magic_enum.hpp"
+#include <sol/sol.hpp>
+
 using JSON = nlohmann::json;
 
 //******************************************************************************//
@@ -62,10 +65,13 @@ namespace NULLENGINE
 		m_RenderStorage.QuadInstanceBuffer.clear();
 		m_RenderStorage.QuadIndexCount = 0;
 		m_RenderStorage.TextureSlotIndex = 0;
+		m_RenderStorage.TexturesUsed.clear();
 	}
 
 	void NRenderer::RenderScene(const RenderData* renderData)
 	{
+		m_RenderStorage.RenderType = renderData->m_Type;
+
 		//SetBlendMode(BlendMode::DEFAULT);
 		renderData->m_Type == RenderData::ELEMENT ?
 			RenderElement(*(static_cast<const ElementData*>(renderData))) :
@@ -114,7 +120,17 @@ namespace NULLENGINE
 
 		if (render.mesh)
 		{
+			if (render.mesh->GetName() == "Quad")
+			{
+				m_RenderStorage.Stats.QuadCount++;
+			}
+
 			render.mesh->Render(render.spriteSrc);
+
+			m_RenderStorage.TexturesUsed.insert(render.spriteSrc->GetTexture()->GetID());
+
+			m_RenderStorage.Stats.DrawCalls++;
+
 		}
 
 		shader->Unbind();
@@ -123,13 +139,8 @@ namespace NULLENGINE
 	void NRenderer::RenderInstances(const ElementData& render)
 	{
 
-
-
 		NTextureManager* texMan = NEngine::Instance().Get<NTextureManager>();
 
-
-
-		
 		if (m_RenderStorage.QuadIndexCount >= m_RenderStorage.MaxIndices)
 			NextBatch();
 
@@ -178,7 +189,6 @@ namespace NULLENGINE
 
 			m_RenderStorage.Stats.QuadCount++;
 		}
-
 	}
 
 	void NRenderer::EndRender()
@@ -202,7 +212,11 @@ namespace NULLENGINE
 	void NRenderer::Flush()
 	{
 
+		if (m_RenderStorage.QuadInstanceBuffer.empty()) return;
+
 		m_RenderStorage.m_QuadInstanceMesh.get()->UpdateInstances(m_RenderStorage.QuadInstanceBuffer, m_RenderStorage.QuadInstanceBuffer.size());
+
+	
 
 		NShaderManager* shaderMan = NEngine::Instance().Get<NShaderManager>();
 		NCameraManager* cameraManager = NEngine::Instance().Get<NCameraManager>();
@@ -376,11 +390,18 @@ namespace NULLENGINE
 
 	void NRenderer::RenderImGui()
 	{
+
+		ImGui::Text("Render Type: %s", magic_enum::enum_name(m_RenderStorage.RenderType).data());
 		ImGui::Text("Draw Calls: %d", m_RenderStorage.Stats.DrawCalls);
 		ImGui::Text("Quads: %d", m_RenderStorage.Stats.QuadCount);
 		ImGui::Text("Vertices Calls: %d", m_RenderStorage.Stats.GetTotalVertexCount());
 		ImGui::Text("Indices Calls: %d", m_RenderStorage.Stats.GetTotalIndexCount());
-		ImGui::Text("Textures Rendered: %d", m_RenderStorage.Stats.TextureCount);
+
+		if(m_RenderStorage.RenderType == RenderData::INSTANCED)
+			ImGui::Text("Textures Rendered: %d", m_RenderStorage.Stats.TextureCount);
+		else
+			ImGui::Text("Textures Rendered: %d", m_RenderStorage.TexturesUsed.size());
+
 	}
 
 	void NRenderer::Unload()

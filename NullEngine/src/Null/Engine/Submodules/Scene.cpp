@@ -249,6 +249,15 @@ namespace NULLENGINE
 		outputFile.close();
 	}
 
+	void Scene::RegisterToScripAPI(sol::state& lua)
+	{
+		lua.new_usertype<Scene>(
+			"NScene",
+			"InstantiateEntity", &Scene::LoadArchetype,
+			"GetAllActiveEntities", &Scene::GetManagedEntities
+		);
+	}
+
 
 	void Scene::RemoveEntity(size_t pos)
 	{

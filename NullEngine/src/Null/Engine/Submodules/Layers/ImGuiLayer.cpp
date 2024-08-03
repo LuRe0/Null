@@ -313,16 +313,25 @@ namespace NULLENGINE
 
 
 
-		if (mouseX >= 0 && mouseY > 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y)
+		if (mouseX >= 0 && mouseY >= 0 && mouseX <= (int)viewportSize.x && mouseY <= (int)viewportSize.y)
 		{
+
+			// Convert mouse coordinates to match OpenGL's bottom-left origin
+			mouseY = viewportSize.y - mouseY;
+
 			buffer.Bind();
 
 			auto pixel = buffer.ReadPixels(1, mouseX, mouseY);
-			NLE_CORE_WARN("PixelData = {0}", pixel);
+
+			//NLE_CORE_WARN("PixelData = {0}", pixel);
+
+			//NLE_CORE_WARN("Mouse = {0},{1}", mouseX, mouseY); 
+
 			buffer.Unbind();
 			if (ImGui::IsItemClicked() && pixel > 0)
 			{
 				m_PannelData.m_SelectedEntity = pixel;
+				SetGuizmo(ImGuizmo::OPERATION::TRANSLATE);
 			}
 		}
 

@@ -112,6 +112,17 @@ namespace NULLENGINE
 			}
 		}
 	}
+	void NEventManager::RegisterToScripAPI(sol::state& lua)
+	{
+		//lua.new_usertype<NEventManager>(
+		//	"Window",
+		//	sol::constructors<NEventManager(int)>(),  // Constructor
+		//	"Quit", &NEventManager::
+		//);
+
+		// Expose the existing instance to Lua under a different global variable
+		//lua[Module<NEventManager>::TypeName().c_str()] = this;
+	}
 	void NEventManager::SortSubscribers(std::uint32_t eventId)
 	{
 		auto& handlers = m_Subscribers[eventId];

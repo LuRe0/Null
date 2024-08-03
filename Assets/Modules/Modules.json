@@ -7,6 +7,9 @@
             "type": "NEventManager"
         },
         {
+            "type": "NScriptingInterface"
+        },
+        {
             "type": "NCameraManager"
         },
         {
@@ -34,12 +37,15 @@
             "type": "NSceneManager"            
         },
         {
+            "type": "ScriptSystem"            
+        },
+        {
             "type": "PhysicsSystem"
         },
         {
             "type": "TransformSystem"
         },
-        {
+            {
             "type": "AnimationSystem"
         },
         {

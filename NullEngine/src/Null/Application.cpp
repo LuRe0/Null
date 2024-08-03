@@ -58,6 +58,8 @@ namespace NULLENGINE
 		AddCreateFunction<TransformSystem>([&engine]() { engine.Add<NULLENGINE::TransformSystem>(); });
 		AddCreateFunction<SpriteRenderSystem>([&engine]() { engine.Add<NULLENGINE::SpriteRenderSystem>(); });
 		AddCreateFunction<AnimationSystem>([&engine]() { engine.Add<NULLENGINE::AnimationSystem>(); });
+		AddCreateFunction<ScriptSystem>([&engine]() { engine.Add<NULLENGINE::ScriptSystem>(); });
+		AddCreateFunction<NScriptingInterface>([&engine]() { engine.Add<NULLENGINE::NScriptingInterface>(); });
 
 		m_NullEngine = &engine;
 

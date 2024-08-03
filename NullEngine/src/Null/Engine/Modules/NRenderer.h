@@ -16,6 +16,7 @@
 #include "Null/Engine/Modules/Base/IModule.h"
 #include "Null/Engine/Submodules/Events/IEvents.h"
 #include "Null/Engine/Submodules/Graphics/Buffers/Framebuffer.h"
+#include <Null/Engine/Submodules/Graphics/Buffers/RenderData.h>
 
 
 //******************************************************************************//
@@ -60,6 +61,9 @@ namespace NULLENGINE
 		void Render() override;
 
 		void RenderImGui() override;
+
+
+		void RegisterToScripAPI(sol::state& lua) override {};
 
 
 		void Unload() override;
@@ -113,6 +117,10 @@ namespace NULLENGINE
 			};
 
 			RendererStats Stats;
+
+			RenderData::RenderType RenderType;
+
+			std::unordered_set<unsigned int> TexturesUsed;
 		};
 		
 

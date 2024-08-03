@@ -51,6 +51,9 @@ namespace NULLENGINE
 		//! Virtual Shutdown function
 		void Shutdown() override;
 
+	
+		void RegisterToScripAPI(sol::state& lua) override;
+
 	private:
 
 		static void CreateAnimationComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);

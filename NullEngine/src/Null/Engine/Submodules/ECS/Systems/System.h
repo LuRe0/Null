@@ -14,7 +14,6 @@
 //******************************************************************************//
 #include "Null/Core.h"
 #include "Null/Engine/Modules/Base/IModule.h"
-#include "Null/Engine/Submodules/ECS/Components/IComponent.h"
 
 
 //******************************************************************************//

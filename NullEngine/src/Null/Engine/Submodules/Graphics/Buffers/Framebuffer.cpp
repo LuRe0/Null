@@ -98,7 +98,7 @@ namespace NULLENGINE
 
 		glReadBuffer(GL_COLOR_ATTACHMENT0 + index); // Select the color attachment
 		int pixelData = 0;
-		glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData); // Read pixel data
+		glReadPixels(x, y, 1, 1, format.m_Format, format.m_Type, &pixelData); // Read pixel data
 
 		return pixelData;
 	}

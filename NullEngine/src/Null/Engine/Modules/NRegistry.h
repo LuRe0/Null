@@ -57,6 +57,9 @@ namespace NULLENGINE
 		void Shutdown() override;
 
 
+		void RegisterToScripAPI(sol::state& lua) override {};
+
+
 		EntityID CreateEntity();
 		void DestroyEntity(EntityID entityID);
 		void AddEntityToSystem(EntityID entityID);

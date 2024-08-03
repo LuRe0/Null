@@ -199,6 +199,17 @@ namespace NULLENGINE
 		m_Data.m_BlockEvents = b;
 	}
 
+	void NWindow::RegisterToScripAPI(sol::state& lua)
+	{
+		//lua.new_usertype<NWindow>(
+		//	"NWindow",
+		//	"Quit", &NWindow::CloseWindow
+		//);
+
+		// Expose the existing instance to Lua under a different global variable
+		lua["Window"] = this;
+	}
+
 	//void NWindow::SetFramebufferSizeCallback(GLFWwindow* window, GLFWframebuffersizefun callback)
 	//{
 	//    glfwSetFramebufferSizeCallback(window, callback);

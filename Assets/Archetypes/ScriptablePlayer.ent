@@ -1,0 +1,42 @@
+{
+    "components": {
+        "Sprite": {
+            "dimension": [
+                1,
+                1
+            ],
+            "frameindex": 0,
+            "meshname": "Triangle",
+            "shadername": "default",
+            "texture": "ChargeParticle",
+            "tint": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+            ]
+        },
+        "Transform": {
+            "rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                50.0,
+                50.0,
+                50.0
+            ],
+            "translation": [
+                -168.53765869140625,
+                2.8683929443359375,
+                0.0
+            ]
+        },
+        "Script": 
+        {
+            "scripts": ["Player_Behavior"]
+        }
+    },
+    "name": "ScriptablePlayer"
+}

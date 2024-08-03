@@ -9,23 +9,35 @@
     <ClInclude Include="src\Pannels\ComponentInspectorPannel.h">
       <Filter>Pannels</Filter>
     </ClInclude>
+    <ClInclude Include="src\Pannels\ContentBrowserPannel.h">
+      <Filter>Pannels</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Pannels\ModuleStatsPannel.h">
+      <Filter>Pannels</Filter>
+    </ClInclude>
     <ClInclude Include="src\Pannels\SceneHierarchyPannel.h">
       <Filter>Pannels</Filter>
     </ClInclude>
-    <ClInclude Include="src\Pannels\ScenePropertyPannel.h" />
-    <ClInclude Include="src\Pannels\ContentBrowserPannel.h" />
-    <ClInclude Include="src\Pannels\ModuleStatsPannel.h" />
+    <ClInclude Include="src\Pannels\ScenePropertyPannel.h">
+      <Filter>Pannels</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\NullEditor.cpp" />
     <ClCompile Include="src\Pannels\ComponentInspectorPannel.cpp">
       <Filter>Pannels</Filter>
     </ClCompile>
+    <ClCompile Include="src\Pannels\ContentBrowserPannel.cpp">
+      <Filter>Pannels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Pannels\ModuleStatsPannel.cpp">
+      <Filter>Pannels</Filter>
+    </ClCompile>
     <ClCompile Include="src\Pannels\SceneHierarchyPannel.cpp">
       <Filter>Pannels</Filter>
     </ClCompile>
-    <ClCompile Include="src\Pannels\ScenePropertyPannel.cpp" />
-    <ClCompile Include="src\Pannels\ContentBrowserPannel.cpp" />
-    <ClCompile Include="src\Pannels\ModuleStatsPannel.cpp" />
+    <ClCompile Include="src\Pannels\ScenePropertyPannel.cpp">
+      <Filter>Pannels</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

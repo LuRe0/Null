@@ -121,6 +121,33 @@ namespace NULLENGINE
 	{
 	}
 
+	void PhysicsSystem::RegisterToScripAPI(sol::state& lua)
+	{
+
+		lua.new_usertype<Rigidbody2DComponent>(
+			"Rigidbody2DComponent",
+			// Expose members
+			//"Type", &Rigidbody2DComponent::m_Type,
+			//"FixedRotation", &Rigidbody2DComponent::m_FixedRotation,
+			"LinearVelocity", &Rigidbody2DComponent::m_LinearVelocity,
+			"AngularVelocity", &Rigidbody2DComponent::m_AngularVelocity
+			//"LinearDamping", &Rigidbody2DComponent::m_LinearDamping,
+			//"AngularDamping", &Rigidbody2DComponent::m_AngularDamping,
+			//"GravityScale", &Rigidbody2DComponent::m_GravityScale
+		);
+
+		lua.new_usertype<BoxCollider2DComponent>(
+			"BoxCollider2DComponent",
+			// Members
+			//"Offset", &BoxCollider2DComponent::m_Offset,
+			"Scale", &BoxCollider2DComponent::m_Scale
+			//"Density", &BoxCollider2DComponent::m_Density,
+			//"Friction", &BoxCollider2DComponent::m_Friction,
+			//"Restitution", &BoxCollider2DComponent::m_Restitution,
+			//"RestitutionThreshold", &BoxCollider2DComponent::m_RestitutionThreshold
+		);
+	}
+
 	// Converts pixel values to meter values
 	const glm::vec2 PhysicsSystem::PixelsToMeters(float xPixels, float yPixels)
 	{

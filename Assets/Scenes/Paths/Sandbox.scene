@@ -1,6 +1,9 @@
 {
     "entities": [
         {
+            "archetype": "ScriptablePlayer"
+        },
+        {
             "components": {
                 "Sprite": {
                     "dimension": [

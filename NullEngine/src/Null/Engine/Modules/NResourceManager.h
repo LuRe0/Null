@@ -105,6 +105,8 @@ namespace NULLENGINE
 			return componentNames;
 		}
 
+		void RegisterToScripAPI(sol::state& lua) override {};
+
 	private:
 
 		std::unordered_map<std::string, T*> m_ResourceList;

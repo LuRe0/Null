@@ -75,7 +75,7 @@ namespace NULLENGINE
 
 
 			//model, mesh, spritesrc, tint, shadername, frameindex, entity
-			renderer->AddRenderCall(std::make_unique<ElementData>(transform.m_TransformMatrix, sprite.m_Mesh, sprite.m_SpriteSource, sprite.m_Color, sprite.m_ShaderName, sprite.m_FrameIndex, entityId, RenderData::ELEMENT));
+			renderer->AddRenderCall(std::make_unique<ElementData>(transform.m_TransformMatrix, sprite.m_Mesh, sprite.m_SpriteSource, sprite.m_Color, sprite.m_ShaderName, sprite.m_FrameIndex, entityId, RenderData::INSTANCED));
 		}
 	}
 
@@ -85,6 +85,24 @@ namespace NULLENGINE
 
 	void SpriteRenderSystem::Shutdown()
 	{
+	}
+
+	void SpriteRenderSystem::RegisterToScripAPI(sol::state& lua)
+	{
+		NTextureManager* textMan = NEngine::Instance().Get<NTextureManager>();
+
+		lua.new_usertype<SpriteSource>(
+			"SpriteSource",
+			sol::constructors<SpriteSource(const std::string&, int, int)>(), // Constructor
+			"Rows", &SpriteSource::Rows,
+			"Cols", &SpriteSource::Cols
+		);
+
+		lua.new_usertype<SpriteComponent>(
+			"SpriteComponent",
+			"Sprite", &SpriteComponent::m_SpriteSource,
+			"Tint", &SpriteComponent::m_Color
+		);
 	}
 
 

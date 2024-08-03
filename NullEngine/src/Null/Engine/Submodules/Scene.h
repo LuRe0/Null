@@ -90,6 +90,10 @@ namespace NULLENGINE
 
 		void SetAsStartScene();
 
+
+		void RegisterToScripAPI(sol::state& lua);
+
+
 		const std::vector<Entity>& GetManagedEntities() { return m_Entities; }
 
 		std::vector<Entity>& ManagedEntities() { return m_Entities; }

@@ -67,6 +67,10 @@ namespace NULLENGINE
 		}
 
 
+		BaseComponent& GetComponent(const std::string& componentName);
+
+		bool HasComponent(const std::string& componentName) const;
+
 		void SetIsDestroyed(bool d);
 
 		bool GetIsDestroyed() const;

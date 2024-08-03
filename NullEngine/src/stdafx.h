@@ -24,6 +24,7 @@
 #include <sstream>
 #include <tuple>
 #include <set>
+#include <unordered_set>
 #include <fstream>
 #include <string_view>
 #include <typeinfo>

@@ -98,6 +98,16 @@ namespace NULLENGINE
 	{
 	}
 
+	void TransformSystem::RegisterToScripAPI(sol::state& lua)
+	{
+		lua.new_usertype<TransformComponent>(
+			"TransformComponent",
+			"Translation", &TransformComponent::m_Translation,
+			"Scale", &TransformComponent::m_Scale,
+			"Rotation", &TransformComponent::m_Rotation
+		);
+	}
+
 
 	void TransformSystem::CreateTransformComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id)
 	{

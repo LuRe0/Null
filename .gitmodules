@@ -25,3 +25,6 @@
 [submodule "NullEngine/vendor/ImGuizmo/ImGuizmo"]
 	path = NullEngine/vendor/ImGuizmo/ImGuizmo
 	url = https://github.com/CedricGuillemet/ImGuizmo
+[submodule "NullEngine/vendor/sol2/sol2"]
+	path = NullEngine/vendor/sol2/sol2
+	url = https://github.com/ThePhD/sol2

@@ -28,3 +28,6 @@
 [submodule "NullEngine/vendor/sol2/sol2"]
 	path = NullEngine/vendor/sol2/sol2
 	url = https://github.com/ThePhD/sol2
+[submodule "NullEngine/vendor/filewatch"]
+	path = NullEngine/vendor/filewatch
+	url = https://github.com/ThomasMonkman/filewatch

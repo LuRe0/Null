@@ -28,6 +28,9 @@
     <Filter Include="Null\Engine\Submodules\ECS\Components">
       <UniqueIdentifier>{9688D489-024D-D379-CBB2-034437366FAF}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Null\Engine\Submodules\ECS\Components\VariableContainer">
+      <UniqueIdentifier>{EEB46E8D-5A9C-5983-638A-5BFFCFF0FC45}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Null\Engine\Submodules\ECS\Entities">
       <UniqueIdentifier>{F5E7179E-61A1-8248-EA00-9D2256B938B8}</UniqueIdentifier>
     </Filter>
@@ -92,9 +95,6 @@
     <ClInclude Include="src\Null\Engine\Modules\NEventManager.h">
       <Filter>Null\Engine\Modules</Filter>
     </ClInclude>
-    <ClInclude Include="src\Null\Engine\Modules\NGraphics.h">
-      <Filter>Null\Engine\Modules</Filter>
-    </ClInclude>
     <ClInclude Include="src\Null\Engine\Modules\NMeshManager.h">
       <Filter>Null\Engine\Modules</Filter>
     </ClInclude>
@@ -108,6 +108,9 @@
       <Filter>Null\Engine\Modules</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Modules\NSceneManager.h">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Modules\NScriptingInterface.h">
       <Filter>Null\Engine\Modules</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Modules\NShaderManager.h">
@@ -128,8 +131,32 @@
     <ClInclude Include="src\Null\Engine\Submodules\ComponentManager.h">
       <Filter>Null\Engine\Submodules</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\AnimationComponent.h">
+      <Filter>Null\Engine\Submodules\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\BoxCollider2DComponent.h">
+      <Filter>Null\Engine\Submodules\ECS\Components</Filter>
+    </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\IComponent.h">
       <Filter>Null\Engine\Submodules\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\Rigidbody2DComponent.h">
+      <Filter>Null\Engine\Submodules\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\ScriptComponent.h">
+      <Filter>Null\Engine\Submodules\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\SpriteComponent.h">
+      <Filter>Null\Engine\Submodules\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\TagComponent.h">
+      <Filter>Null\Engine\Submodules\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\TransformComponent.h">
+      <Filter>Null\Engine\Submodules\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\VariableContainer\VariableContainer.h">
+      <Filter>Null\Engine\Submodules\ECS\Components\VariableContainer</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Entities\Entity.h">
       <Filter>Null\Engine\Submodules\ECS\Entities</Filter>
@@ -138,6 +165,9 @@
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\PhysicsSystem.h">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\ScriptSystem.h">
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\SpriteRenderSystem.h">
@@ -224,7 +254,13 @@
     <ClInclude Include="src\Null\Tools\FileDialog.h">
       <Filter>Null\Tools</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Tools\ImguiSink.h">
+      <Filter>Null\Tools</Filter>
+    </ClInclude>
     <ClInclude Include="src\Null\Tools\JsonWrapper.h">
+      <Filter>Null\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Tools\ScriptHelper.h">
       <Filter>Null\Tools</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Tools\Trace.h">
@@ -260,9 +296,6 @@
     <ClCompile Include="src\Null\Engine\Modules\NEventManager.cpp">
       <Filter>Null\Engine\Modules</Filter>
     </ClCompile>
-    <ClCompile Include="src\Null\Engine\Modules\NGraphics.cpp">
-      <Filter>Null\Engine\Modules</Filter>
-    </ClCompile>
     <ClCompile Include="src\Null\Engine\Modules\NMeshManager.cpp">
       <Filter>Null\Engine\Modules</Filter>
     </ClCompile>
@@ -276,6 +309,9 @@
       <Filter>Null\Engine\Modules</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Modules\NSceneManager.cpp">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Modules\NScriptingInterface.cpp">
       <Filter>Null\Engine\Modules</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Modules\NShaderManager.cpp">
@@ -299,6 +335,9 @@
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Components\IComponent.cpp">
       <Filter>Null\Engine\Submodules\ECS\Components</Filter>
     </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Components\VariableContainer\VariableContainer.cpp">
+      <Filter>Null\Engine\Submodules\ECS\Components\VariableContainer</Filter>
+    </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Entities\Entity.cpp">
       <Filter>Null\Engine\Submodules\ECS\Entities</Filter>
     </ClCompile>
@@ -306,6 +345,9 @@
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\PhysicsSystem.cpp">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\ScriptSystem.cpp">
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\SpriteRenderSystem.cpp">
@@ -383,7 +425,13 @@
     <ClCompile Include="src\Null\Tools\FileDialog.cpp">
       <Filter>Null\Tools</Filter>
     </ClCompile>
+    <ClCompile Include="src\Null\Tools\ImguiSink.cpp">
+      <Filter>Null\Tools</Filter>
+    </ClCompile>
     <ClCompile Include="src\Null\Tools\JsonWrapper.cpp">
+      <Filter>Null\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Tools\ScriptHelper.cpp">
       <Filter>Null\Tools</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Tools\Trace.cpp">

@@ -57,12 +57,17 @@ namespace NULLENGINE
 
 	void AnimationSystem::Update(float dt)
 	{
+
+	}
+
+    void AnimationSystem::RuntimeUpdate(float dt)
+    {
         NRegistry* m_Parent = NEngine::Instance().Get<NRegistry>();
 
-		for (const auto entityId : GetSystemEntities())
-		{
-			AnimationComponent& anim = m_Parent->GetComponent<AnimationComponent>(entityId);
-			SpriteComponent& sprite = m_Parent->GetComponent<SpriteComponent>(entityId);
+        for (const auto entityId : GetSystemEntities())
+        {
+            AnimationComponent& anim = m_Parent->GetComponent<AnimationComponent>(entityId);
+            SpriteComponent& sprite = m_Parent->GetComponent<SpriteComponent>(entityId);
 
 
             if (!anim.m_Enabled)
@@ -123,8 +128,8 @@ namespace NULLENGINE
 
                 sprite.m_FrameIndex = anim.m_FrameOffset + anim.m_FrameIndex;
             }
-		}
-	}
+        }
+    }
 
 
 	void AnimationSystem::Render()
@@ -139,94 +144,68 @@ namespace NULLENGINE
 	{
 	}
 
-    AnimationComponent* AnimationSystem::Animation(Entity& entity)
-    {
-        if (entity.Has<AnimationComponent>())
-            return &entity.Get<AnimationComponent>();
-    }
-
-    void AnimationSystem::Play(Entity& entity, bool state)
-    {
-        if (entity.Has<AnimationComponent>())
-        {
-            auto& anim = entity.Get<AnimationComponent>();
-            anim.m_IsRunning = true;
-        }
-        else
-            NLE_CORE_ERROR("No {0} Found", Component<AnimationSystem>::TypeName());
-    }
-
-    void AnimationSystem::Pause(Entity& entity, bool state)
-    {
-        if (entity.Has<AnimationComponent>())
-        {
-            auto& anim = entity.Get<AnimationComponent>();
-            anim.m_IsRunning = false;
-        }
-        else
-            NLE_CORE_ERROR("No {0} Found", Component<AnimationSystem>::TypeName());
-    }
-
-    void AnimationSystem::Restart(Entity& entity, bool state)
-    {
-        if (entity.Has<AnimationComponent>())
-        {
-            auto& anim = entity.Get<AnimationComponent>();
-            anim.m_IsRunning = true;
-
-            if (anim.m_IsReversed)
-                anim.m_FrameIndex = anim.m_FrameCount - 1;
-            else
-                anim.m_FrameIndex = 0;
-        }
-        else
-            NLE_CORE_ERROR("No {0} Found", Component<AnimationSystem>::TypeName());
-    }
-
-    void AnimationSystem::Stop(Entity& entity, bool state)
-    {
-        if (entity.Has<AnimationComponent>())
-        {
-           auto& anim = entity.Get<AnimationComponent>();
-           anim.m_IsRunning = false;
-
-           if(anim.m_IsReversed)
-            anim.m_FrameIndex = anim.m_FrameCount - 1;
-           else
-               anim.m_FrameIndex = 0;
-        }
-        else
-            NLE_CORE_ERROR("No {0} Found", Component<AnimationSystem>::TypeName());
-    }
 
     void AnimationSystem::RegisterToScripAPI(sol::state& lua)
     {
-        lua.new_usertype<NULLENGINE::AnimationComponent>(
-            "AnimationComponent",
-            // Expose members
-            //"FrameIndex", &NULLENGINE::AnimationComponent::m_FrameIndex,
-            "FrameCount", &NULLENGINE::AnimationComponent::m_FrameCount,
- //           "FrameOffset", &NULLENGINE::AnimationComponent::m_FrameOffset,
- //           "FrameDelay", &NULLENGINE::AnimationComponent::m_FrameDelay,
- //           "FrameDuration", &NULLENGINE::AnimationComponent::m_FrameDuration,
- //           "IsRunning", &NULLENGINE::AnimationComponent::m_IsRunning,
- ///*           "IsLooping", &NULLENGINE::AnimationComponent::m_IsLooping,
- //           "IsPingPong", &NULLENGINE::AnimationComponent::m_IsPingPong,*/
-            "IsDone", &NULLENGINE::AnimationComponent::m_IsDone
-            //"IsReversed", &NULLENGINE::AnimationComponent::m_IsReversed
+        lua.new_usertype<AnimationComponent>
+            (
+                "Animation",
+                sol::no_constructor,
+                "type_id", &Component<AnimationComponent>::GetID,
+                "is_done", [](AnimationComponent& anim)
+                { return anim.m_IsDone; },
+                "set_looping", [](AnimationComponent& anim)
+                {
+                    anim.m_IsLooping = true;
+                    anim.m_IsPingPong = false;
+                },
+                "set_pingpong", [](AnimationComponent& anim)
+                {
+                    anim.m_IsLooping = false;
+                    anim.m_IsPingPong = true;
+                },
+                "set_reverse", [](AnimationComponent& anim)
+                {
+                    anim.m_IsReversed = true;
+                },
+                "play", [](AnimationComponent& anim)
+                {
+                    anim.m_IsRunning = true;
+                },
+                "pause", [](AnimationComponent& anim, float x, float y, float z)
+                {
+                    anim.m_IsRunning = false;
+
+                },
+                "restart", [](AnimationComponent& anim)
+                {
+                    anim.m_IsDone = false;
+                    anim.m_IsRunning = true;
+
+                    if (anim.m_IsReversed)
+                    {
+                        anim.m_FrameIndex = anim.m_FrameCount - 1;
+                    }
+                    else
+                    {
+                        anim.m_FrameIndex = 0;
+                    }
+                },
+                "stop", [](AnimationComponent& anim, float x, float y, float z)
+                {
+                    anim.m_IsDone = true;
+                    anim.m_IsRunning = false;
+
+                    if (anim.m_IsReversed)
+                    {
+                        anim.m_FrameIndex = anim.m_FrameCount - 1;
+                    }
+                    else
+                    {
+                        anim.m_FrameIndex = 0;
+                    }
+                }
         );
-
-        lua.new_usertype<AnimationSystem>(
-            "AnimationSystem",
-            "GetAnimation", &AnimationSystem::Animation,
-            "Stop", &AnimationSystem::Stop,
-            "Restart", &AnimationSystem::Restart,
-            "Play", &AnimationSystem::Play,
-            "Pause", &AnimationSystem::Pause
-        );
-
-
-        lua["Animation"] = this;
     }
 
 

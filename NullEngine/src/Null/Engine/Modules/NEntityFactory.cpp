@@ -12,7 +12,7 @@
 #include "stdafx.h"
 #include "NEntityFactory.h"
 #include "Null/Engine/Submodules/ECS/Entities/Entity.h"
-
+#include "sol/sol.hpp"
 
 
 
@@ -35,6 +35,10 @@ namespace NULLENGINE
     }
 
     void NEntityFactory::Update(float dt)
+    {
+    }
+
+    void NEntityFactory::RuntimeUpdate(float dt)
     {
     }
 
@@ -201,17 +205,23 @@ namespace NULLENGINE
     void NEntityFactory::RegisterToScripAPI(sol::state& lua)
     {
         lua.new_usertype<Entity>("Entity",
-            sol::no_constructor,  // Disable direct construction
-            "GetTransform", [](Entity& obj) -> TransformComponent* { return &obj.Get<TransformComponent>(); },
-            "GetSprite", [](Entity& obj) -> SpriteComponent* { return &obj.Get<SpriteComponent>(); },
-            "GetBoxCollider2D", [](Entity& obj) -> BoxCollider2DComponent* { return &obj.Get<BoxCollider2DComponent>(); },
-            "GetRigidbody2D", [](Entity& obj) -> Rigidbody2DComponent* { return &obj.Get<Rigidbody2DComponent>(); },
-            "GetTag", [](Entity& obj) -> TagComponent* { return &obj.Get<TagComponent>(); },
-            "GetAnimation", [](Entity& obj) -> AnimationComponent* { return &obj.Get<AnimationComponent>(); },
-            "HasComponent", &Entity::HasComponent,
-            "Destroy", &Entity::SetIsDestroyed,
-            "ID", &Entity::m_ID,
-            "Name", &Entity::m_Name
+        	sol::no_constructor,  // Disable direct construction
+            "get_component", [](Entity& entity, const sol::table& comp, sol::this_state s)
+            {
+                //const auto has_comp
+                auto component = NComponentFactory::InvokeSolFunctions(NComponentFactory::GetIdType(comp), "get_component", entity, s);
+
+                return component ? component.as<sol::reference>() : sol::lua_nil_t{};
+            },
+            //"HasComponent", [](Entity& entity, const sol::table& comp)
+            //{
+            //    //const auto has_comp
+            //    auto component = NComponentFactory::InvokeSolFunctions(NComponentFactory::GetIdType(comp));
+
+            //    return component ? component.ca
+            //},
+        	"ID", &Entity::m_ID,
+        	"Name", &Entity::m_Name
         );
     }
 }

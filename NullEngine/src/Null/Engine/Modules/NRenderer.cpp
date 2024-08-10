@@ -376,6 +376,10 @@ namespace NULLENGINE
 		ResetStats();
 	}
 
+	void NRenderer::RuntimeUpdate(float dt)
+	{
+	}
+
 	void NRenderer::Render()
 	{
 		BeginRender();

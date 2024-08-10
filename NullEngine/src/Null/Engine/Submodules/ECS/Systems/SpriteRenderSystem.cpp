@@ -87,45 +87,27 @@ namespace NULLENGINE
 	{
 	}
 
-	SpriteComponent* SpriteRenderSystem::Sprite(Entity entity)
-	{
-		if (entity.Has<SpriteComponent>())
-			return &entity.Get<SpriteComponent>();
-	}
-
-	void SpriteRenderSystem::SetColor(Entity entity,glm::vec4 color)
-	{
-		if (entity.Has<SpriteComponent>())
-			entity.Get<SpriteComponent>().m_Color = color;
-		else
-			NLE_CORE_ERROR("No {0} Found", Component<SpriteComponent>::TypeName());
-	}
-
 	void SpriteRenderSystem::RegisterToScripAPI(sol::state& lua)
 	{
-		NTextureManager* textMan = NEngine::Instance().Get<NTextureManager>();
-
-		lua.new_usertype<SpriteSource>(
-			"SpriteSource",
-			sol::constructors<SpriteSource(const std::string&, int, int)>(), // Constructor
-			"Rows", &SpriteSource::Rows,
-			"Cols", &SpriteSource::Cols
+		lua.new_usertype<SpriteComponent>
+			(
+				"Sprite",
+				sol::no_constructor,
+				"type_id", &Component<SpriteComponent>::GetID,
+				"frame_index", sol::readonly(& SpriteComponent::m_FrameIndex),
+				"tint", [](SpriteComponent& sprite)
+				{	
+					return std::tuple(sprite.m_Color.x, sprite.m_Color.y, sprite.m_Color.z, sprite.m_Color.w);
+				},
+				"set_tint", [](SpriteComponent& sprite, float r, float g, float b, float a)
+				{
+					sprite.m_Color = glm::vec4(r, g, b, a);
+				},
+				"set_frame_index", [](SpriteComponent& sprite, int i)
+				{
+					sprite.m_FrameIndex = i;
+				}
 		);
-
-		lua.new_usertype<SpriteComponent>(
-			"SpriteComponent",
-			"Sprite", &SpriteComponent::m_SpriteSource,
-			"Tint", &SpriteComponent::m_Color
-		);
-
-
-		lua.new_usertype<SpriteRenderSystem>(
-			"SpriteRenderSystem",
-			"Sprite", &SpriteRenderSystem::Sprite,
-			"SetColor", &SpriteRenderSystem::SetColor
-		);
-
-		lua["SpriteRender"] = this;
 	}
 
 

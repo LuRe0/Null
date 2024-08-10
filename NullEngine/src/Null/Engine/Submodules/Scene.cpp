@@ -159,7 +159,11 @@ namespace NULLENGINE
 			{
 				if (signature.test(i))
 				{
-					BaseComponent& component = registry->GetComponent(entity.GetID(), i);
+					auto& component = registry->GetComponent(entity.GetID(), i);
+
+					if (!component.m_SerializeToScene)
+						continue;
+
 					JSON compJson = compFactory->WriteComponent(&component);
 					componentsJson.merge_patch(compJson); // Merge component JSON into the entity's components JSON
 				}
@@ -205,7 +209,7 @@ namespace NULLENGINE
 		for (size_t i = 0; i < signature.size(); i++)
 		{
 
-				BaseComponent& component = registry->GetComponent(entity.GetID(), signature[i]);
+				auto& component = registry->GetComponent(entity.GetID(), signature[i]);
 				JSON compJson = compFactory->WriteComponent(&component);
 				componentsJson.merge_patch(compJson); // Merge component JSON into the entity's components JSON
 			

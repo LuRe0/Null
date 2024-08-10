@@ -12,6 +12,7 @@
 #include "stdafx.h"
 #include "Camera.h"
 #include "Camera3D.h"
+#include <misc/cpp/imgui_stdlib.h>
 
 
 
@@ -151,6 +152,45 @@ namespace NULLENGINE
 		return m_Zoom; //to do????
 	}
 
+
+	void Camera3D::View()
+	{
+		if (ImGui::InputText("Name", &m_Name))
+		{
+			if (m_Name.empty())
+			{
+				SetName("Default_Camera3D");
+			}
+		}
+
+		if (m_Name == "Default_Camera3D")
+		{
+			ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Warning: Assign unique name to camera");
+		}
+
+		ImGui::DragFloat3("Position", glm::value_ptr(m_Position), 0.5f);
+		ImGui::SliderFloat("Yaw", &m_Yaw, -180.0f, 180.0f);
+		ImGui::SliderFloat("Pitch", &m_Pitch, -90.0f, 90.0f);
+		ImGui::SliderFloat("Zoom", &m_Zoom, 0.1f, 10.0f);
+		ImGui::SliderFloat("Field of View (FOV)", &m_FOV, 1.0f, 179.0f);
+		ImGui::SliderFloat("Near Clip", &m_NearClip, 0.0f, 10.0f);
+		ImGui::SliderFloat("Far Clip", &m_FarClip, 10.0f, 10000.0f);
+	}
+
+	void Camera3D::Write(JSON& json)
+	{
+		json["position"] = { m_Position.x, m_Position.y, m_Position.z };
+		json["up"] = { m_Up.x, m_Up.y, m_Up.z };
+		json["type"] = "Camera3D"; // Change to Camera2D if needed
+		json["name"] = m_Name;
+		json["yaw"] = m_Yaw;
+		json["pitch"] = m_Pitch;
+		json["zoom"] = m_Zoom;
+		json["fov"] = m_FOV;
+		json["nearclip"] = m_NearClip;
+		json["farclip"] = m_FarClip;
+
+	}
 
 	void Camera3D::OnWindowResize(const WindowResizeEvent& e)
 	{

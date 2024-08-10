@@ -62,10 +62,13 @@ namespace NULLENGINE
 	struct BaseComponent 
 	{
 		virtual ~BaseComponent() = default;
-		virtual const std::string Name() = 0;
+		virtual const std::string Name() const = 0;
+		virtual const uint32_t ID() const = 0;
+
 		BaseComponent() = default;
 
 		bool m_Enabled = true;
+		bool m_SerializeToScene = true;
 	};
 
 }

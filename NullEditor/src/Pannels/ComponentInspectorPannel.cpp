@@ -97,7 +97,7 @@ namespace NULLENGINE
 				ImGui::PopStyleVar();
 
 			
-				ImGui::SameLine(contentRegion.x + lineHeight * .55f);
+				ImGui::SameLine(contentRegion.x - lineHeight * .55f);
 				bool removed = false;
 
 				// Push the style color for the button
@@ -113,6 +113,9 @@ namespace NULLENGINE
 				ImGui::PopStyleColor(3);
 				if (opened)
 				{
+					//std::string checkboxLabel = "##Enable Component" + std::to_string(comp);
+					ImGui::Checkbox("Serialize in scene", &component.m_SerializeToScene);
+
 					factory->ViewComponent(Entity(m_PannelData->m_SelectedEntity, registry), comp);
 					ImGui::TreePop();
 				}

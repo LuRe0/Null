@@ -45,12 +45,14 @@ namespace NULLENGINE
 
         void SetZoom(float zoom);
 
-
         virtual void Init();
 
         virtual void Shudown() {};
 
         void Update(float dt) override;
+        void View() override;
+
+        void Write(JSON& json) override;
 
         const glm::mat4 GetViewMatrix() const override;
 

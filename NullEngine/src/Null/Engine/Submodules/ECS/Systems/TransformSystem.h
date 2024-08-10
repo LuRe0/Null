@@ -46,6 +46,7 @@ namespace NULLENGINE
 		void Init() override;
 		//! Virtual Update function
 		void Update(float dt) override;
+		virtual void RuntimeUpdate(float dt) override;
 
 		void Render() override;
 
@@ -56,11 +57,6 @@ namespace NULLENGINE
 
 		void RegisterToScripAPI(sol::state& lua) override;
 
-		TransformComponent* Transform(Entity& entity);
-
-		void SetTranslation( Entity& entity, glm::vec3 position);
-		void SetRotation( Entity& entity, glm::vec3 rotation);
-		void SetScale( Entity& entity, glm::vec3 scale);
 
 	private:
 		//void OnWindowResize(const WindowResizeEvent& e);

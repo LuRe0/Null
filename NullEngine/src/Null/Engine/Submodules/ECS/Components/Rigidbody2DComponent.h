@@ -48,7 +48,8 @@ namespace NULLENGINE
 			m_GravityScale(gravScale)
 		{}
 
-		const std::string Name() { return Component<Rigidbody2DComponent>::TypeName(); };
+		const std::string Name() const { return Component<Rigidbody2DComponent>::TypeName(); };
+		const uint32_t ID() const { return Component<Rigidbody2DComponent>::GetID(); };
 
 	};
 }

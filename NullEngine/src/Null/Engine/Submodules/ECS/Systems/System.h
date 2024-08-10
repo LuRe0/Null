@@ -85,6 +85,7 @@ namespace NULLENGINE
 		virtual void Init() override;
 		//! Virtual Update function
 		virtual void Update(float dt) override = 0;
+		virtual void RuntimeUpdate(float dt) override {}
 
 		virtual void Render() override = 0;
 

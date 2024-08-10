@@ -39,6 +39,11 @@ namespace NULLENGINE
 		DispatchEvents();
 	}
 
+	void NEventManager::RuntimeUpdate(float dt)
+	{
+		Update(dt);
+	}
+
 	void NEventManager::Unload()
 	{
 	}

@@ -49,6 +49,7 @@ namespace NULLENGINE
 		void Init() override;
 		//! Virtual Update function
 		void Update(float dt) override;
+		void RuntimeUpdate(float dt) override;
 
 		void Render();
 

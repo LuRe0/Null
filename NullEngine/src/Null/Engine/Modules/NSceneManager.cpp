@@ -115,6 +115,11 @@ namespace NULLENGINE
 		m_Scenes[m_CurrentScene].get()->Update(dt);
 	}
 
+	void NSceneManager::RuntimeUpdate(float dt)
+	{
+		Update(dt);
+	}
+
 	void NSceneManager::Render()
 	{
 		m_Scenes[m_CurrentScene].get()->Render();

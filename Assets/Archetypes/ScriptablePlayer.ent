@@ -1,10 +1,28 @@
 {
     "components": {
+        "BoxCollider2D": {
+            "density": 1.0,
+            "friction": 0.5,
+            "offset": [
+                0.0,
+                0.0
+            ],
+            "restitution": 0.0,
+            "restitutionThreshold": 0.5,
+            "scale": [
+                50.0,
+                50.0
+            ]
+        },
+        "Rigidbody2D": {
+            "fixedRotation": true,
+            "type": 2
+        },
         "Script": {
             "scripts": {
-                "Player_Behavior": {
-                    "isAlive": true,
-                    "moveSpeed": 50.0
+                "RedSquareBehavior": {
+                    "Accel": 50.0,
+                    "Speed": 50.0
                 }
             }
         },

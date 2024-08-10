@@ -38,7 +38,9 @@ namespace NULLENGINE
 			m_IsReversed(isReversed)
 		{}
 
-		const std::string Name() { return Component<AnimationComponent>::TypeName(); };
+		const std::string Name()const { return Component<AnimationComponent>::TypeName(); };
+		const uint32_t ID() const { return Component<AnimationComponent>::GetID(); };
+
 	};
 
 }

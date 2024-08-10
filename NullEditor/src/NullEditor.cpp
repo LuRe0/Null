@@ -7,6 +7,7 @@
 #include "Pannels/ScenePropertyPannel.h"
 #include "Pannels/ContentBrowserPannel.h"
 #include "Pannels/ModuleStatsPannel.h"
+#include "Pannels/EditorConsolePannel.h"
 
 namespace NULLENGINE
 {
@@ -33,12 +34,14 @@ namespace NULLENGINE
 			auto pannel3 = std::make_unique<ScenePropertyPannel>();
 			auto pannel4 = std::make_unique<ContentBrowserPannel>();
 			auto pannel5 = std::make_unique<ModuleStatsPannel>();
+			auto pannel6 = std::make_unique<EditorConsolePannel>();
 
 			gui.get()->AddPannel(std::move(pannel));
 			gui.get()->AddPannel(std::move(pannel2));
 			gui.get()->AddPannel(std::move(pannel3));
 			gui.get()->AddPannel(std::move(pannel4));
 			gui.get()->AddPannel(std::move(pannel5));
+			gui.get()->AddPannel(std::move(pannel6));
 			
 			PushLayer(std::move(gui));
 		}

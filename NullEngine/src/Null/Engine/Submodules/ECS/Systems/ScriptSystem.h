@@ -44,6 +44,7 @@ namespace NULLENGINE
 		void Init() override;
 		//! Virtual Update function
 		void Update(float dt) override;
+		virtual void RuntimeUpdate(float dt) override;
 
 		void Render() override;
 
@@ -56,7 +57,13 @@ namespace NULLENGINE
 
 	private:
 
-		//void OnWindowResize(const WindowResizeEvent& e);
+		void AddScript(EntityID id, const std::string& script);
+		void RemoveScript(EntityID id, const std::string& script);
+
+		void OnScriptAdded(const ScriptCreatedEvent& e);
+		void OnScriptModified(const ScriptModifiedEvent& e);
+		void OnScriptRemoved(const ScriptRemovedEvent& e);
+
 		static void CreateScriptComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
 
 		static JSON WriteScriptComponent(BaseComponent* component);
@@ -68,9 +75,11 @@ namespace NULLENGINE
 		const std::string GetScriptPaths(const std::string& scriptDirectory, const std::string& scriptName);
 
 
+		bool m_ShowCreationMenu = false;
 
+		std::string m_ScriptName = "New Script";
 
-
+		sol::state m_LuaState;
 
 	};
 

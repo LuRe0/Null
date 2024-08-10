@@ -17,6 +17,7 @@ includeDir["Glad"] = "NullEngine/vendor/Glad/include"
 includeDir["JSON"] = "NullEngine/vendor/JSON/include" 
 includeDir["Box2D"] = "NullEngine/vendor/Box2D/include" 
 includeDir["glm"] = "NullEngine/vendor/glm" 
+includeDir["filewatch"] = "NullEngine/vendor/filewatch" 
 includeDir["ImGui"] = "NullEngine/vendor/imgui" 
 includeDir["ImGuizmo"] = "NullEngine/vendor/imGuizmo" 
 includeDir["stb"] = "NullEngine/vendor/stb/stb" 
@@ -62,6 +63,7 @@ project "NullEngine"
          "%{includeDir.Box2D}",
          "%{includeDir.glm}",
          "%{includeDir.stb}",
+         "%{includeDir.filewatch}",
          "%{includeDir.ImGui}",
          "%{includeDir.ImGuizmo}",
          "%{includeDir.sol2}",
@@ -144,6 +146,7 @@ project "Sandbox"
          "%{includeDir.ImGuizmo}",
          "%{includeDir.JSON}",
          "%{includeDir.glm}",
+         "%{includeDir.filewatch}",
          "%{includeDir.sol2}",
          "%{includeDir.lua}"
 
@@ -207,6 +210,7 @@ project "NullEditor"
          "%{includeDir.ImGuizmo}",
          "%{includeDir.JSON}",
          "%{includeDir.glm}",
+         "%{includeDir.filewatch}",
          "%{includeDir.sol2}",
          "%{includeDir.lua}"
     }

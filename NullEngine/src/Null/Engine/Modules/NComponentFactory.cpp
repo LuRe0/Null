@@ -24,6 +24,13 @@
 
 namespace NULLENGINE
 {
+	std::unordered_map<std::string, std::function<void(void*, const nlohmann::json&, NRegistry*, EntityID id)>> NComponentFactory::m_componentReader;
+	std::unordered_map<std::string, std::function<nlohmann::json(BaseComponent*)>> NComponentFactory::m_componentWriter;
+	std::unordered_map<std::string, std::function<BaseComponent* ()>> NComponentFactory::m_ComponentCreator;
+	std::unordered_map<std::string, uint32_t> NComponentFactory::m_ComponentNamesToID;
+	std::unordered_map<size_t, std::function<void(Entity&)>> NComponentFactory::m_ComponentInspector;
+	std::unordered_map<std::string, std::unordered_map<uint32_t, std::function<sol::object(Entity&, sol::this_state)>>> NComponentFactory::m_TypeRegistry;
+
 	void NComponentFactory::Load()
 	{
 		//AddCreateFunction<TransformComponent>(CreateTransformComponent);
@@ -33,6 +40,35 @@ namespace NULLENGINE
 		//AddCreateFunction<AnimationComponent>(CreateAnimationComponent);
 	}
 
+
+
+	//auto& NComponentFactory::Resolve(BaseComponent& comp)
+	//{
+	//	if (comp.ID() == Component<TransformComponent>::GetID())
+	//	{
+	//		// Perform a safe downcast to the derived component type
+	//		return static_cast<TransformComponent&>(comp);
+	//	}
+	//	else if (comp.ID() == Component<SpriteComponent>::GetID())
+	//	{
+	//		return static_cast<SpriteComponent&>(comp);
+	//	}
+
+	uint32_t NComponentFactory::GetIdType(const sol::table& comp)
+	{
+		NLE_CORE_ASSERT(comp.valid(), "Failed to get the type id");
+
+	
+		const auto func = comp["type_id"].get<sol::function>();
+
+		NLE_CORE_ASSERT(func.valid(), "[type_id()] - function not exposed to lua");
+
+		return func().get<uint32_t>();
+	}
+
+	//	// Handle other component types or throw an exception
+	//	NLE_CORE_WARN("Component type not recognized or supported.");
+	//}
 	nlohmann::json NComponentFactory::WriteComponent(BaseComponent* component) const
 	{
 		auto it = m_componentWriter.find(component->Name());

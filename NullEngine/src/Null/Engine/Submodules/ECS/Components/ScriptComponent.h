@@ -23,7 +23,7 @@ namespace NULLENGINE
 	{
 
 
-		sol::state m_Lua_state;
+		sol::environment m_Environment;
 		std::vector<sol::table> m_Scripts;
 		std::vector<std::string> m_Script_Names;
 		std::vector<std::string> m_Script_Paths;
@@ -46,6 +46,8 @@ namespace NULLENGINE
 			return *this;
 		}
 
-		const std::string Name() { return Component<ScriptComponent>::TypeName(); };
+		const std::string Name() const { return Component<ScriptComponent>::TypeName(); };
+		const uint32_t ID() const { return Component<ScriptComponent>::GetID(); };
+
 	};
 }

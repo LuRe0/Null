@@ -27,7 +27,8 @@ namespace NULLENGINE
 			m_ShaderName(shaderName)
 		{}
 
-		const std::string Name() { return Component<SpriteComponent>::TypeName(); };
+		const std::string Name() const { return Component<SpriteComponent>::TypeName(); };
+		const uint32_t ID() const { return Component<SpriteComponent>::GetID(); };
 
 	};
 

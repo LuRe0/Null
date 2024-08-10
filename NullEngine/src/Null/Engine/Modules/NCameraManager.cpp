@@ -40,27 +40,10 @@ namespace NULLENGINE
         file >> j;
 
 
-        NWindow* window = m_Parent->Get<NWindow>();
 
         for (auto& cameraJson : j["cameras"]) {
      
-            std::string type = cameraJson["type"];
-            std::string name = cameraJson["name"];
-            NLE_CORE_ASSERT((type == "Camera2D" || type == "Camera3D"), "Camera type not reckognized: ", type);
-
-            Camera* camera;
-            if (type == "Camera2D")
-            {
-                camera = AddCamera<Camera2D>(name, window->Width(), window->Height(), cameraJson.value("zoom", 1.0f), cameraJson.value("rotation", 0.0f));
-            }
-            else
-            {
-                camera = AddCamera<Camera3D>(name, window->Width(), window->Height(), glm::vec3(cameraJson["position"][0], cameraJson["position"][1], cameraJson["position"][2]),
-                                     glm::vec3(cameraJson["up"][0], cameraJson["up"][1], cameraJson["up"][2]), cameraJson.value("yaw", YAW), cameraJson.value("pitch", PITCH),
-                                     cameraJson.value("zoom", ZOOM), cameraJson.value("fov", FOV), cameraJson.value("nearclip", 0.1f), cameraJson.value("farclip", 5000.0f));
-            }
-
-            camera->SetName(name);
+            ReadCamera(cameraJson);
         }
 
         std::string defaultCam = j.value("DefaultCamera", "Default3D");
@@ -93,18 +76,23 @@ namespace NULLENGINE
             m_CurrentCamera->Update(dt);
         }
 
-        if (Input::KeyTriggered(GLFW_KEY_C))
-        {
-            if (dynamic_cast<Camera2D*>(m_CurrentCamera)) {
-                m_CurrentCamera = GetCamera<Camera3D>("Default3D");
-            }
-            else if (dynamic_cast<Camera3D*>(m_CurrentCamera)) {
-                m_CurrentCamera = GetCamera<Camera2D>("Default2D");
-            }
-            else {
-                NLE_CORE_ERROR("Unknown camera type");
-            }
-        }
+        //if (Input::KeyTriggered(GLFW_KEY_C))
+        //{
+        //    if (dynamic_cast<Camera2D*>(m_CurrentCamera)) {
+        //        m_CurrentCamera = GetCamera<Camera3D>("Default3D");
+        //    }
+        //    else if (dynamic_cast<Camera3D*>(m_CurrentCamera)) {
+        //        m_CurrentCamera = GetCamera<Camera2D>("Default2D");
+        //    }
+        //    else {
+        //        NLE_CORE_ERROR("Unknown camera type");
+        //    }
+        //}
+    }
+
+    void NCameraManager::RuntimeUpdate(float dt)
+    {
+        Update(dt);
     }
 
     void NCameraManager::Unload()
@@ -120,6 +108,31 @@ namespace NULLENGINE
         return m_CurrentCamera;
     }
 
+
+    Camera* NCameraManager::ReadCamera(const JSON& cameraJson)
+    {
+        NWindow* window = m_Parent->Get<NWindow>();
+
+        std::string type = cameraJson["type"];
+        std::string name = cameraJson["name"];
+        NLE_CORE_ASSERT((type == "Camera2D" || type == "Camera3D"), "Camera type not reckognized: ", type);
+
+        Camera* camera;
+        if (type == "Camera2D")
+        {
+            camera = AddCamera<Camera2D>(name, window->Width(), window->Height(), cameraJson.value("zoom", 1.0f), cameraJson.value("rotation", 0.0f));
+        }
+        else
+        {
+            camera = AddCamera<Camera3D>(name, window->Width(), window->Height(), glm::vec3(cameraJson["position"][0], cameraJson["position"][1], cameraJson["position"][2]),
+                glm::vec3(cameraJson["up"][0], cameraJson["up"][1], cameraJson["up"][2]), cameraJson.value("yaw", YAW), cameraJson.value("pitch", PITCH),
+                cameraJson.value("zoom", ZOOM), cameraJson.value("fov", FOV), cameraJson.value("nearclip", 0.1f), cameraJson.value("farclip", 5000.0f));
+        }
+
+        camera->SetName(name);
+
+        return camera;
+    }
 
 
     void NCameraManager::SetCurrentCamera(const std::string& name)

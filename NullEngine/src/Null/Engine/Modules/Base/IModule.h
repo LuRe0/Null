@@ -48,6 +48,8 @@ namespace NULLENGINE
 		//! Virtual Update function
 		virtual void Update(float dt) = 0;
 
+		virtual void RuntimeUpdate(float dt) = 0;
+
 		virtual void Render() {};
 
 		virtual void RenderImGuI() {};

@@ -69,6 +69,8 @@ namespace NULLENGINE
 
 		BaseComponent& GetComponent(const std::string& componentName);
 
+
+
 		bool HasComponent(const std::string& componentName) const;
 
 		void SetIsDestroyed(bool d);
@@ -104,6 +106,14 @@ namespace NULLENGINE
 		friend class SceneHierarchyPannel;
 		friend class ComponentInspectorPannel;
 	};
+
+
+	template <typename T>
+	auto get_component(Entity& entity, sol::this_state s)
+	{
+		auto& comp = entity.Get<T>();
+		return sol::make_reference(s, std::ref(comp));
+	}
 
 	//template<typename T>
 	//inline T& Entity::Get()

@@ -48,6 +48,7 @@ namespace NULLENGINE
 
 		//! Virtual Update function
 		virtual void Update(float dt) override {};
+		virtual void RuntimeUpdate(float dt) override {};
 
 		virtual void Unload() override
 		{

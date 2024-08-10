@@ -49,6 +49,8 @@ namespace NULLENGINE
 		//! Virtual Update function
 		void Update(float dt) override;
 
+		void RuntimeUpdate(float dt) override;
+
 		void Unload() override;
 		//! Virtual Shutdown function
 		void Shutdown() override;

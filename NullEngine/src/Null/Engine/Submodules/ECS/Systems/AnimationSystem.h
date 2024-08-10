@@ -46,20 +46,13 @@ namespace NULLENGINE
 		void Init() override;
 		//! Virtual Update function
 		void Update(float dt) override;
+		virtual void RuntimeUpdate(float dt) override;
 
 		void Render() override;
 
 		void Unload() override;
 		//! Virtual Shutdown function
 		void Shutdown() override;
-
-
-		AnimationComponent* Animation(Entity& entity);
-
-		void Play(Entity& entity, bool state);
-		void Pause(Entity& entity,  bool state);
-		void Restart(Entity& entity,  bool state);
-		void Stop(Entity& entity,  bool state);
 
 		
 		void RegisterToScripAPI(sol::state& lua) override;

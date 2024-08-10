@@ -12,6 +12,9 @@
     <ClInclude Include="src\Pannels\ContentBrowserPannel.h">
       <Filter>Pannels</Filter>
     </ClInclude>
+    <ClInclude Include="src\Pannels\EditorConsolePannel.h">
+      <Filter>Pannels</Filter>
+    </ClInclude>
     <ClInclude Include="src\Pannels\ModuleStatsPannel.h">
       <Filter>Pannels</Filter>
     </ClInclude>
@@ -28,6 +31,9 @@
       <Filter>Pannels</Filter>
     </ClCompile>
     <ClCompile Include="src\Pannels\ContentBrowserPannel.cpp">
+      <Filter>Pannels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Pannels\EditorConsolePannel.cpp">
       <Filter>Pannels</Filter>
     </ClCompile>
     <ClCompile Include="src\Pannels\ModuleStatsPannel.cpp">

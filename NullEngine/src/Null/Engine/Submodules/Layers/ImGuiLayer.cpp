@@ -272,7 +272,7 @@ namespace NULLENGINE
 
 		window->SetBlockEvents(!ImGui::IsWindowHovered() && !ImGui::IsWindowFocused());
 
-		m_CameraController->SetEnabled(!(!ImGui::IsWindowHovered() && !ImGui::IsWindowFocused()));
+		m_CameraController->SetEnabled(!(!ImGui::IsWindowHovered() || !ImGui::IsWindowFocused()));
 
 		auto viewportOffet = ImGui::GetCursorPos();
 
@@ -575,23 +575,20 @@ namespace NULLENGINE
 
 					glm::vec3 deltaRotation = glm::degrees(rotation) - transform.m_Rotation;
 
-
-					transform.m_Translation = translation;
-					transform.m_Rotation += deltaRotation;
-					transform.m_Scale = scale;
-
-					if (entity.Has<Rigidbody2DComponent>())
+					if (transform.m_Translation != translation)
 					{
-						PhysicsSystem* physicsSys = NEngine::Instance().Get<PhysicsSystem>();
-
-						Rigidbody2DComponent& rb2d = entity.Get<Rigidbody2DComponent>();
-
-						auto pos = physicsSys->PixelsToMeters(transform.m_Translation.x, transform.m_Translation.y);
-
-						if (rb2d.m_RuntimeBody)
-							rb2d.m_RuntimeBody->SetTransform({ pos.x, pos.y }, transform.m_Rotation.z);
+						transform.m_Translation = translation;
+						transform.m_DirectManipulation = true;
+					}
+					if (deltaRotation != glm::vec3(0.0f))
+					{
+						transform.m_Rotation += deltaRotation;
+						transform.m_DirectManipulation = true;
 					}
 
+					transform.m_Scale = scale;
+
+		
 					transform.m_Dirty = true;
 
 				}

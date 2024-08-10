@@ -48,6 +48,7 @@ namespace NULLENGINE
 		void Init() override;
 		//! Virtual Update function
 		void Update(float dt) override;
+		virtual void RuntimeUpdate(float dt) override;
 
 		void Render() override;
 
@@ -57,17 +58,6 @@ namespace NULLENGINE
 
 		void RegisterToScripAPI(sol::state& lua) override;
 		
-		BoxCollider2DComponent* BoxCollider2D(Entity& entity);
-
-		Rigidbody2DComponent* Rigidbody2D(Entity& entity);
-
-		void SetLinearVelocity(Entity& entity, glm::vec2 velocity);
-		void SetAngularVelocity(Entity& entity, float velocity);
-		void SetGravityScale(Entity& entity, float scale);
-
-		void SetBoxCollider2DOffset(Entity& entity, glm::vec2 offset);
-		void SetBoxCollider2DScale(Entity& entity, glm::vec2 scale);
-	
 		// Conversion factor
 		const float GetPixelPerMeter() { return PIXELS_PER_METER; } // 1 meter = 64 pixels
 
@@ -99,6 +89,8 @@ namespace NULLENGINE
 		// Conversion factor
 		const float PIXELS_PER_METER = 64.0f; // 1 meter = 64 pixels
 
+
+		bool m_Simulate = false;
 	};
 
 }

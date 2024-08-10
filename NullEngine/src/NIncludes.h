@@ -35,6 +35,7 @@
 #include "Null/Engine/Submodules/ECS/Components/TransformComponent.h"
 #include "Null/Engine/Submodules/ECS/Components/SpriteComponent.h"
 #include "Null/Engine/Submodules/ECS/Components/TagComponent.h"
+#include "Null/Engine/Submodules/ECS/Components/CameraComponent.h"
 #include "Null/Engine/Submodules/ECS/Components/AnimationComponent.h"
 #include "Null/Engine/Submodules/ECS/Components/ScriptComponent.h"
 #include "Null/Engine/Submodules/ECS/Components/Rigidbody2DComponent.h"

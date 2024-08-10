@@ -76,7 +76,7 @@
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NLE_PLATFORM_WINDOWS;NLE_BUILD_DLL;GLFW_INCLUDE_NONE;NLE_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\magic_enum\magic_enum\include;vendor\GLFW\include;vendor\Glad\include;vendor\JSON\include;vendor\Box2D\include;vendor\glm;vendor\stb\stb;vendor\imgui;vendor\imGuizmo;vendor\sol2\sol2\include;vendor\lua\lua\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\magic_enum\magic_enum\include;vendor\GLFW\include;vendor\Glad\include;vendor\JSON\include;vendor\Box2D\include;vendor\glm;vendor\stb\stb;vendor\filewatch;vendor\imgui;vendor\imGuizmo;vendor\sol2\sol2\include;vendor\lua\lua\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <AdditionalOptions>/MDd %(AdditionalOptions)</AdditionalOptions>
@@ -100,7 +100,7 @@ IF EXIST ..\bin\Debug-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /Y 
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NLE_PLATFORM_WINDOWS;NLE_BUILD_DLL;GLFW_INCLUDE_NONE;NLE_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\magic_enum\magic_enum\include;vendor\GLFW\include;vendor\Glad\include;vendor\JSON\include;vendor\Box2D\include;vendor\glm;vendor\stb\stb;vendor\imgui;vendor\imGuizmo;vendor\sol2\sol2\include;vendor\lua\lua\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\magic_enum\magic_enum\include;vendor\GLFW\include;vendor\Glad\include;vendor\JSON\include;vendor\Box2D\include;vendor\glm;vendor\stb\stb;vendor\filewatch;vendor\imgui;vendor\imGuizmo;vendor\sol2\sol2\include;vendor\lua\lua\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <AdditionalOptions>/MD %(AdditionalOptions)</AdditionalOptions>
@@ -124,7 +124,7 @@ IF EXIST ..\bin\Release-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NLE_PLATFORM_WINDOWS;NLE_BUILD_DLL;GLFW_INCLUDE_NONE;NLE_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\magic_enum\magic_enum\include;vendor\GLFW\include;vendor\Glad\include;vendor\JSON\include;vendor\Box2D\include;vendor\glm;vendor\stb\stb;vendor\imgui;vendor\imGuizmo;vendor\sol2\sol2\include;vendor\lua\lua\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\magic_enum\magic_enum\include;vendor\GLFW\include;vendor\Glad\include;vendor\JSON\include;vendor\Box2D\include;vendor\glm;vendor\stb\stb;vendor\filewatch;vendor\imgui;vendor\imGuizmo;vendor\sol2\sol2\include;vendor\lua\lua\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <AdditionalOptions>/MT %(AdditionalOptions)</AdditionalOptions>
@@ -169,14 +169,17 @@ IF EXIST ..\bin\Dist-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /Y /
     <ClInclude Include="src\Null\Engine\Submodules\ComponentManager.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\AnimationComponent.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\BoxCollider2DComponent.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\CameraComponent.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\IComponent.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\Rigidbody2DComponent.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\ScriptComponent.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\SpriteComponent.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\TagComponent.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\TransformComponent.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\VariableContainer\VariableContainer.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Entities\Entity.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\AnimationSystem.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\CameraSystem.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\PhysicsSystem.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\ScriptSystem.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\SpriteRenderSystem.h" />
@@ -207,10 +210,11 @@ IF EXIST ..\bin\Dist-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /Y /
     <ClInclude Include="src\Null\Engine\Submodules\Scene.h" />
     <ClInclude Include="src\Null\EntryPoint.h" />
     <ClInclude Include="src\Null\Tools\FileDialog.h" />
+    <ClInclude Include="src\Null\Tools\ImguiSink.h" />
     <ClInclude Include="src\Null\Tools\JsonWrapper.h" />
+    <ClInclude Include="src\Null\Tools\ScriptHelper.h" />
     <ClInclude Include="src\Null\Tools\Trace.h" />
     <ClInclude Include="src\stdafx.h" />
-    <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\TransformComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Null\Application.cpp" />
@@ -238,6 +242,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /Y /
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Components\VariableContainer\VariableContainer.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Entities\Entity.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\AnimationSystem.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\CameraSystem.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\PhysicsSystem.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\ScriptSystem.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\SpriteRenderSystem.cpp" />
@@ -265,7 +270,9 @@ IF EXIST ..\bin\Dist-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /Y /
     <ClCompile Include="src\Null\Engine\Submodules\Layers\Layer.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Scene.cpp" />
     <ClCompile Include="src\Null\Tools\FileDialog.cpp" />
+    <ClCompile Include="src\Null\Tools\ImguiSink.cpp" />
     <ClCompile Include="src\Null\Tools\JsonWrapper.cpp" />
+    <ClCompile Include="src\Null\Tools\ScriptHelper.cpp" />
     <ClCompile Include="src\Null\Tools\Trace.cpp" />
     <ClCompile Include="src\stdafx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>

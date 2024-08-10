@@ -12,19 +12,16 @@
 #include "stdafx.h"
 #include "ScriptSystem.h"
 #include "imgui.h"
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/quaternion.hpp>
-
-#include <box2d/b2_body.h>
+#include "Null/Engine/Submodules/Events/IEvents.h"
+#include "Null/Tools/ScriptHelper.h"
 #include <sol/sol.hpp>
+#include <misc/cpp/imgui_stdlib.h>
+#include <shellapi.h>
 
 
 //******************************************************************************//
 // Public Variables															    //
 //******************************************************************************//
-
 
 namespace fs = std::filesystem;
 
@@ -36,284 +33,6 @@ using LuaValue = std::variant<float, int, std::string, bool, sol::table, sol::fu
 namespace NULLENGINE
 {
 
-	static void SaveLuaTableToFile(sol::table& table, const std::string& filename, const std::string& path);
-	static std::string SerializeLuaTable(sol::table& table);
-	static LuaValue GetValue(const sol::object& value);
-	static void SetValue(sol::table& table, const std::string& key, const LuaValue& value);
-	static void ImGuiDisplayAndModifyLuaValue(sol::table& dataOwner, sol::table& table, const std::string& key, LuaValue& value);
-	static std::string SerializeLuaFunctions(sol::table& table, const std::string& tableName);
-	static JSON GenerateScriptDifferences(const sol::table& script, const std::unordered_map<std::string, LuaValue>& defaults);
-	static JSON LuaValueToJson(const LuaValue& luaValue);
-	static LuaValue JsonToLuaValue(const JSON& jValue);
-
-	LuaValue JsonToLuaValue(const JSON& jValue) {
-		if (jValue.is_number_integer()) {
-			return LuaValue(jValue.get<int>());
-		}
-		else if (jValue.is_boolean()) {
-			return LuaValue(jValue.get<bool>());
-		}
-		else if (jValue.is_string()) {
-			return LuaValue(jValue.get<std::string>());
-		}
-		else if (jValue.is_number_float()) {
-			return LuaValue(static_cast<float>(jValue.get<double>()));
-		}
-		else {
-			throw std::runtime_error("Unsupported JSON value type");
-		}
-	}
-	JSON LuaValueToJson(const LuaValue& luaValue) 
-	{
-		return std::visit([&luaValue](auto&& arg) {
-			using T = std::decay_t<decltype(arg)>;
-			if constexpr (std::is_same_v<T, float>) {
-				float v = arg;
-				return JSON(v);
-			}
-			else if constexpr (std::is_same_v<T, int>) {
-				int v = arg;
-				return JSON(v);
-			}
-			else if constexpr (std::is_same_v<T, std::string>) {
-				char buffer[256];
-				std::string v = arg;
-				return JSON(v);
-			}
-			else if constexpr (std::is_same_v<T, bool>) {
-				bool v = arg;
-				return JSON(v);
-			}
-			else
-				return JSON();
-		}, luaValue);
-	}
-
-
-	JSON GenerateScriptDifferences(const sol::table& script, const std::unordered_map<std::string, LuaValue>& defaults)
-	{
-		JSON differences;
-		for (auto& pair : script) {
-			sol::object key = pair.first;
-			sol::table props = pair.second;
-
-			sol::object value = props["value"];
-			bool serialize = props["serialize"];
-
-			if (value.is<sol::function>() || value.is<sol::table>() || !serialize)
-				continue;
-
-			std::string keyStr = key.as<std::string>();
-			LuaValue currentValue = GetValue(value);
-
-			//auto it = defaults.find(keyStr);
-			//if (it != defaults.end()) {
-			//	const LuaValue& defaultValue = it->second;
-			//	if (currentValue != defaultValue) {
-			//		differences[keyStr] = LuaValueToJson(currentValue);
-			//	}
-			//}
-			//else {
-			//	differences[keyStr] = LuaValueToJson(currentValue);
-			//}
-
-			differences[keyStr] = LuaValueToJson(currentValue);
-		}
-
-		return differences;
-	}
-
-	void SetValue(sol::table& table, const std::string& key, const LuaValue& value)
-	{
-		std::visit([&table, &key](auto&& arg)
-			{
-				table[key] = arg;
-			}, value);
-	}
-
-	LuaValue GetValue(const sol::object& value)
-	{
-		if (value.is<float>()) {
-			return value.as<float>();
-		}
-		else if (value.is<int>()) {
-			return value.as<int>();
-		}
-		else if (value.is<std::string>()) {
-			return value.as<std::string>();
-		}
-		else if (value.is<bool>()) {
-			return value.as<bool>();
-		}
-		else if (value.is<sol::table>()) {
-			return  value.as<sol::table>();
-		}
-		else if (value.is<sol::function>()) {
-			return value.as<sol::function>();
-		}
-		else {
-			return std::monostate{};
-		}
-	}
-
-	std::string SerializeLuaFunctions(sol::table& table, const std::string& tableName) {
-		std::stringstream ss;
-		for (auto& pair : table) {
-			sol::object key = pair.first;
-			sol::object value = pair.second;
-
-			if (value.is<sol::function>()) {
-				ss << "function " << tableName << ":" << key.as<std::string>() << "()\n";
-				ss << "    -- function body\n";
-				ss << "end\n\n";
-			}
-		}
-		return ss.str();
-	}
-
-	std::string SerializeLuaTable(sol::table& table, const std::string& tableName) {
-		std::stringstream ss;
-		ss << tableName << " = {\n";
-		for (auto& pair : table) {
-			sol::object key = pair.first;
-			sol::object value = pair.second;
-			if (value.is<sol::function>()) {
-				continue; // Skip functions
-			}
-			ss << "    ";
-			if (key.is<std::string>()) {
-				ss << key.as<std::string>() << " = ";
-			}
-			else if (key.is<int>()) {
-				ss << "[" << key.as<int>() << "] = ";
-			}
-
-			if (value.is<float>()) {
-				ss << value.as<float>();
-			}
-			else if (value.is<int>()) {
-				ss << value.as<int>();
-			}
-			else if (value.is<std::string>()) {
-				ss << "\"" << value.as<std::string>() << "\"";
-			}
-			else if (value.is<bool>()) {
-				ss << (value.as<bool>() ? "true" : "false");
-			}
-			else if (value.is<sol::table>()) {
-				sol::table nestedTable = value.as<sol::table>();
-				ss << SerializeLuaTable(nestedTable, key.as<std::string>());
-			}
-
-			ss << ",\n";
-		}
-		ss << "}";
-		return ss.str();
-	}
-
-	void SaveLuaTableToFile(sol::table& table, const std::string& filename, const std::string& path)
-	{
-		// Read the original file content
-		std::ifstream file(path);
-		if (!file.is_open()) {
-			NLE_CORE_ERROR("Unable to open file {0}", filename);
-			return;
-		}
-
-		std::string fileContent((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-		file.close();
-
-		// Serialize the updated table
-		std::string serializedTable = SerializeLuaTable(table, filename);
-
-
-		// Find the position of the table name
-		std::size_t startPos = fileContent.find(filename);
-		if (startPos == std::string::npos) {
-			std::cerr << "Table name not found in the file" << std::endl;
-			return;
-		}
-
-		// Find the position of the opening brace
-		startPos = fileContent.find('{', startPos);
-		if (startPos == std::string::npos) {
-			std::cerr << "Opening brace not found for the table" << std::endl;
-			return;
-		}
-
-		// Find the position of the closing brace
-		std::size_t endPos = fileContent.find('}', startPos);
-		if (endPos == std::string::npos) {
-			std::cerr << "Closing brace not found for the table" << std::endl;
-			return;
-		}
-
-		// Adjust endPos to include the closing brace
-		endPos++;
-
-		// Create the updated content by removing the old table and inserting the new one
-		std::string updatedContent = serializedTable + fileContent.substr(endPos);
-		//+ filename + " = " + serializedTable + "\n\n" + fileContent.substr(endPos);
-
-	// Write the updated content back to the file
-		std::ofstream outFile(path);
-		if (!outFile.is_open()) {
-			NLE_CORE_ERROR("Unable to open file {0} for writing", filename);
-			return;
-		}
-		outFile << updatedContent;
-		outFile.close();
-
-		NLE_CORE_INFO("Table updated in ", filename);
-
-	}
-
-
-	void ImGuiDisplayAndModifyLuaValue(sol::table& dataOwner, sol::table& table, const std::string& key, LuaValue& value)
-	{
-		std::visit([&dataOwner, &key, &value](auto&& arg) {
-			using T = std::decay_t<decltype(arg)>;
-			if constexpr (std::is_same_v<T, float>) {
-				float v = arg;
-				if (ImGui::InputFloat(key.c_str(), &v)) {
-					value = v;
-					SetValue(dataOwner, key, value);
-				}
-			}
-			else if constexpr (std::is_same_v<T, int>) {
-				int v = arg;
-				if (ImGui::InputInt(key.c_str(), &v)) {
-					value = v;
-					SetValue(dataOwner, key, value);
-				}
-			}
-			else if constexpr (std::is_same_v<T, std::string>) {
-				char buffer[256];
-				std::strncpy(buffer, arg.c_str(), sizeof(buffer));
-				buffer[sizeof(buffer) - 1] = 0;
-				if (ImGui::InputText(key.c_str(), buffer, sizeof(buffer))) {
-					value = std::string(buffer);
-					SetValue(dataOwner, key, value);
-				}
-			}
-			else if constexpr (std::is_same_v<T, bool>) {
-				bool v = arg;
-				if (ImGui::Checkbox(key.c_str(), &v)) {
-					value = v;
-					SetValue(dataOwner, key, value);
-				}
-			}
-			//else if constexpr (std::is_same_v<T, sol::table>) {
-			//	ImGui::Text("%s: (table)", key.c_str());
-			//}
-			//else if constexpr (std::is_same_v<T, sol::function>) {
-			//	ImGui::Text("%s: (function)", key.c_str());
-			//}
-			//else {
-			//	ImGui::Text("%s: (unknown type)", key.c_str());
-			//}
-			}, value);
-	}
 
 
 
@@ -332,6 +51,16 @@ namespace NULLENGINE
 
 	void ScriptSystem::Load()
 	{
+		NScriptingInterface* scriptingInterface = m_Parent->Get< NScriptingInterface>();
+		try
+		{
+			m_LuaState.open_libraries(sol::lib::base, sol::lib::coroutine, sol::lib::string, sol::lib::io);
+			scriptingInterface->RegisterEngineFunctions(m_LuaState);
+		}
+		catch (const std::exception&)
+		{
+			NLE_CORE_ERROR("Could not initialize Lua State");
+		}
 	}
 
 	void ScriptSystem::Init()
@@ -344,13 +73,21 @@ namespace NULLENGINE
 			InitializeScripts(entityId);
 		}
 
-		//NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+
+		SUBSCRIBE_EVENT(ScriptCreatedEvent, &ScriptSystem::OnScriptAdded, eventManager, EventPriority::High);
+		SUBSCRIBE_EVENT(ScriptModifiedEvent, &ScriptSystem::OnScriptModified, eventManager, EventPriority::High);
+		SUBSCRIBE_EVENT(ScriptRemovedEvent, &ScriptSystem::OnScriptRemoved, eventManager, EventPriority::High);
 
 
-		//SUBSCRIBE_EVENT(WindowResizeEvent, &ScriptSystem::OnWindowResize, eventManager);
 	}
 
 	void ScriptSystem::Update(float dt)
+	{
+
+	}
+
+	void ScriptSystem::RuntimeUpdate(float dt)
 	{
 		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
 
@@ -426,18 +163,19 @@ namespace NULLENGINE
 		if (!jsonWrapper.Empty())
 		{
 
-			if (json.contains("scripts") )
-			{	
+			if (json.contains("scripts"))
+			{
 				for (const auto& [scriptName, Defaults] : json["scripts"].items())
 				{
 					for (const auto& [varName, value] : Defaults.items())
 					{
-						comp->m_ScriptDefaults[scriptName][varName] = JsonToLuaValue(value);
+						comp->m_ScriptDefaults[scriptName][varName] = ScriptHelper::JsonToLuaValue(value);
 					}
+
 					comp->m_Script_Names.push_back(scriptName);
 				}
 			}
-			else 
+			else
 			{
 				NLE_CORE_ERROR("'scripts' key is missing or not an array.");
 			}
@@ -445,7 +183,7 @@ namespace NULLENGINE
 
 		componentFactory->AddOrUpdate<ScriptComponent>(id, comp, registry, comp->m_Script_Names, comp->m_ScriptDefaults);
 	}
-	
+
 
 
 	JSON ScriptSystem::WriteScriptComponent(BaseComponent* component)
@@ -464,7 +202,7 @@ namespace NULLENGINE
 			const auto& defaults = script.m_ScriptDefaults.at(scriptName);
 			const sol::table& scriptTable = script.m_Scripts[i]["data"];
 
-			nlohmann::json scriptDiffs = GenerateScriptDifferences(scriptTable, defaults);
+			nlohmann::json scriptDiffs = ScriptHelper::GenerateScriptDifferences(scriptTable, defaults);
 			defaultsJSON["scripts"][scriptName] = scriptDiffs;
 		}
 
@@ -492,62 +230,50 @@ namespace NULLENGINE
 
 	void ScriptSystem::ViewScriptComponent(Entity& entity)
 	{
+		NScriptingInterface* scriptingInterface = m_Parent->Get< NScriptingInterface>();
+		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+
 		ScriptComponent& script = entity.Get<ScriptComponent>();
 
-		//for (const auto& scriptName : script.m_Script_Names)
-		//{
+		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen  |  ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_FramePadding;
+		flags |= ImGuiTreeNodeFlags_OpenOnDoubleClick;
+		flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
 
-		//}
+		float lineHeight = ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2.0f;
+		ImVec2 contentRegion = ImGui::GetContentRegionAvail();
+
+		if (script.m_Script_Names.empty())
+		{
+			ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Warning: No Scripts Attached");
+		}
 
 		for (size_t i = 0; i < script.m_Script_Names.size(); i++)
 		{
-			sol::table scr = script.m_Scripts[i];
+			//ImGui::PushFont
+			bool opened = ImGui::TreeNodeEx(script.m_Script_Names[i].c_str(), flags);
 
-			sol::table data = scr["data"];
-			for (auto& pair : data)
+			ImGui::SameLine(contentRegion.x - lineHeight * .25f);
+			bool removed = false;
+
+			// Push the style color for the button
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 0.5f, 0.5f, 1.0f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(1.0f, 0.3f, 0.3f, 1.0f));
+
+	
+			if (ImGui::SmallButton("X"))
 			{
-				sol::object key = pair.first;
-				sol::table props = pair.second;
-
-				sol::object value = props["value"];
-				bool serialize = props["serialize"];
-
-				std::string keyStr = key.as<std::string>();
-				LuaValue luaValue = GetValue(value);
-
-				if(serialize)
-					ImGuiDisplayAndModifyLuaValue(scr,data, keyStr, luaValue);
+				removed = true;
 			}
-		}
+
+			ImGui::PopStyleColor(3);
 
 
-	}
-	void ScriptSystem::InitializeScripts(EntityID id)
-	{
-		NScriptingInterface* scriptingInterface = m_Parent->Get< NScriptingInterface>();
-		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
-		NSceneManager* scene = NEngine::Instance().Get<NSceneManager>();
-
-		ScriptComponent& scriptComponent = registry->GetComponent<ScriptComponent>(id);
-
-		scriptComponent.m_Lua_state.open_libraries(sol::lib::base, sol::lib::coroutine, sol::lib::string, sol::lib::io);
-
-		std::string scriptDirectory = "../Assets/Scripts/";  // Update this path to your script directory
-
-		//AddScriptPaths(scriptComponent.m_Lua_state, scriptDirectory);
-
-		scriptComponent.m_Lua_state["ParentEntity"] = &scene->GetCurrentScene()->GetEntity(id);
-
-		for (const auto& name : scriptComponent.m_Script_Names)
-		{
-			try
+			if (opened)
 			{
-				// Load the script using require_file
-				std::string fullPath = GetScriptPaths(scriptDirectory, name);
-				scriptComponent.m_Script_Paths.push_back(fullPath);
-				sol::table script = scriptComponent.m_Lua_state.require_file(name, fullPath);
+				sol::table scr = script.m_Scripts[i];
 
-				sol::table data = script["data"];
+				sol::table data = scr["data"];
 				for (auto& pair : data)
 				{
 					sol::object key = pair.first;
@@ -557,68 +283,124 @@ namespace NULLENGINE
 					bool serialize = props["serialize"];
 
 					std::string keyStr = key.as<std::string>();
-					LuaValue luaValue = GetValue(value);
+					LuaValue luaValue = ScriptHelper::GetValue(value);
 
-					if (value.is<sol::function>() || value.is<sol::table>() || !serialize)
-						continue;
-
-
-					if (scriptComponent.m_ScriptDefaults.empty())
-					{
-						scriptComponent.m_ScriptDefaults[name][keyStr] = luaValue;
-						continue;
-					}
-
-					// Get the script default for the given name, creating it if it doesn't exist
-					auto& defaultsForName = scriptComponent.m_ScriptDefaults[name];
-
-					// Check if the key exists in the defaults for the name
-					if (defaultsForName.contains(keyStr))
-					{
-						// If the value has changed, set it; otherwise, update the default
-						if (defaultsForName.at(keyStr) != luaValue)
-						{
-							SetValue(script, keyStr, defaultsForName.at(keyStr));
-						}
-						else
-						{
-							defaultsForName[keyStr] = luaValue;
-						}
-					}
-					else
-					{
-						defaultsForName[keyStr] = luaValue;
-					}
-
+					if (serialize)
+						ScriptHelper::ImGuiDisplayAndModifyLuaValue(scr, data, keyStr, luaValue);
 
 				}
 
 
-				scriptComponent.m_Scripts.emplace_back(script);
+
+				if (scriptingInterface->GetScriptStatus(script.m_Script_Names[i]))
+					ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Script out of date: Recompilation required");
+
+				ImGui::TreePop();
 			}
-			catch (const std::exception& e)
+
+			if (removed)
 			{
-				NLE_CORE_ERROR("Error loading script {0}: {1}", name, e.what());
+				eventManager->QueueEvent(std::make_unique<ScriptRemovedEvent>(entity.m_ID, script.m_Script_Names[i]));
 			}
+
+
+
+
+
+			ImGui::Separator();
 		}
 
-		scriptingInterface->RegisterEngineFunctions(scriptComponent.m_Lua_state);
 
 
+		const auto& names = scriptingInterface->GetScriptNames();
+		if (ImGui::BeginMenu("Add Script"))
+		{
+			static ImGuiTextFilter filterBeh;
 
-		for (auto& script : scriptComponent.m_Scripts) {
-			if (script.valid()) {
-				sol::function start_func = script["Start"];
-				if (start_func.valid()) {
-					start_func();
-				}
+
+			filterBeh.Draw("##searchbarBehAdd");
+
+			ImGui::Separator();
+
+
+			for (auto name : names)
+			{
+				if (std::find(script.m_Script_Names.begin(), script.m_Script_Names.end(), name) == script.m_Script_Names.end())
+					if (filterBeh.PassFilter(name.c_str()))
+					{
+						if (ImGui::MenuItem(name.c_str()))
+						{
+							eventManager->QueueEvent(std::make_unique<ScriptCreatedEvent>(entity.m_ID, name));
+						}
+					}
 			}
+
+
+			if (ImGui::MenuItem("New Script"))
+			{
+				m_ShowCreationMenu = true;
+			}
+
+
+			if (m_ShowCreationMenu)
+			{
+				ImGui::OpenPopup("New Script Name");
+			}
+
+
+			if (ImGui::BeginPopupModal("New Script Name", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+			{
+				ImGui::Text("Enter the script name:");
+				ImGui::InputText("##scriptname", &m_ScriptName);
+
+				if (ImGui::Button("Create", ImVec2(120, 0)))
+				{
+					m_ShowCreationMenu = false; // Close the input box
+					ImGui::CloseCurrentPopup();
+
+					// Use the script_name here
+					// For example: create a new script with the name entered
+					scriptingInterface->CreateScript(m_ScriptName);
+					eventManager->QueueEvent(std::make_unique<ScriptCreatedEvent>(entity.m_ID, m_ScriptName));
+
+			/*		std::string fileP = std::filesystem::absolute(p.path()).string();
+
+					ShellExecuteA(0, 0, fileP.c_str(), 0, 0, SW_SHOW);*/
+
+					m_ScriptName = "New Script";
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("Cancel", ImVec2(120, 0)))
+				{
+					m_ShowCreationMenu = false; // Close the input box
+					m_ScriptName = "New Script";
+					ImGui::CloseCurrentPopup();
+				}
+				ImGui::EndPopup();
+			}
+
+			ImGui::EndMenu();
+
+		}
+	}
+	void ScriptSystem::InitializeScripts(EntityID id)
+	{
+
+		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+		ScriptComponent& scriptComponent = registry->GetComponent<ScriptComponent>(id);
+
+
+		for (const auto& name : scriptComponent.m_Script_Names)
+		{
+			AddScript(id, name);
 		}
 
 	}
 
 	const std::string ScriptSystem::GetScriptPaths(const std::string& scriptDirectory, const std::string& scriptName)
 	{
+
+
 		for (const auto& entry : fs::recursive_directory_iterator(scriptDirectory))
 		{
 			if (entry.is_regular_file()) {
@@ -635,4 +417,200 @@ namespace NULLENGINE
 
 		return std::string();
 	}
+
+
+	void ScriptSystem::AddScript(EntityID id, const std::string& scriptname)
+	{
+
+		NScriptingInterface* scriptingInterface = m_Parent->Get< NScriptingInterface>();
+
+		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+		NSceneManager* scene = NEngine::Instance().Get<NSceneManager>();
+
+		ScriptComponent& scriptComponent = registry->GetComponent<ScriptComponent>(id);
+
+		std::string scriptDirectory = "../Assets/Scripts/";  // Update this path to your script directory
+
+
+
+		try
+		{
+			std::string fullPath = GetScriptPaths(scriptDirectory, scriptname);
+
+			// Load the script using require_file
+			scriptComponent.m_Script_Paths.push_back(fullPath);
+			scriptComponent.m_Environment = sol::environment(m_LuaState, sol::create, m_LuaState.globals());
+			sol::table script = m_LuaState.script_file(fullPath, scriptComponent.m_Environment);
+			//scriptComponent.m_Script_Names.push_back(scriptname);
+
+			scriptComponent.m_Environment["pEntity"] = &scene->GetCurrentScene()->GetEntity(id);
+
+			sol::table data = script["data"];
+			for (auto& pair : data)
+			{
+				sol::object key = pair.first;
+				sol::table props = pair.second;
+
+				sol::object value = props["value"];
+				bool serialize = props["serialize"];
+
+				std::string keyStr = key.as<std::string>();
+				LuaValue luaValue = ScriptHelper::GetValue(value);
+
+				if (value.is<sol::function>() || value.is<sol::table>() || !serialize)
+					continue;
+
+
+				if (scriptComponent.m_ScriptDefaults.empty())
+				{
+					scriptComponent.m_ScriptDefaults[scriptname][keyStr] = luaValue;
+					continue;
+				}
+
+				// Get the script default for the given name, creating it if it doesn't exist
+				auto& defaultsForName = scriptComponent.m_ScriptDefaults[scriptname];
+
+				// Check if the key exists in the defaults for the name
+				if (defaultsForName.contains(keyStr))
+				{
+					// If the value has changed, set it; otherwise, update the default
+					if (defaultsForName.at(keyStr) != luaValue)
+					{
+						ScriptHelper::SetValue(script, keyStr, defaultsForName.at(keyStr));
+					}
+					else
+					{
+						defaultsForName[keyStr] = luaValue;
+					}
+				}
+				else
+				{
+					defaultsForName[keyStr] = luaValue;
+				}
+
+
+			}
+
+			scriptingInterface->AddScriptWatcher(scriptComponent.m_Script_Paths.back(), scriptname);
+			//scriptingInterface->AddScriptWatcher(scriptComponent.m_Script_Paths.back(), scriptname);
+			//scriptingInterface->AddScriptWatcher(scriptComponent.m_Script_Paths.back(), scriptname);
+
+			scriptComponent.m_Scripts.emplace_back(script);
+
+		}
+		catch (const std::exception& e)
+		{
+			NLE_CORE_ERROR("Error loading script {0}: {1}", scriptname, e.what());
+		}
+
+
+		auto newScr = scriptComponent.m_Scripts.back();
+		if (newScr.valid())
+		{
+			sol::function start_func = newScr["Start"];
+			if (start_func.valid()) {
+				start_func();
+			}
+		}
+	}
+
+	void ScriptSystem::RemoveScript(EntityID id, const std::string& script)
+	{
+		NScriptingInterface* scriptingInterface = m_Parent->Get< NScriptingInterface>();
+		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+		NSceneManager* scene = NEngine::Instance().Get<NSceneManager>();
+
+		ScriptComponent& scriptComponent = registry->GetComponent<ScriptComponent>(id);
+
+
+		auto itr = std::find(scriptComponent.m_Script_Names.begin(), scriptComponent.m_Script_Names.end(), script);
+
+		if (itr != scriptComponent.m_Script_Names.end())
+		{
+			//	m_Lua.script_file(scriptPath);
+			size_t index = itr - scriptComponent.m_Script_Names.begin();
+			scriptComponent.m_Script_Names.erase(itr);
+			scriptComponent.m_ScriptDefaults.erase(script);
+			scriptComponent.m_Script_Paths.erase(scriptComponent.m_Script_Paths.begin() + index);
+			scriptComponent.m_Scripts.erase(scriptComponent.m_Scripts.begin() + index);
+			m_LuaState[script.c_str()] = sol::nil;
+		}
+	}
+
+	void ScriptSystem::OnScriptAdded(const ScriptCreatedEvent& e)
+	{
+		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+		ScriptComponent& scriptComponent = registry->GetComponent<ScriptComponent>(e.GetEntityID());
+		scriptComponent.m_Script_Names.push_back(e.GetScriptName());
+		AddScript(e.GetEntityID(), e.GetScriptName());
+	}
+
+
+	void ScriptSystem::OnScriptModified(const ScriptModifiedEvent& e)
+	{
+		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+		NScriptingInterface* scriptingInterface = m_Parent->Get< NScriptingInterface>();
+
+		for (const auto entityId : GetSystemEntities())
+		{
+
+			ScriptComponent& scriptComponent = registry->GetComponent<ScriptComponent>(entityId);
+
+			auto itr = std::find(scriptComponent.m_Script_Names.begin(), scriptComponent.m_Script_Names.end(), e.GetScriptName());
+
+			if (itr != scriptComponent.m_Script_Names.end())
+			{
+				//	m_Lua.script_file(scriptPath);
+				size_t index = itr - scriptComponent.m_Script_Names.begin();
+
+				try
+				{
+					//scriptComponent.m_Lua_state["package"]["loaded"][e.GetScriptName()] = sol::nil;
+
+					sol::table oldData = scriptComponent.m_Scripts[index]["data"];
+
+					sol::table table = m_LuaState.script_file(scriptComponent.m_Script_Paths[index]);
+
+					sol::table newData = table["data"];
+
+					for (auto& pair : oldData)
+					{
+						sol::object key = pair.first;
+						sol::table props = pair.second;
+
+						sol::object oldValue = props["value"];
+						bool serialize = props["serialize"];
+
+						std::string keyStr = key.as<std::string>();
+
+						if (newData[keyStr].valid())
+						{
+							sol::table newProps = newData[keyStr];
+							bool serialize = newProps["serialize"];
+							if (serialize)
+								newProps["value"] = oldValue;
+						}
+					}
+
+					scriptComponent.m_Scripts[index] = table;
+
+					scriptingInterface->AddScripts(e.GetScriptName());
+				}
+				catch (const std::exception& ex)
+				{
+					NLE_CORE_ERROR("Error loading Script: {0}", ex.what());
+				}
+
+			}
+		}
+	}
+
+	void ScriptSystem::OnScriptRemoved(const ScriptRemovedEvent& e)
+	{
+		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+		ScriptComponent& scriptComponent = registry->GetComponent<ScriptComponent>(e.GetEntityID());
+
+		RemoveScript(e.GetEntityID(), e.GetScriptName());
+	}
+
 }

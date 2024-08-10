@@ -22,6 +22,8 @@
 #include <bitset>
 #include <functional>
 #include <sstream>
+#include <strstream>
+#include <streambuf>
 #include <tuple>
 #include <set>
 #include <unordered_set>

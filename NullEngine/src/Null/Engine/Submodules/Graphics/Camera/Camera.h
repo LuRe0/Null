@@ -51,6 +51,11 @@ namespace NULLENGINE
 
         virtual void Shudown() = 0;
 
+        virtual void View() = 0;
+
+        virtual void Write(JSON& json) = 0;
+
+
         virtual const glm::mat4 GetViewMatrix() const = 0;
 
         const glm::mat4& GetProjectionMatrix() const { return m_ProjectionMatrix; }

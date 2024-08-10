@@ -53,9 +53,7 @@ namespace NULLENGINE
 		void Shutdown() override;
 
 
-		SpriteComponent* Sprite(Entity entity);
 
-		void SetColor(Entity entity, glm::vec4 color);
 
 		void RegisterToScripAPI(sol::state& lua) override;
 

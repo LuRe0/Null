@@ -108,6 +108,11 @@ namespace NULLENGINE
 		}
 	}
 
+	void NWindow::RuntimeUpdate(float dt)
+	{
+		Update(dt);
+	}
+
 	void NWindow::Unload()
 	{
 

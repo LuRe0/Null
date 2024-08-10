@@ -11,6 +11,7 @@
 //******************************************************************************//
 #include "stdafx.h"
 #include "Camera2D.h"
+#include <misc/cpp/imgui_stdlib.h>
 
 
 
@@ -82,6 +83,37 @@ namespace NULLENGINE
 
 			m_IsDirty = false;
 		}
+	}
+
+	void Camera2D::View()
+	{
+		if (ImGui::InputText("Name", &m_Name))
+		{
+			if (m_Name.empty())
+			{
+				SetName("Default_Camera2D");
+			}
+		}
+
+		if (m_Name == "Default_Camera2D")
+		{
+			ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Warning: Assign unique name to camera");
+		}
+
+		if (ImGui::DragFloat2("Position", glm::value_ptr(m_Position), 0.5f) ||
+			ImGui::SliderFloat("Rotation", &m_Rotation, -180.0f, 180.0f) ||
+			ImGui::SliderFloat("Zoom", &m_Zoom, 0.25f, 5.0f))
+			m_IsDirty = true;
+	
+	}
+
+	void Camera2D::Write(JSON& json)
+	{
+		json["position"] = { m_Position.x, m_Position.y };
+		json["zoom"] = m_Zoom;
+		json["rotation"] = m_Rotation;
+		json["type"] = "Camera2D";
+		json["name"] = m_Name;
 	}
 
 	const glm::mat4 Camera2D::GetViewMatrix() const

@@ -45,6 +45,7 @@ namespace NULLENGINE
 		void Init() override;
 		//! Virtual Update function
 		void Update(float dt) override;
+        void RuntimeUpdate(float dt) override;
 
 		void Unload() override;
 		//! Virtual Shutdown function
@@ -96,8 +97,27 @@ namespace NULLENGINE
 
         void SetCurrentCamera(const std::string& name);
 
+        Camera* ReadCamera(const JSON& json);
 
         Camera* GetCurrentCamera();
+
+        std::vector<std::string> Get2DCameraNames() const
+        {
+            std::vector<std::string> componentNames;
+            for (const auto& pair : m_Cameras2D) {
+                componentNames.push_back(pair.first);
+            }
+            return componentNames;
+        }
+
+        std::vector<std::string> Get3DCameraNames() const
+        {
+            std::vector<std::string> componentNames;
+            for (const auto& pair : m_Cameras3D) {
+                componentNames.push_back(pair.first);
+            }
+            return componentNames;
+        }
 
 	private:
 		std::unordered_map<std::string, std::unique_ptr<Camera2D>> m_Cameras2D;

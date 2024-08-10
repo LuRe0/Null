@@ -341,4 +341,79 @@ namespace NULLENGINE
         const std::string m_NextScene;
     };
 
+
+    class ScriptCreatedEvent : public Event 
+    {
+    public:
+        ScriptCreatedEvent(uint32_t eID, const std::string script)
+            : m_EntityID(eID)
+            , m_Scriptname(script) {}
+
+        std::string Print() const override
+        {
+            std::stringstream ss;
+            ss << "ScriptCreatedEvent: Entity: " << m_EntityID << ", Script: " << m_Scriptname;
+            return ss.str();
+        }
+
+        const uint32_t& GetEntityID() const { return m_EntityID; }
+        const std::string& GetScriptName() const { return m_Scriptname; }
+
+        EVENT_CLASS_TYPE(ScriptCreated)
+
+    private:
+        const uint32_t m_EntityID;
+        const std::string m_Scriptname;
+  
+    };
+
+
+    class ScriptRemovedEvent : public Event
+    {
+    public:
+        ScriptRemovedEvent(uint32_t eID, const std::string& script)
+            : m_EntityID(eID)
+            , m_Scriptname(script) {}
+
+        std::string Print() const override
+        {
+            std::stringstream ss;
+            ss << "ScriptRemovedEvent: Entity: " << m_EntityID << ", Script: " << m_Scriptname;
+            return ss.str();
+        }
+
+        const uint32_t& GetEntityID() const { return m_EntityID; }
+        const std::string& GetScriptName() const { return m_Scriptname; }
+
+        EVENT_CLASS_TYPE(ScriptRemoved)
+
+    private:
+        const uint32_t m_EntityID;
+        const std::string m_Scriptname;
+
+    };
+
+
+    class ScriptModifiedEvent : public Event
+    {
+    public:
+        ScriptModifiedEvent(const std::string script)
+            : m_Scriptname(script) {}
+
+        std::string Print() const override
+        {
+            std::stringstream ss;
+            ss << "ScriptModifiedEvent: script:" << m_Scriptname;
+            return ss.str();
+        }
+
+        const std::string& GetScriptName() const { return m_Scriptname; }
+
+        EVENT_CLASS_TYPE(ScriptModified)
+
+    private:
+        const std::string m_Scriptname;
+
+    };
+
 }

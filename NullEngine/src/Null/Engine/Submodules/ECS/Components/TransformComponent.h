@@ -9,7 +9,7 @@ namespace NULLENGINE
 		glm::vec3 m_Scale;
 		glm::vec3 m_Rotation;
 		bool m_Dirty;
-
+		bool m_DirectManipulation = false;
 		glm::mat4 m_TransformMatrix;
 
 
@@ -25,6 +25,7 @@ namespace NULLENGINE
 			m_TransformMatrix(glm::mat4(1.0f)) // Identity matrix by default
 		{}
 
-		const std::string Name() { return Component<TransformComponent>::TypeName(); };
+		const std::string Name() const { return Component<TransformComponent>::TypeName(); };
+		const uint32_t ID() const { return Component<TransformComponent>::GetID(); };
 	};
 }

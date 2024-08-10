@@ -39,7 +39,7 @@ namespace NULLENGINE
 
 		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
 
-		componentFactory->Register<TransformComponent>(CreateTransformComponent, 
+		componentFactory->Register<TransformComponent>(CreateTransformComponent,
 			[this](Entity& id) { this->ViewTransformComponent(id); }, WriteTransformComponent);
 
 	}
@@ -70,8 +70,9 @@ namespace NULLENGINE
 			if (!transform.m_Enabled)
 				continue;
 
-			if (transform.m_Dirty) 
+			if (transform.m_Dirty)
 			{
+
 				glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), transform.m_Translation);
 				// Calculate rotation matrix (assuming Euler angles in radians)
 				glm::mat4 rotationMatrix = glm::toMat4(glm::quat(glm::radians(transform.m_Rotation)));
@@ -81,12 +82,29 @@ namespace NULLENGINE
 				transform.m_TransformMatrix = translationMatrix * rotationMatrix * scaleMatrix;
 
 				transform.m_Dirty = false;
+
+				//if (m_Parent->HasComponent<Rigidbody2DComponent>(entityId))
+				//{
+				//	Rigidbody2DComponent& rb2d = m_Parent->GetComponent<Rigidbody2DComponent>(entityId);
+
+				//	if (rb2d.m_RuntimeBody)
+				//	{
+				//		PhysicsSystem* physicsSys = NEngine::Instance().Get<PhysicsSystem>();
+				//		auto pos = physicsSys->PixelsToMeters(transform.m_Translation.x, transform.m_Translation.y);
+				//		rb2d.m_RuntimeBody->SetTransform({ pos.x, pos.y }, transform.m_Rotation.z);
+				//	}
+				//}
 			}
 		}
 	}
 
+	void TransformSystem::RuntimeUpdate(float dt)
+	{
+		Update(dt);
+	}
 
-	void TransformSystem::Render() 
+
+	void TransformSystem::Render()
 	{
 	}
 
@@ -100,82 +118,33 @@ namespace NULLENGINE
 
 	void TransformSystem::RegisterToScripAPI(sol::state& lua)
 	{
-		lua.new_usertype<TransformComponent>(
-			"TransformComponent",
-			"Translation", &TransformComponent::m_Translation,
-			"Scale", &TransformComponent::m_Scale,
-			"Rotation", &TransformComponent::m_Rotation
-		);
-
-		lua.new_usertype<TransformSystem>(
-			"TransformSystem",
-			"SetTranslation", &TransformSystem::SetTranslation,
-			"SetRotation", &TransformSystem::SetRotation,
-			"SetScale", &TransformSystem::SetScale
-		);
-
-		lua["Transform"] = this;
-	}
-
-	TransformComponent* TransformSystem::Transform(Entity& entity)
-	{
-		if (entity.Has<TransformComponent>());
-			return &entity.Get<TransformComponent>();
-	}
-
-	void TransformSystem::SetTranslation(Entity& entity, glm::vec3 position)
-	{
-		if (entity.Has<TransformComponent>())
-		{
-			auto& transform = entity.Get<TransformComponent>();
-			transform.m_Translation = position;
-			if (entity.Has<Rigidbody2DComponent>())
-			{
-				Rigidbody2DComponent& rb2d = entity.Get<Rigidbody2DComponent>();
-
-				if (rb2d.m_RuntimeBody)
+		lua.new_usertype<TransformComponent>
+			(
+				"Transform",
+				sol::no_constructor,
+				"type_id", &Component<TransformComponent>::GetID,
+				"translation", [](TransformComponent& transform)
+				{ return std::make_tuple(transform.m_Translation.x, transform.m_Translation.y, transform.m_Translation.z); },
+				"scale", [](TransformComponent& transform)
+				{ return std::make_tuple(transform.m_Scale.x, transform.m_Scale.y, transform.m_Scale.z); },
+				"rotation", [](TransformComponent& transform)
+				{ return std::make_tuple(transform.m_Rotation.x, transform.m_Rotation.y, transform.m_Rotation.z); },
+				"set_translation", [](TransformComponent& transform, float x, float y, float z)
 				{
-					PhysicsSystem* physicsSys = NEngine::Instance().Get<PhysicsSystem>();
-					auto pos = physicsSys->PixelsToMeters(transform.m_Translation.x, transform.m_Translation.y);
-					rb2d.m_RuntimeBody->SetTransform({ pos.x, pos.y }, transform.m_Rotation.z);
-				}
-			}
-
-		}
-		else
-			NLE_CORE_ERROR("No {0} Found", Component<TransformComponent>::TypeName());
-	}
-
-	void TransformSystem::SetRotation(Entity& entity, glm::vec3 rotation)
-	{
-
-		if (entity.Has<TransformComponent>())
-		{
-			auto& transform = entity.Get<TransformComponent>();
-			transform.m_Rotation = rotation;
-			if (entity.Has<Rigidbody2DComponent>())
-			{
-				Rigidbody2DComponent& rb2d = entity.Get<Rigidbody2DComponent>();
-
-				if (rb2d.m_RuntimeBody)
+					transform.m_Translation = glm::vec3(x, y, z);
+					transform.m_Dirty = transform.m_DirectManipulation = true;
+				},
+				"set_scale", [](TransformComponent& transform, float x, float y, float z)
 				{
-					PhysicsSystem* physicsSys = NEngine::Instance().Get<PhysicsSystem>();
-					auto pos = physicsSys->PixelsToMeters(transform.m_Translation.x, transform.m_Translation.y);
-					rb2d.m_RuntimeBody->SetTransform(rb2d.m_RuntimeBody->GetPosition(), transform.m_Rotation.z);
+					transform.m_Scale = glm::vec3(x, y, z);
+					transform.m_Dirty = true;
+				},
+				"set_rotation", [](TransformComponent& transform, float x, float y, float z)
+				{
+					transform.m_Scale = glm::vec3(x, y, z);
+					transform.m_Dirty = transform.m_DirectManipulation = true;
 				}
-			}
-
-		}
-		else
-			NLE_CORE_ERROR("No {0} Found", Component<TransformComponent>::TypeName());
-	}
-
-	void TransformSystem::SetScale(Entity& entity, glm::vec3 scale)
-	{
-		if (entity.Has<TransformComponent>())
-			entity.Get<TransformComponent>().m_Scale = scale;
-		else
-			NLE_CORE_ERROR("No {0} Found", Component<TransformComponent>::TypeName());
+		);
 	}
 
 
@@ -212,38 +181,38 @@ namespace NULLENGINE
 	void TransformSystem::ViewTransformComponent(Entity& entity)
 	{
 		TransformComponent& transform = entity.Get<TransformComponent>();
-	
-		PhysicsSystem* physicsSys = NEngine::Instance().Get<PhysicsSystem>();
+
 
 		if (ImGui::DragFloat3("Translation", glm::value_ptr(transform.m_Translation), 0.5f))
 		{
 			// Handle the change in translation
-			if (entity.Has<Rigidbody2DComponent>())
-			{
-				Rigidbody2DComponent& rb2d = entity.Get<Rigidbody2DComponent>();
-				
-				auto pos = physicsSys->PixelsToMeters(transform.m_Translation.x, transform.m_Translation.y);
-				if(rb2d.m_RuntimeBody)
-					rb2d.m_RuntimeBody->SetTransform({ pos.x, pos.y }, transform.m_Rotation.z);
-			}
+			//if (entity.Has<Rigidbody2DComponent>())
+			//{
+			//	Rigidbody2DComponent& rb2d = entity.Get<Rigidbody2DComponent>();
+			//	
+			//	auto pos = physicsSys->PixelsToMeters(transform.m_Translation.x, transform.m_Translation.y);
+			//	if(rb2d.m_RuntimeBody)
+			//		rb2d.m_RuntimeBody->SetTransform({ pos.x, pos.y }, transform.m_Rotation.z);
+			//}
 
-			transform.m_Dirty = true;
+			transform.m_Dirty = transform.m_DirectManipulation = true;
 
 		}
 
 		if (ImGui::DragFloat3("Rotation", glm::value_ptr(transform.m_Rotation), 0.5f))
 		{
 			// Handle the change in rotation
-			if (entity.Has<Rigidbody2DComponent>())
-			{
-				Rigidbody2DComponent& rb2d = entity.Get<Rigidbody2DComponent>();
+			//if (entity.Has<Rigidbody2DComponent>())
+			//{
+			//	Rigidbody2DComponent& rb2d = entity.Get<Rigidbody2DComponent>();
 
-				auto pos = physicsSys->PixelsToMeters(transform.m_Translation.x, transform.m_Translation.y);
-				if(rb2d.m_RuntimeBody)
-					rb2d.m_RuntimeBody->SetTransform(rb2d.m_RuntimeBody->GetPosition(), transform.m_Rotation.z);
-			}
+			//	auto pos = physicsSys->PixelsToMeters(transform.m_Translation.x, transform.m_Translation.y);
+			//	if(rb2d.m_RuntimeBody)
+			//		rb2d.m_RuntimeBody->SetTransform(rb2d.m_RuntimeBody->GetPosition(), transform.m_Rotation.z);
+			//}
 
-			transform.m_Dirty = true;
+			transform.m_Dirty = transform.m_DirectManipulation = true;
+
 		}
 
 		if (ImGui::DragFloat3("Scale", glm::value_ptr(transform.m_Scale), 0.5f))

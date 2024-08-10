@@ -79,6 +79,10 @@ namespace NULLENGINE
 
 	}
 
+	void NRegistry::RuntimeUpdate(float dt)
+	{
+	}
+
 	void NRegistry::Render()
 	{
 

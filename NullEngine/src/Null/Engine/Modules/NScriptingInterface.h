@@ -15,14 +15,14 @@
 #include "Null/Core.h"
 #include "Null/Engine/Modules/Base/IModule.h"
 #include "sol/sol.hpp"
-
+#include <FileWatch.hpp>
 
 
 //******************************************************************************//
 // Definitions  														        //
 //******************************************************************************//
 
-
+using Watcher = std::vector<std::unique_ptr<filewatch::FileWatch<std::wstring>>>;
 
 //******************************************************************************//
 // Private constants														    //
@@ -35,6 +35,7 @@
 
 namespace NULLENGINE
 {
+
 
 	//class NLE_API Scene;
 
@@ -53,7 +54,8 @@ namespace NULLENGINE
 		//! Virtual Init function
 		void Init() override;
 		//! Virtual Update function
-		void Update(float dt) override {};
+		void Update(float dt) override;
+		void RuntimeUpdate(float dt) override;
 
 		//! render function
 		void Render() {};
@@ -64,18 +66,41 @@ namespace NULLENGINE
 
 		void RegisterEngineFunctions(sol::state& lua);
 
+		void CreateScript(const std::string& filename);
+
+		void ReloadScript(const std::string& filename);
+
+		void AddScriptWatcher(const std::string filepath, const std::string& filename);
+
 	/*	
 		void Render(const RenderData& render);*/
 
+		void AddScripts(const std::string& filename);
+
+		void UpdateScript(const std::string& filename, bool m);
+
+		bool GetScriptStatus(const std::string& filename);
+
 		void RegisterToScripAPI(sol::state& lua) override {};
 
+
+		std::vector<std::string> GetScriptNames() const
+		{
+			std::vector<std::string> componentNames;
+			for (const auto& pair : m_ScriptList) {
+				componentNames.push_back(pair.first);
+			}
+			return componentNames;
+		}
+
+		static void RegisterMathStructures(sol::state& lua);
 	private:
+		Watcher m_ScriptReloaders;
+		std::unordered_map<std::string, bool> m_ScriptList;
 
 		NScriptingInterface(NScriptingInterface const&) = delete;
 		NScriptingInterface& operator=(NScriptingInterface const&) = delete;
 
-		void RegisterMathStructures(sol::state& lua);
-		void RegisterEntity(sol::state& lua);
 	};
 
 }

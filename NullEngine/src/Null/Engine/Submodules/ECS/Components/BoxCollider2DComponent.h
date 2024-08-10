@@ -33,7 +33,8 @@ namespace NULLENGINE
 			m_RuntimeFixture(runtimeFixture)
 		{}
 
-		const std::string Name() { return Component<BoxCollider2DComponent>::TypeName(); };
+		const std::string Name() const { return Component<BoxCollider2DComponent>::TypeName(); };
+		const uint32_t ID() const { return Component<BoxCollider2DComponent>::GetID(); };
 
 	};
 

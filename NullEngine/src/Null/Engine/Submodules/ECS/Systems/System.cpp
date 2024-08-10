@@ -159,9 +159,18 @@ namespace NULLENGINE
 	void Signature::set(size_t index, bool value)
 	{
 		assert(index < m_Bitset.size());
-		if (!m_Bitset.test(index)) {
-			m_Bitset.set(index, value);
+
+		if (value == m_Bitset.test(index)) return;
+
+		m_Bitset.set(index, value);
+
+		if (m_Bitset.test(index))
+		{
 			m_Indices.push_back(index);
+		}
+		else
+		{
+			m_Indices.erase(std::remove(m_Indices.begin(), m_Indices.end(), index), m_Indices.end());
 		}
 	}
 

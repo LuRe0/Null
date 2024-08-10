@@ -12,6 +12,8 @@ namespace NULLENGINE
 		{}
 
 		const std::string Name() { return Component<TagComponent>::TypeName(); };
+		const uint32_t ID() { return Component<TagComponent>::GetID(); };
+
 	};
 
 }

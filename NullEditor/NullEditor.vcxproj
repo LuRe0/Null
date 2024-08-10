@@ -78,7 +78,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NLE_PLATFORM_WINDOWS;EDITOR;NLE_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\NullEngine\vendor\spdlog\include;..\NullEngine\vendor\magic_enum\magic_enum\include;..\NullEngine\src;src;..\NullEngine\vendor\GLFW\include;..\NullEngine\vendor\Glad\include;..\NullEngine\vendor\imgui;..\NullEngine\vendor\imGuizmo;..\NullEngine\vendor\JSON\include;..\NullEngine\vendor\glm;..\NullEngine\vendor\sol2\sol2\include;..\NullEngine\vendor\lua\lua\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\NullEngine\vendor\spdlog\include;..\NullEngine\vendor\magic_enum\magic_enum\include;..\NullEngine\src;src;..\NullEngine\vendor\GLFW\include;..\NullEngine\vendor\Glad\include;..\NullEngine\vendor\imgui;..\NullEngine\vendor\imGuizmo;..\NullEngine\vendor\JSON\include;..\NullEngine\vendor\glm;..\NullEngine\vendor\filewatch;..\NullEngine\vendor\sol2\sol2\include;..\NullEngine\vendor\lua\lua\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <LanguageStandard>stdcpplatest</LanguageStandard>
@@ -93,7 +93,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NLE_PLATFORM_WINDOWS;EDITOR;NLE_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\NullEngine\vendor\spdlog\include;..\NullEngine\vendor\magic_enum\magic_enum\include;..\NullEngine\src;src;..\NullEngine\vendor\GLFW\include;..\NullEngine\vendor\Glad\include;..\NullEngine\vendor\imgui;..\NullEngine\vendor\imGuizmo;..\NullEngine\vendor\JSON\include;..\NullEngine\vendor\glm;..\NullEngine\vendor\sol2\sol2\include;..\NullEngine\vendor\lua\lua\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\NullEngine\vendor\spdlog\include;..\NullEngine\vendor\magic_enum\magic_enum\include;..\NullEngine\src;src;..\NullEngine\vendor\GLFW\include;..\NullEngine\vendor\Glad\include;..\NullEngine\vendor\imgui;..\NullEngine\vendor\imGuizmo;..\NullEngine\vendor\JSON\include;..\NullEngine\vendor\glm;..\NullEngine\vendor\filewatch;..\NullEngine\vendor\sol2\sol2\include;..\NullEngine\vendor\lua\lua\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <LanguageStandard>stdcpplatest</LanguageStandard>
@@ -108,7 +108,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NLE_PLATFORM_WINDOWS;EDITOR;NLE_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\NullEngine\vendor\spdlog\include;..\NullEngine\vendor\magic_enum\magic_enum\include;..\NullEngine\src;src;..\NullEngine\vendor\GLFW\include;..\NullEngine\vendor\Glad\include;..\NullEngine\vendor\imgui;..\NullEngine\vendor\imGuizmo;..\NullEngine\vendor\JSON\include;..\NullEngine\vendor\glm;..\NullEngine\vendor\sol2\sol2\include;..\NullEngine\vendor\lua\lua\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\NullEngine\vendor\spdlog\include;..\NullEngine\vendor\magic_enum\magic_enum\include;..\NullEngine\src;src;..\NullEngine\vendor\GLFW\include;..\NullEngine\vendor\Glad\include;..\NullEngine\vendor\imgui;..\NullEngine\vendor\imGuizmo;..\NullEngine\vendor\JSON\include;..\NullEngine\vendor\glm;..\NullEngine\vendor\filewatch;..\NullEngine\vendor\sol2\sol2\include;..\NullEngine\vendor\lua\lua\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <LanguageStandard>stdcpplatest</LanguageStandard>
@@ -121,6 +121,7 @@
   <ItemGroup>
     <ClInclude Include="src\Pannels\ComponentInspectorPannel.h" />
     <ClInclude Include="src\Pannels\ContentBrowserPannel.h" />
+    <ClInclude Include="src\Pannels\EditorConsolePannel.h" />
     <ClInclude Include="src\Pannels\ModuleStatsPannel.h" />
     <ClInclude Include="src\Pannels\SceneHierarchyPannel.h" />
     <ClInclude Include="src\Pannels\ScenePropertyPannel.h" />
@@ -129,6 +130,7 @@
     <ClCompile Include="src\NullEditor.cpp" />
     <ClCompile Include="src\Pannels\ComponentInspectorPannel.cpp" />
     <ClCompile Include="src\Pannels\ContentBrowserPannel.cpp" />
+    <ClCompile Include="src\Pannels\EditorConsolePannel.cpp" />
     <ClCompile Include="src\Pannels\ModuleStatsPannel.cpp" />
     <ClCompile Include="src\Pannels\SceneHierarchyPannel.cpp" />
     <ClCompile Include="src\Pannels\ScenePropertyPannel.cpp" />

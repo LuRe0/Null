@@ -1,0 +1,73 @@
+[2024-08-05 12:59:53.928] [NULL ENGINE] [warning] Initialized Log!
+[2024-08-05 12:59:54.080] [NULL ENGINE] [trace] GLAD initialized successfully.
+[2024-08-05 12:59:54.252] [NULL ENGINE] [info] Succesfully added BoxCollider2DComponent, 4 to entity 1
+[2024-08-05 12:59:54.252] [NULL ENGINE] [info] Succesfully added Rigidbody2DComponent, 3 to entity 1
+[2024-08-05 12:59:54.253] [NULL ENGINE] [info] Succesfully added ScriptComponent, 1 to entity 1
+[2024-08-05 12:59:54.253] [NULL ENGINE] [info] Succesfully added SpriteComponent, 6 to entity 1
+[2024-08-05 12:59:54.253] [NULL ENGINE] [info] Succesfully added TransformComponent, 2 to entity 1
+[2024-08-05 12:59:54.254] [NULL ENGINE] [info] Succesfully added SpriteComponent, 6 to entity 2
+[2024-08-05 12:59:54.254] [NULL ENGINE] [info] Succesfully added TransformComponent, 2 to entity 2
+[2024-08-05 12:59:54.254] [NULL ENGINE] [info] Succesfully added SpriteComponent, 6 to entity 3
+[2024-08-05 12:59:54.254] [NULL ENGINE] [info] Succesfully added TransformComponent, 2 to entity 3
+[2024-08-05 12:59:54.254] [NULL ENGINE] [trace] Sandbox scene addded successfully added to list
+[2024-08-05 13:02:20.317] [NULL ENGINE] [warning] Initialized Log!
+[2024-08-05 13:02:20.491] [NULL ENGINE] [trace] GLAD initialized successfully.
+[2024-08-05 13:02:20.669] [NULL ENGINE] [info] Succesfully added BoxCollider2DComponent, 4 to entity 1
+[2024-08-05 13:02:20.669] [NULL ENGINE] [info] Succesfully added Rigidbody2DComponent, 3 to entity 1
+[2024-08-05 13:02:20.670] [NULL ENGINE] [info] Succesfully added ScriptComponent, 1 to entity 1
+[2024-08-05 13:02:20.670] [NULL ENGINE] [info] Succesfully added SpriteComponent, 6 to entity 1
+[2024-08-05 13:02:20.671] [NULL ENGINE] [info] Succesfully added TransformComponent, 2 to entity 1
+[2024-08-05 13:02:20.671] [NULL ENGINE] [info] Succesfully added SpriteComponent, 6 to entity 2
+[2024-08-05 13:02:20.671] [NULL ENGINE] [info] Succesfully added TransformComponent, 2 to entity 2
+[2024-08-05 13:02:20.671] [NULL ENGINE] [info] Succesfully added SpriteComponent, 6 to entity 3
+[2024-08-05 13:02:20.672] [NULL ENGINE] [info] Succesfully added TransformComponent, 2 to entity 3
+[2024-08-05 13:02:20.672] [NULL ENGINE] [trace] Sandbox scene addded successfully added to list
+[2024-08-05 21:46:36.948] [NULL ENGINE] [warning] Initialized Log!
+[2024-08-05 21:46:37.117] [NULL ENGINE] [trace] GLAD initialized successfully.
+[2024-08-05 21:46:37.309] [NULL ENGINE] [info] Succesfully added BoxCollider2DComponent, 4 to entity 1
+[2024-08-05 21:46:37.309] [NULL ENGINE] [info] Succesfully added Rigidbody2DComponent, 3 to entity 1
+[2024-08-05 21:46:37.310] [NULL ENGINE] [info] Succesfully added ScriptComponent, 1 to entity 1
+[2024-08-05 21:46:37.311] [NULL ENGINE] [info] Succesfully added SpriteComponent, 6 to entity 1
+[2024-08-05 21:46:37.311] [NULL ENGINE] [info] Succesfully added TransformComponent, 2 to entity 1
+[2024-08-05 21:46:37.311] [NULL ENGINE] [info] Succesfully added SpriteComponent, 6 to entity 2
+[2024-08-05 21:46:37.312] [NULL ENGINE] [info] Succesfully added TransformComponent, 2 to entity 2
+[2024-08-05 21:46:37.312] [NULL ENGINE] [info] Succesfully added SpriteComponent, 6 to entity 3
+[2024-08-05 21:46:37.312] [NULL ENGINE] [info] Succesfully added TransformComponent, 2 to entity 3
+[2024-08-05 21:46:37.312] [NULL ENGINE] [trace] Sandbox scene addded successfully added to list
+[2024-08-05 21:59:05.568] [NULL ENGINE] [debug] DEEZ
+[2024-08-05 21:59:05.568] [NULL ENGINE] [warning] Initialized Log!
+[2024-08-05 21:59:05.830] [NULL ENGINE] [trace] GLAD initialized successfully.
+[2024-08-05 21:59:06.038] [NULL ENGINE] [info] Succesfully added BoxCollider2DComponent, 4 to entity 1
+[2024-08-05 21:59:06.039] [NULL ENGINE] [info] Succesfully added Rigidbody2DComponent, 3 to entity 1
+[2024-08-05 21:59:06.039] [NULL ENGINE] [info] Succesfully added ScriptComponent, 1 to entity 1
+[2024-08-05 21:59:06.040] [NULL ENGINE] [info] Succesfully added SpriteComponent, 6 to entity 1
+[2024-08-05 21:59:06.040] [NULL ENGINE] [info] Succesfully added TransformComponent, 2 to entity 1
+[2024-08-05 21:59:06.041] [NULL ENGINE] [info] Succesfully added SpriteComponent, 6 to entity 2
+[2024-08-05 21:59:06.041] [NULL ENGINE] [info] Succesfully added TransformComponent, 2 to entity 2
+[2024-08-05 21:59:06.041] [NULL ENGINE] [info] Succesfully added SpriteComponent, 6 to entity 3
+[2024-08-05 21:59:06.042] [NULL ENGINE] [info] Succesfully added TransformComponent, 2 to entity 3
+[2024-08-05 21:59:06.042] [NULL ENGINE] [trace] Sandbox scene addded successfully added to list
+[2024-08-05 22:14:41.595] [NULL ENGINE] [warning] Initialized Log!
+[2024-08-05 22:14:41.783] [NULL ENGINE] [trace] GLAD initialized successfully.
+[2024-08-05 22:14:41.979] [NULL ENGINE] [info] Succesfully added BoxCollider2DComponent, 4 to entity 1
+[2024-08-05 22:14:41.979] [NULL ENGINE] [info] Succesfully added Rigidbody2DComponent, 3 to entity 1
+[2024-08-05 22:14:41.980] [NULL ENGINE] [info] Succesfully added ScriptComponent, 1 to entity 1
+[2024-08-05 22:14:41.980] [NULL ENGINE] [info] Succesfully added SpriteComponent, 6 to entity 1
+[2024-08-05 22:14:41.981] [NULL ENGINE] [info] Succesfully added TransformComponent, 2 to entity 1
+[2024-08-05 22:14:41.981] [NULL ENGINE] [info] Succesfully added SpriteComponent, 6 to entity 2
+[2024-08-05 22:14:41.982] [NULL ENGINE] [info] Succesfully added TransformComponent, 2 to entity 2
+[2024-08-05 22:14:41.982] [NULL ENGINE] [info] Succesfully added SpriteComponent, 6 to entity 3
+[2024-08-05 22:14:41.982] [NULL ENGINE] [info] Succesfully added TransformComponent, 2 to entity 3
+[2024-08-05 22:14:41.982] [NULL ENGINE] [trace] Sandbox scene addded successfully added to list
+[2024-08-05 22:14:57.634] [NULL ENGINE] [warning] Initialized Log!
+[2024-08-05 22:14:57.795] [NULL ENGINE] [trace] GLAD initialized successfully.
+[2024-08-05 22:14:57.967] [NULL ENGINE] [info] Succesfully added BoxCollider2DComponent, 4 to entity 1
+[2024-08-05 22:14:57.967] [NULL ENGINE] [info] Succesfully added Rigidbody2DComponent, 3 to entity 1
+[2024-08-05 22:14:57.968] [NULL ENGINE] [info] Succesfully added ScriptComponent, 1 to entity 1
+[2024-08-05 22:14:57.968] [NULL ENGINE] [info] Succesfully added SpriteComponent, 6 to entity 1
+[2024-08-05 22:14:57.968] [NULL ENGINE] [info] Succesfully added TransformComponent, 2 to entity 1
+[2024-08-05 22:14:57.969] [NULL ENGINE] [info] Succesfully added SpriteComponent, 6 to entity 2
+[2024-08-05 22:14:57.969] [NULL ENGINE] [info] Succesfully added TransformComponent, 2 to entity 2
+[2024-08-05 22:14:57.969] [NULL ENGINE] [info] Succesfully added SpriteComponent, 6 to entity 3
+[2024-08-05 22:14:57.969] [NULL ENGINE] [info] Succesfully added TransformComponent, 2 to entity 3
+[2024-08-05 22:14:57.969] [NULL ENGINE] [trace] Sandbox scene addded successfully added to list

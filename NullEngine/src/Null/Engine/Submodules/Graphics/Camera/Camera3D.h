@@ -72,6 +72,12 @@ namespace NULLENGINE
         const float GetYaw() const;
         const float GetZoom() const;
 
+
+        void View() override;
+
+        void Write(JSON& json) override;
+
+
         void OnWindowResize(const WindowResizeEvent& e);
         void OnMouseScrolled(const MouseScrolledEvent& e);
     private:

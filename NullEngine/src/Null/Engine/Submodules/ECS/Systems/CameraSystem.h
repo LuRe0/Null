@@ -68,6 +68,7 @@ namespace NULLENGINE
 
 		bool m_ShowCreationMenu = false;
 		std::string m_CameraName = "New Camera";
+		Camera::CameraType m_CameraType = Camera::ORTHOGRAPHIC;
 
 	};
 

@@ -87,18 +87,7 @@ namespace NULLENGINE
 
 	void Camera2D::View()
 	{
-		if (ImGui::InputText("Name", &m_Name))
-		{
-			if (m_Name.empty())
-			{
-				SetName("Default_Camera2D");
-			}
-		}
-
-		if (m_Name == "Default_Camera2D")
-		{
-			ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Warning: Assign unique name to camera");
-		}
+		ImGui::Text("Camera name: %s", m_Name.c_str());
 
 		if (ImGui::DragFloat2("Position", glm::value_ptr(m_Position), 0.5f) ||
 			ImGui::SliderFloat("Rotation", &m_Rotation, -180.0f, 180.0f) ||

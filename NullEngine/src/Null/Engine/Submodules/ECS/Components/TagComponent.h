@@ -11,8 +11,8 @@ namespace NULLENGINE
 			: m_Tag(tag)
 		{}
 
-		const std::string Name() { return Component<TagComponent>::TypeName(); };
-		const uint32_t ID() { return Component<TagComponent>::GetID(); };
+		const std::string Name() const { return Component<TagComponent>::TypeName(); };
+		const uint32_t ID() const { return Component<TagComponent>::GetID(); };
 
 	};
 

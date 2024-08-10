@@ -67,4 +67,12 @@ function RedSquareBehavior:Exit()
     -- Cleanup code here
 end
 
+function easeInOutQuint(x)
+    if x < 0.5 then
+        return 16 * x * x * x * x * x
+    else
+        return 1 - math.pow(-2 * x + 2, 5) / 2
+    end
+end
+
 return RedSquareBehavior

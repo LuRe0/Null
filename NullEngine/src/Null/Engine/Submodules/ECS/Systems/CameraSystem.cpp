@@ -13,6 +13,7 @@
 #include "CameraSystem.h"
 #include "imgui.h"
 #include <misc/cpp/imgui_stdlib.h>
+#include <magic_enum/magic_enum.hpp>
 
 
 
@@ -118,29 +119,50 @@ namespace NULLENGINE
 			(
 				"Camera",
 				sol::no_constructor,
-				"type_id", &Component<CameraComponent>::GetID
+				"type_id", &Component<CameraComponent>::GetID,
 				//"translation", [](CameraComponent& Camera)
 				//{ return std::make_tuple(Camera.m_Translation.x, Camera.m_Translation.y, Camera.m_Translation.z); },
 				//"scale", [](CameraComponent& Camera)
 				//{ return std::make_tuple(Camera.m_Scale.x, Camera.m_Scale.y, Camera.m_Scale.z); },
 				//"rotation", [](CameraComponent& Camera)
 				//{ return std::make_tuple(Camera.m_Rotation.x, Camera.m_Rotation.y, Camera.m_Rotation.z); },
-				//"set_translation", [](CameraComponent& Camera, float x, float y, float z)
-				//{
-				//	Camera.m_Translation = glm::vec3(x, y, z);
-				//	Camera.m_Dirty = Camera.m_DirectManipulation = true;
-				//},
-				//"set_scale", [](CameraComponent& Camera, float x, float y, float z)
-				//{
-				//	Camera.m_Scale = glm::vec3(x, y, z);
-				//	Camera.m_Dirty = true;
-				//},
-				//"set_rotation", [](CameraComponent& Camera, float x, float y, float z)
-				//{
-				//	Camera.m_Scale = glm::vec3(x, y, z);
-				//	Camera.m_Dirty = Camera.m_DirectManipulation = true;
-				//}
-		);
+				"set_position", 
+				sol::overload([](CameraComponent& cam, float x, float y, float z)
+					{
+						if (dynamic_cast<Camera3D*>(cam.m_Camera)) {
+							auto camera = dynamic_cast<Camera3D*>(cam.m_Camera);
+							camera->SetPosition(glm::vec3(x, y, z));
+						}
+						else
+						{
+							NLE_CORE_ERROR("Unknown camera type");
+						}
+					},
+					[](CameraComponent& cam, float x, float y)
+					{
+						if (dynamic_cast<Camera3D*>(cam.m_Camera)) {
+							auto camera = dynamic_cast<Camera2D*>(cam.m_Camera);
+							camera->SetPosition(glm::vec2(x, y));
+						}
+						else
+						{
+							NLE_CORE_ERROR("Unknown camera type");
+						}
+					}
+				),
+
+				"set_zoom", [](CameraComponent& cam, float z)
+				{
+					if (dynamic_cast<Camera3D*>(cam.m_Camera)) {
+						auto camera = dynamic_cast<Camera3D*>(cam.m_Camera);
+						camera->SetZoom(z);
+					}
+					else
+					{
+						auto camera = dynamic_cast<Camera2D*>(cam.m_Camera);
+						camera->SetZoom(z);
+					}
+				});
 	}
 
 
@@ -159,7 +181,7 @@ namespace NULLENGINE
 			comp->m_Camera = camManager->ReadCamera(json);
 		}
 
-		componentFactory->AddOrUpdate<CameraComponent>(id, comp, registry, comp->m_Name, comp->m_Type);
+		componentFactory->AddOrUpdate<CameraComponent>(id, comp, registry, comp->m_Name, comp->m_Type, comp->m_Camera);
 	}
 
 	JSON CameraSystem::WriteCameraComponent(BaseComponent* component)
@@ -181,6 +203,7 @@ namespace NULLENGINE
 		if (!Camera.m_Camera)
 		{
 			NCameraManager* camManager = NEngine::Instance().Get<NCameraManager>();
+			NWindow* window = m_Parent->Get<NWindow>();
 
 			const auto& names3D = camManager->Get3DCameraNames();
 			const auto& names2D = camManager->Get2DCameraNames();
@@ -194,28 +217,31 @@ namespace NULLENGINE
 
 				ImGui::Separator();
 
-				ImGui::Text("Perspective");
+				ImGui::TextColored(ImVec4(0.3,0.4,1,1), "Perspective");
 				for (auto name : names3D)
 				{
-			
-						if (filterBeh.PassFilter(name.c_str()))
+
+					if (filterBeh.PassFilter(name.c_str()))
+					{
+						if (ImGui::MenuItem(name.c_str()))
 						{
-							if (ImGui::MenuItem(name.c_str()))
-							{
-							}
+							Camera.m_Camera = camManager->GetCamera<Camera3D>(name);
 						}
+					}
 				}
 
-				ImGui::Text("Orthographic");
-				for (auto name : names3D)
+				ImGui::TextColored(ImVec4(0.3, 0.4, 1, 1), "Orthographic");
+
+				for (auto name : names2D)
 				{
 
-						if (filterBeh.PassFilter(name.c_str()))
+					if (filterBeh.PassFilter(name.c_str()))
+					{
+						if (ImGui::MenuItem(name.c_str()))
 						{
-							if (ImGui::MenuItem(name.c_str()))
-							{
-							}
+							Camera.m_Camera = camManager->GetCamera<Camera2D>(name);
 						}
+					}
 				}
 
 
@@ -231,17 +257,54 @@ namespace NULLENGINE
 				}
 
 
+
 				if (ImGui::BeginPopupModal("New Camera Name", NULL, ImGuiWindowFlags_AlwaysAutoResize))
 				{
 					ImGui::Text("Enter the Camera name:");
 					ImGui::InputText("##Cameraname", &m_CameraName);
 
+					ImGui::Text("Select Camera Projection:");
+					if (ImGui::BeginCombo("##CameraProjection",
+						magic_enum::enum_name(static_cast<Camera::CameraType>(m_CameraType)).data()))
+					{
+						for (size_t i = Camera::CameraType::ORTHOGRAPHIC; i < Camera::CameraType::PROJECTIONTYPE; i++)
+						{
+							auto name = magic_enum::enum_name(static_cast<Camera::CameraType>(i)).data();
+
+							bool isSelected = m_CameraType == i;
+
+							if (ImGui::Selectable(name, isSelected))
+							{
+								m_CameraType = static_cast<Camera::CameraType>(i);
+							}
+							if (isSelected)
+							{
+								ImGui::SetItemDefaultFocus(); // Set focus on the selected item
+							}
+						}
+
+						ImGui::EndCombo();
+					}
+
+
 					if (ImGui::Button("Create", ImVec2(120, 0)))
 					{
+
+						if (m_CameraType == Camera::ORTHOGRAPHIC)
+						{
+							Camera.m_Camera = camManager->AddCamera<Camera2D>(m_CameraName, window->Width(), window->Height());
+						}
+						else if (m_CameraType == Camera::PERSPECTIVE)
+						{
+							Camera.m_Camera = camManager->AddCamera<Camera3D>(m_CameraName, window->Width(), window->Height());
+						}
+
+						Camera.m_Camera->SetName(m_CameraName);
+
 						m_ShowCreationMenu = false; // Close the input box
 						ImGui::CloseCurrentPopup();
-			
-						m_CameraName = "New Script";
+
+						m_CameraName = "New Camera";
 					}
 					ImGui::SameLine();
 					if (ImGui::Button("Cancel", ImVec2(120, 0)))

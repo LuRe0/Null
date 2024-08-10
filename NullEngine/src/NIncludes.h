@@ -31,6 +31,7 @@
 #include "Null/Engine/Submodules/ECS/Systems/TransformSystem.h"
 #include "Null/Engine/Submodules/ECS/Systems/AnimationSystem.h"
 #include "Null/Engine/Submodules/ECS/Systems/ScriptSystem.h"
+#include "Null/Engine/Submodules/ECS/Systems/CameraSystem.h"
 #include "Null/Engine/Submodules/ECS/Components/IComponent.h"
 #include "Null/Engine/Submodules/ECS/Components/TransformComponent.h"
 #include "Null/Engine/Submodules/ECS/Components/SpriteComponent.h"

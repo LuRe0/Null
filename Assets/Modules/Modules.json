@@ -40,6 +40,9 @@
             "type": "ScriptSystem"            
         },
         {
+            "type": "CameraSystem"
+        },
+        {
             "type": "PhysicsSystem"
         },
         {

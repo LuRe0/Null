@@ -60,6 +60,7 @@ namespace NULLENGINE
 		AddCreateFunction<AnimationSystem>([&engine]() { engine.Add<NULLENGINE::AnimationSystem>(); });
 		AddCreateFunction<ScriptSystem>([&engine]() { engine.Add<NULLENGINE::ScriptSystem>(); });
 		AddCreateFunction<NScriptingInterface>([&engine]() { engine.Add<NULLENGINE::NScriptingInterface>(); });
+		AddCreateFunction<CameraSystem>([&engine]() { engine.Add<NULLENGINE::CameraSystem>(); });
 
 		m_NullEngine = &engine;
 

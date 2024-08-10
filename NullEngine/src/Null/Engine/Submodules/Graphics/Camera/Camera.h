@@ -41,6 +41,7 @@ namespace NULLENGINE
             INVALID = -1,
             ORTHOGRAPHIC,
             PERSPECTIVE,
+            PROJECTIONTYPE
         };
 
         virtual ~Camera() = default;

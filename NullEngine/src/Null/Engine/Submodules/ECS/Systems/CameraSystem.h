@@ -60,7 +60,7 @@ namespace NULLENGINE
 
 
 	private:
-		//void OnWindowResize(const WindowResizeEvent& e);
+		void OnRuntimeStart(const EngineRunStateEvent& e);
 		static void CreateCameraComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
 
 		static JSON WriteCameraComponent(BaseComponent* component);

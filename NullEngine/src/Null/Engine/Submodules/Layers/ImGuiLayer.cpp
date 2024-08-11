@@ -686,6 +686,7 @@ namespace NULLENGINE
 	{
 		NRenderer* renderer = NEngine::Instance().Get<NRenderer>();
 		NWindow* window = NEngine::Instance().Get<NWindow>();
+		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
 
 		//ImGui::PopStyleVar(2);
 		bool pOpen = true;
@@ -737,11 +738,19 @@ namespace NULLENGINE
 		int mouseY = static_cast<int>(mousePos.y);
 
 		ImGui::End();
+
+		if (Input::KeyDown(GLFW_KEY_ESCAPE))
+		{
+			NEngine::Instance().SetEngineState(IEngine::EDIT);
+			eventManager->QueueEvent(std::make_unique<SceneSwitchEvent>(m_PannelData.m_Context->m_Name, m_PannelData.m_Context->m_Name));
+			eventManager->QueueEvent(std::make_unique<EngineEditStateEvent>(NEngine::EDIT));
+		}
 	}
 	void ImGuiLayer::MaximizedSceneLayer()
 	{
 		NRenderer* renderer = NEngine::Instance().Get<NRenderer>();
 		NWindow* window = NEngine::Instance().Get<NWindow>();
+		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
 
 
 		// Get the size of the main viewport
@@ -820,6 +829,8 @@ namespace NULLENGINE
 		if (Input::KeyDown(GLFW_KEY_ESCAPE))
 		{
 			NEngine::Instance().SetEngineState(IEngine::EDIT);
+			eventManager->QueueEvent(std::make_unique<SceneSwitchEvent>(m_PannelData.m_Context->m_Name, m_PannelData.m_Context->m_Name));
+			eventManager->QueueEvent(std::make_unique<EngineEditStateEvent>(NEngine::EDIT));
 		}
 	}
 

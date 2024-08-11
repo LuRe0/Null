@@ -78,6 +78,7 @@ namespace NULLENGINE
 		SUBSCRIBE_EVENT(ScriptCreatedEvent, &ScriptSystem::OnScriptAdded, eventManager, EventPriority::High);
 		SUBSCRIBE_EVENT(ScriptModifiedEvent, &ScriptSystem::OnScriptModified, eventManager, EventPriority::High);
 		SUBSCRIBE_EVENT(ScriptRemovedEvent, &ScriptSystem::OnScriptRemoved, eventManager, EventPriority::High);
+		SUBSCRIBE_EVENT(SceneSwitchEvent, &ScriptSystem::OnSceneSwitched, eventManager, EventPriority::Low);
 
 
 	}
@@ -611,6 +612,14 @@ namespace NULLENGINE
 		ScriptComponent& scriptComponent = registry->GetComponent<ScriptComponent>(e.GetEntityID());
 
 		RemoveScript(e.GetEntityID(), e.GetScriptName());
+	}
+
+	void ScriptSystem::OnSceneSwitched(const SceneSwitchEvent& e)
+	{
+		for (const auto entityId : GetSystemEntities())
+		{
+			InitializeScripts(entityId);
+		}
 	}
 
 }

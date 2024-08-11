@@ -41,12 +41,12 @@ namespace NULLENGINE
 		//	m_Transitions.push_back(transition);
 		//}
 
-		for (const auto& entityData : sceneData["entities"]) 
+		for (const auto& entityData : sceneData["entities"])
 		{
 			JsonReader jsonWrapper(entityData);
 
 			Entity entity = entityFactory->CreateEntity(entityData, registry);
-	
+
 
 			if (entityData.contains("components"))
 			{
@@ -126,7 +126,7 @@ namespace NULLENGINE
 	void Scene::Serialize(const std::string& name)
 	{
 		std::string filePath = "";
-		if(name.empty())
+		if (name.empty())
 			filePath = std::string("../Assets/Scenes/Paths/") + m_Name + std::string(".scene");
 		else
 			filePath = std::string("../Assets/Scenes/Paths/") + name + std::string(".scene");
@@ -137,7 +137,7 @@ namespace NULLENGINE
 
 		// Write the JSON object to the file
 		//outFile << json.dump(4); // Pretty-print with an indent of 4 spaces
-		
+
 		JSON json;
 		JSON entitiesJson = JSON::array();
 
@@ -149,7 +149,7 @@ namespace NULLENGINE
 			JSON entityJson;
 			entityJson["name"] = entity.GetName();
 
-			if(!entity.m_Archetype.empty())
+			if (!entity.m_Archetype.empty())
 				entityJson["archetype"] = entity.m_Archetype;
 
 			JSON componentsJson;
@@ -170,7 +170,7 @@ namespace NULLENGINE
 			}
 
 			entityJson["components"] = componentsJson;
-			entitiesJson.push_back(entityJson);	 
+			entitiesJson.push_back(entityJson);
 		}
 
 		json["entities"] = entitiesJson;
@@ -209,10 +209,10 @@ namespace NULLENGINE
 		for (size_t i = 0; i < signature.size(); i++)
 		{
 
-				auto& component = registry->GetComponent(entity.GetID(), signature[i]);
-				JSON compJson = compFactory->WriteComponent(&component);
-				componentsJson.merge_patch(compJson); // Merge component JSON into the entity's components JSON
-			
+			auto& component = registry->GetComponent(entity.GetID(), signature[i]);
+			JSON compJson = compFactory->WriteComponent(&component);
+			componentsJson.merge_patch(compJson); // Merge component JSON into the entity's components JSON
+
 		}
 
 		entityJson["components"] = componentsJson;
@@ -271,7 +271,7 @@ namespace NULLENGINE
 	void Scene::DeleteEntity(EntityID entityID)
 	{
 		auto it = std::find(m_Entities.begin(), m_Entities.end(), entityID);
-		if ( it != m_Entities.end())
+		if (it != m_Entities.end())
 		{
 			it->SetIsDestroyed(true);
 		}
@@ -291,7 +291,7 @@ namespace NULLENGINE
 			if (m_Entities[i].GetIsDestroyed())
 			{
 				eventManager->QueueEvent(std::make_unique<EntityDestroyedEvent>(m_Entities[i].GetID()));
-				
+
 				RemoveEntity(i);
 
 				--i;

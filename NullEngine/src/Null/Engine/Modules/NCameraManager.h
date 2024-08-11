@@ -125,6 +125,10 @@ namespace NULLENGINE
 
         Camera* m_CurrentCamera = nullptr;
 
+
+        void OnRuntimeStop(const EngineEditStateEvent& e);
+
+
         NCameraManager(NCameraManager const&);
         NCameraManager& operator=(NCameraManager const&);
 	};

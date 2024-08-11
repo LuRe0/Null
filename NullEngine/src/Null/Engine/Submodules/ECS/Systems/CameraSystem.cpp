@@ -50,10 +50,10 @@ namespace NULLENGINE
 	{
 		ISystem::Init();
 
-		//NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
 
 
-		//SUBSCRIBE_EVENT(WindowResizeEvent, &CameraSystem::OnWindowResize, eventManager);
+		SUBSCRIBE_EVENT(EngineRunStateEvent, &CameraSystem::OnRuntimeStart, eventManager, EventPriority::Low);
 	}
 
 	void CameraSystem::Update(float dt)
@@ -158,6 +158,29 @@ namespace NULLENGINE
 	}
 
 
+	void CameraSystem::OnRuntimeStart(const EngineRunStateEvent& e)
+	{
+		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+		NCameraManager* camManager = NEngine::Instance().Get<NCameraManager>();
+
+		for (const auto entityId : GetSystemEntities())
+		{
+			CameraComponent& cam = registry->GetComponent<CameraComponent>(entityId);
+
+			if (!cam.m_Enabled)
+				continue;
+
+			if (!cam.m_IsMainCamera) 
+			{
+				continue;
+			}
+			else 
+			{
+				camManager->SetCurrentCamera(cam.m_Name);
+			}
+		}
+	}
+
 	void CameraSystem::CreateCameraComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id)
 	{
 		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
@@ -174,7 +197,7 @@ namespace NULLENGINE
 			comp->m_Camera = camManager->ReadCamera(json);
 		}
 
-		componentFactory->AddOrUpdate<CameraComponent>(id, comp, registry, comp->m_Name, comp->m_Type, comp->m_Camera);
+		componentFactory->AddOrUpdate<CameraComponent>(id, comp, registry, comp->m_Name, comp->m_Type, comp->m_Camera, comp->m_IsMainCamera);
 	}
 
 	JSON CameraSystem::WriteCameraComponent(BaseComponent* component)
@@ -182,7 +205,7 @@ namespace NULLENGINE
 		nlohmann::json json;
 
 		auto& cam = *static_cast<CameraComponent*>(component);
-
+		json["Camera"]["mainCamera"] = cam.m_IsMainCamera;
 		cam.m_Camera->Write(json["Camera"]);
 
 		return json;

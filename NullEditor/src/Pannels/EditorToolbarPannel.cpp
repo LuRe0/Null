@@ -46,6 +46,8 @@ namespace NULLENGINE
 
 	void EditorToolbarPannel::OnImGUIRender()
 	{
+		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
 
@@ -95,11 +97,15 @@ namespace NULLENGINE
 				if (m_CurrentMode == MODE_WINDOWED)
 				{
 					NEngine::Instance().SetEngineState(IEngine::RUN_WINDOWED);
+					eventManager->QueueEvent(std::make_unique<EngineRunStateEvent>(NEngine::RUN_WINDOWED));
 				}
 				else
 				{
 					NEngine::Instance().SetEngineState(IEngine::RUN_MAXIMIZED);
+					eventManager->QueueEvent(std::make_unique<EngineRunStateEvent>(NEngine::RUN_MAXIMIZED));
 				}
+
+				m_PannelData->m_SelectedEntity = {};
 				break;
 			}
 			case NULLENGINE::IEngine::PAUSE:
@@ -107,6 +113,9 @@ namespace NULLENGINE
 			case NULLENGINE::IEngine::RUN_MAXIMIZED: // Handle maximized state
 			case NULLENGINE::IEngine::RUN_WINDOWED:  // Handle windowed state
 				NEngine::Instance().SetEngineState(IEngine::EDIT);
+				eventManager->QueueEvent(std::make_unique<SceneSwitchEvent>(m_PannelData->m_Context->GetName(), 
+																			m_PannelData->m_Context->GetName()));
+				eventManager->QueueEvent(std::make_unique<EngineEditStateEvent>(NEngine::EDIT));
 				break;
 			case NULLENGINE::IEngine::SIMULATE:
 				break;

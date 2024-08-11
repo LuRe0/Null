@@ -62,6 +62,10 @@ namespace NULLENGINE
 
     void NCameraManager::Init()
     {
+        NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+
+        SUBSCRIBE_EVENT(EngineEditStateEvent, &NCameraManager::OnRuntimeStop, eventManager, EventPriority::High);
+
 
        for (auto& cam : m_Cameras3D)
            cam.second->Init();
@@ -133,6 +137,12 @@ namespace NULLENGINE
 
         return camera;
     }
+
+    void NCameraManager::OnRuntimeStop(const EngineEditStateEvent& e)
+    {
+        SetCurrentCamera("Editor3D");
+    }
+
 
 
     void NCameraManager::SetCurrentCamera(const std::string& name)

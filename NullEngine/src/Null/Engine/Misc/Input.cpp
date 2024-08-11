@@ -51,6 +51,7 @@ namespace NULLENGINE
 		SUBSCRIBE_INPUT_EVENT(MouseButtonPressEvent, &Input::OnMouseButton, eventManager);
 		SUBSCRIBE_INPUT_EVENT(MouseButtonReleaseEvent, &Input::OnMouseButton, eventManager);
 		SUBSCRIBE_INPUT_EVENT(MouseMoveEvent, &Input::OnMouseMoved, eventManager);
+		SUBSCRIBE_INPUT_EVENT(SceneSwitchEvent, &Input::OnSceneSwitched, eventManager);
 
 		//SUBSCRIBE_EVENT(WindowCloseEvent, &ImGuiLayer::OnWindowClose, eventManager);
 		//SUBSCRIBE_EVENT(KeyPressEvent, &ImGuiLayer::OnKeyPressed, eventManager);
@@ -383,6 +384,19 @@ namespace NULLENGINE
 	{
 		m_MousePos.x = e.GetX();
 		m_MousePos.y = e.GetY();
+	}
+
+	void Input::OnSceneSwitched(const SceneSwitchEvent& event)
+	{
+		for (int key = GLFW_KEY_SPACE; key <= GLFW_KEY_LAST; ++key) 
+		{
+			m_KeyState[key] = false;
+		}
+
+		for (int button = GLFW_MOUSE_BUTTON_1; button <= GLFW_MOUSE_BUTTON_LAST; ++button) 
+		{
+			m_MouseState[button] = false;
+		}
 	}
 
 }

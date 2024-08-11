@@ -4205,3 +4205,276 @@
 [2024-08-10 22:02:05.318] [APP] [trace] Added SpriteRenderSystem To Engine
 [2024-08-10 22:02:05.318] [APP] [trace] Added NRenderer To Engine
 [2024-08-10 22:02:05.695] [APP] [trace] Creating Window Null Editor (1280, 720)
+[2024-08-10 22:04:25.527] [APP] [info] Initialized Log!
+[2024-08-10 22:04:25.528] [APP] [trace] Added NWindow To Engine
+[2024-08-10 22:04:25.528] [APP] [trace] Added NEventManager To Engine
+[2024-08-10 22:04:25.529] [APP] [trace] Added NScriptingInterface To Engine
+[2024-08-10 22:04:25.529] [APP] [trace] Added NCameraManager To Engine
+[2024-08-10 22:04:25.529] [APP] [trace] Added NShaderManager To Engine
+[2024-08-10 22:04:25.529] [APP] [trace] Added NMeshManager To Engine
+[2024-08-10 22:04:25.529] [APP] [trace] Added NTextureManager To Engine
+[2024-08-10 22:04:25.530] [APP] [trace] Added NSpriteSourceManager To Engine
+[2024-08-10 22:04:25.530] [APP] [trace] Added NEntityFactory To Engine
+[2024-08-10 22:04:25.530] [APP] [trace] Added NComponentFactory To Engine
+[2024-08-10 22:04:25.530] [APP] [trace] Added NRegistry To Engine
+[2024-08-10 22:04:25.531] [APP] [trace] Added NSceneManager To Engine
+[2024-08-10 22:04:25.531] [APP] [trace] Added ScriptSystem To Engine
+[2024-08-10 22:04:25.531] [APP] [trace] Added CameraSystem To Engine
+[2024-08-10 22:04:25.532] [APP] [trace] Added PhysicsSystem To Engine
+[2024-08-10 22:04:25.532] [APP] [trace] Added TransformSystem To Engine
+[2024-08-10 22:04:25.532] [APP] [trace] Added AnimationSystem To Engine
+[2024-08-10 22:04:25.532] [APP] [trace] Added SpriteRenderSystem To Engine
+[2024-08-10 22:04:25.533] [APP] [trace] Added NRenderer To Engine
+[2024-08-10 22:04:26.110] [APP] [trace] Creating Window Null Editor (1280, 720)
+[2024-08-10 22:13:05.792] [APP] [info] Initialized Log!
+[2024-08-10 22:13:05.793] [APP] [trace] Added NWindow To Engine
+[2024-08-10 22:13:05.793] [APP] [trace] Added NEventManager To Engine
+[2024-08-10 22:13:05.793] [APP] [trace] Added NScriptingInterface To Engine
+[2024-08-10 22:13:05.793] [APP] [trace] Added NCameraManager To Engine
+[2024-08-10 22:13:05.793] [APP] [trace] Added NShaderManager To Engine
+[2024-08-10 22:13:05.794] [APP] [trace] Added NMeshManager To Engine
+[2024-08-10 22:13:05.794] [APP] [trace] Added NTextureManager To Engine
+[2024-08-10 22:13:05.794] [APP] [trace] Added NSpriteSourceManager To Engine
+[2024-08-10 22:13:05.794] [APP] [trace] Added NEntityFactory To Engine
+[2024-08-10 22:13:05.794] [APP] [trace] Added NComponentFactory To Engine
+[2024-08-10 22:13:05.794] [APP] [trace] Added NRegistry To Engine
+[2024-08-10 22:13:05.794] [APP] [trace] Added NSceneManager To Engine
+[2024-08-10 22:13:05.795] [APP] [trace] Added ScriptSystem To Engine
+[2024-08-10 22:13:05.795] [APP] [trace] Added CameraSystem To Engine
+[2024-08-10 22:13:05.795] [APP] [trace] Added PhysicsSystem To Engine
+[2024-08-10 22:13:05.796] [APP] [trace] Added TransformSystem To Engine
+[2024-08-10 22:13:05.796] [APP] [trace] Added AnimationSystem To Engine
+[2024-08-10 22:13:05.796] [APP] [trace] Added SpriteRenderSystem To Engine
+[2024-08-10 22:13:05.796] [APP] [trace] Added NRenderer To Engine
+[2024-08-10 22:13:06.416] [APP] [trace] Creating Window Null Editor (1280, 720)
+[2024-08-10 22:30:09.383] [APP] [info] Initialized Log!
+[2024-08-10 22:30:09.384] [APP] [trace] Added NWindow To Engine
+[2024-08-10 22:30:09.384] [APP] [trace] Added NEventManager To Engine
+[2024-08-10 22:30:09.384] [APP] [trace] Added NScriptingInterface To Engine
+[2024-08-10 22:30:09.385] [APP] [trace] Added NCameraManager To Engine
+[2024-08-10 22:30:09.385] [APP] [trace] Added NShaderManager To Engine
+[2024-08-10 22:30:09.385] [APP] [trace] Added NMeshManager To Engine
+[2024-08-10 22:30:09.385] [APP] [trace] Added NTextureManager To Engine
+[2024-08-10 22:30:09.385] [APP] [trace] Added NSpriteSourceManager To Engine
+[2024-08-10 22:30:09.385] [APP] [trace] Added NEntityFactory To Engine
+[2024-08-10 22:30:09.386] [APP] [trace] Added NComponentFactory To Engine
+[2024-08-10 22:30:09.386] [APP] [trace] Added NRegistry To Engine
+[2024-08-10 22:30:09.386] [APP] [trace] Added NSceneManager To Engine
+[2024-08-10 22:30:09.387] [APP] [trace] Added ScriptSystem To Engine
+[2024-08-10 22:30:09.387] [APP] [trace] Added CameraSystem To Engine
+[2024-08-10 22:30:09.387] [APP] [trace] Added PhysicsSystem To Engine
+[2024-08-10 22:30:09.387] [APP] [trace] Added TransformSystem To Engine
+[2024-08-10 22:30:09.387] [APP] [trace] Added AnimationSystem To Engine
+[2024-08-10 22:30:09.388] [APP] [trace] Added SpriteRenderSystem To Engine
+[2024-08-10 22:30:09.388] [APP] [trace] Added NRenderer To Engine
+[2024-08-10 22:30:10.114] [APP] [trace] Creating Window Null Editor (1280, 720)
+[2024-08-10 22:31:55.780] [APP] [info] Initialized Log!
+[2024-08-10 22:31:55.781] [APP] [trace] Added NWindow To Engine
+[2024-08-10 22:31:55.782] [APP] [trace] Added NEventManager To Engine
+[2024-08-10 22:31:55.782] [APP] [trace] Added NScriptingInterface To Engine
+[2024-08-10 22:31:55.783] [APP] [trace] Added NCameraManager To Engine
+[2024-08-10 22:31:55.783] [APP] [trace] Added NShaderManager To Engine
+[2024-08-10 22:31:55.783] [APP] [trace] Added NMeshManager To Engine
+[2024-08-10 22:31:55.783] [APP] [trace] Added NTextureManager To Engine
+[2024-08-10 22:31:55.783] [APP] [trace] Added NSpriteSourceManager To Engine
+[2024-08-10 22:31:55.784] [APP] [trace] Added NEntityFactory To Engine
+[2024-08-10 22:31:55.784] [APP] [trace] Added NComponentFactory To Engine
+[2024-08-10 22:31:55.784] [APP] [trace] Added NRegistry To Engine
+[2024-08-10 22:31:55.784] [APP] [trace] Added NSceneManager To Engine
+[2024-08-10 22:31:55.785] [APP] [trace] Added ScriptSystem To Engine
+[2024-08-10 22:31:55.786] [APP] [trace] Added CameraSystem To Engine
+[2024-08-10 22:31:55.786] [APP] [trace] Added PhysicsSystem To Engine
+[2024-08-10 22:31:55.786] [APP] [trace] Added TransformSystem To Engine
+[2024-08-10 22:31:55.786] [APP] [trace] Added AnimationSystem To Engine
+[2024-08-10 22:31:55.787] [APP] [trace] Added SpriteRenderSystem To Engine
+[2024-08-10 22:31:55.787] [APP] [trace] Added NRenderer To Engine
+[2024-08-10 22:31:56.260] [APP] [trace] Creating Window Null Editor (1280, 720)
+[2024-08-10 22:33:29.718] [APP] [info] Initialized Log!
+[2024-08-10 22:33:29.719] [APP] [trace] Added NWindow To Engine
+[2024-08-10 22:33:29.720] [APP] [trace] Added NEventManager To Engine
+[2024-08-10 22:33:29.720] [APP] [trace] Added NScriptingInterface To Engine
+[2024-08-10 22:33:29.720] [APP] [trace] Added NCameraManager To Engine
+[2024-08-10 22:33:29.720] [APP] [trace] Added NShaderManager To Engine
+[2024-08-10 22:33:29.720] [APP] [trace] Added NMeshManager To Engine
+[2024-08-10 22:33:29.720] [APP] [trace] Added NTextureManager To Engine
+[2024-08-10 22:33:29.720] [APP] [trace] Added NSpriteSourceManager To Engine
+[2024-08-10 22:33:29.721] [APP] [trace] Added NEntityFactory To Engine
+[2024-08-10 22:33:29.721] [APP] [trace] Added NComponentFactory To Engine
+[2024-08-10 22:33:29.721] [APP] [trace] Added NRegistry To Engine
+[2024-08-10 22:33:29.721] [APP] [trace] Added NSceneManager To Engine
+[2024-08-10 22:33:29.722] [APP] [trace] Added ScriptSystem To Engine
+[2024-08-10 22:33:29.722] [APP] [trace] Added CameraSystem To Engine
+[2024-08-10 22:33:29.722] [APP] [trace] Added PhysicsSystem To Engine
+[2024-08-10 22:33:29.722] [APP] [trace] Added TransformSystem To Engine
+[2024-08-10 22:33:29.722] [APP] [trace] Added AnimationSystem To Engine
+[2024-08-10 22:33:29.723] [APP] [trace] Added SpriteRenderSystem To Engine
+[2024-08-10 22:33:29.723] [APP] [trace] Added NRenderer To Engine
+[2024-08-10 22:33:30.158] [APP] [trace] Creating Window Null Editor (1280, 720)
+[2024-08-10 22:35:29.565] [APP] [info] Initialized Log!
+[2024-08-10 22:35:29.567] [APP] [trace] Added NWindow To Engine
+[2024-08-10 22:35:29.567] [APP] [trace] Added NEventManager To Engine
+[2024-08-10 22:35:29.568] [APP] [trace] Added NScriptingInterface To Engine
+[2024-08-10 22:35:29.568] [APP] [trace] Added NCameraManager To Engine
+[2024-08-10 22:35:29.568] [APP] [trace] Added NShaderManager To Engine
+[2024-08-10 22:35:29.568] [APP] [trace] Added NMeshManager To Engine
+[2024-08-10 22:35:29.568] [APP] [trace] Added NTextureManager To Engine
+[2024-08-10 22:35:29.569] [APP] [trace] Added NSpriteSourceManager To Engine
+[2024-08-10 22:35:29.569] [APP] [trace] Added NEntityFactory To Engine
+[2024-08-10 22:35:29.569] [APP] [trace] Added NComponentFactory To Engine
+[2024-08-10 22:35:29.569] [APP] [trace] Added NRegistry To Engine
+[2024-08-10 22:35:29.570] [APP] [trace] Added NSceneManager To Engine
+[2024-08-10 22:35:29.571] [APP] [trace] Added ScriptSystem To Engine
+[2024-08-10 22:35:29.571] [APP] [trace] Added CameraSystem To Engine
+[2024-08-10 22:35:29.571] [APP] [trace] Added PhysicsSystem To Engine
+[2024-08-10 22:35:29.572] [APP] [trace] Added TransformSystem To Engine
+[2024-08-10 22:35:29.572] [APP] [trace] Added AnimationSystem To Engine
+[2024-08-10 22:35:29.572] [APP] [trace] Added SpriteRenderSystem To Engine
+[2024-08-10 22:35:29.572] [APP] [trace] Added NRenderer To Engine
+[2024-08-10 22:35:30.128] [APP] [trace] Creating Window Null Editor (1280, 720)
+[2024-08-10 22:37:08.476] [APP] [info] Initialized Log!
+[2024-08-10 22:37:08.478] [APP] [trace] Added NWindow To Engine
+[2024-08-10 22:37:08.478] [APP] [trace] Added NEventManager To Engine
+[2024-08-10 22:37:08.478] [APP] [trace] Added NScriptingInterface To Engine
+[2024-08-10 22:37:08.478] [APP] [trace] Added NCameraManager To Engine
+[2024-08-10 22:37:08.478] [APP] [trace] Added NShaderManager To Engine
+[2024-08-10 22:37:08.478] [APP] [trace] Added NMeshManager To Engine
+[2024-08-10 22:37:08.478] [APP] [trace] Added NTextureManager To Engine
+[2024-08-10 22:37:08.478] [APP] [trace] Added NSpriteSourceManager To Engine
+[2024-08-10 22:37:08.478] [APP] [trace] Added NEntityFactory To Engine
+[2024-08-10 22:37:08.479] [APP] [trace] Added NComponentFactory To Engine
+[2024-08-10 22:37:08.479] [APP] [trace] Added NRegistry To Engine
+[2024-08-10 22:37:08.479] [APP] [trace] Added NSceneManager To Engine
+[2024-08-10 22:37:08.479] [APP] [trace] Added ScriptSystem To Engine
+[2024-08-10 22:37:08.480] [APP] [trace] Added CameraSystem To Engine
+[2024-08-10 22:37:08.480] [APP] [trace] Added PhysicsSystem To Engine
+[2024-08-10 22:37:08.480] [APP] [trace] Added TransformSystem To Engine
+[2024-08-10 22:37:08.480] [APP] [trace] Added AnimationSystem To Engine
+[2024-08-10 22:37:08.480] [APP] [trace] Added SpriteRenderSystem To Engine
+[2024-08-10 22:37:08.481] [APP] [trace] Added NRenderer To Engine
+[2024-08-10 22:37:08.863] [APP] [trace] Creating Window Null Editor (1280, 720)
+[2024-08-10 22:39:17.369] [APP] [info] Initialized Log!
+[2024-08-10 22:39:17.370] [APP] [trace] Added NWindow To Engine
+[2024-08-10 22:39:17.371] [APP] [trace] Added NEventManager To Engine
+[2024-08-10 22:39:17.371] [APP] [trace] Added NScriptingInterface To Engine
+[2024-08-10 22:39:17.371] [APP] [trace] Added NCameraManager To Engine
+[2024-08-10 22:39:17.371] [APP] [trace] Added NShaderManager To Engine
+[2024-08-10 22:39:17.371] [APP] [trace] Added NMeshManager To Engine
+[2024-08-10 22:39:17.371] [APP] [trace] Added NTextureManager To Engine
+[2024-08-10 22:39:17.371] [APP] [trace] Added NSpriteSourceManager To Engine
+[2024-08-10 22:39:17.372] [APP] [trace] Added NEntityFactory To Engine
+[2024-08-10 22:39:17.372] [APP] [trace] Added NComponentFactory To Engine
+[2024-08-10 22:39:17.372] [APP] [trace] Added NRegistry To Engine
+[2024-08-10 22:39:17.372] [APP] [trace] Added NSceneManager To Engine
+[2024-08-10 22:39:17.373] [APP] [trace] Added ScriptSystem To Engine
+[2024-08-10 22:39:17.373] [APP] [trace] Added CameraSystem To Engine
+[2024-08-10 22:39:17.373] [APP] [trace] Added PhysicsSystem To Engine
+[2024-08-10 22:39:17.373] [APP] [trace] Added TransformSystem To Engine
+[2024-08-10 22:39:17.374] [APP] [trace] Added AnimationSystem To Engine
+[2024-08-10 22:39:17.374] [APP] [trace] Added SpriteRenderSystem To Engine
+[2024-08-10 22:39:17.374] [APP] [trace] Added NRenderer To Engine
+[2024-08-10 22:39:17.884] [APP] [trace] Creating Window Null Editor (1280, 720)
+[2024-08-10 22:55:09.664] [APP] [info] Initialized Log!
+[2024-08-10 22:55:09.665] [APP] [trace] Added NWindow To Engine
+[2024-08-10 22:55:09.665] [APP] [trace] Added NEventManager To Engine
+[2024-08-10 22:55:09.666] [APP] [trace] Added NScriptingInterface To Engine
+[2024-08-10 22:55:09.666] [APP] [trace] Added NCameraManager To Engine
+[2024-08-10 22:55:09.666] [APP] [trace] Added NShaderManager To Engine
+[2024-08-10 22:55:09.666] [APP] [trace] Added NMeshManager To Engine
+[2024-08-10 22:55:09.666] [APP] [trace] Added NTextureManager To Engine
+[2024-08-10 22:55:09.666] [APP] [trace] Added NSpriteSourceManager To Engine
+[2024-08-10 22:55:09.666] [APP] [trace] Added NEntityFactory To Engine
+[2024-08-10 22:55:09.666] [APP] [trace] Added NComponentFactory To Engine
+[2024-08-10 22:55:09.667] [APP] [trace] Added NRegistry To Engine
+[2024-08-10 22:55:09.667] [APP] [trace] Added NSceneManager To Engine
+[2024-08-10 22:55:09.668] [APP] [trace] Added ScriptSystem To Engine
+[2024-08-10 22:55:09.668] [APP] [trace] Added CameraSystem To Engine
+[2024-08-10 22:55:09.668] [APP] [trace] Added PhysicsSystem To Engine
+[2024-08-10 22:55:09.668] [APP] [trace] Added TransformSystem To Engine
+[2024-08-10 22:55:09.669] [APP] [trace] Added AnimationSystem To Engine
+[2024-08-10 22:55:09.669] [APP] [trace] Added SpriteRenderSystem To Engine
+[2024-08-10 22:55:09.669] [APP] [trace] Added NRenderer To Engine
+[2024-08-10 22:55:10.054] [APP] [trace] Creating Window Null Editor (1280, 720)
+[2024-08-10 23:01:50.117] [APP] [info] Initialized Log!
+[2024-08-10 23:01:50.118] [APP] [trace] Added NWindow To Engine
+[2024-08-10 23:01:50.118] [APP] [trace] Added NEventManager To Engine
+[2024-08-10 23:01:50.118] [APP] [trace] Added NScriptingInterface To Engine
+[2024-08-10 23:01:50.119] [APP] [trace] Added NCameraManager To Engine
+[2024-08-10 23:01:50.119] [APP] [trace] Added NShaderManager To Engine
+[2024-08-10 23:01:50.119] [APP] [trace] Added NMeshManager To Engine
+[2024-08-10 23:01:50.119] [APP] [trace] Added NTextureManager To Engine
+[2024-08-10 23:01:50.119] [APP] [trace] Added NSpriteSourceManager To Engine
+[2024-08-10 23:01:50.119] [APP] [trace] Added NEntityFactory To Engine
+[2024-08-10 23:01:50.119] [APP] [trace] Added NComponentFactory To Engine
+[2024-08-10 23:01:50.119] [APP] [trace] Added NRegistry To Engine
+[2024-08-10 23:01:50.120] [APP] [trace] Added NSceneManager To Engine
+[2024-08-10 23:01:50.120] [APP] [trace] Added ScriptSystem To Engine
+[2024-08-10 23:01:50.121] [APP] [trace] Added CameraSystem To Engine
+[2024-08-10 23:01:50.121] [APP] [trace] Added PhysicsSystem To Engine
+[2024-08-10 23:01:50.121] [APP] [trace] Added TransformSystem To Engine
+[2024-08-10 23:01:50.121] [APP] [trace] Added AnimationSystem To Engine
+[2024-08-10 23:01:50.121] [APP] [trace] Added SpriteRenderSystem To Engine
+[2024-08-10 23:01:50.121] [APP] [trace] Added NRenderer To Engine
+[2024-08-10 23:01:50.587] [APP] [trace] Creating Window Null Editor (1280, 720)
+[2024-08-10 23:09:36.512] [APP] [info] Initialized Log!
+[2024-08-10 23:09:36.513] [APP] [trace] Added NWindow To Engine
+[2024-08-10 23:09:36.514] [APP] [trace] Added NEventManager To Engine
+[2024-08-10 23:09:36.514] [APP] [trace] Added NScriptingInterface To Engine
+[2024-08-10 23:09:36.514] [APP] [trace] Added NCameraManager To Engine
+[2024-08-10 23:09:36.514] [APP] [trace] Added NShaderManager To Engine
+[2024-08-10 23:09:36.514] [APP] [trace] Added NMeshManager To Engine
+[2024-08-10 23:09:36.514] [APP] [trace] Added NTextureManager To Engine
+[2024-08-10 23:09:36.514] [APP] [trace] Added NSpriteSourceManager To Engine
+[2024-08-10 23:09:36.514] [APP] [trace] Added NEntityFactory To Engine
+[2024-08-10 23:09:36.515] [APP] [trace] Added NComponentFactory To Engine
+[2024-08-10 23:09:36.515] [APP] [trace] Added NRegistry To Engine
+[2024-08-10 23:09:36.515] [APP] [trace] Added NSceneManager To Engine
+[2024-08-10 23:09:36.515] [APP] [trace] Added ScriptSystem To Engine
+[2024-08-10 23:09:36.516] [APP] [trace] Added CameraSystem To Engine
+[2024-08-10 23:09:36.516] [APP] [trace] Added PhysicsSystem To Engine
+[2024-08-10 23:09:36.516] [APP] [trace] Added TransformSystem To Engine
+[2024-08-10 23:09:36.516] [APP] [trace] Added AnimationSystem To Engine
+[2024-08-10 23:09:36.516] [APP] [trace] Added SpriteRenderSystem To Engine
+[2024-08-10 23:09:36.517] [APP] [trace] Added NRenderer To Engine
+[2024-08-10 23:09:37.019] [APP] [trace] Creating Window Null Editor (1280, 720)
+[2024-08-10 23:10:10.481] [APP] [info] Initialized Log!
+[2024-08-10 23:10:10.482] [APP] [trace] Added NWindow To Engine
+[2024-08-10 23:10:10.482] [APP] [trace] Added NEventManager To Engine
+[2024-08-10 23:10:10.483] [APP] [trace] Added NScriptingInterface To Engine
+[2024-08-10 23:10:10.483] [APP] [trace] Added NCameraManager To Engine
+[2024-08-10 23:10:10.483] [APP] [trace] Added NShaderManager To Engine
+[2024-08-10 23:10:10.483] [APP] [trace] Added NMeshManager To Engine
+[2024-08-10 23:10:10.483] [APP] [trace] Added NTextureManager To Engine
+[2024-08-10 23:10:10.483] [APP] [trace] Added NSpriteSourceManager To Engine
+[2024-08-10 23:10:10.483] [APP] [trace] Added NEntityFactory To Engine
+[2024-08-10 23:10:10.484] [APP] [trace] Added NComponentFactory To Engine
+[2024-08-10 23:10:10.484] [APP] [trace] Added NRegistry To Engine
+[2024-08-10 23:10:10.484] [APP] [trace] Added NSceneManager To Engine
+[2024-08-10 23:10:10.484] [APP] [trace] Added ScriptSystem To Engine
+[2024-08-10 23:10:10.485] [APP] [trace] Added CameraSystem To Engine
+[2024-08-10 23:10:10.485] [APP] [trace] Added PhysicsSystem To Engine
+[2024-08-10 23:10:10.485] [APP] [trace] Added TransformSystem To Engine
+[2024-08-10 23:10:10.485] [APP] [trace] Added AnimationSystem To Engine
+[2024-08-10 23:10:10.485] [APP] [trace] Added SpriteRenderSystem To Engine
+[2024-08-10 23:10:10.485] [APP] [trace] Added NRenderer To Engine
+[2024-08-10 23:10:10.912] [APP] [trace] Creating Window Null Editor (1280, 720)
+[2024-08-10 23:11:52.458] [APP] [info] Initialized Log!
+[2024-08-10 23:11:52.459] [APP] [trace] Added NWindow To Engine
+[2024-08-10 23:11:52.459] [APP] [trace] Added NEventManager To Engine
+[2024-08-10 23:11:52.460] [APP] [trace] Added NScriptingInterface To Engine
+[2024-08-10 23:11:52.460] [APP] [trace] Added NCameraManager To Engine
+[2024-08-10 23:11:52.460] [APP] [trace] Added NShaderManager To Engine
+[2024-08-10 23:11:52.460] [APP] [trace] Added NMeshManager To Engine
+[2024-08-10 23:11:52.460] [APP] [trace] Added NTextureManager To Engine
+[2024-08-10 23:11:52.460] [APP] [trace] Added NSpriteSourceManager To Engine
+[2024-08-10 23:11:52.460] [APP] [trace] Added NEntityFactory To Engine
+[2024-08-10 23:11:52.460] [APP] [trace] Added NComponentFactory To Engine
+[2024-08-10 23:11:52.461] [APP] [trace] Added NRegistry To Engine
+[2024-08-10 23:11:52.461] [APP] [trace] Added NSceneManager To Engine
+[2024-08-10 23:11:52.462] [APP] [trace] Added ScriptSystem To Engine
+[2024-08-10 23:11:52.462] [APP] [trace] Added CameraSystem To Engine
+[2024-08-10 23:11:52.462] [APP] [trace] Added PhysicsSystem To Engine
+[2024-08-10 23:11:52.462] [APP] [trace] Added TransformSystem To Engine
+[2024-08-10 23:11:52.462] [APP] [trace] Added AnimationSystem To Engine
+[2024-08-10 23:11:52.463] [APP] [trace] Added SpriteRenderSystem To Engine
+[2024-08-10 23:11:52.463] [APP] [trace] Added NRenderer To Engine
+[2024-08-10 23:11:52.920] [APP] [trace] Creating Window Null Editor (1280, 720)

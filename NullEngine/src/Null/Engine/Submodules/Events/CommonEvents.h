@@ -429,33 +429,33 @@ namespace NULLENGINE
     };
 
 
-    //class EngineRunStateEvent : public EngineStateEvent {
-    //public:
-    //    EngineRunStateEvent()
-    //        : EngineStateEvent(IEngine::RUN) {}
+    class EngineRunStateEvent : public EngineStateEvent {
+    public:
+        EngineRunStateEvent(IEngine::EngineState enginestate)
+            : EngineStateEvent(enginestate) {}
 
-    //    std::string Print() const override
-    //    {
-    //        std::stringstream ss;
-    //        ss << "KeyReleaseEvent: State = RUN";
-    //        return ss.str();
-    //    }
+        std::string Print() const override
+        {
+            std::stringstream ss;
+            ss << "KeyReleaseEvent: State = RUN";
+            return ss.str();
+        }
 
-    //    EVENT_CLASS_TYPE(EngineRunState)
-    //};
+        EVENT_CLASS_TYPE(EngineRunState)
+    };
 
-    //class EngineEditStateEvent : public EngineStateEvent {
-    //public:
-    //    EngineEditStateEvent()
-    //        : EngineStateEvent(IEngine::EDIT) {}
+    class EngineEditStateEvent : public EngineStateEvent {
+    public:
+        EngineEditStateEvent(IEngine::EngineState enginestate)
+            : EngineStateEvent(enginestate) {}
 
-    //    std::string Print() const override
-    //    {
-    //        std::stringstream ss;
-    //        ss << "KeyReleaseEvent: State = EDIT";
-    //        return ss.str();
-    //    }
+        std::string Print() const override
+        {
+            std::stringstream ss;
+            ss << "KeyReleaseEvent: State = EDIT";
+            return ss.str();
+        }
 
-    //    EVENT_CLASS_TYPE(EngineEditState)
-    //};
+        EVENT_CLASS_TYPE(EngineEditState)
+    };
 }

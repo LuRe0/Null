@@ -50,7 +50,28 @@ namespace NULLENGINE
 		// Update and draw each component
 		for (int i = 0; i < m_Modules.size(); i++)
 		{
-			m_Modules[i].first->Update(dt);
+			if (m_EditorEnabled)
+			{
+				switch (m_EngineState)
+				{
+				case NULLENGINE::IEngine::EDIT:
+					m_Modules[i].first->Update(dt);
+					break;
+				case NULLENGINE::IEngine::PAUSE:
+					break;
+				case NULLENGINE::IEngine::RUN_MAXIMIZED: // Handle maximized state
+				case NULLENGINE::IEngine::RUN_WINDOWED:  // Handle windowed state
+					m_Modules[i].first->RuntimeUpdate(dt);
+					break;
+				case NULLENGINE::IEngine::SIMULATE:
+					break;
+				default:
+					break;
+				}
+			}
+			else
+				m_Modules[i].first->RuntimeUpdate(dt);
+
 			m_Modules[i].first->Render();
 		}
 	}

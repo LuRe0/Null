@@ -52,8 +52,6 @@ namespace NULLENGINE
 
 		virtual void Render() {};
 
-		virtual void RenderImGuI() {};
-
 		virtual void Unload() {};
 		//! Virtual Shutdown function
 		virtual void Shutdown() = 0;

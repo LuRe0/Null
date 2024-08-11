@@ -112,8 +112,7 @@ namespace NULLENGINE
 
 	void ImGuiLayer::OnImGUIRender()
 	{
-		NRenderer* renderer = NEngine::Instance().Get<NRenderer>();
-		NWindow* window = NEngine::Instance().Get<NWindow>();
+
 		// If you strip some features of, this demo is pretty much equivalent to calling DockSpaceOverViewport()!
 			// In most cases you should be able to just call DockSpaceOverViewport() and ignore all the code below!
 			// In this specific demo, we are not using DockSpaceOverViewport() because:
@@ -163,7 +162,7 @@ namespace NULLENGINE
 		// any change of dockspace/settings would lead to windows being stuck in limbo and never being visible.
 		if (!opt_padding)
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-		ImGui::Begin("DockSpace Demo", &dockspaceOpen, window_flags);
+		ImGui::Begin("##DockSpace Demo", &dockspaceOpen, window_flags);
 		if (!opt_padding)
 			ImGui::PopStyleVar();
 
@@ -262,155 +261,28 @@ namespace NULLENGINE
 		for (auto& pannel : m_Pannels)
 			pannel.get()->OnImGUIRender();
 
-		//ImGui::PopStyleVar(2);
+	
 
-		ImGui::Begin("Scene");
-		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
-
-		const Framebuffer& buffer = renderer->GetFramebuffer("Scene");
-		uint32_t texture = buffer.GetColorAttachment(0);
-
-		window->SetBlockEvents(!ImGui::IsWindowHovered() && !ImGui::IsWindowFocused());
-
-		m_CameraController->SetEnabled(!(!ImGui::IsWindowHovered() || !ImGui::IsWindowFocused()));
-
-		auto viewportOffet = ImGui::GetCursorPos();
-
-		if (m_ViewportSize != *((glm::vec2*)&viewportPanelSize))
+		switch (NEngine::Instance().GetEngineState())
 		{
-			renderer->ResizeFramebuffer(viewportPanelSize.x, viewportPanelSize.y);
-			m_CameraController->OnResize(viewportPanelSize.x, viewportPanelSize.y);
-			m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
-		}
-
-		ImGui::Image((void*)(intptr_t)texture, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, { 0, 1 }, { 1, 0 });
-
-
-		auto windowSize = ImGui::GetWindowSize();
-		ImVec2 windowPos = ImGui::GetWindowPos();
-
-		// Get the content region position and size
-		ImVec2 contentRegionMin = ImGui::GetWindowContentRegionMin();
-		ImVec2 contentRegionMax = ImGui::GetWindowContentRegionMax();
-
-		// Calculate the actual bounds of the viewport within the window
-		ImVec2 minBound = { windowPos.x + contentRegionMin.x, windowPos.y + contentRegionMin.y };
-		ImVec2 maxBound = { windowPos.x + contentRegionMax.x, windowPos.y + contentRegionMax.y };
-
-		m_viewportBounds[0] = { minBound.x, minBound.y };
-		m_viewportBounds[1] = { maxBound.x, maxBound.y };
-
-		glm::vec2 viewportSize = m_viewportBounds[1] - m_viewportBounds[0];
-
-		auto mousePos = ImGui::GetMousePos();
-
-		mousePos.x -= m_viewportBounds[0].x;
-		mousePos.y -= m_viewportBounds[0].y;
-
-
-		int mouseX = static_cast<int>(mousePos.x);
-		int mouseY = static_cast<int>(mousePos.y);
-
-
-
-		if (mouseX >= 0 && mouseY >= 0 && mouseX <= (int)viewportSize.x && mouseY <= (int)viewportSize.y)
+		case NULLENGINE::IEngine::EDIT:
 		{
-
-			// Convert mouse coordinates to match OpenGL's bottom-left origin
-			mouseY = viewportSize.y - mouseY;
-
-			buffer.Bind();
-
-			auto pixel = buffer.ReadPixels(1, mouseX, mouseY);
-
-			//NLE_CORE_WARN("PixelData = {0}", pixel);
-
-			//NLE_CORE_WARN("Mouse = {0},{1}", mouseX, mouseY); 
-
-			buffer.Unbind();
-			if (ImGui::IsItemClicked() && pixel > 0)
-			{
-				m_PannelData.m_SelectedEntity = pixel;
-				SetGuizmo(ImGuizmo::OPERATION::TRANSLATE);
-			}
+			WindowedEditSceneLayer();
+			break;
 		}
-
-
-		ImVec2 buttonSize = { 32,32 };
-		ImGui::SetCursorPos({ 9, 31 });
-
-		// set background color
-		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
-		ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 1.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 4));
-		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-
-
-		ImGui::BeginChild("TOOLS", ImVec2{ 48, 200 }, true);
-
-
-		ImGui::BeginGroup();
-
-		ImVec4 normalColor = ImGui::GetStyleColorVec4(ImGuiCol_Button);
-		ImVec4 selectedColor = ImVec4(0.26f, 0.59f, 0.98f, 1.0f); // Blue color
-
-
-		ImGui::PushStyleColor(ImGuiCol_Button, m_GuizmoType == -1 || m_FlyMode ? selectedColor : normalColor);
-		if (ImGui::Button(m_FlyMode ? "F" : "V", buttonSize))
-		{
-			SetGuizmo(-1);
+		case NULLENGINE::IEngine::PAUSE:
+			break;
+		case NULLENGINE::IEngine::RUN_MAXIMIZED: // Handle maximized state
+			MaximizedSceneLayer();
+			break;
+		case NULLENGINE::IEngine::RUN_WINDOWED:  // Handle windowed state
+			WindowedSceneLayer();
+			break;
+		case NULLENGINE::IEngine::SIMULATE:
+			break;
+		default:
+			break;
 		}
-		ImGui::PopStyleColor();
-
-
-		// Button for Translate
-		ImGui::PushStyleColor(ImGuiCol_Button, m_GuizmoType == ImGuizmo::OPERATION::TRANSLATE && !m_FlyMode ? selectedColor : normalColor);
-		if (ImGui::Button("M", buttonSize))
-		{
-			SetGuizmo(ImGuizmo::OPERATION::TRANSLATE);
-		}
-		ImGui::PopStyleColor();
-		// Button for Rotate
-		ImGui::PushStyleColor(ImGuiCol_Button, m_GuizmoType == ImGuizmo::OPERATION::ROTATE && !m_FlyMode ? selectedColor : normalColor);
-		if (ImGui::Button("R", buttonSize))
-		{
-			SetGuizmo(ImGuizmo::OPERATION::ROTATE);
-
-		}
-		ImGui::PopStyleColor();
-
-		// Button for Scale
-		ImGui::PushStyleColor(ImGuiCol_Button, m_GuizmoType == ImGuizmo::OPERATION::SCALE && !m_FlyMode ? selectedColor : normalColor);
-		if (ImGui::Button("S", buttonSize))
-		{
-			SetGuizmo(ImGuizmo::OPERATION::SCALE);
-		}
-		ImGui::PopStyleColor();
-
-		ImGui::PushStyleColor(ImGuiCol_Button, m_GuizmoType == ImGuizmo::OPERATION::UNIVERSAL && !m_FlyMode ? selectedColor : normalColor);
-		if (ImGui::Button("T", buttonSize))
-		{
-			SetGuizmo(ImGuizmo::OPERATION::UNIVERSAL);
-
-		}
-		ImGui::PopStyleColor();
-
-
-		ImGui::EndGroup();
-		ImGui::EndChild();
-		ImGui::PopStyleColor();
-		ImGui::PopStyleVar(3);
-
-
-
-
-
-		/// IMGUIZMO
-		ImGuizmoImpl();
-
-
-
-		ImGui::End();
 
 		ImGui::End();
 	}
@@ -652,6 +524,303 @@ namespace NULLENGINE
 		//io.DisplaySize = ImVec2(e.GetWidth(), e.GetHeight());
 		//io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
 		//glViewport(0, 0, e.GetWidth(), e.GetHeight());
+	}
+
+	void ImGuiLayer::WindowedEditSceneLayer()
+	{
+		NRenderer* renderer = NEngine::Instance().Get<NRenderer>();
+		NWindow* window = NEngine::Instance().Get<NWindow>();
+
+		//ImGui::PopStyleVar(2);
+		bool pOpen = true;
+		ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoNav);
+		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
+
+		Framebuffer& buffer = renderer->GetFramebuffer("Scene");
+		uint32_t texture = buffer.GetColorAttachment(0);
+
+		window->SetBlockEvents(!ImGui::IsWindowHovered() && !ImGui::IsWindowFocused());
+
+		m_CameraController->SetEnabled(!(!ImGui::IsWindowHovered() || !ImGui::IsWindowFocused()));
+
+		auto viewportOffet = ImGui::GetCursorPos();
+
+		if (m_ViewportSize != *((glm::vec2*)&viewportPanelSize))
+		{
+			buffer.Resize(viewportPanelSize.x, viewportPanelSize.y);
+			m_CameraController->OnResize(viewportPanelSize.x, viewportPanelSize.y);
+			m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
+		}
+
+		ImGui::Image((void*)(intptr_t)texture, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, { 0, 1 }, { 1, 0 });
+
+
+		auto windowSize = ImGui::GetWindowSize();
+		ImVec2 windowPos = ImGui::GetWindowPos();
+
+		// Get the content region position and size
+		ImVec2 contentRegionMin = ImGui::GetWindowContentRegionMin();
+		ImVec2 contentRegionMax = ImGui::GetWindowContentRegionMax();
+
+		// Calculate the actual bounds of the viewport within the window
+		ImVec2 minBound = { windowPos.x + contentRegionMin.x, windowPos.y + contentRegionMin.y };
+		ImVec2 maxBound = { windowPos.x + contentRegionMax.x, windowPos.y + contentRegionMax.y };
+
+		m_viewportBounds[0] = { minBound.x, minBound.y };
+		m_viewportBounds[1] = { maxBound.x, maxBound.y };
+
+		glm::vec2 viewportSize = m_viewportBounds[1] - m_viewportBounds[0];
+
+		auto mousePos = ImGui::GetMousePos();
+
+		mousePos.x -= m_viewportBounds[0].x;
+		mousePos.y -= m_viewportBounds[0].y;
+
+
+		int mouseX = static_cast<int>(mousePos.x);
+		int mouseY = static_cast<int>(mousePos.y);
+
+
+
+		if (mouseX >= 0 && mouseY >= 0 && mouseX <= (int)viewportSize.x && mouseY <= (int)viewportSize.y)
+		{
+
+			// Convert mouse coordinates to match OpenGL's bottom-left origin
+			mouseY = viewportSize.y - mouseY;
+
+			buffer.Bind();
+
+			auto pixel = buffer.ReadPixels(1, mouseX, mouseY);
+
+			//NLE_CORE_WARN("PixelData = {0}", pixel);
+
+			//NLE_CORE_WARN("Mouse = {0},{1}", mouseX, mouseY); 
+
+			buffer.Unbind();
+			if (ImGui::IsItemClicked() && pixel > 0)
+			{
+				m_PannelData.m_SelectedEntity = pixel;
+				SetGuizmo(ImGuizmo::OPERATION::TRANSLATE);
+			}
+		}
+
+
+		ImVec2 buttonSize = { 32,32 };
+		ImGui::SetCursorPos({ 9, 31 });
+
+		// set background color
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
+		ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 1.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 4));
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+
+
+		ImGui::BeginChild("TOOLS", ImVec2{ 48, 200 }, true, ImGuiWindowFlags_NoNav);
+
+
+		ImGui::BeginGroup();
+
+		ImVec4 normalColor = ImGui::GetStyleColorVec4(ImGuiCol_Button);
+		ImVec4 selectedColor = ImVec4(0.26f, 0.59f, 0.98f, 1.0f); // Blue color
+
+
+		ImGui::PushStyleColor(ImGuiCol_Button, m_GuizmoType == -1 || m_FlyMode ? selectedColor : normalColor);
+		if (ImGui::Button(m_FlyMode ? "F" : "V", buttonSize))
+		{
+			SetGuizmo(-1);
+		}
+		ImGui::PopStyleColor();
+
+
+		// Button for Translate
+		ImGui::PushStyleColor(ImGuiCol_Button, m_GuizmoType == ImGuizmo::OPERATION::TRANSLATE && !m_FlyMode ? selectedColor : normalColor);
+		if (ImGui::Button("M", buttonSize))
+		{
+			SetGuizmo(ImGuizmo::OPERATION::TRANSLATE);
+		}
+		ImGui::PopStyleColor();
+		// Button for Rotate
+		ImGui::PushStyleColor(ImGuiCol_Button, m_GuizmoType == ImGuizmo::OPERATION::ROTATE && !m_FlyMode ? selectedColor : normalColor);
+		if (ImGui::Button("R", buttonSize))
+		{
+			SetGuizmo(ImGuizmo::OPERATION::ROTATE);
+
+		}
+		ImGui::PopStyleColor();
+
+		// Button for Scale
+		ImGui::PushStyleColor(ImGuiCol_Button, m_GuizmoType == ImGuizmo::OPERATION::SCALE && !m_FlyMode ? selectedColor : normalColor);
+		if (ImGui::Button("S", buttonSize))
+		{
+			SetGuizmo(ImGuizmo::OPERATION::SCALE);
+		}
+		ImGui::PopStyleColor();
+
+		ImGui::PushStyleColor(ImGuiCol_Button, m_GuizmoType == ImGuizmo::OPERATION::UNIVERSAL && !m_FlyMode ? selectedColor : normalColor);
+		if (ImGui::Button("T", buttonSize))
+		{
+			SetGuizmo(ImGuizmo::OPERATION::UNIVERSAL);
+
+		}
+		ImGui::PopStyleColor();
+
+
+		ImGui::EndGroup();
+		ImGui::EndChild();
+		ImGui::PopStyleColor();
+		ImGui::PopStyleVar(3);
+
+
+
+
+
+		/// IMGUIZMO
+		ImGuizmoImpl();
+
+
+
+		ImGui::End();
+	}
+	
+	void ImGuiLayer::WindowedSceneLayer()
+	{
+		NRenderer* renderer = NEngine::Instance().Get<NRenderer>();
+		NWindow* window = NEngine::Instance().Get<NWindow>();
+
+		//ImGui::PopStyleVar(2);
+		bool pOpen = true;
+		ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoNav);
+		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
+
+		Framebuffer& buffer = renderer->GetFramebuffer("Scene");
+		uint32_t texture = buffer.GetColorAttachment(0);
+
+		window->SetBlockEvents(!ImGui::IsWindowHovered() && !ImGui::IsWindowFocused());
+
+		m_CameraController->SetEnabled(false);
+
+		auto viewportOffet = ImGui::GetCursorPos();
+
+		if (m_ViewportSize != *((glm::vec2*)&viewportPanelSize))
+		{
+			buffer.Resize(viewportPanelSize.x, viewportPanelSize.y);
+			m_CameraController->OnResize(viewportPanelSize.x, viewportPanelSize.y);
+			m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
+		}
+
+		ImGui::Image((void*)(intptr_t)texture, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, { 0, 1 }, { 1, 0 });
+
+
+		auto windowSize = ImGui::GetWindowSize();
+		ImVec2 windowPos = ImGui::GetWindowPos();
+
+		// Get the content region position and size
+		ImVec2 contentRegionMin = ImGui::GetWindowContentRegionMin();
+		ImVec2 contentRegionMax = ImGui::GetWindowContentRegionMax();
+
+		// Calculate the actual bounds of the viewport within the window
+		ImVec2 minBound = { windowPos.x + contentRegionMin.x, windowPos.y + contentRegionMin.y };
+		ImVec2 maxBound = { windowPos.x + contentRegionMax.x, windowPos.y + contentRegionMax.y };
+
+		m_viewportBounds[0] = { minBound.x, minBound.y };
+		m_viewportBounds[1] = { maxBound.x, maxBound.y };
+
+		glm::vec2 viewportSize = m_viewportBounds[1] - m_viewportBounds[0];
+
+		auto mousePos = ImGui::GetMousePos();
+
+		mousePos.x -= m_viewportBounds[0].x;
+		mousePos.y -= m_viewportBounds[0].y;
+
+
+		int mouseX = static_cast<int>(mousePos.x);
+		int mouseY = static_cast<int>(mousePos.y);
+
+		ImGui::End();
+	}
+	void ImGuiLayer::MaximizedSceneLayer()
+	{
+		NRenderer* renderer = NEngine::Instance().Get<NRenderer>();
+		NWindow* window = NEngine::Instance().Get<NWindow>();
+
+
+		// Get the size of the main viewport
+		ImGuiViewport* viewport = ImGui::GetMainViewport();
+		ImVec2 viewportPos = viewport->Pos;
+		ImVec2 viewSize = viewport->Size;
+
+		// Set window flags for fullscreen
+		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration |
+			ImGuiWindowFlags_NoMove |
+			ImGuiWindowFlags_NoResize |
+			ImGuiWindowFlags_NoScrollbar |
+			ImGuiWindowFlags_NoScrollWithMouse |
+			ImGuiWindowFlags_NoBringToFrontOnFocus;
+
+		// Set the position and size to cover the entire viewport
+		ImGui::SetNextWindowPos(viewportPos);
+		ImGui::SetNextWindowSize(viewSize);
+		ImGui::SetNextWindowViewport(viewport->ID);
+
+		// Begin the window
+		//ImGui::Begin("Fullscreen Viewport", nullptr, windowFlags);
+
+		//ImGui::PopStyleVar(2);
+		//bool pOpen = true;
+		ImGui::Begin("##Fullscreen Scene", nullptr, ImGuiWindowFlags_NoNavInputs);
+		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
+
+		Framebuffer& buffer = renderer->GetFramebuffer("Scene");
+		uint32_t texture = buffer.GetColorAttachment(0);
+
+		window->SetBlockEvents(!ImGui::IsWindowHovered() && !ImGui::IsWindowFocused());
+
+		m_CameraController->SetEnabled(false);
+
+		auto viewportOffet = ImGui::GetCursorPos();
+
+		if (m_ViewportSize != *((glm::vec2*)&viewportPanelSize))
+		{
+			buffer.Resize(viewportPanelSize.x, viewportPanelSize.y);
+			m_CameraController->OnResize(viewportPanelSize.x, viewportPanelSize.y);
+			m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
+		}
+
+		ImGui::Image((void*)(intptr_t)texture, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, { 0, 1 }, { 1, 0 });
+
+
+		auto windowSize = ImGui::GetWindowSize();
+		ImVec2 windowPos = ImGui::GetWindowPos();
+
+		// Get the content region position and size
+		ImVec2 contentRegionMin = ImGui::GetWindowContentRegionMin();
+		ImVec2 contentRegionMax = ImGui::GetWindowContentRegionMax();
+
+		// Calculate the actual bounds of the viewport within the window
+		ImVec2 minBound = { windowPos.x + contentRegionMin.x, windowPos.y + contentRegionMin.y };
+		ImVec2 maxBound = { windowPos.x + contentRegionMax.x, windowPos.y + contentRegionMax.y };
+
+		m_viewportBounds[0] = { minBound.x, minBound.y };
+		m_viewportBounds[1] = { maxBound.x, maxBound.y };
+
+		glm::vec2 viewportSize = m_viewportBounds[1] - m_viewportBounds[0];
+
+		auto mousePos = ImGui::GetMousePos();
+
+		mousePos.x -= m_viewportBounds[0].x;
+		mousePos.y -= m_viewportBounds[0].y;
+
+
+		int mouseX = static_cast<int>(mousePos.x);
+		int mouseY = static_cast<int>(mousePos.y);
+
+
+		ImGui::End();
+
+		if (Input::KeyDown(GLFW_KEY_ESCAPE))
+		{
+			NEngine::Instance().SetEngineState(IEngine::EDIT);
+		}
 	}
 
 	void ImGuiLayer::OnWindowClose(const WindowCloseEvent& e)

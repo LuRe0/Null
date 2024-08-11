@@ -39,6 +39,7 @@ namespace NULLENGINE
 	class NLE_API NEngine : public IEngine
 	{
 	public:
+
 		void Load() override;
 		void Init() override;           // Initialize FLEngine
 		void Update(float dt) override; // Update FLEngine
@@ -62,6 +63,8 @@ namespace NULLENGINE
 		void SetEditorEnabled(bool enable) override { m_EditorEnabled = enable; }
 		bool GetIsEditorEnabled()  override { return m_EditorEnabled;  }
 
+		void SetEngineState(EngineState mode) override { m_EngineState = mode; }
+		EngineState GetEngineState()  override { return m_EngineState; }
 
 		const std::vector<std::pair<IModule*, std::string>>& GetModules() const override { return m_Modules; }
 	private:
@@ -69,12 +72,10 @@ namespace NULLENGINE
 		float framerateTimer = 0;
 
 
-		bool m_EditorEnabled = false;
 
 		NEngine() = default;
 		//! Vector containing all FLEngine Components
 		std::vector<std::pair<IModule*, std::string>> m_Modules;
-
 	};
 
 

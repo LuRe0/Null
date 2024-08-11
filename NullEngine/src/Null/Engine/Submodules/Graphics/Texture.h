@@ -39,11 +39,24 @@ namespace NULLENGINE
 	class Texture
 	{
 	public:
-		Texture(const std::string& filePath);
+		Texture(const std::string& filePath, bool fullpath = false);
 		Texture() = default;
 		void Bind() const ;
 		void BindUnit(uint32_t slot) const ;
 		void Unbind() const;
+
+
+
+		/**
+ * @brief Initializes the Texture.
+ */
+		void Init();
+
+		/**
+		 * @brief Shuts down the Texture and releases resources.
+		 */
+		void Shutdown();
+
 
 		unsigned int GetID() const;
 		~Texture();
@@ -57,6 +70,8 @@ namespace NULLENGINE
 
 		std::string m_FilePath;
 
+		void CreateTexture();
+		void DeleteTexture();
 	};
 
 

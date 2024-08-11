@@ -8,6 +8,7 @@
 #include "Pannels/ContentBrowserPannel.h"
 #include "Pannels/ModuleStatsPannel.h"
 #include "Pannels/EditorConsolePannel.h"
+#include "Pannels/EditorToolbarPannel.h"
 
 namespace NULLENGINE
 {
@@ -35,6 +36,7 @@ namespace NULLENGINE
 			auto pannel4 = std::make_unique<ContentBrowserPannel>();
 			auto pannel5 = std::make_unique<ModuleStatsPannel>();
 			auto pannel6 = std::make_unique<EditorConsolePannel>();
+			auto pannel7 = std::make_unique<EditorToolbarPannel>();
 
 			gui.get()->AddPannel(std::move(pannel));
 			gui.get()->AddPannel(std::move(pannel2));
@@ -42,6 +44,7 @@ namespace NULLENGINE
 			gui.get()->AddPannel(std::move(pannel4));
 			gui.get()->AddPannel(std::move(pannel5));
 			gui.get()->AddPannel(std::move(pannel6));
+			gui.get()->AddPannel(std::move(pannel7));
 			
 			PushLayer(std::move(gui));
 		}

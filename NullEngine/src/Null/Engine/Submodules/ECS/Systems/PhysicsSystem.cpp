@@ -128,6 +128,16 @@ namespace NULLENGINE
 	{
 	}
 
+	void PhysicsSystem::RenderImGui()
+	{
+		ISystem::RenderImGui();
+
+		ImGui::Text("Pixels Per Meter:");
+		ImGui::SameLine();
+		ImGui::SetNextItemWidth(100.0f); // Set the width of the DragFloat
+		ImGui::DragFloat("##Pixels Per Meter", &m_Pixels_Per_Meter, 0.5f, 4, 128);
+	}
+
 	void PhysicsSystem::Unload()
 	{
 		delete m_PhysicsWorld;
@@ -197,8 +207,8 @@ namespace NULLENGINE
 	// Converts pixel values to meter values
 	const glm::vec2 PhysicsSystem::PixelsToMeters(float xPixels, float yPixels)
 	{
-		float xMeters = xPixels / PIXELS_PER_METER; // Convert pixels to meters
-		float yMeters = yPixels / PIXELS_PER_METER; // Convert pixels to meters
+		float xMeters = xPixels / m_Pixels_Per_Meter; // Convert pixels to meters
+		float yMeters = yPixels / m_Pixels_Per_Meter; // Convert pixels to meters
 
 		return glm::vec2(xMeters, yMeters);
 	}
@@ -206,8 +216,8 @@ namespace NULLENGINE
 	// Converts meter values to pixel values
 	const glm::vec2 PhysicsSystem::MetersToPixels(float xMeters, float yMeters)
 	{
-		float xPixels = xMeters * PIXELS_PER_METER; // Convert meters to pixels
-		float yPixels = yMeters * PIXELS_PER_METER; // Convert meters to pixels
+		float xPixels = xMeters * m_Pixels_Per_Meter; // Convert meters to pixels
+		float yPixels = yMeters * m_Pixels_Per_Meter; // Convert meters to pixels
 
 		return glm::vec2(xPixels, yPixels);
 	}

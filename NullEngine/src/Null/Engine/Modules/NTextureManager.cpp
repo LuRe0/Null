@@ -45,7 +45,8 @@ namespace NULLENGINE
 
 				const std::string& name = filePath.substr(start, end - start);
 
-				Create(name);
+				auto tex = Create(name);
+				tex->Init();
 			}
 		}
 	}
@@ -53,6 +54,9 @@ namespace NULLENGINE
 	void NTextureManager::Unload()
 	{
 		NResourceManager::Unload();
+
+		for (auto& tex : m_ResourceList)
+			tex.second->Shutdown();
 	}
 
 	void NTextureManager::AddTextureIndex(const std::string& texture)

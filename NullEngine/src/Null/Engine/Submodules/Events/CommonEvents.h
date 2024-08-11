@@ -416,4 +416,46 @@ namespace NULLENGINE
 
     };
 
+
+    class EngineStateEvent : public Event {
+    public:
+        EngineStateEvent(IEngine::EngineState enginestate) : m_State(enginestate) {}
+
+        IEngine::EngineState GetState() const { return m_State; }
+
+
+    protected:
+        IEngine::EngineState m_State;
+    };
+
+
+    //class EngineRunStateEvent : public EngineStateEvent {
+    //public:
+    //    EngineRunStateEvent()
+    //        : EngineStateEvent(IEngine::RUN) {}
+
+    //    std::string Print() const override
+    //    {
+    //        std::stringstream ss;
+    //        ss << "KeyReleaseEvent: State = RUN";
+    //        return ss.str();
+    //    }
+
+    //    EVENT_CLASS_TYPE(EngineRunState)
+    //};
+
+    //class EngineEditStateEvent : public EngineStateEvent {
+    //public:
+    //    EngineEditStateEvent()
+    //        : EngineStateEvent(IEngine::EDIT) {}
+
+    //    std::string Print() const override
+    //    {
+    //        std::stringstream ss;
+    //        ss << "KeyReleaseEvent: State = EDIT";
+    //        return ss.str();
+    //    }
+
+    //    EVENT_CLASS_TYPE(EngineEditState)
+    //};
 }

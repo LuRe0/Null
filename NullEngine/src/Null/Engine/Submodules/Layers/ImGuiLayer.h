@@ -124,6 +124,10 @@ namespace NULLENGINE
 
 		void InitCameraControllers();
 
+		void WindowedEditSceneLayer();
+		void WindowedSceneLayer();
+		void MaximizedSceneLayer();
+
 		void KeyboardShortcuts(const KeyPressEvent& e);
 
 		//std::unique_ptr<SceneHierarchyPannel> m_SceneHierachyPannel;

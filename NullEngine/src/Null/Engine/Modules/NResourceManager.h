@@ -107,10 +107,10 @@ namespace NULLENGINE
 		}
 
 		void RegisterToScripAPI(sol::state& lua) override {};
-
+	protected:
+		std::unordered_map<std::string, T*> m_ResourceList;
 	private:
 
-		std::unordered_map<std::string, T*> m_ResourceList;
 
 		NResourceManager(NResourceManager const&);
 		NResourceManager& operator=(NResourceManager const&);

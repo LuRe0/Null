@@ -89,14 +89,14 @@ namespace NULLENGINE
 
 		virtual void Render() override = 0;
 
-		void RenderImGui() override;
+		virtual void RenderImGui() override;
 
 		virtual void Unload()override = 0;
 		//! Virtual Shutdown function
 		virtual void Shutdown() override = 0;
 
 
-		bool HasRenderImGui() const override { return !m_Entities.empty(); }
+		virtual bool HasRenderImGui() const override { return !m_Entities.empty(); }
 
 
 		/// <summary>

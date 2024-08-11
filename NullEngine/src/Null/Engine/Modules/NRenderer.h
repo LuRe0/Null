@@ -81,7 +81,7 @@ namespace NULLENGINE
 		const uint32_t MaxVertices() { return m_RenderStorage.MaxVertices; }
 		const uint32_t MaxIndices() { return m_RenderStorage.MaxIndices; }
 
-		const Framebuffer& GetFramebuffer(const std::string& buffer) const;
+		Framebuffer& GetFramebuffer(const std::string& buffer);
 
 		void ResizeFramebuffer(unsigned int width, unsigned int height);
 

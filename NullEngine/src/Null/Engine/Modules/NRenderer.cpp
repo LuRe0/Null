@@ -378,6 +378,7 @@ namespace NULLENGINE
 
 	void NRenderer::RuntimeUpdate(float dt)
 	{
+		Update(dt);
 	}
 
 	void NRenderer::Render()
@@ -440,7 +441,7 @@ namespace NULLENGINE
 	//	m_RenderQueue.push_back(render);
 	//}
 
-	const Framebuffer& NRenderer::GetFramebuffer(const std::string& buffer) const
+	Framebuffer& NRenderer::GetFramebuffer(const std::string& buffer)
 	{
 		// TODO: insert return statement here
 		return m_Framebuffers.at(buffer);

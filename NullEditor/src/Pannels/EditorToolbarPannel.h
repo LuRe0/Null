@@ -4,7 +4,7 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	stubfile.h
+// File Name:	EditorToolbarPannel.h
 // Author(s):	name
 // 
 //------------------------------------------------------------------------------
@@ -13,7 +13,10 @@
 // Includes																        //
 //******************************************************************************//
 #include "Null/Core.h"
-
+#include "Null/Engine/Submodules/Layers/ImGuiLayer.h"
+#include "Null/Engine/Submodules/Graphics/Texture.h"
+#include "spdlog/sinks/base_sink.h"
+#include "spdlog/spdlog.h"
 
 //******************************************************************************//
 // Definitions  														        //
@@ -32,30 +35,35 @@
 
 namespace NULLENGINE
 {
+	class Scene;
 
-	class NLE_API Event {
+
+
+
+	class EditorToolbarPannel : public Pannel
+	{
 	public:
-		enum EventType
+		EditorToolbarPannel();
+		~EditorToolbarPannel() =  default;
+
+		void OnImGUIRender();
+	private:
+		enum WindowMode
 		{
-			WindowResize, WindowClose, WindowFocus, WindowLostFocus,
-			KeyPress, KeyRelease, KeyHold, KeyTyped,
-			MouseMove, MouseButtonPress, MouseButtonRelease, MouseButtonHold, MouseScrolled,
-			EntityCreated, EntityDestroyed,EntityAddComponent, EntityRemoveComponent,
-			SceneSwitch,
-			ScriptCreated, ScriptRemoved, ScriptModified,
-			EngineRunState, EngineEditState,
+			MODE_MAXIMIZED,
+			MODE_WINDOWED
 		};
+		EditorToolbarPannel(EditorToolbarPannel const&) = delete;
+		EditorToolbarPannel& operator=(EditorToolbarPannel const&) = delete;
 
-		virtual std::unique_ptr<Event> Clone() const = 0;
-		virtual EventType GetEventType() const = 0;
-		virtual const char* GetName() const = 0;
-		virtual std::string Print() const { return GetName(); }
+		Texture m_PlayButton;
+		Texture m_StopButton;
 
-		virtual ~Event() = default;
-
-	public:
-		bool Handled{ false };
+		WindowMode m_CurrentMode = MODE_WINDOWED; // Default mode
 	};
+
+
+
 
 
 }

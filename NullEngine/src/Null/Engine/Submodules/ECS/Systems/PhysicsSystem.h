@@ -51,7 +51,7 @@ namespace NULLENGINE
 		virtual void RuntimeUpdate(float dt) override;
 
 		void Render() override;
-
+		void RenderImGui() override;
 		void Unload() override;
 		//! Virtual Shutdown function
 		void Shutdown() override;
@@ -59,7 +59,7 @@ namespace NULLENGINE
 		void RegisterToScripAPI(sol::state& lua) override;
 		
 		// Conversion factor
-		const float GetPixelPerMeter() { return PIXELS_PER_METER; } // 1 meter = 64 pixels
+		const float GetPixelPerMeter() { return m_Pixels_Per_Meter; } // 1 meter = 64 pixels
 
 		const glm::vec2 MetersToPixels(float x, float y);
 		const glm::vec2 PixelsToMeters(float x, float y);
@@ -87,7 +87,7 @@ namespace NULLENGINE
 
 		const glm::vec3 GRAVITY = glm::vec3(0.0f, -9.81, 0.0f);
 		// Conversion factor
-		const float PIXELS_PER_METER = 64.0f; // 1 meter = 64 pixels
+		float m_Pixels_Per_Meter = 64.0f; // 1 meter = 64 pixels
 
 
 		bool m_Simulate = false;

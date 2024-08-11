@@ -37,6 +37,15 @@ namespace NULLENGINE
 
 	struct NLE_API IEngine
 	{
+		enum EngineState
+		{
+			EDIT,
+			PAUSE,
+			SIMULATE,
+			RUN_MAXIMIZED,
+			RUN_WINDOWED,
+		};
+
 		virtual void Add(IModule* module, const std::string_view& name) = 0;
 		virtual IModule* Get(const std::string_view& name) const = 0;
 
@@ -50,6 +59,10 @@ namespace NULLENGINE
 
 		virtual void SetEditorEnabled(bool enable) = 0;
 		virtual bool GetIsEditorEnabled()  = 0;
+
+		virtual void SetEngineState(EngineState mode) = 0;
+		virtual EngineState GetEngineState() = 0;
+
 		template<typename T>
 		T* Get() const
 		{
@@ -73,6 +86,9 @@ namespace NULLENGINE
 		}
 
 		virtual ~IEngine() = default;
+
+		bool m_EditorEnabled = false;
+		EngineState m_EngineState = EngineState::EDIT;
 	};
 
 

@@ -53,6 +53,7 @@ namespace NULLENGINE
 			 * @param height Height of the framebuffer.
 			 */
 		Framebuffer(unsigned int width, unsigned int height);
+		Framebuffer() = default;
 
 		/**
 		 * @brief Destructor to clean up the framebuffer.

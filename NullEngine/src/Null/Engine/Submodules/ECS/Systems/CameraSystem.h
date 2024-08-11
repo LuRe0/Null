@@ -49,6 +49,7 @@ namespace NULLENGINE
 		virtual void RuntimeUpdate(float dt) override;
 
 		void Render() override;
+		void RenderImGui() override;
 
 		void Unload() override;
 		//! Virtual Shutdown function
@@ -69,7 +70,7 @@ namespace NULLENGINE
 		bool m_ShowCreationMenu = false;
 		std::string m_CameraName = "New Camera";
 		Camera::CameraType m_CameraType = Camera::ORTHOGRAPHIC;
-
+		size_t m_MainCameraCount = 0;
 	};
 
 }

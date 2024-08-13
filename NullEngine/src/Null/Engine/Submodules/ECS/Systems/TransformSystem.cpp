@@ -123,28 +123,47 @@ namespace NULLENGINE
 				"Transform",
 				sol::no_constructor,
 				"type_id", &Component<TransformComponent>::GetID,
-				"translation", [](TransformComponent& transform)
-				{ return std::make_tuple(transform.m_Translation.x, transform.m_Translation.y, transform.m_Translation.z); },
-				"scale", [](TransformComponent& transform)
-				{ return std::make_tuple(transform.m_Scale.x, transform.m_Scale.y, transform.m_Scale.z); },
-				"rotation", [](TransformComponent& transform)
-				{ return std::make_tuple(transform.m_Rotation.x, transform.m_Rotation.y, transform.m_Rotation.z); },
-				"set_translation", [](TransformComponent& transform, float x, float y, float z)
-				{
-					transform.m_Translation = glm::vec3(x, y, z);
-					transform.m_Dirty = transform.m_DirectManipulation = true;
-				},
-				"set_scale", [](TransformComponent& transform, float x, float y, float z)
-				{
-					transform.m_Scale = glm::vec3(x, y, z);
-					transform.m_Dirty = true;
-				},
-				"set_rotation", [](TransformComponent& transform, float x, float y, float z)
-				{
-					transform.m_Scale = glm::vec3(x, y, z);
-					transform.m_Dirty = transform.m_DirectManipulation = true;
-				}
-		);
+				"translation", sol::readonly(&TransformComponent::m_Translation),
+				"scale", sol::readonly(&TransformComponent::m_Scale),
+				"rotation", sol::readonly(&TransformComponent::m_Rotation),
+				"set_translation",
+				sol::overload(
+					[](TransformComponent& transform, float x, float y, float z)
+					{
+						transform.m_Translation = glm::vec3(x, y, z);
+						transform.m_Dirty = transform.m_DirectManipulation = true;
+					},
+					[](TransformComponent& transform, glm::vec3 newPos)
+					{
+						transform.m_Translation = newPos;
+						transform.m_Dirty = transform.m_DirectManipulation = true;
+					}
+				),
+				"set_scale", sol::overload(
+					[](TransformComponent& transform, float x, float y, float z)
+					{
+						transform.m_Scale = glm::vec3(x, y, z);
+						transform.m_Dirty = true;
+					},
+					[](TransformComponent& transform, glm::vec3 newScale)
+					{
+						transform.m_Scale = newScale;
+						transform.m_Dirty = true;
+					}
+				),
+				"set_rotation", sol::overload(
+					[](TransformComponent& transform, float x, float y, float z)
+					{
+						transform.m_Rotation = glm::vec3(x, y, z);
+						transform.m_Dirty = transform.m_DirectManipulation = true;
+					},
+					[](TransformComponent& transform, glm::vec3 newRot)
+					{
+						transform.m_Rotation = newRot;
+						transform.m_Dirty = transform.m_DirectManipulation = true;
+					}
+				)
+			);
 	}
 
 

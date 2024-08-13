@@ -87,7 +87,7 @@ namespace NULLENGINE
 			if (!bc2d.m_RuntimeFixture)
 				continue;
 
-			auto translation = (transform.m_Translation + glm::vec3(bc2d.m_Offset, transform.m_Translation.z + transform.m_Scale.z + 0.50f));
+			auto translation = (transform.m_Translation + glm::vec3(bc2d.m_Offset, transform.m_Translation.z + transform.m_Scale.z*0.5f + 0.50f));
 			auto rot = bc2d.m_RuntimeFixture->GetBody()->GetAngle();
 
 
@@ -125,25 +125,74 @@ namespace NULLENGINE
 
 	void BoxCollider2DSystem::RegisterToScripAPI(sol::state& lua)
 	{
-		//lua.new_usertype<BoxCollider2DComponent>
-		//	(
-		//		//"Sprite",
-		//		//sol::no_constructor,
-		//		//"type_id", &Component<BoxCollider2DComponent>::GetID,
-		//		//"frame_index", sol::readonly(& BoxCollider2DComponent::m_FrameIndex),
-		//		//"tint", [](BoxCollider2DComponent& sprite)
-		//		//{	
-		//		//	return std::tuple(sprite.m_Color.x, sprite.m_Color.y, sprite.m_Color.z, sprite.m_Color.w);
-		//		//},
-		//		//"set_tint", [](BoxCollider2DComponent& sprite, float r, float g, float b, float a)
-		//		//{
-		//		//	sprite.m_Color = glm::vec4(r, g, b, a);
-		//		//},
-		//		//"set_frame_index", [](BoxCollider2DComponent& sprite, int i)
-		//		//{
-		//		//	sprite.m_FrameIndex = i;
-		//		//}
-		//);
+		lua.new_usertype<BoxCollider2DComponent>
+			(
+				"BoxCollider2D",
+				sol::no_constructor,
+				"type_id", &Component<BoxCollider2DComponent>::GetID,
+				"offset", sol::readonly(&BoxCollider2DComponent::m_Offset),
+				"scale", sol::readonly(&BoxCollider2DComponent::m_Scale),
+				"set_offset", sol::overload(
+					[this](BoxCollider2DComponent& bc2d, float x, float y)
+					{
+						PhysicsSystem* physicsSys = NEngine::Instance().Get<PhysicsSystem>();
+
+						bc2d.m_Offset = glm::vec2(x, y);
+
+						if (bc2d.m_RuntimeFixture)
+						{
+							auto offset = physicsSys->PixelsToMeters(bc2d.m_Offset.x, bc2d.m_Offset.y);
+							auto scale = physicsSys->PixelsToMeters(bc2d.m_Scale.x / 2, bc2d.m_Scale.y / 2);
+
+							dynamic_cast<b2PolygonShape*>(bc2d.m_RuntimeFixture->GetShape())->SetAsBox(scale.x, scale.y, b2Vec2(offset.x, offset.y), 0.0f);
+						}
+					},
+					[this](BoxCollider2DComponent& bc2d, glm::vec2 newOffset)
+					{
+						PhysicsSystem* physicsSys = NEngine::Instance().Get<PhysicsSystem>();
+
+						bc2d.m_Offset = newOffset;
+
+						if (bc2d.m_RuntimeFixture)
+						{
+							auto offset = physicsSys->PixelsToMeters(bc2d.m_Offset.x, bc2d.m_Offset.y);
+							auto scale = physicsSys->PixelsToMeters(bc2d.m_Scale.x / 2, bc2d.m_Scale.y / 2);
+
+							dynamic_cast<b2PolygonShape*>(bc2d.m_RuntimeFixture->GetShape())->SetAsBox(scale.x, scale.y, b2Vec2(offset.x, offset.y), 0.0f);
+						}
+					}
+				),
+				"set_scale", sol::overload(
+					[this](BoxCollider2DComponent& bc2d, float x, float y)
+					{
+						PhysicsSystem* physicsSys = NEngine::Instance().Get<PhysicsSystem>();
+
+						bc2d.m_Scale = glm::vec2(x, y);
+
+						if (bc2d.m_RuntimeFixture)
+						{
+							auto offset = physicsSys->PixelsToMeters(bc2d.m_Offset.x, bc2d.m_Offset.y);
+							auto scale = physicsSys->PixelsToMeters(bc2d.m_Scale.x / 2, bc2d.m_Scale.y / 2);
+
+							dynamic_cast<b2PolygonShape*>(bc2d.m_RuntimeFixture->GetShape())->SetAsBox(scale.x, scale.y, b2Vec2(offset.x, offset.y), 0.0f);
+						}
+					},
+					[this](BoxCollider2DComponent& bc2d, glm::vec2 newScale)
+					{
+						PhysicsSystem* physicsSys = NEngine::Instance().Get<PhysicsSystem>();
+
+						bc2d.m_Scale = newScale;
+
+						if (bc2d.m_RuntimeFixture)
+						{
+							auto offset = physicsSys->PixelsToMeters(bc2d.m_Offset.x, bc2d.m_Offset.y);
+							auto scale = physicsSys->PixelsToMeters(bc2d.m_Scale.x / 2, bc2d.m_Scale.y / 2);
+
+							dynamic_cast<b2PolygonShape*>(bc2d.m_RuntimeFixture->GetShape())->SetAsBox(scale.x, scale.y, b2Vec2(offset.x, offset.y), 0.0f);
+						}
+					}
+				)
+		);
 	}
 
 

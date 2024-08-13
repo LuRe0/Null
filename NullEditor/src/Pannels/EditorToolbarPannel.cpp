@@ -103,12 +103,14 @@ namespace NULLENGINE
 				{
 					NEngine::Instance().SetEngineState(IEngine::RUN_WINDOWED);
 					eventManager->QueueEvent(std::make_unique<EngineRunStateEvent>(NEngine::RUN_WINDOWED));
+					m_Parent->ResizeCamera();
 				}
 				else
 				{
 					NEngine::Instance().SetEngineState(IEngine::RUN_MAXIMIZED);
 					eventManager->QueueEvent(std::make_unique<EngineRunStateEvent>(NEngine::RUN_MAXIMIZED));
 				}
+
 
 				//m_PannelData->m_SelectedEntity = {};
 				break;

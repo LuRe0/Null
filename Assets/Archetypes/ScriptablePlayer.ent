@@ -36,14 +36,22 @@
             "zoom": 1.0
         },
         "Rigidbody2D": {
+            "angularDamping": 0.0,
+            "angularVelocity": 0.0,
             "fixedRotation": true,
-            "type": 1
+            "gravityScale": 0.0,
+            "linearDamping": 0.0,
+            "linearVelocity": [
+                0.0,
+                0.0
+            ],
+            "type": 2
         },
         "Script": {
             "scripts": {
                 "RedSquareBehavior": {
-                    "Accel": 50.0,
-                    "Speed": 50.0
+                    "Accel": 0.0,
+                    "Speed": 250.0
                 }
             }
         },
@@ -52,10 +60,12 @@
                 1,
                 1
             ],
+            "fade": 0.004999999888241291,
             "frameindex": 0,
             "meshname": "Quad",
             "shadername": "default",
             "texture": "ChargeParticle",
+            "thickness": 1.0,
             "tint": [
                 1.0,
                 1.0,
@@ -72,11 +82,11 @@
             "scale": [
                 50.0,
                 50.0,
-                50.0
+                0.0
             ],
             "translation": [
                 5.9179840087890625,
-                2.8683929443359375,
+                2.47959303855896,
                 0.0
             ]
         }

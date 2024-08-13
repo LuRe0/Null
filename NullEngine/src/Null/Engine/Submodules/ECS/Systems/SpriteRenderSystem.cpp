@@ -71,7 +71,7 @@ namespace NULLENGINE
 				continue;
 
 			glm::mat4 viewMatrix = camManager->GetCurrentCamera()->GetViewMatrix();
-			 
+
 			glm::vec4 worldPosition = transform.m_TransformMatrix * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
 			// Transform the world position to camera space
@@ -81,8 +81,8 @@ namespace NULLENGINE
 			float depth = cameraSpacePosition.z;
 
 			//model, mesh, spritesrc, tint, shadername, frameindex, entity
-			renderer->AddRenderCall(std::make_unique<ElementData>(transform.m_TransformMatrix, sprite.m_Mesh, sprite.m_SpriteSource, sprite.m_Color, sprite.m_ShaderName, 
-												sprite.m_FrameIndex, entityId, sprite.m_Thickness, sprite.m_Fade, RenderData::INSTANCED, -depth));
+			renderer->AddRenderCall(std::make_unique<ElementData>(transform.m_TransformMatrix, sprite.m_Mesh, sprite.m_SpriteSource, sprite.m_Color, sprite.m_ShaderName,
+				sprite.m_FrameIndex, entityId, sprite.m_Thickness, sprite.m_Fade, RenderData::INSTANCED, -depth));
 		}
 	}
 
@@ -101,15 +101,30 @@ namespace NULLENGINE
 				"Sprite",
 				sol::no_constructor,
 				"type_id", &Component<SpriteComponent>::GetID,
-				"frame_index", sol::readonly(& SpriteComponent::m_FrameIndex),
-				"tint", [](SpriteComponent& sprite)
-				{	
-					return std::tuple(sprite.m_Color.x, sprite.m_Color.y, sprite.m_Color.z, sprite.m_Color.w);
-				},
-				"set_tint", [](SpriteComponent& sprite, float r, float g, float b, float a)
-				{
-					sprite.m_Color = glm::vec4(r, g, b, a);
-				},
+				"frame_index", sol::readonly(&SpriteComponent::m_FrameIndex),
+				"tint", sol::readonly(&SpriteComponent::m_Color),
+				"get_alpha", sol::overload(
+					[](SpriteComponent& sprite, float a)
+					{
+						return sprite.m_Color.a;
+					}
+				),
+				"set_alpha", sol::overload(
+					[](SpriteComponent& sprite, float a)
+					{
+						sprite.m_Color = glm::vec4(sprite.m_Color.r, sprite.m_Color.g, sprite.m_Color.b, a);
+					}
+				),
+				"set_tint", sol::overload(
+					[](SpriteComponent& sprite, float r, float g, float b, float a)
+					{
+						sprite.m_Color = glm::vec4(r, g, b, a);
+					},
+					[](SpriteComponent& sprite, const glm::vec4& newColor)
+					{
+						sprite.m_Color = newColor;
+					}
+				),
 				"set_frame_index", [](SpriteComponent& sprite, int i)
 				{
 					sprite.m_FrameIndex = i;
@@ -152,7 +167,7 @@ namespace NULLENGINE
 		}
 
 		componentFactory->AddOrUpdate<SpriteComponent>(id, comp, registry, comp->m_FrameIndex, comp->m_SpriteSource, comp->m_Mesh,
-														comp->m_Color, comp->m_ShaderName, comp->m_Thickness, comp->m_Fade);
+			comp->m_Color, comp->m_ShaderName, comp->m_Thickness, comp->m_Fade);
 	}
 
 	JSON SpriteRenderSystem::WriteSpriteComponent(BaseComponent* component)

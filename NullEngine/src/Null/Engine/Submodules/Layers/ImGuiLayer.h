@@ -97,6 +97,8 @@ namespace NULLENGINE
 
 		 CameraController* GetCameraController();
 
+		 void ResizeCamera();
+
 		 void Begin();
 		 void End();
 
@@ -119,6 +121,8 @@ namespace NULLENGINE
 		int m_GuizmoType = -1;
 
 		bool m_FlyMode;
+
+		bool m_CODA =  false;
 
 		void ImGuizmoImpl();
 
@@ -145,6 +149,13 @@ namespace NULLENGINE
 		void OnMouseScroll(const MouseScrolledEvent& e);
 		void OnSceneSwitched(const SceneSwitchEvent& e);
 
+		void NewSceneImpl();
+		void SaveSceneImpl();
+		void SaveSceneAsImpl();
+		void OpenSceneImpl();
+		void SetAsDefaultSceneImpl();
+
+		void KeyboardShortcuts();
 	};
 
 }

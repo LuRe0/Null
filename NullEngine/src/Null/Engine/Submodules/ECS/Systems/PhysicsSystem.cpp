@@ -155,20 +155,29 @@ namespace NULLENGINE
 				"Rigidbody2D",
 				sol::no_constructor,
 				"type_id", &Component<Rigidbody2DComponent>::GetID,
-				"linear_velocity", [](Rigidbody2DComponent& rb2d)
-				{ return std::make_tuple(rb2d.m_LinearVelocity.x, rb2d.m_LinearVelocity.y); },
+				"linear_velocity", sol::readonly(&Rigidbody2DComponent::m_LinearVelocity),
 				"angular_velocity", sol::readonly(&Rigidbody2DComponent::m_AngularVelocity),
 				"gravity_scale", sol::readonly(&Rigidbody2DComponent::m_GravityScale),
+				"set_linear_velocity", sol::overload(
+					[this](Rigidbody2DComponent& rb2d, float x, float y)
+					{
+						rb2d.m_LinearVelocity = glm::vec2(x, y);
 
-				"set_linear_velocity", [this](Rigidbody2DComponent& rb2d, float x, float y)
-				{
-					rb2d.m_LinearVelocity = glm::vec2(x, y);
+						auto vel = PixelsToMeters(rb2d.m_LinearVelocity.x, rb2d.m_LinearVelocity.y);
 
-					auto vel = PixelsToMeters(rb2d.m_LinearVelocity.x, rb2d.m_LinearVelocity.y);
+						if (rb2d.m_RuntimeBody)
+							rb2d.m_RuntimeBody->SetLinearVelocity({ vel.x, vel.y });
+					},
+					[this](Rigidbody2DComponent& rb2d, glm::vec2 newVel)
+					{
+						rb2d.m_LinearVelocity = newVel;
 
-					if (rb2d.m_RuntimeBody)
-						rb2d.m_RuntimeBody->SetLinearVelocity({ vel.x, vel.y });
-				},
+						auto vel = PixelsToMeters(rb2d.m_LinearVelocity.x, rb2d.m_LinearVelocity.y);
+
+						if (rb2d.m_RuntimeBody)
+							rb2d.m_RuntimeBody->SetLinearVelocity({ vel.x, vel.y });
+					}
+				),
 				"set_angular_velocity", [](Rigidbody2DComponent& rb2d, float v)
 				{
 					rb2d.m_AngularVelocity = v;
@@ -180,26 +189,6 @@ namespace NULLENGINE
 					rb2d.m_GravityScale = g;
 					if (rb2d.m_RuntimeBody)
 						rb2d.m_RuntimeBody->SetGravityScale(rb2d.m_GravityScale);
-				}
-		);
-
-
-		lua.new_usertype<BoxCollider2DComponent>
-			(
-				"BoxCollider2D",
-				sol::no_constructor,
-				"type_id", &Component<BoxCollider2DComponent>::GetID,
-				"offset", [](BoxCollider2DComponent& bc2d)
-				{ return std::make_tuple(bc2d.m_Offset.x, bc2d.m_Offset.y); },
-				"scale", [](BoxCollider2DComponent& bc2d)
-				{ return std::make_tuple(bc2d.m_Scale.x, bc2d.m_Scale.y); },
-				"set_offset", [](BoxCollider2DComponent& bc2d, float x, float y)
-				{
-					bc2d.m_Offset = glm::vec2(x, y);
-				},
-				"set_scale", [](BoxCollider2DComponent& bc2d, float x, float y)
-				{
-					bc2d.m_Scale = glm::vec2(x, y);
 				}
 		);
 	}
@@ -249,7 +238,7 @@ namespace NULLENGINE
 		{
 			comp->m_Type = static_cast<Rigidbody2DComponent::BodyType>(jsonWrapper.GetInt("type", 0));
 			comp->m_FixedRotation = jsonWrapper.GetBool("fixedRotation", true);
-			comp->m_LinearVelocity = jsonWrapper.GetVec2("linearVelocity", glm::vec2(0,0));
+			comp->m_LinearVelocity = jsonWrapper.GetVec2("linearVelocity", glm::vec2(0, 0));
 			comp->m_AngularVelocity = jsonWrapper.GetFloat("angularVelocity", 0.0f);
 			comp->m_LinearDamping = jsonWrapper.GetFloat("linearDamping", 0.0f);
 			comp->m_AngularDamping = jsonWrapper.GetFloat("angularDamping", 0.0f);
@@ -257,8 +246,8 @@ namespace NULLENGINE
 		}
 
 		componentFactory->AddOrUpdate<Rigidbody2DComponent>(id, comp, registry, static_cast<Rigidbody2DComponent::BodyType>(comp->m_Type), comp->m_FixedRotation,
-															nullptr, comp->m_LinearVelocity, comp->m_AngularVelocity, comp->m_LinearDamping, comp->m_AngularDamping,
-															comp->m_GravityScale);
+			nullptr, comp->m_LinearVelocity, comp->m_AngularVelocity, comp->m_LinearDamping, comp->m_AngularDamping,
+			comp->m_GravityScale);
 
 	}
 
@@ -271,7 +260,7 @@ namespace NULLENGINE
 
 		json["Rigidbody2D"]["type"] = rigidbody.m_Type;
 		json["Rigidbody2D"]["fixedRotation"] = rigidbody.m_FixedRotation;
-		json["Rigidbody2D"]["linearVelocity"] = {rigidbody.m_LinearVelocity.x, rigidbody.m_LinearVelocity.y};
+		json["Rigidbody2D"]["linearVelocity"] = { rigidbody.m_LinearVelocity.x, rigidbody.m_LinearVelocity.y };
 		json["Rigidbody2D"]["angularVelocity"] = rigidbody.m_AngularVelocity;
 		json["Rigidbody2D"]["linearDamping"] = rigidbody.m_LinearDamping;
 		json["Rigidbody2D"]["angularDamping"] = rigidbody.m_AngularDamping;
@@ -399,7 +388,7 @@ namespace NULLENGINE
 			if (registry->HasComponent<Rigidbody2DComponent>(e.GetID()) &&
 				registry->HasComponent<TransformComponent>(e.GetID()) &&
 				(registry->HasComponent<BoxCollider2DComponent>(e.GetID()) ||
-				 registry->HasComponent<CircleCollider2DComponent>(e.GetID())))
+					registry->HasComponent<CircleCollider2DComponent>(e.GetID())))
 			{
 				InitializePhysics(e.GetID(), registry);
 			}
@@ -469,7 +458,7 @@ namespace NULLENGINE
 
 			b2PolygonShape boxShape;
 
-			auto scale = PixelsToMeters(bc2d.m_Scale.x/2, bc2d.m_Scale.y / 2);
+			auto scale = PixelsToMeters(bc2d.m_Scale.x / 2, bc2d.m_Scale.y / 2);
 			auto offset = PixelsToMeters(bc2d.m_Offset.x, bc2d.m_Offset.y);
 
 			boxShape.SetAsBox(scale.x, scale.y, b2Vec2(offset.x, offset.y), 0.0f);

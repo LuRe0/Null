@@ -102,6 +102,9 @@ namespace NULLENGINE
 
 		if (m_FlyMode)
 			m_CameraController->Update(dt);
+
+
+		KeyboardShortcuts();
 	}
 
 	void ImGuiLayer::OnRender()
@@ -182,55 +185,39 @@ namespace NULLENGINE
 		{
 			if (ImGui::BeginMenu("File"))
 			{
-				if (ImGui::MenuItem("New Scene", NULL, false))
+				if (ImGui::MenuItem("New Scene", "CTRL+N", false))
 				{
-					NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
-
-					eventManager->QueueEvent(std::make_unique<SceneSwitchEvent>(m_PannelData.m_Context->m_Name, "New Scene"));
-
-					m_PannelData.m_SelectedEntity = {};
+					NewSceneImpl();
 				}
 
-				if (ImGui::MenuItem("Open", NULL, false))
+				if (ImGui::MenuItem("Open", "CTRL+O", false))
 				{
-
-					const std::string& nextScene = FileDialog::OpenFile("Null Engine Scene (*.scene)\0*.scene\0");
-
-					if (!nextScene.empty())
-					{
-						NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
-
-						eventManager->QueueEvent(std::make_unique<SceneSwitchEvent>(m_PannelData.m_Context->m_Name, nextScene));
-
-						m_PannelData.m_SelectedEntity = {};
-					}
+					OpenSceneImpl();
 				}
 
-				if (ImGui::MenuItem("Save Scene", NULL, false))
+				if (ImGui::MenuItem("Save Scene", "CTRL+S", false))
 				{
-					m_PannelData.m_Context->Serialize();
+					SaveSceneImpl();
 				}
 
-				if (ImGui::MenuItem("Save Scene As", NULL, false))
+				if (ImGui::MenuItem("Save Scene As", "CTRL+SHIFT+S", false))
 				{
-					const std::string& nextScene = FileDialog::SaveFile("Null Engine Scene (*.json)\0*.json\0");
-
-					m_PannelData.m_Context->Serialize(nextScene);
+					SaveSceneAsImpl();
 				}
 
-				if (ImGui::MenuItem("Set As Start Scene", NULL, false))
+				if (ImGui::MenuItem("Set As Start Scene", "CTRL+ALT+S", false))
 				{
-					m_PannelData.m_Context->SetAsStartScene();
+					SetAsDefaultSceneImpl();
 				}
 
 				if (ImGui::MenuItem("Exit", NULL, false))
 				{
-					NWindow* window = NEngine::Instance().Get<NWindow>();
-					window->CloseWindow();
+					m_CODA = true;
 				}
 
 				ImGui::EndMenu();
 			}
+
 
 
 			if (ImGui::BeginMenu("Options"))
@@ -254,6 +241,50 @@ namespace NULLENGINE
 			}
 
 			ImGui::EndMenuBar();
+		}
+
+		if (m_CODA)
+		{
+			ImGui::OpenPopup("CODA");
+		}
+
+		if (ImGui::BeginPopupModal("CODA", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+		{
+			// Center the text horizontally
+			const char* message = "Are you sure you want to exit the NULL Editor?";
+			ImVec2 textSize = ImGui::CalcTextSize(message);
+			ImVec2 windowSize = ImGui::GetContentRegionAvail();
+			ImGui::SetCursorPosX((windowSize.x - textSize.x) * 0.5f);
+			ImGui::Text(" %s", message);
+
+			// Add some vertical space before buttons
+			ImGui::Dummy(ImVec2(0.0f, 10.0f));
+
+			// Center the buttons horizontally
+			float buttonWidth = 120.0f;
+			float buttonSpacing = ImGui::GetStyle().ItemSpacing.x;
+			float totalWidth = buttonWidth * 2.0f + buttonSpacing;
+			ImGui::SetCursorPosX((windowSize.x - totalWidth) * 0.5f);
+
+			// OK button
+			if (ImGui::Button("OK", ImVec2(buttonWidth, 0)))
+			{
+				ImGui::CloseCurrentPopup();
+				m_CODA = false;
+				NWindow* window = NEngine::Instance().Get<NWindow>();
+				window->CloseWindow();
+			}
+
+			ImGui::SameLine();
+
+			// Cancel button
+			if (ImGui::Button("Cancel", ImVec2(buttonWidth, 0)))
+			{
+				m_CODA = false;
+				ImGui::CloseCurrentPopup();
+			}
+
+			ImGui::EndPopup();
 		}
 
 		//ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1.0f, 1.0f));  // Reduce padding inside the frame
@@ -690,6 +721,7 @@ namespace NULLENGINE
 		NRenderer* renderer = NEngine::Instance().Get<NRenderer>();
 		NWindow* window = NEngine::Instance().Get<NWindow>();
 		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+		NCameraManager* camManager = NEngine::Instance().Get<NCameraManager>();
 
 		//ImGui::PopStyleVar(2);
 		bool pOpen = true;
@@ -704,13 +736,6 @@ namespace NULLENGINE
 		m_CameraController->SetEnabled(false);
 
 		auto viewportOffet = ImGui::GetCursorPos();
-
-		if (m_ViewportSize != *((glm::vec2*)&viewportPanelSize))
-		{
-			buffer.Resize(viewportPanelSize.x, viewportPanelSize.y);
-			m_CameraController->OnResize(viewportPanelSize.x, viewportPanelSize.y);
-			m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
-		}
 
 		ImGui::Image((void*)(intptr_t)texture, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, { 0, 1 }, { 1, 0 });
 
@@ -794,8 +819,8 @@ namespace NULLENGINE
 		if (m_ViewportSize != *((glm::vec2*)&viewportPanelSize))
 		{
 			buffer.Resize(viewportPanelSize.x, viewportPanelSize.y);
-			m_CameraController->OnResize(viewportPanelSize.x, viewportPanelSize.y);
 			m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
+			ResizeCamera();
 		}
 
 		ImGui::Image((void*)(intptr_t)texture, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, { 0, 1 }, { 1, 0 });
@@ -835,6 +860,12 @@ namespace NULLENGINE
 			eventManager->QueueEvent(std::make_unique<SceneSwitchEvent>(m_PannelData.m_Context->m_Name, m_PannelData.m_Context->m_Name));
 			eventManager->QueueEvent(std::make_unique<EngineEditStateEvent>(NEngine::EDIT));
 		}
+	}
+
+	void ImGuiLayer::ResizeCamera()
+	{
+		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+		eventManager->QueueEvent(std::make_unique<WindowResizeEvent>(m_ViewportSize.x, m_ViewportSize.y));
 	}
 
 	void ImGuiLayer::OnWindowClose(const WindowCloseEvent& e)
@@ -978,5 +1009,81 @@ namespace NULLENGINE
 		return true;
 	}
 
+	void ImGuiLayer::NewSceneImpl()
+	{
+		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
 
+		eventManager->QueueEvent(std::make_unique<SceneSwitchEvent>(m_PannelData.m_Context->m_Name, "New Scene"));
+
+		m_PannelData.m_SelectedEntity = {};
+		NLE_CORE_INFO("New Scene Created");
+	}
+
+	void ImGuiLayer::SaveSceneImpl()
+	{
+		m_PannelData.m_Context->Serialize();
+
+		NLE_CORE_INFO("Scene: {0} successfully saved", m_PannelData.m_Context->m_Name);
+	}
+	void ImGuiLayer::SaveSceneAsImpl()
+	{
+		const std::string& nextScene = FileDialog::SaveFile("Null Engine Scene (*.json)\0*.json\0");
+
+		m_PannelData.m_Context->Serialize(nextScene);
+
+		NLE_CORE_INFO("Scene: {0} successfully saved as {1}", m_PannelData.m_Context->m_Name, nextScene);
+	}
+	void ImGuiLayer::OpenSceneImpl()
+	{
+		const std::string& nextScene = FileDialog::OpenFile("Null Engine Scene (*.scene)\0*.scene\0");
+
+		if (!nextScene.empty())
+		{
+			NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+
+			eventManager->QueueEvent(std::make_unique<SceneSwitchEvent>(m_PannelData.m_Context->m_Name, nextScene));
+
+			m_PannelData.m_SelectedEntity = {};
+
+			NLE_CORE_INFO("Scene: {0} Loaded", nextScene);
+
+		}
+	}
+
+	void ImGuiLayer::SetAsDefaultSceneImpl()
+	{
+		m_PannelData.m_Context->SetAsStartScene();
+
+		NLE_CORE_INFO("Scene: {0} successfully set as default scene", m_PannelData.m_Context->m_Name);
+	}
+
+	void ImGuiLayer::KeyboardShortcuts()
+	{
+		if ((ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl)) && ImGui::IsKeyPressed(ImGuiKey_N))
+		{
+			NewSceneImpl();
+		}
+
+		if ((ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl)) && ImGui::IsKeyPressed(ImGuiKey_O))
+		{
+			OpenSceneImpl();
+		}
+
+		if ((ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl)) && 
+			(ImGui::IsKeyDown(ImGuiKey_LeftAlt) || ImGui::IsKeyDown(ImGuiKey_RightAlt)) && ImGui::IsKeyPressed(ImGuiKey_S))
+		{
+			SetAsDefaultSceneImpl();
+		}
+
+		if ((ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl)) &&
+			(ImGui::IsKeyDown(ImGuiKey_LeftShift) || ImGui::IsKeyDown(ImGuiKey_RightShift)) && ImGui::IsKeyPressed(ImGuiKey_S))
+		{
+			SaveSceneAsImpl();
+		}
+
+		if ((ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl)) && ImGui::IsKeyPressed(ImGuiKey_S))
+		{
+			SaveSceneImpl();
+		}
+	}
 }

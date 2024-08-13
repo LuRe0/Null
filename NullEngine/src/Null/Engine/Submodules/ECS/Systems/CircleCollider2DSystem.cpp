@@ -129,25 +129,53 @@ namespace NULLENGINE
 
 	void CircleCollider2DSystem::RegisterToScripAPI(sol::state& lua)
 	{
-		//lua.new_usertype<CircleCollider2DComponent>
-		//	(
-		//		//"Sprite",
-		//		//sol::no_constructor,
-		//		//"type_id", &Component<CircleCollider2DComponent>::GetID,
-		//		//"frame_index", sol::readonly(& CircleCollider2DComponent::m_FrameIndex),
-		//		//"tint", [](CircleCollider2DComponent& sprite)
-		//		//{	
-		//		//	return std::tuple(sprite.m_Color.x, sprite.m_Color.y, sprite.m_Color.z, sprite.m_Color.w);
-		//		//},
-		//		//"set_tint", [](CircleCollider2DComponent& sprite, float r, float g, float b, float a)
-		//		//{
-		//		//	sprite.m_Color = glm::vec4(r, g, b, a);
-		//		//},
-		//		//"set_frame_index", [](CircleCollider2DComponent& sprite, int i)
-		//		//{
-		//		//	sprite.m_FrameIndex = i;
-		//		//}
-		//);
+		lua.new_usertype<CircleCollider2DComponent>
+			(
+				"BoxCollider2D",
+				sol::no_constructor,
+				"type_id", &Component<CircleCollider2DComponent>::GetID,
+				"offset", sol::readonly(&CircleCollider2DComponent::m_Offset),
+				"radius", sol::readonly(&CircleCollider2DComponent::m_Radius),
+				"set_offset", sol::overload(
+					[this](CircleCollider2DComponent& cc2d, float x, float y)
+					{
+						PhysicsSystem* physicsSys = NEngine::Instance().Get<PhysicsSystem>();
+
+						cc2d.m_Offset = glm::vec2(x, y);
+
+						if (cc2d.m_RuntimeFixture)
+						{
+							auto offset = physicsSys->PixelsToMeters(cc2d.m_Offset.x, cc2d.m_Offset.y);
+							dynamic_cast<b2CircleShape*>(cc2d.m_RuntimeFixture->GetShape())->m_p.Set(offset.x, offset.y);
+						}
+					},
+					[this](CircleCollider2DComponent& cc2d, glm::vec2 newOffset)
+					{
+						PhysicsSystem* physicsSys = NEngine::Instance().Get<PhysicsSystem>();
+
+						cc2d.m_Offset = newOffset;
+
+						if (cc2d.m_RuntimeFixture)
+						{
+							auto offset = physicsSys->PixelsToMeters(cc2d.m_Offset.x, cc2d.m_Offset.y);
+							dynamic_cast<b2CircleShape*>(cc2d.m_RuntimeFixture->GetShape())->m_p.Set(offset.x, offset.y);
+						}
+					}
+				),
+				"set_radius", [this](CircleCollider2DComponent& cc2d, float r)
+				{
+					PhysicsSystem* physicsSys = NEngine::Instance().Get<PhysicsSystem>();
+
+					cc2d.m_Radius = r;
+
+					if (cc2d.m_RuntimeFixture)
+					{
+						auto radius = physicsSys->PixelsToMeters(cc2d.m_Radius);
+
+						dynamic_cast<b2CircleShape*>(cc2d.m_RuntimeFixture->GetShape())->m_radius = radius;
+					}
+				}
+		);
 	}
 
 

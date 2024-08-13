@@ -93,7 +93,7 @@ namespace NULLENGINE
 			return componentNames;
 		}
 
-		static void RegisterMathStructures(sol::state& lua);
+
 	private:
 		Watcher m_ScriptReloaders;
 		std::unordered_map<std::string, bool> m_ScriptList;
@@ -101,6 +101,11 @@ namespace NULLENGINE
 		NScriptingInterface(NScriptingInterface const&) = delete;
 		NScriptingInterface& operator=(NScriptingInterface const&) = delete;
 
+		 void RegisterMathStructures(sol::state& lua);
+		 void RegisterVec2Structures(sol::state& lua);
+		 void RegisterVec3Structures(sol::state& lua);
+		 void RegisterVec4Structures(sol::state& lua);
+		 void MathFreeFunctions(sol::state& lua);
 	};
 
 }

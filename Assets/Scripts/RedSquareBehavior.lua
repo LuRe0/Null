@@ -32,33 +32,33 @@ end
 
 function RedSquareBehavior:Update(dt)
     -- Update code here
-    local velocityX = 0
-    local velocityY = 0
+    local velocity = vec2(0)
     local rb2d = pEntity:get_component(Rigidbody2D)
 
-    -- Trace.debug("here")
+    local linearVel = rb2d.linear_velocity
+    
     if(Input.KeyDown(KEY_UP)) then
         -- Trace.debug("here")
-        velocityY = RedSquareBehavior.Speed
+        velocity.y = RedSquareBehavior.Speed
     elseif Input.KeyDown(KEY_DOWN) then
-        velocityY = -(RedSquareBehavior.Speed)
+        velocity.y = -(RedSquareBehavior.Speed)
     else
-        velocityY = 0
+        velocity.y = 0
     end
 
 
     if(Input.KeyDown(KEY_RIGHT)) then
-        velocityX = RedSquareBehavior.Speed
+        velocity.x = RedSquareBehavior.Speed
     elseif Input.KeyDown(KEY_LEFT) then
-        velocityX = -(RedSquareBehavior.Speed)
+        velocity.x = -(RedSquareBehavior.Speed)
     else
-        velocityX = 0
+        velocity.x = 0
     end
     
     -- Trace.debug("v_x: {0}, v_y: {1}", velocityX, velocityY)
 
-    rb2d:set_linear_velocity(velocityX, velocityY)
-        -- PhysicsSystem.SetLinearVelocity(ParentEntity, velocity)
+    rb2d:set_linear_velocity(velocity)
+
 
 end
 

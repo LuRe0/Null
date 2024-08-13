@@ -66,7 +66,7 @@ namespace NULLENGINE
 
         // Load the texture image
         //stbi_set_flip_vertically_on_load(true);
-        m_Data = stbi_load(m_FilePath.c_str(), &m_Width, &m_Height, &m_NrChannels, 0);
+        m_Data = stbi_load(m_FilePath.c_str(), &m_Width, &m_Height, &m_NrChannels, STBI_rgb_alpha);
         if (m_Data)
         {
             GLenum format = (m_NrChannels == 4) ? GL_RGBA : GL_RGB;

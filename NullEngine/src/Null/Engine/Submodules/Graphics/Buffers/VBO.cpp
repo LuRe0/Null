@@ -98,10 +98,24 @@ namespace NULLENGINE
 			: glBufferData(GL_ARRAY_BUFFER, m_Count * sizeof(Instance), nullptr, GL_STATIC_DRAW);
 	}
 
+	void VBO::AttachBuffer(const std::vector<CircleInstance>& vertices, std::vector<Layout>& layouts, bool dynamic, size_t size)
+	{
+		m_Layouts = layouts;
+		m_Count = size;
+		dynamic ? glBufferData(GL_ARRAY_BUFFER, m_Count * sizeof(CircleInstance), nullptr, GL_DYNAMIC_DRAW)
+			: glBufferData(GL_ARRAY_BUFFER, m_Count * sizeof(CircleInstance), nullptr, GL_STATIC_DRAW);
+	}
+
 	void VBO::UpdateBuffer(const std::vector<Instance>& vertices)
 	{
 		m_Instances = vertices.size();
 		glBufferSubData(GL_ARRAY_BUFFER, 0, m_Instances * sizeof(Instance), vertices.data());
+	}
+
+	void VBO::UpdateBuffer(const std::vector<CircleInstance>& vertices)
+	{
+		m_Instances = vertices.size();
+		glBufferSubData(GL_ARRAY_BUFFER, 0, m_Instances * sizeof(CircleInstance), vertices.data());
 	}
 
 

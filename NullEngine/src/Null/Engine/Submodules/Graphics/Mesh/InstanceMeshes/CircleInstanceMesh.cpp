@@ -1,7 +1,7 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	InstanceMesh.cpp
+// File Name:	CircleInstanceMesh.cpp
 // Author(s):	Anthon Reid
 // 
 //------------------------------------------------------------------------------
@@ -10,7 +10,7 @@
 // Includes																        //
 //******************************************************************************//
 #include "stdafx.h"
-#include "InstanceMesh.h"
+#include "CircleInstanceMesh.h"
 #include "glad/glad.h"
 #include "Null/Core.h"
 #include "Null/Engine/Submodules/Graphics/Shader/Shader.h"
@@ -42,7 +42,7 @@ namespace NULLENGINE
 
 
 
-	InstanceMesh::InstanceMesh(const std::string& filename,const uint32_t vertexCount, const uint32_t indexCount) : Mesh()
+	CircleInstanceMesh::CircleInstanceMesh(const std::string& filename,const uint32_t vertexCount, const uint32_t indexCount) : Mesh()
 	{
 		Read(filename);
 
@@ -69,10 +69,16 @@ namespace NULLENGINE
 		instancesLayouts.push_back({ 2, GL_FLOAT, 2 * sizeof(float) }); // location 9
 
 		// unsigned int texIndex (a_InstanceTexIndex)
-		instancesLayouts.push_back({ 1, GL_INT, sizeof(int) }); // location 10
+		instancesLayouts.push_back({ 1, GL_FLOAT, sizeof(float) }); // location 10
 
 		// uint32_t entityID (a_EntityID)
-		instancesLayouts.push_back({ 1, GL_INT, sizeof(int) }); // location 11
+		instancesLayouts.push_back({ 1, GL_FLOAT, sizeof(float) }); // location 11
+
+		// unsigned int texIndex (a_InstanceTexIndex)
+		instancesLayouts.push_back({ 1, GL_INT, sizeof(int) }); // location 12
+
+		// uint32_t entityID (a_EntityID)
+		instancesLayouts.push_back({ 1, GL_INT, sizeof(int) }); // location 13
 
 		SetupVertexBuffer(std::vector<Instance>(), instancesLayouts, true, vertexCount);
 
@@ -100,26 +106,26 @@ namespace NULLENGINE
 
 		m_Buffer.m_VAO.AttachEBO(m_Buffer.m_EBO);
 	}
-	InstanceMesh::~InstanceMesh()
+	CircleInstanceMesh::~CircleInstanceMesh()
 	{
 
 	}
 
-	void InstanceMesh::Bind() const
+	void CircleInstanceMesh::Bind() const
 	{
 		m_Buffer.m_VAO.Bind();
 		m_Buffer.m_VBO.Bind();
 		m_Buffer.m_EBO.Bind();
 	}
 
-	void InstanceMesh::Unbind() const
+	void CircleInstanceMesh::Unbind() const
 	{
 		m_Buffer.m_EBO.Unbind();
 		m_Buffer.m_VBO.Bind();
 		m_Buffer.m_VAO.Unbind();
 	}
 
-	void InstanceMesh::SetupIndexBuffer(const std::vector<unsigned int>& indexData) {
+	void CircleInstanceMesh::SetupIndexBuffer(const std::vector<unsigned int>& indexData) {
 		m_Buffer.m_VAO.Bind();
 		m_Buffer.m_EBO.Bind();
 		m_Buffer.m_EBO.AttachBuffer(indexData);
@@ -127,7 +133,7 @@ namespace NULLENGINE
 		m_Buffer.m_VAO.Unbind();
 	}
 
-	void InstanceMesh::SetupVertexAttributes() 
+	void CircleInstanceMesh::SetupVertexAttributes() 
 	{
 		// Vertex struct attributes
 		// Vertex Position attribute
@@ -148,7 +154,7 @@ namespace NULLENGINE
 		//m_Buffer.m_VAO.AttachVBO()
 	}
 
-	void InstanceMesh::SetupInstances()
+	void CircleInstanceMesh::SetupInstances()
 	{
 	/*	m_Buffer.m_InstanceVBO.Bind();*/
 		std::vector<Layout> instancesLayouts;
@@ -178,7 +184,7 @@ namespace NULLENGINE
 	}
 
 
-	void InstanceMesh::Render(uint32_t count) const
+	void CircleInstanceMesh::Render(uint32_t count) const
 	{
 		m_Buffer.m_VAO.Bind();
 

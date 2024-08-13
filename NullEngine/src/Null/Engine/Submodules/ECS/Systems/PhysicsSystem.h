@@ -64,19 +64,16 @@ namespace NULLENGINE
 		const glm::vec2 MetersToPixels(float x, float y);
 		const glm::vec2 PixelsToMeters(float x, float y);
 
+		const float MetersToPixels(float meters);
+		const float PixelsToMeters(float pixels);
+
 	private:
 		b2World* m_PhysicsWorld;
 
 		static void CreateRigidbody2DComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
-		static void CreateBoxCollider2DComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
-
 		static JSON WriteRigidbody2DComponent(BaseComponent* component);
-
-		static JSON WriteBoxCollider2DComponent(BaseComponent* component);
-
-
 		void ViewRigidbody2DComponent(Entity& entityID);
-		void ViewBoxCollider2DComponent(Entity& entityID);
+
 
 		void InitializePhysics(EntityID entityID, NRegistry* registry);
 

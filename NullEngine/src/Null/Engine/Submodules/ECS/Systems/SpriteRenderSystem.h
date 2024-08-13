@@ -14,7 +14,6 @@
 //******************************************************************************//
 #include "Null/Core.h"
 #include "Null/Engine/Submodules/ECS/Systems/System.h"
-#include "Null/Engine/Submodules/Graphics/InstanceMesh.h"
 
 
 //******************************************************************************//

@@ -7,7 +7,16 @@
               "path": "framebuffer"
         },
         {
-            "path": "objInstance"
-      }
+            "path": "quadInstance"
+        },
+        {
+        "path": "triInstance"
+        },
+        {
+            "path": "cubeInstance"
+        },
+        {
+            "path": "circleInstance"
+        }
     ]
 }

@@ -4,6 +4,9 @@
             "type": "NWindow"
         },
         {
+            "type": "NDebugManager"
+        },
+        {
             "type": "NEventManager"
         },
         {
@@ -53,6 +56,12 @@
         },
         {
             "type": "SpriteRenderSystem"
+        },
+        {
+            "type": "BoxCollider2DSystem"
+        },
+        {
+            "type": "CircleCollider2DSystem"
         },
         {
             "type": "NRenderer"

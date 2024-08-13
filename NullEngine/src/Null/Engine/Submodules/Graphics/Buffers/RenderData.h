@@ -59,6 +59,8 @@ namespace NULLENGINE
         std::string shaderName;         // 24 bytes (approx., depends on the implementation)
         unsigned int frameIndex;        // 4 bytes
         EntityID entity;
+        float thickness;
+        float fade;
 
         // Default constructor
         ElementData()
@@ -71,9 +73,9 @@ namespace NULLENGINE
         // Parameterized constructor
         ElementData(const glm::mat4& model, const Mesh* mesh,
             const SpriteSource* spriteSrc, const glm::vec4& tintColor,
-            const std::string& shaderName, unsigned int frameIndex, EntityID entity, RenderType type)
+            const std::string& shaderName, unsigned int frameIndex, EntityID entity, float thick, float f, RenderType type)
             : model(model), mesh(mesh), spriteSrc(spriteSrc), tintColor(tintColor),
-            shaderName(shaderName), frameIndex(frameIndex), entity(entity)
+            shaderName(shaderName), frameIndex(frameIndex), entity(entity), thickness(thick), fade(f)
         {
             m_Type = type;
         }

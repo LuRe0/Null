@@ -20,7 +20,7 @@
 #include "Null/Engine/Submodules/Graphics/Buffers/VBO.h"
 #include "Null/Engine/Submodules/Graphics/Buffers/EBO.h"
 #include "Null/Engine/Submodules/Graphics/Texture.h"
-#include "Null/Engine/Submodules/Graphics/Mesh.h"
+#include "Null/Engine/Submodules/Graphics/Mesh/Mesh.h"
 
 
 
@@ -53,10 +53,13 @@ namespace NULLENGINE
 		AddCreateFunction<NSceneManager>([&engine]() { engine.Add<NULLENGINE::NSceneManager>(); });
 		AddCreateFunction<NComponentFactory>([&engine]() { engine.Add<NULLENGINE::NComponentFactory>(); });
 		AddCreateFunction<NEntityFactory>([&engine]() { engine.Add<NULLENGINE::NEntityFactory>(); });
+		AddCreateFunction<NDebugManager>([&engine]() { engine.Add<NULLENGINE::NDebugManager>(); });
 		AddCreateFunction<NRenderer>([&engine]() { engine.Add<NULLENGINE::NRenderer>(); });
 		AddCreateFunction<PhysicsSystem>([&engine]() { engine.Add<NULLENGINE::PhysicsSystem>(); });
 		AddCreateFunction<TransformSystem>([&engine]() { engine.Add<NULLENGINE::TransformSystem>(); });
 		AddCreateFunction<SpriteRenderSystem>([&engine]() { engine.Add<NULLENGINE::SpriteRenderSystem>(); });
+		AddCreateFunction<CircleCollider2DSystem>([&engine]() { engine.Add<NULLENGINE::CircleCollider2DSystem>(); });
+		AddCreateFunction<BoxCollider2DSystem>([&engine]() { engine.Add<NULLENGINE::BoxCollider2DSystem>(); });
 		AddCreateFunction<AnimationSystem>([&engine]() { engine.Add<NULLENGINE::AnimationSystem>(); });
 		AddCreateFunction<ScriptSystem>([&engine]() { engine.Add<NULLENGINE::ScriptSystem>(); });
 		AddCreateFunction<NScriptingInterface>([&engine]() { engine.Add<NULLENGINE::NScriptingInterface>(); });

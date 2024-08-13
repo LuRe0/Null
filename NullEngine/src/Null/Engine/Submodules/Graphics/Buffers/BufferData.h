@@ -68,6 +68,36 @@ struct Instance
 
 	glm::vec2 textSize;
 
+	float thickness;
+
+	float fade;
+
+	int textIndex;
+
+	int entityID;
+};
+
+
+struct CircleInstance
+{
+	glm::vec3 vertexposition;
+
+	glm::vec4 vertexColor;
+
+	glm::vec2 vertexCoords;
+
+	glm::mat4 model;
+
+	glm::vec4 color;
+
+	glm::vec2 textCoords;
+
+	glm::vec2 textSize;
+	
+	float thickness;
+	
+	float fade;
+
 	int textIndex;
 
 	int entityID;

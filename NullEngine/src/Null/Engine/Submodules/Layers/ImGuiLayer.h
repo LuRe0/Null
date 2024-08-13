@@ -143,6 +143,8 @@ namespace NULLENGINE
 		void OnMouseReleased(const MouseButtonReleaseEvent& e);
 		void OnMouseMove(const MouseMoveEvent& e);
 		void OnMouseScroll(const MouseScrolledEvent& e);
+		void OnSceneSwitched(const SceneSwitchEvent& e);
+
 	};
 
 }

@@ -4,7 +4,7 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	InstanceMesh.h
+// File Name:	CubeInstanceMesh.h
 // Author(s):	name
 // 
 //------------------------------------------------------------------------------
@@ -17,7 +17,8 @@
 #include "Null/Engine/Submodules/Graphics/Buffers/VBO.h"
 #include "Null/Engine/Submodules/Graphics/Buffers/EBO.h"
 #include "Null/Engine/Submodules/Graphics/Buffers/BufferData.h"
-#include "Null/Engine/Submodules/Graphics/Mesh.h"
+#include "Null/Engine/Submodules/Graphics/Mesh/Mesh.h"
+
 
 //******************************************************************************//
 // Definitions  														        //
@@ -37,14 +38,14 @@
 namespace NULLENGINE
 {
 
-	class NLE_API InstanceMesh : public Mesh
+	class NLE_API CubeInstanceMesh : public Mesh
 	{
 	public:
 
 
-		InstanceMesh(const std::string& filename, const uint32_t vertexCount, const uint32_t indexCount);
-		InstanceMesh() = default;
-		~InstanceMesh();
+		CubeInstanceMesh(const std::string& filename, const uint32_t vertexCount, const uint32_t indexCount);
+		CubeInstanceMesh() = default;
+		~CubeInstanceMesh();
 
 		void Bind() const;
 		void Unbind() const;

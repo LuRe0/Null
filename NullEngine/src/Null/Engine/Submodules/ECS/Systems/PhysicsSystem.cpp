@@ -15,6 +15,7 @@
 #include <box2d/b2_world.h>
 #include <box2d/b2_body.h>
 #include <box2d/b2_polygon_shape.h>
+#include <box2d/b2_circle_shape.h>
 #include <box2d/b2_fixture.h>
 #include <magic_enum/magic_enum.hpp>
 #include "Null/Engine/Submodules/Events/IEvents.h"
@@ -40,10 +41,6 @@ namespace NULLENGINE
 
 		componentFactory->Register<Rigidbody2DComponent>(CreateRigidbody2DComponent,
 			[this](Entity& id) { this->ViewRigidbody2DComponent(id); }, WriteRigidbody2DComponent);
-
-		componentFactory->Register<BoxCollider2DComponent>(CreateBoxCollider2DComponent,
-			[this](Entity& id) { this->ViewBoxCollider2DComponent(id); }, WriteBoxCollider2DComponent);
-
 	}
 	void PhysicsSystem::Load()
 	{
@@ -113,6 +110,10 @@ namespace NULLENGINE
 				const auto& position = body->GetPosition();
 
 				auto newPos = MetersToPixels(position.x, position.y);
+
+				auto linearVel = body->GetLinearVelocity();
+
+				rb2d.m_LinearVelocity = MetersToPixels(linearVel.x, linearVel.y);
 
 				transform.m_Translation.x = newPos.x;
 				transform.m_Translation.y = newPos.y;
@@ -213,6 +214,16 @@ namespace NULLENGINE
 		return glm::vec2(xMeters, yMeters);
 	}
 
+	const float PhysicsSystem::MetersToPixels(float meters)
+	{
+		return meters * m_Pixels_Per_Meter;
+	}
+
+	const float PhysicsSystem::PixelsToMeters(float pixels)
+	{
+		return pixels / m_Pixels_Per_Meter;
+	}
+
 	// Converts meter values to pixel values
 	const glm::vec2 PhysicsSystem::MetersToPixels(float xMeters, float yMeters)
 	{
@@ -244,25 +255,7 @@ namespace NULLENGINE
 
 	}
 
-	void PhysicsSystem::CreateBoxCollider2DComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id)
-	{
 
-		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
-
-		auto* comp = static_cast<BoxCollider2DComponent*>(component);
-		JsonReader jsonWrapper(json);
-
-		if (!jsonWrapper.Empty())
-		{
-			comp->m_Offset = jsonWrapper.GetVec2("offset", { 0.0f, 0.0f });
-			comp->m_Scale = jsonWrapper.GetVec2("scale", { 1.0f, 1.0f });
-			comp->m_Density = jsonWrapper.GetFloat("density", 1.0f);
-			comp->m_Friction = jsonWrapper.GetFloat("friction", 0.5f);
-			comp->m_Restitution = jsonWrapper.GetFloat("restitution", 1.0f);
-			comp->m_RestitutionThreshold = jsonWrapper.GetFloat("restitutionThreshold", 0.5f);
-		}
-		componentFactory->AddOrUpdate<BoxCollider2DComponent>(id, comp, registry, comp->m_Offset, comp->m_Scale, comp->m_Density, comp->m_Friction, comp->m_Restitution, comp->m_RestitutionThreshold);
-	}
 	JSON PhysicsSystem::WriteRigidbody2DComponent(BaseComponent* component)
 	{
 		nlohmann::json json;
@@ -274,21 +267,7 @@ namespace NULLENGINE
 
 		return json;
 	}
-	JSON PhysicsSystem::WriteBoxCollider2DComponent(BaseComponent* component)
-	{
-		nlohmann::json json;
 
-		auto& collider = *static_cast<BoxCollider2DComponent*>(component);
-
-		json["BoxCollider2D"]["offset"] = { collider.m_Offset.x, collider.m_Offset.y };
-		json["BoxCollider2D"]["scale"] = { collider.m_Scale.x, collider.m_Scale.y };
-		json["BoxCollider2D"]["density"] = collider.m_Density;
-		json["BoxCollider2D"]["friction"] = collider.m_Friction;
-		json["BoxCollider2D"]["restitution"] = collider.m_Restitution;
-		json["BoxCollider2D"]["restitutionThreshold"] = collider.m_RestitutionThreshold;
-
-		return json;
-	}
 	void PhysicsSystem::ViewRigidbody2DComponent(Entity& entity)
 	{
 		Rigidbody2DComponent& rb2d = entity.Get<Rigidbody2DComponent>();
@@ -351,36 +330,7 @@ namespace NULLENGINE
 
 		//update body when data changes
 	}
-	void PhysicsSystem::ViewBoxCollider2DComponent(Entity& entity)
-	{
-		BoxCollider2DComponent& bc2d = entity.Get<BoxCollider2DComponent>();
-		//TransformComponent& transform = entity.Get<TransformComponent>();
 
-		ImGui::DragFloat2("Offset", glm::value_ptr(bc2d.m_Offset), 0.5f);
-		ImGui::DragFloat2("Scale", glm::value_ptr(bc2d.m_Scale), 0.5f);
-		ImGui::DragFloat("Density", &bc2d.m_Density, 0.5f);
-		ImGui::DragFloat("Friction", &bc2d.m_Friction, 0.5f, 0, 1.0f);
-		ImGui::DragFloat("Resitution", &bc2d.m_Restitution, 0.5f);
-		ImGui::DragFloat("Resitution Threshold", &bc2d.m_RestitutionThreshold, 0.5f);
-
-		if (bc2d.m_RuntimeFixture)
-		{
-
-			bc2d.m_RuntimeFixture->SetDensity(bc2d.m_Density);
-			bc2d.m_RuntimeFixture->SetFriction(bc2d.m_Friction);
-			bc2d.m_RuntimeFixture->SetRestitution(bc2d.m_Restitution);
-			bc2d.m_RuntimeFixture->SetRestitutionThreshold(bc2d.m_RestitutionThreshold);
-
-
-			auto scale = PixelsToMeters(bc2d.m_Scale.x/2, bc2d.m_Scale.y / 2);
-
-			dynamic_cast<b2PolygonShape*>(bc2d.m_RuntimeFixture->GetShape())->SetAsBox(scale.x, scale.y);
-		}
-		else
-		{
-			ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Warning: Requires Rigidbody2D component to enable physics");
-		}
-	}
 
 	void PhysicsSystem::OnEntityCreated(const EntityCreatedEvent& e)
 	{
@@ -431,11 +381,13 @@ namespace NULLENGINE
 
 		if (e.GetComponentID() == Component<Rigidbody2DComponent>::GetID() ||
 			e.GetComponentID() == Component<TransformComponent>::GetID() ||
-			e.GetComponentID() == Component<BoxCollider2DComponent>::GetID())
+			e.GetComponentID() == Component<BoxCollider2DComponent>::GetID() ||
+			e.GetComponentID() == Component<CircleCollider2DComponent>::GetID())
 		{
 			if (registry->HasComponent<Rigidbody2DComponent>(e.GetID()) &&
 				registry->HasComponent<TransformComponent>(e.GetID()) &&
-				registry->HasComponent<BoxCollider2DComponent>(e.GetID()))
+				(registry->HasComponent<BoxCollider2DComponent>(e.GetID()) ||
+				 registry->HasComponent<CircleCollider2DComponent>(e.GetID())))
 			{
 				InitializePhysics(e.GetID(), registry);
 			}
@@ -506,8 +458,9 @@ namespace NULLENGINE
 			b2PolygonShape boxShape;
 
 			auto scale = PixelsToMeters(bc2d.m_Scale.x/2, bc2d.m_Scale.y / 2);
+			auto offset = PixelsToMeters(bc2d.m_Offset.x, bc2d.m_Offset.y);
 
-			boxShape.SetAsBox(scale.x, scale.y);
+			boxShape.SetAsBox(scale.x, scale.y, b2Vec2(offset.x, offset.y), 0.0f);
 
 			b2FixtureDef fixDef;
 
@@ -518,6 +471,30 @@ namespace NULLENGINE
 			fixDef.restitutionThreshold = bc2d.m_RestitutionThreshold;
 
 			bc2d.m_RuntimeFixture = rb2d.m_RuntimeBody->CreateFixture(&fixDef);
+		}
+
+		if (registry->HasComponent<CircleCollider2DComponent>(entityId))
+		{
+			CircleCollider2DComponent& cc2d = registry->GetComponent<CircleCollider2DComponent>(entityId);
+
+			b2CircleShape circleShape;
+
+			auto offset = PixelsToMeters(cc2d.m_Offset.x, cc2d.m_Offset.y);
+			auto radius = PixelsToMeters(cc2d.m_Radius);
+
+
+			circleShape.m_p.Set(offset.x, offset.y);
+			circleShape.m_radius = radius;
+
+			b2FixtureDef fixDef;
+
+			fixDef.shape = &circleShape;
+			fixDef.density = cc2d.m_Density;
+			fixDef.friction = cc2d.m_Friction;
+			fixDef.restitution = cc2d.m_Restitution;
+			fixDef.restitutionThreshold = cc2d.m_RestitutionThreshold;
+
+			cc2d.m_RuntimeFixture = rb2d.m_RuntimeBody->CreateFixture(&fixDef);
 		}
 	}
 

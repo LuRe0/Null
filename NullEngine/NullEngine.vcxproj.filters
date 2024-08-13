@@ -224,10 +224,10 @@
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\Controllers\PerspectiveCameraController.h">
       <Filter>Null\Engine\Submodules\Graphics\Camera\Controllers</Filter>
     </ClInclude>
-    <ClInclude Include="src\Null\Engine\Submodules\Graphics\InstanceMesh.h">
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\QuadInstanceMesh.h">
       <Filter>Null\Engine\Submodules\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Mesh.h">
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Mesh\Mesh.h">
       <Filter>Null\Engine\Submodules\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Shader\Shader.h">
@@ -267,6 +267,20 @@
       <Filter>Null\Tools</Filter>
     </ClInclude>
     <ClInclude Include="src\stdafx.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\CameraComponent.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\CameraSystem.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\BatchRenderer.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\QuadBatchRenderer.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\TriangleInstanceMesh.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\TriangleBatchRenderer.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\CubeInstanceMesh.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\CubeBatchRenderer.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\CircleBatchRenderer.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\CircleInstanceMesh.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\LineInstanceMesh.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\BoxCollider2DSystem.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\CircleCollider2DSystem.h" />
+    <ClInclude Include="src\Null\Engine\Modules\NDebugManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Null\Application.cpp">
@@ -398,10 +412,10 @@
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\Controllers\PerspectiveCameraController.cpp">
       <Filter>Null\Engine\Submodules\Graphics\Camera\Controllers</Filter>
     </ClCompile>
-    <ClCompile Include="src\Null\Engine\Submodules\Graphics\InstanceMesh.cpp">
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\QuadInstanceMesh.cpp">
       <Filter>Null\Engine\Submodules\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Mesh.cpp">
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Mesh\Mesh.cpp">
       <Filter>Null\Engine\Submodules\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Shader\Shader.cpp">
@@ -438,5 +452,14 @@
       <Filter>Null\Tools</Filter>
     </ClCompile>
     <ClCompile Include="src\stdafx.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\CameraSystem.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\BatchRenderer.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\TriangleInstanceMesh.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\CubeInstanceMesh.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\CircleInstanceMesh.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\LineInstanceMesh.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\BoxCollider2DSystem.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\CircleCollider2DSystem.cpp" />
+    <ClCompile Include="src\Null\Engine\Modules\NDebugManager.cpp" />
   </ItemGroup>
 </Project>

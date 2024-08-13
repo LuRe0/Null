@@ -102,12 +102,24 @@ return Template_Script
 
     void NScriptingInterface::Update(float dt)
     {
-        for (auto& scripts : m_ScriptList)
+
+        switch (NEngine::Instance().GetEngineState())
         {
-            if (scripts.second)
+        case NULLENGINE::IEngine::RUN_MAXIMIZED: // Handle maximized state
+        case NULLENGINE::IEngine::RUN_WINDOWED:  // Handle windowed state
+        case NULLENGINE::IEngine::SIMULATE:
+        {
+            for (auto& scripts : m_ScriptList)
             {
-                ReloadScript(scripts.first);
+                if (scripts.second)
+                {
+                    ReloadScript(scripts.first);
+                }
             }
+            break;
+        }
+        default:
+            break;
         }
     }
 

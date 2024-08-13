@@ -88,6 +88,7 @@ namespace NULLENGINE
 
 
 		SUBSCRIBE_EVENT(KeyPressEvent, &ImGuiLayer::OnKeyPressed, eventManager, EventPriority::Low);
+		SUBSCRIBE_EVENT(SceneSwitchEvent, &ImGuiLayer::OnSceneSwitched, eventManager, EventPriority::High);
 
 		InitCameraControllers();
 	}
@@ -893,6 +894,11 @@ namespace NULLENGINE
 		io.MouseWheelH += e.GetXOffset();
 		io.MouseWheel += e.GetYOffset();
 
+	}
+
+	void ImGuiLayer::OnSceneSwitched(const SceneSwitchEvent& e)
+	{
+		//m_PannelData.m_SelectedEntity = {};
 	}
 
 	bool DecomposeTransform(const glm::mat4& transform, glm::vec3& translation, glm::vec3& rotation, glm::vec3& scale)

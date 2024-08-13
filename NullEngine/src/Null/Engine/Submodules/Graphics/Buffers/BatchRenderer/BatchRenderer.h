@@ -4,7 +4,7 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	VBO.h
+// File Name:	BatchRenderer.h
 // Author(s):	name
 // 
 //------------------------------------------------------------------------------
@@ -17,8 +17,6 @@ LearnOpenGl license: https://creativecommons.org/licenses/by/4.0/legalcode
 // Includes																        //
 //******************************************************************************//
 #include "Null/Core.h"
-#include "BufferData.h"
-
 
 
 //******************************************************************************//
@@ -38,45 +36,45 @@ LearnOpenGl license: https://creativecommons.org/licenses/by/4.0/legalcode
 
 namespace NULLENGINE
 {
-	//class Vertex;
-	class VBO
+	class BatchRenderer
 	{
 	public:
-		VBO();
+		static const uint32_t m_MaxTextureSlots = 32;
 
-		
-		//VBO(const std::vector<Vertex>& data);
-		~VBO();
+		struct RendererStats
+		{
+			uint32_t DrawCalls = 0;
+			uint32_t InstanceCount = 0;
+			uint32_t TextureCount = 0;
 
-		void Bind() const;
-		void Unbind() const;
-		inline unsigned int Count() const { return m_Count; }
-		inline const std::vector<Layout>& Layouts() const { return m_Layouts; }
-		unsigned int Stride() const;
-		unsigned int Instances() const { return m_Instances; }
+			//uint32_t GetTotalVertexCount() { return QuadCount * 4; }
+			//uint32_t GetTotalIndexCount() { return QuadCount * 6; }
+		};
 
+		virtual ~BatchRenderer() {};
 
-		void AttachBuffer(const std::vector<float>& vertices, std::vector<Layout>& layouts,bool dynamic = false, size_t size = 0);
+		virtual void BeginBatch() = 0;
+		virtual void NextBatch() = 0;
+		virtual void Flush() = 0;
+		virtual void ImguiView() = 0;
+		virtual void BindTextureBuffer() = 0;
+		virtual void AddInstance(const ElementData& render) = 0;
 
-		void AttachBuffer(const std::vector<Vertex>& vertices, std::vector<Layout>& layouts, bool dynamic = false, size_t size = 0);
-
-		void AttachBuffer(const std::vector<Instance>& vertices, std::vector<Layout>& layouts, bool dynamic = false, size_t size = 0);
-		void AttachBuffer(const std::vector<CircleInstance>& vertices, std::vector<Layout>& layouts, bool dynamic = false, size_t size = 0);
-
-		void UpdateBuffer(const std::vector<Instance>& vertices);
-
-		void UpdateBuffer(const std::vector<CircleInstance>& vertices);
-
-		void UpdateBuffer(const std::vector<Vertex>& vertices);
-
-		const unsigned int GetID() const { return m_ID; }
+		virtual void ResetStats() = 0;
+	protected:
+		uint32_t m_MaxInstances;
+		uint32_t m_MaxVertices;
+		uint32_t m_MaxIndices;
 
 
-	private:
-		unsigned int m_ID;
-		unsigned int m_Count = 0;
-		std::vector<Layout> m_Layouts;
-		unsigned int m_Instances = 0;
+		uint32_t m_InstanceIndexCount = 0;
+		uint32_t m_TextureSlotIndex = 0;
+
+		//std::unordered_set<unsigned int> TexturesUsed;
+
+
+		std::array<Texture*, m_MaxTextureSlots> m_TextureSlots;
 	};
+
 
 }

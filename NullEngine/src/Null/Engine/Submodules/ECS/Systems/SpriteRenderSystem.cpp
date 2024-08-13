@@ -11,7 +11,7 @@
 //******************************************************************************//
 #include "stdafx.h"
 #include "SpriteRenderSystem.h"
-#include "Null/Engine/Submodules/Graphics/Mesh.h"
+#include "Null/Engine/Submodules/Graphics/Mesh/Mesh.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "imgui.h"
@@ -61,10 +61,6 @@ namespace NULLENGINE
 		NRenderer* renderer = NEngine::Instance().Get<NRenderer>();
 		NRegistry* m_Parent = NEngine::Instance().Get<NRegistry>();
 
-		std::vector<Instance> QuadInstances;
-		std::vector<Instance> TriInstances;
-		std::vector<Instance> CubeInstances;
-
 		for (const auto entityId : GetSystemEntities())
 		{
 			TransformComponent& transform = m_Parent->GetComponent<TransformComponent>(entityId);
@@ -75,7 +71,8 @@ namespace NULLENGINE
 
 
 			//model, mesh, spritesrc, tint, shadername, frameindex, entity
-			renderer->AddRenderCall(std::make_unique<ElementData>(transform.m_TransformMatrix, sprite.m_Mesh, sprite.m_SpriteSource, sprite.m_Color, sprite.m_ShaderName, sprite.m_FrameIndex, entityId, RenderData::INSTANCED));
+			renderer->AddRenderCall(std::make_unique<ElementData>(transform.m_TransformMatrix, sprite.m_Mesh, sprite.m_SpriteSource, sprite.m_Color, sprite.m_ShaderName, 
+												sprite.m_FrameIndex, entityId, sprite.m_Thickness, sprite.m_Fade, RenderData::INSTANCED));
 		}
 	}
 
@@ -125,7 +122,12 @@ namespace NULLENGINE
 		{
 			comp->m_FrameIndex = jsonWrapper.GetInt("frameindex", 0);
 			glm::vec2 dimension = jsonWrapper.GetVec2("dimension", { 1.0f, 1.0f });
-			comp->m_SpriteSource = spritesrcManager->Create(jsonWrapper.GetString("texture", ""), dimension.x, dimension.y);
+			auto src = jsonWrapper.GetString("texture", "");
+			if (!src.empty())
+				comp->m_SpriteSource = spritesrcManager->Create(src, dimension.x, dimension.y);
+			else
+				comp->m_SpriteSource = nullptr;
+
 			comp->m_ShaderName = jsonWrapper.GetString("shadername", "default");
 			const std::string& meshName = jsonWrapper.GetString("meshname", "");
 
@@ -146,11 +148,13 @@ namespace NULLENGINE
 		auto& sprite = *static_cast<SpriteComponent*>(component);
 
 		json["Sprite"]["frameindex"] = sprite.m_FrameIndex;
-		json["Sprite"]["texture"] = sprite.m_SpriteSource->GetName();
-		json["Sprite"]["dimension"] = { sprite.m_SpriteSource->GetRows(),  sprite.m_SpriteSource->GetCols() };
+		json["Sprite"]["texture"] = sprite.m_SpriteSource != nullptr ? sprite.m_SpriteSource->GetName() : "";
+		json["Sprite"]["dimension"] = sprite.m_SpriteSource == nullptr
+			? nlohmann::json::array({ 1, 1 })
+			: nlohmann::json::array({ sprite.m_SpriteSource->GetRows(), sprite.m_SpriteSource->GetCols() });
 		json["Sprite"]["tint"] = { sprite.m_Color.r, sprite.m_Color.g, sprite.m_Color.b, sprite.m_Color.a };
 		json["Sprite"]["shadername"] = sprite.m_ShaderName;
-		json["Sprite"]["meshname"] = sprite.m_Mesh->GetName();
+		json["Sprite"]["meshname"] = sprite.m_Mesh == nullptr ? "" : sprite.m_Mesh->GetName();
 
 		return json;
 
@@ -165,11 +169,12 @@ namespace NULLENGINE
 		NShaderManager* shaderManager = NEngine::Instance().Get<NShaderManager>();
 
 
-		ImGui::DragInt("Frame Index", reinterpret_cast<int*>(&(sprite.m_FrameIndex)), 0.5f, 0);
+
+		ImGui::DragFloat("Thickness", &sprite.m_Thickness, 0.01f, 0);
+
+		ImGui::DragFloat("Fade", &sprite.m_Fade, 0.001f, 0);
+
 		const auto& meshNames = meshManager->GetResourceNames();
-
-
-
 
 		if (sprite.m_Mesh)
 		{
@@ -220,6 +225,9 @@ namespace NULLENGINE
 		{
 			ImGui::DragInt("Rows", &sprite.m_SpriteSource->Rows(), 0.5f, 1);
 			ImGui::DragInt("Columns", &sprite.m_SpriteSource->Cols(), 0.5f, 1);
+
+			ImGui::DragInt("Frame Index", reinterpret_cast<int*>(&(sprite.m_FrameIndex)), 1, 0, sprite.m_SpriteSource->GetFrameCount());
+
 
 			if (sprite.m_SpriteSource->GetTexture())
 			{

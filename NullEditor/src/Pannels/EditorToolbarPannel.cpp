@@ -47,6 +47,7 @@ namespace NULLENGINE
 	void EditorToolbarPannel::OnImGUIRender()
 	{
 		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+		NDebugManager* debugManager = NEngine::Instance().Get<NDebugManager>();
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
@@ -84,7 +85,11 @@ namespace NULLENGINE
 			ImGui::EndCombo();
 		}
 
-		ImGui::SameLine((ImGui::GetContentRegionMax().x * 0.5f) - (size * 0.5f));
+		ImGui::SameLine((ImGui::GetContentRegionMax().x * 0.50f) - (size * 0.5f));
+
+		ImGui::Text("Show Colliders: "); ImGui::SameLine(); ImGui::Checkbox("##showcolliders", &debugManager->m_ShowColliders);
+
+		ImGui::SameLine((ImGui::GetContentRegionMax().x * 0.0f) + (size * 0.5f));
 
 		Texture& icon = NEngine::Instance().GetEngineState() == IEngine::EDIT ? m_PlayButton : m_StopButton;
 
@@ -105,7 +110,7 @@ namespace NULLENGINE
 					eventManager->QueueEvent(std::make_unique<EngineRunStateEvent>(NEngine::RUN_MAXIMIZED));
 				}
 
-				m_PannelData->m_SelectedEntity = {};
+				//m_PannelData->m_SelectedEntity = {};
 				break;
 			}
 			case NULLENGINE::IEngine::PAUSE:

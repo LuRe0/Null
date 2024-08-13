@@ -39,7 +39,6 @@ LearnOpenGl license: https://creativecommons.org/licenses/by/4.0/legalcode
 
 namespace NULLENGINE
 {
-
 	class NLE_API Mesh
 	{
 	public:

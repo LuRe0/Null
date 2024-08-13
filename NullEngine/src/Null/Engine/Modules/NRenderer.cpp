@@ -18,8 +18,16 @@ Batch Rendering Code adapted from https://www.youtube.com/watch?v=biGF6oLxgtQ&li
 #include "glad/glad.h"
 #include "Null/Engine/Submodules/Graphics/Shader/Shader.h"
 #include "Null/Engine/Submodules/Graphics/SpriteSource.h"
-#include "Null/Engine/Submodules/Graphics/Mesh.h"
+#include "Null/Engine/Submodules/Graphics/Mesh/Mesh.h"
+#include "Null/Engine/Submodules/Graphics/Mesh/InstanceMeshes/QuadInstanceMesh.h"
+#include "Null/Engine/Submodules/Graphics/Mesh/InstanceMeshes/TriangleInstanceMesh.h"
+#include "Null/Engine/Submodules/Graphics/Mesh/InstanceMeshes/CubeInstanceMesh.h"
+#include "Null/Engine/Submodules/Graphics/Mesh/InstanceMeshes/CircleInstanceMesh.h"
 #include "Null/Engine/Submodules/Graphics/Buffers/Framebuffer.h"
+#include "Null/Engine/Submodules/Graphics/Buffers/BatchRenderer/QuadBatchRenderer.h"
+#include "Null/Engine/Submodules/Graphics/Buffers/BatchRenderer/TriangleBatchRenderer.h"
+#include "Null/Engine/Submodules/Graphics/Buffers/BatchRenderer/CubeBatchRenderer.h"
+#include "Null/Engine/Submodules/Graphics/Buffers/BatchRenderer/CircleBatchRenderer.h"
 #include "imgui.h"
 #include "magic_enum/magic_enum.hpp"
 #include <sol/sol.hpp>
@@ -44,12 +52,6 @@ namespace NULLENGINE
 
 	void NRenderer::BeginRender()
 	{
-
-		//for (auto& fb : m_Framebuffers)
-		//{
-		//	fb.second.Resize(m_WinWidth, m_WinHeight);
-		//}
-
 		m_Framebuffers.at("Scene").Bind();
 
 		ClearRender();
@@ -57,25 +59,17 @@ namespace NULLENGINE
 		int nean = -1;
 		m_Framebuffers.at("Scene").ClearColorAttachment(1, &nean);
 
-		BeginBatch();
+		for (auto& batch : m_Batchers)
+			batch.second.get()->BeginBatch();
 	}
 
-	void NRenderer::BeginBatch()
-	{
-		m_RenderStorage.QuadInstanceBuffer.clear();
-		m_RenderStorage.QuadIndexCount = 0;
-		m_RenderStorage.TextureSlotIndex = 0;
-		m_RenderStorage.TexturesUsed.clear();
-	}
 
 	void NRenderer::RenderScene(const RenderData* renderData)
 	{
-		m_RenderStorage.RenderType = renderData->m_Type;
-
 		//SetBlendMode(BlendMode::DEFAULT);
 		renderData->m_Type == RenderData::ELEMENT ?
 			RenderElement(*(static_cast<const ElementData*>(renderData))) :
-		RenderInstances(*(static_cast<const ElementData*>(renderData)));
+			RenderInstances(*(static_cast<const ElementData*>(renderData)));
 	}
 
 	void NRenderer::RenderElement(const ElementData& render)
@@ -120,17 +114,7 @@ namespace NULLENGINE
 
 		if (render.mesh)
 		{
-			if (render.mesh->GetName() == "Quad")
-			{
-				m_RenderStorage.Stats.QuadCount++;
-			}
-
 			render.mesh->Render(render.spriteSrc);
-
-			m_RenderStorage.TexturesUsed.insert(render.spriteSrc->GetTexture()->GetID());
-
-			m_RenderStorage.Stats.DrawCalls++;
-
 		}
 
 		shader->Unbind();
@@ -138,57 +122,10 @@ namespace NULLENGINE
 
 	void NRenderer::RenderInstances(const ElementData& render)
 	{
+		if (!render.mesh)
+			return;
 
-		NTextureManager* texMan = NEngine::Instance().Get<NTextureManager>();
-
-		if (m_RenderStorage.QuadIndexCount >= m_RenderStorage.MaxIndices)
-			NextBatch();
-
-		if (m_RenderStorage.TextureSlotIndex >= m_RenderStorage.MaxTextureSlots)
-			NextBatch();
-
-		int textureIndex = -1;
-		if (render.spriteSrc)
-		{
-
-			for (size_t i = 0; i < m_RenderStorage.TextureSlotIndex; i++)
-			{
-				if (render.spriteSrc)
-				{
-					if (m_RenderStorage.TextureSlots[i]->GetID() == render.spriteSrc->GetTexture()->GetID())
-					{
-						textureIndex = i;
-						break;
-					}
-				}
-			}
-
-			if (textureIndex < 0)
-			{
-				textureIndex = m_RenderStorage.TextureSlotIndex;
-				m_RenderStorage.TextureSlots[m_RenderStorage.TextureSlotIndex] = render.spriteSrc->GetTexture();
-				++m_RenderStorage.TextureSlotIndex;
-			}
-		}
-
-		if (render.mesh->GetName() == "Quad")
-		{
-			const auto& verts = render.mesh->Vertices();
-
-
-			for (size_t i = 0; i < verts.size(); i++)
-			{
-				m_RenderStorage.QuadInstanceBuffer.push_back({ verts[i].position, verts[i].color, verts[i].textCoords, render.model, render.tintColor,
-				render.spriteSrc != nullptr ? render.spriteSrc->GetUV(render.frameIndex) : glm::vec2(0,0),
-				render.spriteSrc != nullptr ? render.spriteSrc->GetSize() : glm::vec2(1,1),
-				render.spriteSrc != nullptr ? textureIndex : -1,
-				int(render.entity) });
-			}
-
-			m_RenderStorage.QuadIndexCount += 6;
-
-			m_RenderStorage.Stats.QuadCount++;
-		}
+		m_Batchers[render.mesh->GetName()].get()->AddInstance(render);
 	}
 
 	void NRenderer::EndRender()
@@ -203,90 +140,11 @@ namespace NULLENGINE
 		RenderToScreen();
 	}
 
-	void NRenderer::NextBatch()
-	{
-		Flush();
-		BeginBatch();
-	}
 
 	void NRenderer::Flush()
 	{
-
-		if (m_RenderStorage.QuadInstanceBuffer.empty()) return;
-
-		m_RenderStorage.m_QuadInstanceMesh.get()->UpdateInstances(m_RenderStorage.QuadInstanceBuffer, m_RenderStorage.QuadInstanceBuffer.size());
-
-	
-
-		NShaderManager* shaderMan = NEngine::Instance().Get<NShaderManager>();
-		NCameraManager* cameraManager = NEngine::Instance().Get<NCameraManager>();
-		NTextureManager* textureMan = NEngine::Instance().Get<NTextureManager>();
-
-		std::string shaderName = "objInstance";
-
-		Shader* shader = shaderMan->Get(shaderName);
-
-
-
-
-		Camera* camera = cameraManager->GetCurrentCamera();
-
-		NLE_CORE_ASSERT(camera != nullptr, "No valid camera in use");
-
-
-		glm::mat4 projection = camera->GetProjectionMatrix();
-
-
-		glm::mat4 view = camera->GetViewMatrix();
-	
-	
-		// Use shader program and set uniform locations
-		shader->Bind();
-
-		//glActiveTexture(GL_TEXTURE0);
-		//glBindTexture(GL_TEXTURE_2D, m_RenderStorage.TextureSlots[0]->GetID());
-
-		//glActiveTexture(GL_TEXTURE1);
-		//glBindTexture(GL_TEXTURE_2D, m_RenderStorage.TextureSlots[1]->GetID());
-
-		for (size_t i = 0; i < m_RenderStorage.TextureSlotIndex; i++)
-		{
-			m_RenderStorage.TextureSlots[i]->BindUnit(i);
-		}
-
-
-		shader->setMat4("view", view);
-		shader->setMat4("projection", projection);
-
-		//glUniform1i(glGetUniformLocation(shaderProgram, "u_Texture0"), 0); // Texture unit 0
-		//glUniform1i(glGetUniformLocation(shaderProgram, "u_Texture1"), 1); // Texture unit 1
-		//
-		//shader->setInt("u_Texture0", 0);
-		//shader->setInt("u_Texture1", 1);
-
-
-		m_RenderStorage.m_QuadInstanceMesh.get()->Render(m_RenderStorage.QuadIndexCount);
-
-		m_RenderStorage.Stats.DrawCalls++;
-		m_RenderStorage.Stats.TextureCount += m_RenderStorage.TextureSlotIndex;
-
-		shader->Unbind();
-
-		//EndBatch();
-
-	}
-
-	void NRenderer::ResetStats()
-	{
-		m_RenderStorage.Stats.DrawCalls = 0;
-		m_RenderStorage.Stats.QuadCount = 0;
-		m_RenderStorage.Stats.TextureCount = 0;
-	}
-
-	const NRenderer::RenderStorage::RendererStats& NRenderer::GetStats() const
-	{
-		// TODO: insert return statement here
-		return m_RenderStorage.Stats;
+		for (auto& batch : m_Batchers)
+			batch.second.get()->Flush();
 	}
 
 	void NRenderer::RenderToScreen()
@@ -334,13 +192,17 @@ namespace NULLENGINE
 
 
 		glEnable(GL_BLEND);
-		glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
+		glBlendEquation(GL_FUNC_ADD);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LESS);
+		//glEnable(GL_CULL_FACE);
+		glCullFace(GL_BACK); // Or GL_FRONT, depending on your winding order
 
-
-		m_RenderStorage.m_QuadInstanceMesh = std::make_unique<InstanceMesh>("Quad", m_RenderStorage.MaxVertices, m_RenderStorage.MaxIndices);
-		m_RenderStorage.QuadInstanceBuffer.reserve(m_RenderStorage.MaxVertices);
+		m_Batchers.emplace("Quad", std::make_unique<QuadBatchRenderer<Instance, QuadInstanceMesh, 10000>>());
+		m_Batchers.emplace("Triangle", std::make_unique<TriangleBatchRenderer<Instance, TriangleInstanceMesh, 10000>>());
+		m_Batchers.emplace("Cube", std::make_unique<CubeBatchRenderer<Instance, CubeInstanceMesh, 10000>>());
+		m_Batchers.emplace("Circle", std::make_unique<CircleBatchRenderer<CircleInstance, CircleInstanceMesh, 10000>>());
 
 		m_Framebuffers.insert(std::make_pair("Scene", Framebuffer(m_WinWidth, m_WinHeight)));
 
@@ -350,30 +212,14 @@ namespace NULLENGINE
 
 		buffer.AddColorAttachment({ Framebuffer::Format(GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE), Framebuffer::Format(GL_R32I, GL_RED_INTEGER, GL_INT) });
 
-
-		std::vector<int32_t> samplers(m_RenderStorage.MaxTextureSlots);
-
-		for (int32_t i = 0; i < samplers.size(); i++)
-		{
-			samplers[i] = i;
-		}
-
-
-		NShaderManager* shaderMan = NEngine::Instance().Get<NShaderManager>();
-
-		Shader* shader = shaderMan->Get("objInstance");
-
-		shader->Bind();
-
-		shader->setInt1fv("u_Textures", m_RenderStorage.MaxTextureSlots, samplers.data());
-
-		shader->Unbind();
-
+		for (auto& batch : m_Batchers)
+			batch.second.get()->BindTextureBuffer();
 	}
 
 	void NRenderer::Update(float dt)
 	{
-		ResetStats();
+		for (auto& batch : m_Batchers)
+			batch.second.get()->ResetStats();
 	}
 
 	void NRenderer::RuntimeUpdate(float dt)
@@ -396,17 +242,21 @@ namespace NULLENGINE
 	void NRenderer::RenderImGui()
 	{
 
-		ImGui::Text("Render Type: %s", magic_enum::enum_name(m_RenderStorage.RenderType).data());
-		ImGui::Text("Draw Calls: %d", m_RenderStorage.Stats.DrawCalls);
-		ImGui::Text("Quads: %d", m_RenderStorage.Stats.QuadCount);
-		ImGui::Text("Vertices Calls: %d", m_RenderStorage.Stats.GetTotalVertexCount());
-		ImGui::Text("Indices Calls: %d", m_RenderStorage.Stats.GetTotalIndexCount());
+		//ImGui::Text("Render Type: %s", magic_enum::enum_name(m_RenderStorage.RenderType).data());
+		//ImGui::Text("Draw Calls: %d", m_RenderStorage.Stats.DrawCalls);
+		//ImGui::Text("Quads: %d", m_RenderStorage.Stats.QuadCount);
+		//ImGui::Text("Vertices Calls: %d", m_RenderStorage.Stats.GetTotalVertexCount());
+		//ImGui::Text("Indices Calls: %d", m_RenderStorage.Stats.GetTotalIndexCount());
 
-		if(m_RenderStorage.RenderType == RenderData::INSTANCED)
-			ImGui::Text("Textures Rendered: %d", m_RenderStorage.Stats.TextureCount);
-		else
-			ImGui::Text("Textures Rendered: %d", m_RenderStorage.TexturesUsed.size());
-
+		//if (m_RenderStorage.RenderType == RenderData::INSTANCED)
+		//	ImGui::Text("Textures Rendered: %d", m_RenderStorage.Stats.TextureCount);
+		//else
+		//	ImGui::Text("Textures Rendered: %d", m_RenderStorage.TexturesUsed.size());
+		for (auto& batch : m_Batchers)
+		{
+			batch.second.get()->ImguiView();
+			ImGui::Separator();
+		}
 	}
 
 	void NRenderer::Unload()

@@ -8,6 +8,9 @@ layout (location = 1) out int FragID;     // Output color
 in vec4 v_Color;
 in vec4 v_Tint;
 in vec2 v_TexCoord;
+in vec3 v_LocalPosition; 
+in float v_Fade;
+in float v_Thickness;
 flat in int v_TexIndex;
 flat in int v_EntityID;
 
@@ -20,6 +23,10 @@ uniform sampler2D u_Textures[32];
 void main()
 {
     // Example: Combine textures
+
+    float distance = 1.0f - length(v_LocalPosition);
+    float circle = smoothstep(0.0, v_Fade, distance);
+    circle *= smoothstep(v_Thickness + v_Fade, v_Thickness, distance);
 
     int index = int(v_TexIndex);
     vec4 l_Texture;
@@ -64,6 +71,8 @@ void main()
         FragColor = l_Texture * v_Color * v_Tint;
     else
         FragColor = v_Color * v_Tint;
+
+    FragColor.a *= circle;
 
 	FragID = v_EntityID;
 }

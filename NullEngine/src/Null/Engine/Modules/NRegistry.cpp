@@ -161,6 +161,8 @@ namespace NULLENGINE
 				RemoveComponent(e.GetID(), i);
 			}
 		}
+
+		m_RecycledEntity.push(e.GetID());
 	}
 
 
@@ -180,5 +182,6 @@ namespace NULLENGINE
 		m_EntityToIndexMap.clear();
 		m_IndexToEntityMap.clear();
 		m_EntityComponentSignatures.clear();
+		m_NumEntities = 0;
 	}
 }

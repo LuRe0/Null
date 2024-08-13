@@ -14,7 +14,7 @@
 #include "Null/Engine/Submodules/ECS/Components/IComponent.h"
 #include "Null/Engine/Submodules/Graphics/Texture.h"
 #include "Null/Engine/Submodules/Graphics/SpriteSource.h"
-#include "Null/Engine/Submodules/Graphics/Mesh.h"
+#include "Null/Engine/Submodules/Graphics/Mesh/Mesh.h"
 
 
 

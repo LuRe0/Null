@@ -81,6 +81,7 @@ namespace NULLENGINE
 		glm::vec3 front = m_Camera->GetFront();
 		glm::vec3 position = m_Camera->GetPosition();
 		glm::vec3 right = m_Camera->GetRight();
+		glm::vec3 up = m_Camera->GetUp();
 		if (Input::KeyDown(GLFW_KEY_W))
 		{
 			position += front * velocity;
@@ -101,6 +102,18 @@ namespace NULLENGINE
 		if (Input::KeyDown(GLFW_KEY_D))
 		{
 			position += right * velocity;
+			m_Camera->SetPosition(position);
+		}
+
+		if (Input::KeyDown(GLFW_KEY_Q))
+		{
+			position += up * velocity;
+			m_Camera->SetPosition(position);
+		}
+
+		if (Input::KeyDown(GLFW_KEY_E))
+		{
+			position -= up * velocity;
 			m_Camera->SetPosition(position);
 		}
 	}

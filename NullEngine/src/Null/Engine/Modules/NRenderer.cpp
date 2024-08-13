@@ -64,12 +64,12 @@ namespace NULLENGINE
 	}
 
 
-	void NRenderer::RenderScene(const RenderData* renderData)
+	void NRenderer::RenderScene(const ElementData* renderData)
 	{
 		//SetBlendMode(BlendMode::DEFAULT);
 		renderData->m_Type == RenderData::ELEMENT ?
-			RenderElement(*(static_cast<const ElementData*>(renderData))) :
-			RenderInstances(*(static_cast<const ElementData*>(renderData)));
+			RenderElement(*(renderData)) :
+			RenderInstances(*(renderData));
 	}
 
 	void NRenderer::RenderElement(const ElementData& render)
@@ -130,7 +130,7 @@ namespace NULLENGINE
 
 	void NRenderer::EndRender()
 	{
-		m_RenderQueue.clear();
+		//m_RenderQueue.clear();
 
 		Flush();
 
@@ -197,11 +197,11 @@ namespace NULLENGINE
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LESS);
 		//glEnable(GL_CULL_FACE);
-		glCullFace(GL_BACK); // Or GL_FRONT, depending on your winding order
+		//glCullFace(GL_FRONT); // Or GL_FRONT, depending on your winding order
 
+		m_Batchers.emplace("Cube", std::make_unique<CubeBatchRenderer<Instance, CubeInstanceMesh, 10000>>());
 		m_Batchers.emplace("Quad", std::make_unique<QuadBatchRenderer<Instance, QuadInstanceMesh, 10000>>());
 		m_Batchers.emplace("Triangle", std::make_unique<TriangleBatchRenderer<Instance, TriangleInstanceMesh, 10000>>());
-		m_Batchers.emplace("Cube", std::make_unique<CubeBatchRenderer<Instance, CubeInstanceMesh, 10000>>());
 		m_Batchers.emplace("Circle", std::make_unique<CircleBatchRenderer<CircleInstance, CircleInstanceMesh, 10000>>());
 
 		m_Framebuffers.insert(std::make_pair("Scene", Framebuffer(m_WinWidth, m_WinHeight)));
@@ -231,10 +231,22 @@ namespace NULLENGINE
 	{
 		BeginRender();
 
-		for (size_t i = 0; i < m_RenderQueue.size(); i++)
+		while (!m_RenderQueue.empty()) 
 		{
-			RenderScene(m_RenderQueue[i].get());
+			// Access the element with the highest priority (greatest depth)
+			auto& renderData = m_RenderQueue.top();
+
+			// Process/render the object
+			RenderScene(renderData.get());
+
+			// Remove the element from the queue
+			m_RenderQueue.pop();
 		}
+
+		//for (auto& renderData : m_RenderQueue)
+		//{
+		//	RenderScene(renderData.get());
+		//}
 
 		EndRender();
 	}
@@ -276,9 +288,10 @@ namespace NULLENGINE
 		glViewport(x, y, width, height);
 	}
 
-	void NRenderer::AddRenderCall(std::unique_ptr<RenderData>&& render)
+	void NRenderer::AddRenderCall(std::unique_ptr<ElementData>&& render)
 	{
-		m_RenderQueue.push_back(std::move(render));
+		m_RenderQueue.push(std::move(render));
+		//m_RenderQueue.push_back(std::move(render));
 	}
 
 	//void NRenderer::AddElementRenderCall(const ElementData& render)

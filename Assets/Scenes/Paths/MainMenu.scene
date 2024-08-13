@@ -18,7 +18,15 @@
                     ]
                 },
                 "Rigidbody2D": {
+                    "angularDamping": 0.0,
+                    "angularVelocity": 0.0,
                     "fixedRotation": false,
+                    "gravityScale": 1.0,
+                    "linearDamping": 0.0,
+                    "linearVelocity": [
+                        0.0,
+                        0.0
+                    ],
                     "type": 2
                 },
                 "Sprite": {
@@ -26,10 +34,12 @@
                         1,
                         1
                     ],
+                    "fade": 0.0,
                     "frameindex": 0,
                     "meshname": "Quad",
                     "shadername": "default",
                     "texture": "titlesquished",
+                    "thickness": 1.0,
                     "tint": [
                         0.73613440990448,
                         0.516162633895874,
@@ -84,7 +94,15 @@
                     ]
                 },
                 "Rigidbody2D": {
+                    "angularDamping": 0.0,
+                    "angularVelocity": 0.0,
                     "fixedRotation": false,
+                    "gravityScale": 1.0,
+                    "linearDamping": 0.0,
+                    "linearVelocity": [
+                        0.0,
+                        0.0
+                    ],
                     "type": 2
                 },
                 "Sprite": {
@@ -92,10 +110,12 @@
                         2,
                         3
                     ],
+                    "fade": 0.0,
                     "frameindex": 4,
                     "meshname": "Quad",
                     "shadername": "default",
                     "texture": "baguetteIdle",
+                    "thickness": 1.0,
                     "tint": [
                         1.0,
                         0.8088206648826599,
@@ -150,7 +170,15 @@
                     ]
                 },
                 "Rigidbody2D": {
+                    "angularDamping": 0.0,
+                    "angularVelocity": 0.0,
                     "fixedRotation": false,
+                    "gravityScale": 1.0,
+                    "linearDamping": 0.0,
+                    "linearVelocity": [
+                        0.0,
+                        0.0
+                    ],
                     "type": 2
                 },
                 "Sprite": {
@@ -158,10 +186,12 @@
                         3,
                         3
                     ],
+                    "fade": 0.0,
                     "frameindex": 4,
                     "meshname": "Quad",
                     "shadername": "default",
                     "texture": "rune",
+                    "thickness": 1.0,
                     "tint": [
                         1.0,
                         0.516162633895874,
@@ -207,7 +237,15 @@
                     ]
                 },
                 "Rigidbody2D": {
+                    "angularDamping": 0.0,
+                    "angularVelocity": 0.0,
                     "fixedRotation": false,
+                    "gravityScale": 1.0,
+                    "linearDamping": 0.0,
+                    "linearVelocity": [
+                        0.0,
+                        0.0
+                    ],
                     "type": 2
                 },
                 "Sprite": {
@@ -215,10 +253,12 @@
                         1,
                         1
                     ],
+                    "fade": 0.0,
                     "frameindex": 0,
                     "meshname": "Quad",
                     "shadername": "default",
                     "texture": "titlesquished",
+                    "thickness": 1.0,
                     "tint": [
                         0.8748696446418762,
                         0.0,
@@ -263,7 +303,15 @@
                     ]
                 },
                 "Rigidbody2D": {
+                    "angularDamping": 0.0,
+                    "angularVelocity": 0.0,
                     "fixedRotation": true,
+                    "gravityScale": 1.0,
+                    "linearDamping": 0.0,
+                    "linearVelocity": [
+                        0.0,
+                        0.0
+                    ],
                     "type": 0
                 },
                 "Sprite": {
@@ -271,10 +319,12 @@
                         1,
                         1
                     ],
+                    "fade": 0.004999999888241291,
                     "frameindex": 0,
                     "meshname": "Quad",
                     "shadername": "default",
                     "texture": "debugRect",
+                    "thickness": 1.0,
                     "tint": [
                         0.19999998807907104,
                         0.36392074823379517,
@@ -319,7 +369,15 @@
                     ]
                 },
                 "Rigidbody2D": {
+                    "angularDamping": 0.0,
+                    "angularVelocity": 0.0,
                     "fixedRotation": false,
+                    "gravityScale": 1.0,
+                    "linearDamping": 0.0,
+                    "linearVelocity": [
+                        0.0,
+                        0.0
+                    ],
                     "type": 2
                 },
                 "Sprite": {
@@ -327,10 +385,12 @@
                         1,
                         1
                     ],
+                    "fade": 0.004999999888241291,
                     "frameindex": 0,
-                    "meshname": "Quad",
+                    "meshname": "Cube",
                     "shadername": "default",
                     "texture": "ChargeParticle",
+                    "thickness": 1.0,
                     "tint": [
                         1.0,
                         1.0,
@@ -372,7 +432,15 @@
                     "restitutionThreshold": 0.5
                 },
                 "Rigidbody2D": {
+                    "angularDamping": 0.0,
+                    "angularVelocity": 0.0,
                     "fixedRotation": true,
+                    "gravityScale": 0.0,
+                    "linearDamping": 0.0,
+                    "linearVelocity": [
+                        0.0,
+                        0.0
+                    ],
                     "type": 2
                 },
                 "Sprite": {
@@ -380,10 +448,12 @@
                         1,
                         1
                     ],
+                    "fade": 0.9459999799728394,
                     "frameindex": 0,
                     "meshname": "Circle",
                     "shadername": "default",
                     "texture": "",
+                    "thickness": 1.0,
                     "tint": [
                         1.0,
                         1.0,
@@ -400,7 +470,7 @@
                     "scale": [
                         50.0,
                         50.0,
-                        50.0
+                        0.0
                     ],
                     "translation": [
                         0.0,

@@ -61,6 +61,7 @@ namespace NULLENGINE
         EntityID entity;
         float thickness;
         float fade;
+        float depth;
 
         // Default constructor
         ElementData()
@@ -73,9 +74,9 @@ namespace NULLENGINE
         // Parameterized constructor
         ElementData(const glm::mat4& model, const Mesh* mesh,
             const SpriteSource* spriteSrc, const glm::vec4& tintColor,
-            const std::string& shaderName, unsigned int frameIndex, EntityID entity, float thick, float f, RenderType type)
+            const std::string& shaderName, unsigned int frameIndex, EntityID entity, float thick, float f, RenderType type, float d = 1.0f)
             : model(model), mesh(mesh), spriteSrc(spriteSrc), tintColor(tintColor),
-            shaderName(shaderName), frameIndex(frameIndex), entity(entity), thickness(thick), fade(f)
+            shaderName(shaderName), frameIndex(frameIndex), entity(entity), thickness(thick), fade(f), depth(d)
         {
             m_Type = type;
         }

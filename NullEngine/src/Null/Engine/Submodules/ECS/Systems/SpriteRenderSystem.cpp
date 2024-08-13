@@ -60,6 +60,7 @@ namespace NULLENGINE
 	{
 		NRenderer* renderer = NEngine::Instance().Get<NRenderer>();
 		NRegistry* m_Parent = NEngine::Instance().Get<NRegistry>();
+		NCameraManager* camManager = NEngine::Instance().Get<NCameraManager>();
 
 		for (const auto entityId : GetSystemEntities())
 		{
@@ -69,10 +70,19 @@ namespace NULLENGINE
 			if (!sprite.m_Enabled)
 				continue;
 
+			glm::mat4 viewMatrix = camManager->GetCurrentCamera()->GetViewMatrix();
+			 
+			glm::vec4 worldPosition = transform.m_TransformMatrix * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+
+			// Transform the world position to camera space
+			glm::vec4 cameraSpacePosition = viewMatrix * worldPosition;
+
+			// The depth is the z-component of the camera space position
+			float depth = cameraSpacePosition.z;
 
 			//model, mesh, spritesrc, tint, shadername, frameindex, entity
 			renderer->AddRenderCall(std::make_unique<ElementData>(transform.m_TransformMatrix, sprite.m_Mesh, sprite.m_SpriteSource, sprite.m_Color, sprite.m_ShaderName, 
-												sprite.m_FrameIndex, entityId, sprite.m_Thickness, sprite.m_Fade, RenderData::INSTANCED));
+												sprite.m_FrameIndex, entityId, sprite.m_Thickness, sprite.m_Fade, RenderData::INSTANCED, -depth));
 		}
 	}
 
@@ -120,6 +130,9 @@ namespace NULLENGINE
 
 		if (!jsonWrapper.Empty())
 		{
+			comp->m_Fade = jsonWrapper.GetFloat("fade", 0.005f);
+			comp->m_Thickness = jsonWrapper.GetFloat("thickness", 1.0f);
+
 			comp->m_FrameIndex = jsonWrapper.GetInt("frameindex", 0);
 			glm::vec2 dimension = jsonWrapper.GetVec2("dimension", { 1.0f, 1.0f });
 			auto src = jsonWrapper.GetString("texture", "");
@@ -138,7 +151,8 @@ namespace NULLENGINE
 			comp->m_Color = jsonWrapper.GetVec4("tint", { 1.0f, 1.0f, 1.0f, 1.0f });
 		}
 
-		componentFactory->AddOrUpdate<SpriteComponent>(id, comp, registry, comp->m_FrameIndex, comp->m_SpriteSource, comp->m_Mesh, comp->m_Color, comp->m_ShaderName);
+		componentFactory->AddOrUpdate<SpriteComponent>(id, comp, registry, comp->m_FrameIndex, comp->m_SpriteSource, comp->m_Mesh,
+														comp->m_Color, comp->m_ShaderName, comp->m_Thickness, comp->m_Fade);
 	}
 
 	JSON SpriteRenderSystem::WriteSpriteComponent(BaseComponent* component)
@@ -155,6 +169,8 @@ namespace NULLENGINE
 		json["Sprite"]["tint"] = { sprite.m_Color.r, sprite.m_Color.g, sprite.m_Color.b, sprite.m_Color.a };
 		json["Sprite"]["shadername"] = sprite.m_ShaderName;
 		json["Sprite"]["meshname"] = sprite.m_Mesh == nullptr ? "" : sprite.m_Mesh->GetName();
+		json["Sprite"]["fade"] = sprite.m_Fade;
+		json["Sprite"]["thickness"] = sprite.m_Thickness;
 
 		return json;
 

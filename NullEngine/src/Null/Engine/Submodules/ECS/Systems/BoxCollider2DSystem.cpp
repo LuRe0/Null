@@ -77,6 +77,7 @@ namespace NULLENGINE
 		NRenderer* renderer = NEngine::Instance().Get<NRenderer>();
 		NRegistry* m_Parent = NEngine::Instance().Get<NRegistry>();
 		NMeshManager* meshManager = NEngine::Instance().Get<NMeshManager>();
+		NCameraManager* camManager = NEngine::Instance().Get<NCameraManager>();
 
 		for (const auto entityId : GetSystemEntities())
 		{
@@ -86,8 +87,17 @@ namespace NULLENGINE
 			if (!bc2d.m_RuntimeFixture)
 				continue;
 
-			auto translation = (transform.m_Translation + glm::vec3(bc2d.m_Offset, transform.m_Translation.z + 1.0f));
+			auto translation = (transform.m_Translation + glm::vec3(bc2d.m_Offset, transform.m_Translation.z + transform.m_Scale.z + 0.50f));
 			auto rot = bc2d.m_RuntimeFixture->GetBody()->GetAngle();
+
+
+			glm::mat4 viewMatrix = camManager->GetCurrentCamera()->GetViewMatrix();
+
+			// Transform the world position to camera space
+			glm::vec4 cameraSpacePosition = viewMatrix * glm::vec4(translation, 1.0f);
+
+			// The depth is the z-component of the camera space position
+			float depth = cameraSpacePosition.z;
 
 			glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), translation);
 			// Calculate rotation matrix (assuming Euler angles in radians)
@@ -101,7 +111,7 @@ namespace NULLENGINE
 				0, entityId, 0.05f, 0.005f, RenderData::INSTANCED)*/
 			//model, mesh, spritesrc, tint, shadername, frameindex, entity
 			renderer->AddRenderCall(std::make_unique<ElementData>(matrix, meshManager->Get("Quad"), nullptr, m_Color, "", 0,
-									entityId, m_Thickness, 0.005f, RenderData::INSTANCED));
+									entityId, m_Thickness, 0.005f, RenderData::INSTANCED, depth));
 		}
 	}
 

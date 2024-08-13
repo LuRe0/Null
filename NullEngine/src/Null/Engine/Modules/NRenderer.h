@@ -74,7 +74,7 @@ namespace NULLENGINE
 
 		void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
 
-		void AddRenderCall(std::unique_ptr<RenderData>&& render);
+		void AddRenderCall(std::unique_ptr<ElementData>&& render);
 
 		bool HasRenderImGui() const override { return true; }
 
@@ -98,7 +98,19 @@ namespace NULLENGINE
 
 		void OnWindowResize(const WindowResizeEvent& e);
 
-		std::vector<std::unique_ptr<RenderData>> m_RenderQueue;
+		struct RenderDataComparator {
+			bool operator()(const std::unique_ptr<ElementData>& a, const std::unique_ptr<ElementData>& b) const {
+				return a->depth < b->depth;  // For sorting in descending order (back to front)
+			}
+		};
+
+		std::priority_queue<
+			std::unique_ptr<ElementData>,
+			std::vector<std::unique_ptr<ElementData>>,
+			RenderDataComparator
+		> m_RenderQueue;
+
+		//std::vector<std::unique_ptr<ElementData>> m_RenderQueue;
 
 		std::unordered_map<std::string, Framebuffer> m_Framebuffers;
 		std::unordered_map<std::string, std::unique_ptr<BatchRenderer>> m_Batchers;
@@ -108,7 +120,7 @@ namespace NULLENGINE
 
 
 		void BeginRender();
-		void RenderScene(const RenderData* renderData);
+		void RenderScene(const ElementData* renderData);
 		void RenderElement(const ElementData& renderData);
 		void RenderInstances(const ElementData& renderData);
 

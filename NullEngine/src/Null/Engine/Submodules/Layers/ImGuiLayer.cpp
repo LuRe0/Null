@@ -598,10 +598,12 @@ namespace NULLENGINE
 			//NLE_CORE_WARN("Mouse = {0},{1}", mouseX, mouseY); 
 
 			buffer.Unbind();
-			if (ImGui::IsItemClicked() && pixel > 0)
+			if (ImGui::IsItemClicked() && !ImGuizmo ::IsUsing() && pixel > 0)
 			{
 				m_PannelData.m_SelectedEntity = pixel;
-				SetGuizmo(ImGuizmo::OPERATION::TRANSLATE);
+
+				if(m_GuizmoType == -1)
+					SetGuizmo(ImGuizmo::OPERATION::TRANSLATE);
 			}
 		}
 

@@ -92,6 +92,12 @@ namespace NULLENGINE
 	{
 		if (m_InstanceBuffer.empty()) return;
 
+		//glEnable(GL_DEPTH_TEST);
+		//glDepthFunc(GL_LEQUAL);
+		//glEnable(GL_CULL_FACE);
+		//glCullFace(GL_BACK);
+
+
 		m_InstanceMesh.get()->UpdateInstances(m_InstanceBuffer, m_InstanceBuffer.size());
 
 		NShaderManager* shaderMan = NEngine::Instance().Get<NShaderManager>();

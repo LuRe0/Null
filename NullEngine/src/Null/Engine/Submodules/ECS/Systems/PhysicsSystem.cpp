@@ -249,9 +249,16 @@ namespace NULLENGINE
 		{
 			comp->m_Type = static_cast<Rigidbody2DComponent::BodyType>(jsonWrapper.GetInt("type", 0));
 			comp->m_FixedRotation = jsonWrapper.GetBool("fixedRotation", true);
+			comp->m_LinearVelocity = jsonWrapper.GetVec2("linearVelocity", glm::vec2(0,0));
+			comp->m_AngularVelocity = jsonWrapper.GetFloat("angularVelocity", 0.0f);
+			comp->m_LinearDamping = jsonWrapper.GetFloat("linearDamping", 0.0f);
+			comp->m_AngularDamping = jsonWrapper.GetFloat("angularDamping", 0.0f);
+			comp->m_GravityScale = jsonWrapper.GetFloat("gravityScale", 1.0f);
 		}
 
-		componentFactory->AddOrUpdate<Rigidbody2DComponent>(id, comp, registry, static_cast<Rigidbody2DComponent::BodyType>(comp->m_Type), comp->m_FixedRotation);
+		componentFactory->AddOrUpdate<Rigidbody2DComponent>(id, comp, registry, static_cast<Rigidbody2DComponent::BodyType>(comp->m_Type), comp->m_FixedRotation,
+															nullptr, comp->m_LinearVelocity, comp->m_AngularVelocity, comp->m_LinearDamping, comp->m_AngularDamping,
+															comp->m_GravityScale);
 
 	}
 
@@ -264,6 +271,11 @@ namespace NULLENGINE
 
 		json["Rigidbody2D"]["type"] = rigidbody.m_Type;
 		json["Rigidbody2D"]["fixedRotation"] = rigidbody.m_FixedRotation;
+		json["Rigidbody2D"]["linearVelocity"] = {rigidbody.m_LinearVelocity.x, rigidbody.m_LinearVelocity.y};
+		json["Rigidbody2D"]["angularVelocity"] = rigidbody.m_AngularVelocity;
+		json["Rigidbody2D"]["linearDamping"] = rigidbody.m_LinearDamping;
+		json["Rigidbody2D"]["angularDamping"] = rigidbody.m_AngularDamping;
+		json["Rigidbody2D"]["gravityScale"] = rigidbody.m_GravityScale;
 
 		return json;
 	}

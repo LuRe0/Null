@@ -155,6 +155,9 @@ namespace NULLENGINE
 		else if (value.is<bool>()) {
 			return value.as<bool>();
 		}
+		else if (value.is<sol::object>()) {
+			return  value.as<sol::object>();
+		}
 		else if (value.is<sol::table>()) {
 			return  value.as<sol::table>();
 		}
@@ -168,7 +171,7 @@ namespace NULLENGINE
 
 	void ScriptHelper::ImGuiDisplayAndModifyLuaValue(sol::table& dataOwner, sol::table& table, const std::string& key, LuaValue& value)
 	{
-		std::visit([&dataOwner, &key, &value](auto&& arg) {
+		std::visit([&dataOwner, &table, &key, &value](auto&& arg) {
 			using T = std::decay_t<decltype(arg)>;
 			if constexpr (std::is_same_v<T, float>) {
 				float v = arg;
@@ -199,6 +202,83 @@ namespace NULLENGINE
 					value = v;
 					SetValue(dataOwner, key, value);
 				}
+			}
+			else if constexpr (std::is_same_v<T, sol::table>) {
+				sol::table& tableArg = arg;
+				NLE_CORE_DEBUG("Table contains: {0} elements", tableArg.empty());
+				// Display the table's contents
+				for (const auto& pair : arg)
+				{
+					sol::object key = pair.first;
+					sol::object value = pair.second;
+
+					std::string keyStr = key.as<std::string>();
+					LuaValue luaValue = ScriptHelper::GetValue(value);
+
+					// Recursively display and modify the table value
+					ScriptHelper::ImGuiDisplayAndModifyLuaValue(table, tableArg, keyStr, luaValue);
+				}
+			}
+			else if constexpr (std::is_same_v<T, sol::object>) {
+				sol::object objArg = arg;
+
+				// Handle sol::object based on its type
+				if (objArg.is<float>()) {
+					float v = objArg.as<float>();
+					if (ImGui::InputFloat(key.c_str(), &v)) {
+						value = v;
+						SetValue(dataOwner, key, value);
+					}
+				}
+				else if (objArg.is<int>()) {
+					int v = objArg.as<int>();
+					if (ImGui::InputInt(key.c_str(), &v)) {
+						value = v;
+						SetValue(dataOwner, key, value);
+					}
+				}
+				else if (objArg.is<std::string>()) {
+					std::string v = objArg.as<std::string>();
+					char buffer[256];
+					std::strncpy(buffer, v.c_str(), sizeof(buffer));
+					buffer[sizeof(buffer) - 1] = 0;
+					if (ImGui::InputText(key.c_str(), buffer, sizeof(buffer))) {
+						value = std::string(buffer);
+						SetValue(dataOwner, key, value);
+					}
+				}
+				else if (objArg.is<bool>()) {
+					bool v = objArg.as<bool>();
+					if (ImGui::Checkbox(key.c_str(), &v)) {
+						value = v;
+						SetValue(dataOwner, key, value);
+					}
+				}
+				else if (objArg.is<glm::vec2>()) {
+					glm::vec2 v = objArg.as<glm::vec2>();
+					if (ImGui::DragFloat2(key.c_str(), glm::value_ptr(v))) {
+						value = sol::make_object(dataOwner.lua_state(), v);
+
+						SetValue(dataOwner, key, value);
+					}
+				}
+				else if (objArg.is<glm::vec3>()) {
+					glm::vec3 v = objArg.as<glm::vec3>();
+					if (ImGui::DragFloat3(key.c_str(), glm::value_ptr(v))) {
+						value = sol::make_object(dataOwner.lua_state(), v);
+
+						SetValue(dataOwner, key, value);
+					}
+				}
+				else if (objArg.is<glm::vec4>()) {
+					glm::vec4 v = objArg.as<glm::vec4>();
+					if (ImGui::DragFloat4(key.c_str(), glm::value_ptr(v))) {
+						value = sol::make_object(dataOwner.lua_state(), v);
+						SetValue(dataOwner, key, value);
+					}
+				}
+
+				// Add other types as needed (e.g., sol::function)
 			}
 			}, value);
 	}

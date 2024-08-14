@@ -112,33 +112,41 @@ namespace NULLENGINE
 				"Camera",
 				sol::no_constructor,
 				"type_id", &Component<CameraComponent>::GetID,
-				//"translation", [](CameraComponent& Camera)
-				//{ return std::make_tuple(Camera.m_Translation.x, Camera.m_Translation.y, Camera.m_Translation.z); },
-				//"scale", [](CameraComponent& Camera)
-				//{ return std::make_tuple(Camera.m_Scale.x, Camera.m_Scale.y, Camera.m_Scale.z); },
-				//"rotation", [](CameraComponent& Camera)
-				//{ return std::make_tuple(Camera.m_Rotation.x, Camera.m_Rotation.y, Camera.m_Rotation.z); },
+				"get_position", [](CameraComponent& cam)
+				{
+					if (dynamic_cast<Camera3D*>(cam.m_Camera)) {
+						auto camera = dynamic_cast<Camera3D*>(cam.m_Camera);
+						return glm::vec2(camera->GetPosition().x, camera->GetPosition().y);
+					}
+					else
+					{
+						auto camera = dynamic_cast<Camera2D*>(cam.m_Camera);
+						return camera->GetPosition();
+					}
+				},
 				"set_position", 
-				sol::overload([](CameraComponent& cam, float x, float y, float z)
+				sol::overload([](CameraComponent& cam, float x, float y)
 					{
 						if (dynamic_cast<Camera3D*>(cam.m_Camera)) {
 							auto camera = dynamic_cast<Camera3D*>(cam.m_Camera);
-							camera->SetPosition(glm::vec3(x, y, z));
+							camera->SetPosition(glm::vec3(x,y, camera->GetPosition().z));
 						}
 						else
 						{
-							NLE_CORE_ERROR("Unknown camera type");
-						}
-					},
-					[](CameraComponent& cam, float x, float y)
-					{
-						if (dynamic_cast<Camera3D*>(cam.m_Camera)) {
 							auto camera = dynamic_cast<Camera2D*>(cam.m_Camera);
 							camera->SetPosition(glm::vec2(x, y));
 						}
+					},
+					[](CameraComponent& cam, glm::vec2 pos)
+					{
+						if (dynamic_cast<Camera3D*>(cam.m_Camera)) {
+							auto camera = dynamic_cast<Camera3D*>(cam.m_Camera);
+							camera->SetPosition(glm::vec3(pos, camera->GetPosition().z));
+						}
 						else
 						{
-							NLE_CORE_ERROR("Unknown camera type");
+							auto camera = dynamic_cast<Camera2D*>(cam.m_Camera);
+							camera->SetPosition(pos);
 						}
 					}
 				),
@@ -266,75 +274,77 @@ namespace NULLENGINE
 					m_ShowCreationMenu = true;
 				}
 
-
-				if (m_ShowCreationMenu)
-				{
-					ImGui::OpenPopup("New Camera Name");
-				}
-
-
-
-				if (ImGui::BeginPopupModal("New Camera Name", NULL, ImGuiWindowFlags_AlwaysAutoResize))
-				{
-					ImGui::Text("Enter the Camera name:");
-					ImGui::InputText("##Cameraname", &m_CameraName);
-
-					ImGui::Text("Select Camera Projection:");
-					if (ImGui::BeginCombo("##CameraProjection",
-						magic_enum::enum_name(static_cast<Camera::CameraType>(m_CameraType)).data()))
-					{
-						for (size_t i = Camera::CameraType::ORTHOGRAPHIC; i < Camera::CameraType::PROJECTIONTYPE; i++)
-						{
-							auto name = magic_enum::enum_name(static_cast<Camera::CameraType>(i)).data();
-
-							bool isSelected = m_CameraType == i;
-
-							if (ImGui::Selectable(name, isSelected))
-							{
-								m_CameraType = static_cast<Camera::CameraType>(i);
-							}
-							if (isSelected)
-							{
-								ImGui::SetItemDefaultFocus(); // Set focus on the selected item
-							}
-						}
-
-						ImGui::EndCombo();
-					}
-
-
-					if (ImGui::Button("Create", ImVec2(120, 0)))
-					{
-
-						if (m_CameraType == Camera::ORTHOGRAPHIC)
-						{
-							Camera.m_Camera = camManager->AddCamera<Camera2D>(m_CameraName, window->Width(), window->Height());
-						}
-						else if (m_CameraType == Camera::PERSPECTIVE)
-						{
-							Camera.m_Camera = camManager->AddCamera<Camera3D>(m_CameraName, window->Width(), window->Height());
-						}
-
-						Camera.m_Camera->SetName(m_CameraName);
-
-						m_ShowCreationMenu = false; // Close the input box
-						ImGui::CloseCurrentPopup();
-
-						m_CameraName = "New Camera";
-					}
-					ImGui::SameLine();
-					if (ImGui::Button("Cancel", ImVec2(120, 0)))
-					{
-						m_ShowCreationMenu = false; // Close the input box
-						m_CameraName = "New Camera";
-						ImGui::CloseCurrentPopup();
-					}
-					ImGui::EndPopup();
-				}
-
 				ImGui::EndMenu();
 
 			}
+
+
+
+			if (m_ShowCreationMenu)
+			{
+				ImGui::OpenPopup("New Camera Name");
+			}
+
+
+
+			if (ImGui::BeginPopupModal("New Camera Name", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+			{
+				ImGui::Text("Enter the Camera name:");
+				ImGui::InputText("##Cameraname", &m_CameraName);
+
+				ImGui::Text("Select Camera Projection:");
+				if (ImGui::BeginCombo("##CameraProjection",
+					magic_enum::enum_name(static_cast<Camera::CameraType>(m_CameraType)).data()))
+				{
+					for (size_t i = Camera::CameraType::ORTHOGRAPHIC; i < Camera::CameraType::PROJECTIONTYPE; i++)
+					{
+						auto name = magic_enum::enum_name(static_cast<Camera::CameraType>(i)).data();
+
+						bool isSelected = m_CameraType == i;
+
+						if (ImGui::Selectable(name, isSelected))
+						{
+							m_CameraType = static_cast<Camera::CameraType>(i);
+						}
+						if (isSelected)
+						{
+							ImGui::SetItemDefaultFocus(); // Set focus on the selected item
+						}
+					}
+
+					ImGui::EndCombo();
+				}
+
+
+				if (ImGui::Button("Create", ImVec2(120, 0)))
+				{
+
+					if (m_CameraType == Camera::ORTHOGRAPHIC)
+					{
+						Camera.m_Camera = camManager->AddCamera<Camera2D>(m_CameraName, window->Width(), window->Height());
+					}
+					else if (m_CameraType == Camera::PERSPECTIVE)
+					{
+						Camera.m_Camera = camManager->AddCamera<Camera3D>(m_CameraName, window->Width(), window->Height());
+					}
+
+					Camera.m_Camera->SetName(m_CameraName);
+
+					m_ShowCreationMenu = false; // Close the input box
+					ImGui::CloseCurrentPopup();
+
+					m_CameraName = "New Camera";
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("Cancel", ImVec2(120, 0)))
+				{
+					m_ShowCreationMenu = false; // Close the input box
+					m_CameraName = "New Camera";
+					ImGui::CloseCurrentPopup();
+				}
+				ImGui::EndPopup();
+			}
+
 		}
 		else
 		{
@@ -344,5 +354,8 @@ namespace NULLENGINE
 			ImGui::Checkbox("Main Camera", &Camera.m_IsMainCamera);
 			Camera.m_Camera->View();
 		}
+
+
+
 	}
 }

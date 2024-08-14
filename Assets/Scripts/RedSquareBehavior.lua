@@ -3,8 +3,9 @@
 local RedSquareBehavior = {
     data = 
     {
-        Speed = { value = 10, serialize = true },
-        Accel = { value = 50, serialize = true },
+        Speed = { value = 250, serialize = true },
+        Accel = { value = vec2(0, 0), serialize = true },
+        Jerk =  { value = vec2(0, 0), serialize = true }
     }
 }
 
@@ -32,34 +33,18 @@ end
 
 function RedSquareBehavior:Update(dt)
     -- Update code here
-    local velocity = vec2(0)
     local rb2d = pEntity:get_component(Rigidbody2D)
 
-    local linearVel = rb2d.linear_velocity
-    
-    if(Input.KeyDown(KEY_UP)) then
-        -- Trace.debug("here")
-        velocity.y = RedSquareBehavior.Speed
-    elseif Input.KeyDown(KEY_DOWN) then
-        velocity.y = -(RedSquareBehavior.Speed)
-    else
-        velocity.y = 0
-    end
+    MoveBox()
 
+    RedSquareBehavior.Accel = RedSquareBehavior.Accel * 1.0 / (1.0 + dt * rb2d.linear_damping)
 
-    if(Input.KeyDown(KEY_RIGHT)) then
-        velocity.x = RedSquareBehavior.Speed
-    elseif Input.KeyDown(KEY_LEFT) then
-        velocity.x = -(RedSquareBehavior.Speed)
-    else
-        velocity.x = 0
-    end
-    
-    -- Trace.debug("v_x: {0}, v_y: {1}", velocityX, velocityY)
+    RedSquareBehavior.Accel = RedSquareBehavior.Accel + (RedSquareBehavior.Jerk*dt)
+    local velocity = rb2d.linear_velocity + (RedSquareBehavior.Accel*dt)
 
     rb2d:set_linear_velocity(velocity)
 
-
+    -- RedSquareBehavior.Accel = vec2(0,0);
 end
 
 function RedSquareBehavior:Exit()
@@ -67,12 +52,32 @@ function RedSquareBehavior:Exit()
     -- Cleanup code here
 end
 
-function easeInOutQuint(x)
-    if x < 0.5 then
-        return 16 * x * x * x * x * x
+function MoveBox()
+    if(Input.KeyDown(KEY_W)) then
+        -- Trace.debug("here")
+        RedSquareBehavior.Jerk.y = RedSquareBehavior.Speed
+    elseif Input.KeyDown(KEY_S) then
+        RedSquareBehavior.Jerk.y = -(RedSquareBehavior.Speed)
     else
-        return 1 - math.pow(-2 * x + 2, 5) / 2
+        RedSquareBehavior.Jerk.y = 0
     end
+
+
+    if(Input.KeyDown(KEY_D)) then
+        RedSquareBehavior.Jerk.x = RedSquareBehavior.Speed
+    elseif Input.KeyDown(KEY_A) then
+        RedSquareBehavior.Jerk.x = -(RedSquareBehavior.Speed)
+    else
+        RedSquareBehavior.Jerk.x = 0
+    end
+
+    if RedSquareBehavior.Jerk.x ~= 0 or RedSquareBehavior.Jerk.y ~= 0 then
+        RedSquareBehavior.Jerk = normalize(RedSquareBehavior.Jerk)
+    end
+
+    
+    RedSquareBehavior.Jerk = RedSquareBehavior.Jerk * RedSquareBehavior.Speed
+    
 end
 
 return RedSquareBehavior

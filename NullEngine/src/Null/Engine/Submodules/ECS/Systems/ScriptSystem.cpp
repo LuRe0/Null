@@ -341,48 +341,49 @@ namespace NULLENGINE
 			{
 				m_ShowCreationMenu = true;
 			}
-
-
-			if (m_ShowCreationMenu)
-			{
-				ImGui::OpenPopup("New Script Name");
-			}
-
-
-			if (ImGui::BeginPopupModal("New Script Name", NULL, ImGuiWindowFlags_AlwaysAutoResize))
-			{
-				ImGui::Text("Enter the script name:");
-				ImGui::InputText("##scriptname", &m_ScriptName);
-
-				if (ImGui::Button("Create", ImVec2(120, 0)))
-				{
-					m_ShowCreationMenu = false; // Close the input box
-					ImGui::CloseCurrentPopup();
-
-					// Use the script_name here
-					// For example: create a new script with the name entered
-					scriptingInterface->CreateScript(m_ScriptName);
-					eventManager->QueueEvent(std::make_unique<ScriptCreatedEvent>(entity.m_ID, m_ScriptName));
-
-			/*		std::string fileP = std::filesystem::absolute(p.path()).string();
-
-					ShellExecuteA(0, 0, fileP.c_str(), 0, 0, SW_SHOW);*/
-
-					m_ScriptName = "New Script";
-				}
-				ImGui::SameLine();
-				if (ImGui::Button("Cancel", ImVec2(120, 0)))
-				{
-					m_ShowCreationMenu = false; // Close the input box
-					m_ScriptName = "New Script";
-					ImGui::CloseCurrentPopup();
-				}
-				ImGui::EndPopup();
-			}
-
 			ImGui::EndMenu();
 
 		}
+
+
+
+		if (m_ShowCreationMenu)
+		{
+			ImGui::OpenPopup("New Script Name");
+		}
+
+
+		if (ImGui::BeginPopupModal("New Script Name", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+		{
+			ImGui::Text("Enter the script name:");
+			ImGui::InputText("##scriptname", &m_ScriptName);
+
+			if (ImGui::Button("Create", ImVec2(120, 0)))
+			{
+				m_ShowCreationMenu = false; // Close the input box
+				ImGui::CloseCurrentPopup();
+
+				// Use the script_name here
+				// For example: create a new script with the name entered
+				scriptingInterface->CreateScript(m_ScriptName);
+				eventManager->QueueEvent(std::make_unique<ScriptCreatedEvent>(entity.m_ID, m_ScriptName));
+
+				/*		std::string fileP = std::filesystem::absolute(p.path()).string();
+
+						ShellExecuteA(0, 0, fileP.c_str(), 0, 0, SW_SHOW);*/
+
+				m_ScriptName = "New Script";
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Cancel", ImVec2(120, 0)))
+			{
+				m_ShowCreationMenu = false; // Close the input box
+				m_ScriptName = "New Script";
+				ImGui::CloseCurrentPopup();
+			}
+			ImGui::EndPopup();
+		}
+
 	}
 	void ScriptSystem::InitializeScripts(EntityID id)
 	{
@@ -458,7 +459,7 @@ namespace NULLENGINE
 				std::string keyStr = key.as<std::string>();
 				LuaValue luaValue = ScriptHelper::GetValue(value);
 
-				if (value.is<sol::function>() || value.is<sol::table>() || !serialize)
+				if (value.is<sol::function>() || !serialize)
 					continue;
 
 

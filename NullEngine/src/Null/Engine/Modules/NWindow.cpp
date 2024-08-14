@@ -165,6 +165,8 @@ namespace NULLENGINE
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+		glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
+
 		GLFWwindow* window = glfwCreateWindow(width, height, title, NULL, NULL);
 		if (!window) {
 			NLE_ERROR("Failed to create GLFW window");

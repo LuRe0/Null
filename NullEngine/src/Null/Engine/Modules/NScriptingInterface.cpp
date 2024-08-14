@@ -211,7 +211,7 @@ return Template_Script
         RegisterVec2Structures(lua);
         RegisterVec3Structures(lua);
         RegisterVec4Structures(lua);
-
+        MathFreeFunctions(lua);
 
 
         //// Register glm::mat4
@@ -360,6 +360,20 @@ return Template_Script
                 [](glm::vec2& a, glm::vec2& b) { return glm::distance(a, b); },
                 [](glm::vec3& a, glm::vec3& b) { return glm::distance(a, b); },
                 [](glm::vec4& a, glm::vec4& b) { return glm::distance(a, b); }
+        ));
+
+        lua.set_function("mix",
+            sol::overload(
+                [](glm::vec2& a, glm::vec2& b, float t) { return glm::mix(a, b, t); },
+                [](glm::vec3& a, glm::vec3& b, float t) { return glm::mix(a, b, t); },
+                [](glm::vec4& a, glm::vec4& b, float t) { return glm::mix(a, b, t); }
+        ));
+
+        lua.set_function("normalize",
+            sol::overload(
+                [](glm::vec2& a) { return glm::normalize(a); },
+                [](glm::vec3& a) { return glm::normalize(a); },
+                [](glm::vec4& a) { return glm::normalize(a); }
         ));
 
         lua.set_function("lerp",

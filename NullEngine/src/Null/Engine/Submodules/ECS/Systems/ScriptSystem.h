@@ -82,6 +82,7 @@ namespace NULLENGINE
 
 		sol::state m_LuaState;
 
+
 	};
 
 }

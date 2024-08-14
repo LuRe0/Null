@@ -98,10 +98,12 @@ namespace NULLENGINE
 		 CameraController* GetCameraController();
 
 		 void ResizeCamera();
+		 void ResetViewportSize();
 
 		 void Begin();
 		 void End();
 
+		void SaveSceneImpl();
 	private:
 		ImGuiLayer(ImGuiLayer const&) = delete;
 		ImGuiLayer& operator=(ImGuiLayer const&) = delete;
@@ -150,7 +152,6 @@ namespace NULLENGINE
 		void OnSceneSwitched(const SceneSwitchEvent& e);
 
 		void NewSceneImpl();
-		void SaveSceneImpl();
 		void SaveSceneAsImpl();
 		void OpenSceneImpl();
 		void SetAsDefaultSceneImpl();

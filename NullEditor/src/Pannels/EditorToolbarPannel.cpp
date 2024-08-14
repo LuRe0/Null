@@ -103,7 +103,7 @@ namespace NULLENGINE
 				{
 					NEngine::Instance().SetEngineState(IEngine::RUN_WINDOWED);
 					eventManager->QueueEvent(std::make_unique<EngineRunStateEvent>(NEngine::RUN_WINDOWED));
-					m_Parent->ResizeCamera();
+					m_Parent->ResetViewportSize();
 				}
 				else
 				{
@@ -112,7 +112,8 @@ namespace NULLENGINE
 				}
 
 
-				//m_PannelData->m_SelectedEntity = {};
+				m_Parent->SaveSceneImpl();
+
 				break;
 			}
 			case NULLENGINE::IEngine::PAUSE:

@@ -739,6 +739,12 @@ namespace NULLENGINE
 
 		ImGui::Image((void*)(intptr_t)texture, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, { 0, 1 }, { 1, 0 });
 
+		if (m_ViewportSize != *((glm::vec2*)&viewportPanelSize))
+		{
+			buffer.Resize(viewportPanelSize.x, viewportPanelSize.y);
+			m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
+			ResizeCamera();
+		}
 
 		auto windowSize = ImGui::GetWindowSize();
 		ImVec2 windowPos = ImGui::GetWindowPos();
@@ -866,6 +872,14 @@ namespace NULLENGINE
 	{
 		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
 		eventManager->QueueEvent(std::make_unique<WindowResizeEvent>(m_ViewportSize.x, m_ViewportSize.y));
+
+		m_CameraController->OnResize(m_ViewportSize.x, m_ViewportSize.y);
+
+	}
+
+	void ImGuiLayer::ResetViewportSize()
+	{
+		m_ViewportSize = {};
 	}
 
 	void ImGuiLayer::OnWindowClose(const WindowCloseEvent& e)

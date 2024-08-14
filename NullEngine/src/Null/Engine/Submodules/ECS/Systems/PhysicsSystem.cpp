@@ -157,6 +157,8 @@ namespace NULLENGINE
 				"type_id", &Component<Rigidbody2DComponent>::GetID,
 				"linear_velocity", sol::readonly(&Rigidbody2DComponent::m_LinearVelocity),
 				"angular_velocity", sol::readonly(&Rigidbody2DComponent::m_AngularVelocity),
+				"angular_damping", sol::readonly(&Rigidbody2DComponent::m_AngularDamping),
+				"linear_damping", sol::readonly(&Rigidbody2DComponent::m_LinearDamping),
 				"gravity_scale", sol::readonly(&Rigidbody2DComponent::m_GravityScale),
 				"set_linear_velocity", sol::overload(
 					[this](Rigidbody2DComponent& rb2d, float x, float y)

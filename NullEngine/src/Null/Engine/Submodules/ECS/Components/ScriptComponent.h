@@ -4,7 +4,7 @@
 
 namespace NULLENGINE
 {
-	using LuaValue = std::variant<float, int, std::string, bool, sol::table, sol::function, std::monostate>;
+	using LuaValue = std::variant<float, int, std::string, bool, sol::object, sol::table, sol::function, std::monostate>;
 	using ScriptDefaults = std::unordered_map<std::string, std::unordered_map<std::string, LuaValue>>;
 
 	//bool operator==(const LuaValue& lhs, const LuaValue& rhs) {
@@ -42,6 +42,7 @@ namespace NULLENGINE
 		ScriptComponent& operator=(const ScriptComponent & other)
 		{
 			m_Script_Names = other.m_Script_Names;
+			m_ScriptDefaults = other.m_ScriptDefaults;
 
 			return *this;
 		}

@@ -53,7 +53,7 @@
                 "Script": {
                     "scripts": {
                         "CameraFollowScript": {
-                            "lerpFactor": 1.0
+                            "lerpFactor": 5.0
                         },
                         "RedSquareBehavior": {
                             "Accel": 0.0,

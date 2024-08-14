@@ -270,6 +270,8 @@ namespace NULLENGINE
 			ImGui::PopStyleColor(3);
 
 
+
+
 			if (opened)
 			{
 				sol::table scr = script.m_Scripts[i];
@@ -306,8 +308,40 @@ namespace NULLENGINE
 
 
 
+			// Get the size of the button
+			ImVec2 buttonSize = ImVec2(100, 30); // Set your desired button size here
 
+			// Get the current window size
+			ImVec2 windowSize = ImGui::GetWindowSize();
 
+			// Calculate the position to center the button horizontally
+			float buttonX = (windowSize.x - buttonSize.x) * 0.5f; // Centering on the x-axis
+			float buttonY = ImGui::GetCursorPosY(); // Keep the current cursor position on the y-axis
+
+			// Set the cursor position to the calculated position
+			ImGui::SetCursorPos(ImVec2(buttonX, buttonY));
+
+			// Create the button
+			if (ImGui::Button("Open Script", buttonSize))
+			{
+				std::filesystem::path relativePath(script.m_Script_Paths[i]);
+				std::filesystem::path absolutePath = std::filesystem::absolute(relativePath);
+				std::string fileP = absolutePath.string();
+
+				// Check if the file exists
+				if (std::filesystem::exists(absolutePath))
+				{
+					// Attempt to open the file
+					if (ShellExecuteA(NULL, "open", fileP.c_str(), NULL, NULL, SW_SHOWNORMAL) <= (HINSTANCE)32)
+					{
+						NLE_CORE_ERROR("Failed to open script: {}", fileP);
+					}
+				}
+				else
+				{
+					NLE_CORE_ERROR("File does not exist: {}", fileP);
+				}
+			}
 			ImGui::Separator();
 		}
 

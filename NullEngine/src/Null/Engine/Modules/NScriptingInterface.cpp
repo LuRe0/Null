@@ -15,6 +15,8 @@
 #include <nlohmann/json.hpp>
 #include "Null/Engine/Submodules/ECS/Entities/Entity.h"
 #include "FileWatch.hpp"
+#include <shellapi.h>
+
 using JSON = nlohmann::json;
 
 //******************************************************************************//
@@ -168,6 +170,16 @@ return Template_Script
         outFile.close();
 
 
+        // Convert to a filesystem path
+        std::filesystem::path relativePath(filePath);
+
+        // Get the absolute path
+        std::filesystem::path absolutePath = std::filesystem::absolute(relativePath);
+
+        // Convert the absolute path to a C-style string
+        std::string fileP = absolutePath.string();
+
+        ShellExecuteA(NULL, "open", fileP.c_str(), NULL, NULL, SW_SHOWNORMAL);
         //AddScriptWatcher(filePath, filename);
     }
     void NScriptingInterface::ReloadScript(const std::string& filename)

@@ -1,8 +1,7 @@
 {
 	"xHalfSize": 0.5,
 	"yHalfSize": 0.5,
-	"uSize": 1,
-	"vSize": 1,
+    "drawType": "TRIANGLES",
     "vertices": [
 			{ "position": [-0.5, -0.5, -0.5], "color": [1.0, 1.0, 1.0, 1.0], "texCoords": [0.0, 0.0] },   
 			{ "position": [0.5, -0.5, -0.5], "color": [1.0, 1.0, 1.0, 1.0], "texCoords": [1.0, 0.0] },    

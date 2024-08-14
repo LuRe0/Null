@@ -69,10 +69,16 @@ namespace NULLENGINE
 		instancesLayouts.push_back({ 2, GL_FLOAT, 2 * sizeof(float) }); // location 9
 
 		// unsigned int texIndex (a_InstanceTexIndex)
-		instancesLayouts.push_back({ 1, GL_INT, sizeof(int) }); // location 10
+		instancesLayouts.push_back({ 1, GL_FLOAT, sizeof(float) }); // location 10
 
 		// uint32_t entityID (a_EntityID)
-		instancesLayouts.push_back({ 1, GL_INT, sizeof(int) }); // location 11
+		instancesLayouts.push_back({ 1, GL_FLOAT, sizeof(float) }); // location 11
+
+		// unsigned int texIndex (a_InstanceTexIndex)
+		instancesLayouts.push_back({ 1, GL_INT, sizeof(int) }); // location 12
+
+		// uint32_t entityID (a_EntityID)
+		instancesLayouts.push_back({ 1, GL_INT, sizeof(int) }); // location 13
 
 		SetupVertexBuffer(std::vector<Instance>(), instancesLayouts, true, vertexCount);
 
@@ -83,22 +89,18 @@ namespace NULLENGINE
 		//to do
 		std::vector<unsigned int> indexData(indexCount);
 		uint32_t offset = 0;
-		for (size_t i = 0; i < indexData.size(); i += 6)
+
+		for (size_t i = 0; i < indexData.size(); i += 2)
 		{
 			indexData[i + 0] = offset + 0;
 			indexData[i + 1] = offset + 1;
-			indexData[i + 2] = offset + 3;
 
-			indexData[i + 3] = offset + 1;
-			indexData[i + 4] = offset + 2;
-			indexData[i + 5] = offset + 3;
-
-			offset += 4;
+			offset += 2;
 		}
 
 		SetupIndexBuffer(indexData);
 
-		m_Buffer.m_VAO.AttachEBO(m_Buffer.m_EBO);
+		m_Buffer.m_VAO.AttachEBO(m_Buffer.m_EBO, GL_LINES);
 	}
 	LineInstanceMesh::~LineInstanceMesh()
 	{
@@ -177,6 +179,15 @@ namespace NULLENGINE
 		//SetupInstanceBuffer(std::vector<Instance>(), instancesLayouts, true, MAXVERTEXCOUNT);
 	}
 
+	void LineInstanceMesh::RenderLines(uint32_t count) const
+	{
+		m_Buffer.m_VAO.Bind();
+
+		glDrawArrays(m_Buffer.m_VAO.DrawType(), 0, count);
+
+		m_Buffer.m_VAO.Unbind();
+	}
+
 
 	void LineInstanceMesh::Render(uint32_t count) const
 	{
@@ -184,9 +195,7 @@ namespace NULLENGINE
 
 		glDrawElements(m_Buffer.m_VAO.DrawType(), count, GL_UNSIGNED_INT, nullptr);
 
-
 		m_Buffer.m_VAO.Unbind();
-
 	}
 
 

@@ -54,8 +54,8 @@ namespace NULLENGINE
         void RegisterToScripAPI(sol::state& lua) override {};
 
 	public:
-		bool m_ShowColliders = false;
-		bool m_ShowKinematics = false;
+		bool m_ShowDebug = false;
+		//bool m_ShowKinematics = false;
 
 	private:
 

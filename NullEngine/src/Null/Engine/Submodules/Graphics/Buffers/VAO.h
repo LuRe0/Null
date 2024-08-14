@@ -57,7 +57,7 @@ namespace NULLENGINE
 
 		void UpdateVBO(const VBO& vbo);
 
-		void AttachEBO(const EBO& ebo);
+		void AttachEBO(const EBO& ebo, unsigned int drawType);
 
 		unsigned int ElementCount() const { return m_ElementCount; };
 		unsigned int DrawType() const { return m_DrawType; }

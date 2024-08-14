@@ -281,6 +281,7 @@
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\BoxCollider2DSystem.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\CircleCollider2DSystem.h" />
     <ClInclude Include="src\Null\Engine\Modules\NDebugManager.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\LineBatchRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Null\Application.cpp">

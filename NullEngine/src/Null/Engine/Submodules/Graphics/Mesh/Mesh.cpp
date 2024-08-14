@@ -15,7 +15,7 @@
 #include "Null/Core.h"
 #include "Null/Engine/Submodules/Graphics/Shader/Shader.h"
 #include "Null/Engine/Submodules/Graphics/SpriteSource.h"
-
+#include "magic_enum/magic_enum.hpp"
 using JSON = nlohmann::json;
 
 
@@ -60,6 +60,7 @@ namespace NULLENGINE
 
 		m_xHalfSize = j["xHalfSize"];
 		m_yHalfSize = j["yHalfSize"];
+		const std::string type = j["drawType"];
 		m_Name = filename;
 
 		for (const auto& vertex : j["vertices"]) {
@@ -86,7 +87,28 @@ namespace NULLENGINE
 		SetupIndexBuffer(indexData);
 
 		m_Buffer.m_VAO.AttachVBO(m_Buffer.m_VBO);
-		m_Buffer.m_VAO.AttachEBO(m_Buffer.m_EBO);
+
+		unsigned int drawType = GL_TRIANGLES;
+		std::optional<Mesh::DRAWTYPE> typeOpt = magic_enum::enum_cast<Mesh::DRAWTYPE>(type);
+
+		if (typeOpt.has_value())
+		{
+			Mesh::DRAWTYPE type = typeOpt.value();
+
+			switch (type)
+			{
+			case NULLENGINE::Mesh::TRIANGLES:
+				drawType = GL_TRIANGLES;
+				break;
+			case NULLENGINE::Mesh::LINES:
+				drawType = GL_LINES;
+				break;
+			default:
+				break;
+			}
+		}
+
+		m_Buffer.m_VAO.AttachEBO(m_Buffer.m_EBO, drawType);
 	}
 	Mesh::Mesh(const std::string& name, float xHalfSize, float yHalfSize, float uSize, float vSize) :
 		m_xHalfSize(xHalfSize), m_yHalfSize(yHalfSize), m_Name(name)

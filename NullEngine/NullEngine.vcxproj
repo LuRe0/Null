@@ -198,6 +198,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /Y /
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\Framebuffer.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\TriangleBatchRenderer.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\CircleBatchRenderer.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\LineBatchRenderer.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\RenderData.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\CubeBatchRenderer.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\VAO.h" />

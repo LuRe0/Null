@@ -76,6 +76,7 @@ namespace NULLENGINE
 
 		}
 
+		void RenderLines(uint32_t count) const;
 		void Render(uint32_t count) const;
 		
 	private:

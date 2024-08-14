@@ -99,14 +99,14 @@ namespace NULLENGINE
         m_Instances = vbo.Instances();
     }
 
-    void VAO::AttachEBO(const EBO& ebo)
+    void VAO::AttachEBO(const EBO& ebo, unsigned int drawType)
     {
         Bind();
         ebo.Bind();
 
 
         m_ElementCount = ebo.Count();
-        m_DrawType = GL_TRIANGLES;
+        m_DrawType = drawType;
 
         Unbind();
         ebo.Unbind();

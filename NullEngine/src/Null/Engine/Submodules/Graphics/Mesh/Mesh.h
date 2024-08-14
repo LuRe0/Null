@@ -43,6 +43,11 @@ namespace NULLENGINE
 	{
 	public:
 
+		enum DRAWTYPE
+		{
+			TRIANGLES,
+			LINES,
+		};
 
 		Mesh(const std::string& filename);
 		Mesh(const std::string& name, float xHalfSize, float yHalfSize, float uSize, float vSize);

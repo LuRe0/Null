@@ -75,6 +75,7 @@ namespace NULLENGINE
 		void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
 
 		void AddRenderCall(std::unique_ptr<ElementData>&& render);
+		void AddDebugRenderCall(std::unique_ptr<ElementData>&& render);
 
 		bool HasRenderImGui() const override { return true; }
 
@@ -109,6 +110,12 @@ namespace NULLENGINE
 			std::vector<std::unique_ptr<ElementData>>,
 			RenderDataComparator
 		> m_RenderQueue;
+
+		std::priority_queue<
+			std::unique_ptr<ElementData>,
+			std::vector<std::unique_ptr<ElementData>>,
+			RenderDataComparator
+		> m_DebugRenderQueue;
 
 		//std::vector<std::unique_ptr<ElementData>> m_RenderQueue;
 

@@ -19,7 +19,9 @@
 #include <box2d/b2_fixture.h>
 #include <magic_enum/magic_enum.hpp>
 #include "Null/Engine/Submodules/Events/IEvents.h"
-
+#include <glm/gtc/matrix_transform.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
 
 //******************************************************************************//
 // Public Variables															    //
@@ -127,6 +129,72 @@ namespace NULLENGINE
 
 	void PhysicsSystem::Render()
 	{
+		if (!NEngine::Instance().Get<NDebugManager>()->m_ShowDebug)
+			return;
+
+		NRenderer* renderer = NEngine::Instance().Get<NRenderer>();
+		NRegistry* m_Parent = NEngine::Instance().Get<NRegistry>();
+		NMeshManager* meshManager = NEngine::Instance().Get<NMeshManager>();
+		NCameraManager* camManager = NEngine::Instance().Get<NCameraManager>();
+
+
+		for (const auto entityId : GetSystemEntities())
+		{
+			TransformComponent& transform = m_Parent->GetComponent<TransformComponent>(entityId);
+			Rigidbody2DComponent& rb2d = m_Parent->GetComponent<Rigidbody2DComponent>(entityId);
+
+			if (!rb2d.m_RuntimeBody)
+				continue;
+
+			// Define a maximum length for the line
+			float maxLength = 250.0f; // Example max length; adjust as needed
+
+			// Calculate the current length of the velocity vector
+			float velocityLength = glm::length(rb2d.m_LinearVelocity);
+
+			// Define a reference speed for scaling
+			float referenceSpeed = 1000.0f; // Example reference speed; adjust as needed
+
+			// Calculate the scaling factor based on the ratio of velocity to the reference speed
+			float scaleFactor = glm::min(velocityLength / referenceSpeed, 1.0f);
+
+			// Determine the actual length of the line based on the scale factor and maximum length
+			float lineLength = maxLength * scaleFactor;
+
+			// Normalize the velocity vector and calculate the offset
+			auto offset = glm::normalize(rb2d.m_LinearVelocity) * (lineLength / 2.0f);
+
+			// Calculate the translation with the correct depth
+			//auto translation = glm::vec3(transform.m_Translation.x, transform.m_Translation.y, (transform.m_Translation.z + transform.m_Scale.z * 0.5f + 0.50f));
+			auto translation = (transform.m_Translation + glm::vec3(offset, transform.m_Translation.z + transform.m_Scale.z + 0.50f));
+
+			// Calculate the angle of rotation based on the linear velocity vector
+			float rot = glm::atan(rb2d.m_LinearVelocity.y, rb2d.m_LinearVelocity.x);
+
+			glm::mat4 viewMatrix = camManager->GetCurrentCamera()->GetViewMatrix();
+
+			// Transform the world position to camera space
+			glm::vec4 cameraSpacePosition = viewMatrix * glm::vec4(translation, 1.0f);
+
+			// The depth is the z-component of the camera space position
+			float depth = cameraSpacePosition.z;
+
+			// Create the translation matrix
+			glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), translation);
+
+			// Create the rotation matrix, rotating around the Z-axis based on the velocity direction
+			glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), rot, glm::vec3(0, 0, 1));
+
+			// Create the scale matrix based on the length of the velocity vector
+			glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(lineLength, m_Thickness, 1.0f));
+
+			// Combine the matrices to form the final transformation matrix
+			glm::mat4 matrix = translationMatrix * rotationMatrix * scaleMatrix;
+
+			// Add the render call for the line
+			renderer->AddDebugRenderCall(std::make_unique<ElementData>(matrix, meshManager->Get("Line"), nullptr, m_Color, "", 0,
+				entityId, m_Thickness, 0.005f, RenderData::INSTANCED, depth));
+		}
 	}
 
 	void PhysicsSystem::RenderImGui()

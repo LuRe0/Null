@@ -73,7 +73,7 @@ namespace NULLENGINE
 
 	void CircleCollider2DSystem::Render()
 	{
-		if (!NEngine::Instance().Get<NDebugManager>()->m_ShowColliders)
+		if (!NEngine::Instance().Get<NDebugManager>()->m_ShowDebug)
 			return;
 
 		NRenderer* renderer = NEngine::Instance().Get<NRenderer>();
@@ -114,7 +114,7 @@ namespace NULLENGINE
 			/*		matrix, meshManager->Get("Quad"), "", glm::vec4(0, 1, 0, 1), "",
 						0, entityId, 0.05f, 0.005f, RenderData::INSTANCED)*/
 						//model, mesh, spritesrc, tint, shadername, frameindex, entity
-			renderer->AddRenderCall(std::make_unique<ElementData>(matrix, meshManager->Get("Circle"), nullptr, m_Color, "", 0,
+			renderer->AddDebugRenderCall(std::make_unique<ElementData>(matrix, meshManager->Get("Circle"), nullptr, m_Color, "", 0,
 				entityId, m_Thickness, 0.005f, RenderData::INSTANCED, -depth));
 		}
 	}

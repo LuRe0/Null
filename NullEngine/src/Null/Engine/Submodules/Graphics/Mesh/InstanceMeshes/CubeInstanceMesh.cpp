@@ -145,7 +145,7 @@ namespace NULLENGINE
 
 		SetupIndexBuffer(indexData);
 
-		m_Buffer.m_VAO.AttachEBO(m_Buffer.m_EBO);
+		m_Buffer.m_VAO.AttachEBO(m_Buffer.m_EBO, GL_TRIANGLES);
 	}
 	CubeInstanceMesh::~CubeInstanceMesh()
 	{

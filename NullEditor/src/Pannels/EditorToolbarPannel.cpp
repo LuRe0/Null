@@ -87,7 +87,7 @@ namespace NULLENGINE
 
 		ImGui::SameLine((ImGui::GetContentRegionMax().x * 0.50f) - (size * 0.5f));
 
-		ImGui::Text("Show Colliders: "); ImGui::SameLine(); ImGui::Checkbox("##showcolliders", &debugManager->m_ShowColliders);
+		ImGui::Text("Show Debug: "); ImGui::SameLine(); ImGui::Checkbox("##showdebug", &debugManager->m_ShowDebug);
 
 		ImGui::SameLine((ImGui::GetContentRegionMax().x * 0.0f) + (size * 0.5f));
 

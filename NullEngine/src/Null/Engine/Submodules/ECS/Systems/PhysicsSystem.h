@@ -82,6 +82,9 @@ namespace NULLENGINE
 		void OnEntityComponentAdded(const EntityAddComponentEvent& e);
 		void OnSceneSwitched(const SceneSwitchEvent& e);
 
+		float m_Thickness = 0.55f;
+		glm::vec4 m_Color = glm::vec4(0, 0, 1, 1);
+
 		const glm::vec3 GRAVITY = glm::vec3(0.0f, -9.81, 0.0f);
 		// Conversion factor
 		float m_Pixels_Per_Meter = 64.0f; // 1 meter = 64 pixels

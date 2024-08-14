@@ -18,7 +18,9 @@
 #include <glm/gtx/quaternion.hpp>
 
 #include <box2d/b2_body.h>
-
+#include <glm/gtc/matrix_transform.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
 
 
 //******************************************************************************//
@@ -72,6 +74,10 @@ namespace NULLENGINE
 
 			if (transform.m_Dirty)
 			{
+				if (transform.m_Scale.z == 0.0)
+				{
+					transform.m_Scale.z += 0.001f;
+				}
 
 				glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), transform.m_Translation);
 				// Calculate rotation matrix (assuming Euler angles in radians)

@@ -23,11 +23,13 @@ Batch Rendering Code adapted from https://www.youtube.com/watch?v=biGF6oLxgtQ&li
 #include "Null/Engine/Submodules/Graphics/Mesh/InstanceMeshes/TriangleInstanceMesh.h"
 #include "Null/Engine/Submodules/Graphics/Mesh/InstanceMeshes/CubeInstanceMesh.h"
 #include "Null/Engine/Submodules/Graphics/Mesh/InstanceMeshes/CircleInstanceMesh.h"
+#include "Null/Engine/Submodules/Graphics/Mesh/InstanceMeshes/LineInstanceMesh.h"
 #include "Null/Engine/Submodules/Graphics/Buffers/Framebuffer.h"
 #include "Null/Engine/Submodules/Graphics/Buffers/BatchRenderer/QuadBatchRenderer.h"
 #include "Null/Engine/Submodules/Graphics/Buffers/BatchRenderer/TriangleBatchRenderer.h"
 #include "Null/Engine/Submodules/Graphics/Buffers/BatchRenderer/CubeBatchRenderer.h"
 #include "Null/Engine/Submodules/Graphics/Buffers/BatchRenderer/CircleBatchRenderer.h"
+#include "Null/Engine/Submodules/Graphics/Buffers/BatchRenderer/LineBatchRenderer.h"
 #include "imgui.h"
 #include "magic_enum/magic_enum.hpp"
 #include <sol/sol.hpp>
@@ -202,7 +204,8 @@ namespace NULLENGINE
 		m_Batchers.emplace("Cube", std::make_unique<CubeBatchRenderer<Instance, CubeInstanceMesh, 10000>>());
 		m_Batchers.emplace("Quad", std::make_unique<QuadBatchRenderer<Instance, QuadInstanceMesh, 10000>>());
 		m_Batchers.emplace("Triangle", std::make_unique<TriangleBatchRenderer<Instance, TriangleInstanceMesh, 10000>>());
-		m_Batchers.emplace("Circle", std::make_unique<CircleBatchRenderer<CircleInstance, CircleInstanceMesh, 10000>>());
+		m_Batchers.emplace("Circle", std::make_unique<CircleBatchRenderer<Instance, CircleInstanceMesh, 10000>>());
+		m_Batchers.emplace("Line", std::make_unique<LineBatchRenderer<Instance, LineInstanceMesh, 5000>>());
 
 		m_Framebuffers.insert(std::make_pair("Scene", Framebuffer(m_WinWidth, m_WinHeight)));
 
@@ -241,6 +244,19 @@ namespace NULLENGINE
 
 			// Remove the element from the queue
 			m_RenderQueue.pop();
+		}
+
+
+		while (!m_DebugRenderQueue.empty())
+		{
+			// Access the element with the highest priority (greatest depth)
+			auto& renderData = m_DebugRenderQueue.top();
+
+			// Process/render the object
+			RenderScene(renderData.get());
+
+			// Remove the element from the queue
+			m_DebugRenderQueue.pop();
 		}
 
 		//for (auto& renderData : m_RenderQueue)
@@ -291,7 +307,11 @@ namespace NULLENGINE
 	void NRenderer::AddRenderCall(std::unique_ptr<ElementData>&& render)
 	{
 		m_RenderQueue.push(std::move(render));
-		//m_RenderQueue.push_back(std::move(render));
+	}
+
+	void NRenderer::AddDebugRenderCall(std::unique_ptr<ElementData>&& render)
+	{
+		m_DebugRenderQueue.push(std::move(render));
 	}
 
 	//void NRenderer::AddElementRenderCall(const ElementData& render)

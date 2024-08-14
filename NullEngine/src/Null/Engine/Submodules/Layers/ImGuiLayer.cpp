@@ -445,8 +445,8 @@ namespace NULLENGINE
 			ImGuizmo::SetOrthographic(mainCam->GetCameraType() == Camera::ORTHOGRAPHIC);
 			ImGuizmo::SetDrawlist();
 
-			float winWidth = (float)ImGui::GetWindowWidth();
-			float winHeight = (float)ImGui::GetWindowHeight();
+			float winWidth = m_ViewportSize.x;
+			float winHeight = m_ViewportSize.y;
 			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, winWidth, winHeight);
 
 

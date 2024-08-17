@@ -42,7 +42,7 @@ namespace NULLENGINE
 
 		void OnImGUIRender();
 	private:
-	
+		void DrawEntityNode(Entity& entity);
 		SceneHierarchyPannel(SceneHierarchyPannel const&) = delete;
 		SceneHierarchyPannel& operator=(SceneHierarchyPannel const&) = delete;
 	};

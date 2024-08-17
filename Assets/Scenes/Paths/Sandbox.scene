@@ -88,7 +88,7 @@
                     "scale": [
                         50.0,
                         50.0,
-                        0.0010000000474974513
+                       1.0
                     ],
                     "translation": [
                         -209.46905517578125,
@@ -97,7 +97,41 @@
                     ]
                 }
             },
-            "name": "ScriptablePlayer (Clone)"
+            "name": "ScriptablePlayer (Clone)",
+            "children": 
+            [
+                {
+                    "components": {
+                        "BoxCollider2D": 
+                        {
+                            "density": 0.5,
+                            "friction": 0.3,
+                            "offset": [0.0, 0.0],
+                            "restitution": 0.1,
+                            "restitutionThreshold": 0.5,
+                            "scale": [10.0, 10.0]
+                        },
+                        "Transform":
+                        {
+                            "rotation": [0.0, 0.0, 0.0],
+                            "scale": [10, 10, 1.0],
+                            "translation": [-1,
+                            -0.0,
+                            0.0]  
+                        },
+                        "Sprite": 
+                        {
+                            "dimension": [1, 1],
+                            "fade": 0.005,
+                            "frameindex": 0,
+                            "meshname": "Triangle",
+                            "thickness": 1.0,
+                            "tint": [1.0, 0.0, 0.0, 1.0]
+                        }
+                    },
+                    "name": "Weapon"
+                }
+            ]
         },
         {
             "components": {
@@ -220,7 +254,7 @@
                     "scale": [
                         50.0,
                         50.0,
-                        0.0010000000474974513
+                       1.0
                     ],
                     "translation": [
                         -186.8247833251953,
@@ -283,7 +317,7 @@
                     "scale": [
                         50.0,
                         50.0,
-                        0.0010000000474974513
+                       1.0
                     ],
                     "translation": [
                         0.0,
@@ -389,7 +423,7 @@
                     "scale": [
                         50.000057220458984,
                         50.000057220458984,
-                        0.0010000000474974513
+                       1.0
                     ],
                     "translation": [
                         0.0,
@@ -429,7 +463,7 @@
                     "scale": [
                         50.0,
                         50.0,
-                        0.0010000000474974513
+                       1.0
                     ],
                     "translation": [
                         0.0,

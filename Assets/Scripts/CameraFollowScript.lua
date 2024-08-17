@@ -3,7 +3,7 @@
 local CameraFollowScript = {
     data = 
     {
-        lerpFactor = { value = 5, serialize = true }
+        lerpFactor = { value = 5, serialize = true },
     }
 }
 

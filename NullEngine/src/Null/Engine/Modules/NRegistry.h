@@ -238,6 +238,41 @@ namespace NULLENGINE
 		}
 
 
+		template <typename T, typename ...TArgs>
+		T& GetOrAddComponent(EntityID entityID, TArgs&& ...args)
+		{
+			const auto componentID = Component<T>::GetID();
+
+
+			if (HasComponent<T>(entityID))
+			{
+				ComponentManager<T>* newManager = dynamic_cast<ComponentManager<T>*>(m_ComponentManagers[componentID - 1].get());
+				if (newManager)
+				{
+					T& component = newManager->Get(entityID);
+
+					//NLE_CORE_INFO("Succesfully Retrieved {0}, {1} from entity {2}", Component<T>::TypeName(), componentID, entityID);
+
+					return component;
+				}
+			}
+			else
+			{
+				AddComponent<T>(entityID, std::forward<TArgs>(args)...);
+
+
+				// Retrieve and return the newly added component
+				ComponentManager<T>* newManager = dynamic_cast<ComponentManager<T>*>(m_ComponentManagers[componentID - 1].get());
+				if (newManager)
+				{
+					T& component = newManager->Get(entityID);
+					return component;
+				}
+			}
+
+		}
+
+
 
 		const SignatureBits& EntitySignature(EntityID id);
 		const OwnedComponents& EntityComponents(EntityID id);

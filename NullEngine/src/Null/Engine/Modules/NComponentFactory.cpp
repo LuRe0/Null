@@ -88,8 +88,8 @@ namespace NULLENGINE
 		if (it != m_ComponentInspector.end()) {
 			it->second(entity);
 		}
-		else
-			NLE_CORE_WARN("No Inspector function found for {0}", componentId);
+		//else
+		//	NLE_CORE_WARN("No Inspector function found for {0}", componentId);
 	}
 
 	BaseComponent& NComponentFactory::CreateComponent(const std::string& componentName, const nlohmann::json& componentData, NRegistry* registry, EntityID id) const

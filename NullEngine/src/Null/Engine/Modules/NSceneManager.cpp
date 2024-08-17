@@ -173,7 +173,7 @@ namespace NULLENGINE
 
 		std::unique_ptr<Scene> scene = std::make_unique<Scene>(sceneName);
 
-		scene->Load(sceneName, sceneData);
+		scene->Load(sceneData);
 
 		RegisterScene(sceneName, std::move(scene));
 

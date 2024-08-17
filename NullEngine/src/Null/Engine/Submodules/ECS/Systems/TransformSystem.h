@@ -59,6 +59,9 @@ namespace NULLENGINE
 
 
 	private:
+
+		void UpdateChildTransform(EntityID childId, const TransformComponent& parentTransform, NRegistry* registry);
+
 		//void OnWindowResize(const WindowResizeEvent& e);
 		static void CreateTransformComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
 

@@ -22,7 +22,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
-
+#include <glm/gtx/matrix_decompose.hpp>
 //******************************************************************************//
 // Public Variables															    //
 //******************************************************************************//
@@ -205,6 +205,8 @@ namespace NULLENGINE
 		ImGui::SameLine();
 		ImGui::SetNextItemWidth(100.0f); // Set the width of the DragFloat
 		ImGui::DragFloat("##Pixels Per Meter", &m_Pixels_Per_Meter, 0.5f, 4, 128);
+
+		ImGui::ColorEdit4("Vector Color", glm::value_ptr(m_Color), 0.5f);
 	}
 
 	void PhysicsSystem::Unload()
@@ -347,17 +349,36 @@ namespace NULLENGINE
 			if (ImGui::Checkbox("Fixed Rotation", &rb2d.m_FixedRotation))
 				rb2d.m_RuntimeBody->SetFixedRotation(rb2d.m_FixedRotation);
 
-			ImGui::Text(magic_enum::enum_name(rb2d.m_Type).data()); ImGui::SameLine();
+			//ImGui::Text(magic_enum::enum_name(rb2d.m_Type).data()); ImGui::SameLine();
 
-			if (ImGui::DragInt("Body Type", reinterpret_cast<int*>(&(rb2d.m_Type)), 1.0f, 0, Rigidbody2DComponent::BodyType::BodyTypes - 1))
+	/*		if (ImGui::DragInt("Body Type", reinterpret_cast<int*>(&(rb2d.m_Type)), 1.0f, 0, Rigidbody2DComponent::BodyType::BodyTypes - 1))
 
 				if (rb2d.m_Type > Rigidbody2DComponent::BodyType::BodyTypes - 1)
 				{
 					rb2d.m_Type = (Rigidbody2DComponent::BodyType)static_cast<int>(Rigidbody2DComponent::BodyType::BodyTypes - 1);
 				}
 
-			rb2d.m_RuntimeBody->SetType(static_cast<b2BodyType>(rb2d.m_Type));
+			rb2d.m_RuntimeBody->SetType(static_cast<b2BodyType>(rb2d.m_Type));*/
 
+
+			if (ImGui::BeginCombo("Body Type", magic_enum::enum_name(rb2d.m_Type).data()))
+			{
+				for (size_t i = 0; i < Rigidbody2DComponent::BodyType::BodyTypes; i++)
+				{
+					bool isSelected = rb2d.m_Type == static_cast<Rigidbody2DComponent::BodyType>(i);
+
+					if (ImGui::Selectable(magic_enum::enum_name(static_cast<Rigidbody2DComponent::BodyType>(i)).data(), isSelected)) {
+						rb2d.m_Type = static_cast<Rigidbody2DComponent::BodyType>(i);
+						rb2d.m_RuntimeBody->SetType(static_cast<b2BodyType>(rb2d.m_Type));
+					}
+					if (isSelected) 
+					{
+						ImGui::SetItemDefaultFocus(); // Set focus on the selected item
+					}
+				}
+
+				ImGui::EndCombo();
+			}
 
 			if (ImGui::DragFloat2("Linear Velocity", glm::value_ptr(rb2d.m_LinearVelocity), 0.5f))
 			{

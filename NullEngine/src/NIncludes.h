@@ -37,6 +37,7 @@
 #include "Null/Engine/Submodules/ECS/Systems/CircleCollider2DSystem.h"
 #include "Null/Engine/Submodules/ECS/Components/IComponent.h"
 #include "Null/Engine/Submodules/ECS/Components/TransformComponent.h"
+#include "Null/Engine/Submodules/ECS/Components/Parent-ChildComponents.h"
 #include "Null/Engine/Submodules/ECS/Components/SpriteComponent.h"
 #include "Null/Engine/Submodules/ECS/Components/TagComponent.h"
 #include "Null/Engine/Submodules/ECS/Components/CameraComponent.h"

@@ -46,6 +46,10 @@ namespace NULLENGINE
 
 	//class NLE_API IComponentManager;
 
+	class NLE_API NEntityFactory;
+	class NLE_API NComponentFactory;
+	class NLE_API NEventManager;
+
 	class NLE_API Scene
 	{
 	public:
@@ -59,7 +63,7 @@ namespace NULLENGINE
 		/// <summary>
 		/// This function will be used to read json and load in entities
 		/// </summary>
-		void Load(const std::string& name, const JSON& jsonData);
+		void Load(const JSON& jsonData);
 
 		//!  Init function
 		void Init();
@@ -76,6 +80,9 @@ namespace NULLENGINE
 		void Shutdown();
 
 		void DeleteEntity(EntityID entityID);
+
+		void HandleChildren(Entity& parentEntity, const nlohmann::json& childrenData, NRegistry* registry, 
+			NEntityFactory* entityFactory, NComponentFactory* componentFactory, NEventManager* eventManager);
 
 		EntityID CreateEmptyEntity(const std::string& name);
 

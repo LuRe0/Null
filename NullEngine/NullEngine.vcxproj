@@ -179,6 +179,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /Y /
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\TransformComponent.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\VariableContainer\VariableContainer.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Entities\Entity.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\Parent-ChildComponents.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\AnimationSystem.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\BoxCollider2DSystem.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\CameraSystem.h" />

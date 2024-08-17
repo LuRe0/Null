@@ -55,7 +55,7 @@ namespace NULLENGINE
 
 		ImGui::BeginChild("##target");
 
-		auto& entities = m_PannelData->m_Context->GetManagedEntities();
+		auto& entities = m_PannelData->m_Context->ManagedEntities();
 
 		if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
 			m_PannelData->m_SelectedEntity = {};
@@ -80,6 +80,10 @@ namespace NULLENGINE
 
 		for (auto& entity : entities)
 		{
+
+			if (entity.Has<ParentComponent>())
+				continue;
+
 			ImGuiTreeNodeFlags flags = (m_PannelData->m_SelectedEntity == entity.GetID() ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
 
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 100);
@@ -126,6 +130,19 @@ namespace NULLENGINE
 
 			if (opened)
 			{
+				if (entity.Has<ChildrenComponent>())
+				{
+					auto& cComp = entity.Get<ChildrenComponent>();
+					auto& children = cComp.m_Children;
+
+					for (const auto& childID : children)
+					{
+						auto& childEntity = m_PannelData->m_Context->GetEntity(childID);
+
+						// Recursive call to draw the child entity and its children
+						DrawEntityNode(childEntity);
+					}
+				}
 				ImGui::TreePop();
 			}
 
@@ -162,5 +179,34 @@ namespace NULLENGINE
 
 
 		ImGui::End();
+	}
+	void SceneHierarchyPannel::DrawEntityNode(Entity& entity)
+	{
+		ImGuiTreeNodeFlags flags = (m_PannelData->m_SelectedEntity == entity.GetID() ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
+
+		bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)(entity.GetID()), flags, entity.GetName().c_str());
+
+		if (ImGui::IsItemClicked() || ImGui::IsItemClicked(1))
+		{
+			m_PannelData->m_SelectedEntity = entity.GetID();
+		}
+
+		if (opened)
+		{
+			if (entity.Has<ChildrenComponent>())
+			{
+				auto& cComp = entity.Get<ChildrenComponent>();
+				auto& children = cComp.m_Children;
+
+				for (const auto& childID : children)
+				{
+					auto& childEntity = m_PannelData->m_Context->GetEntity(childID);
+
+					// Recursive call to draw the child entity and its children
+					DrawEntityNode(childEntity);
+				}
+			}
+			ImGui::TreePop();
+		}
 	}
 }

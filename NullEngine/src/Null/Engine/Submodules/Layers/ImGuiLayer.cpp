@@ -482,6 +482,7 @@ namespace NULLENGINE
 					if (transform.m_Translation != translation)
 					{
 						transform.m_Translation = translation;
+
 						transform.m_DirectManipulation = true;
 					}
 					if (deltaRotation != glm::vec3(0.0f))
@@ -490,7 +491,10 @@ namespace NULLENGINE
 						transform.m_DirectManipulation = true;
 					}
 
-					transform.m_Scale = scale;
+					if (transform.m_Scale != scale)
+					{
+						transform.m_Scale = scale;
+					}
 
 		
 					transform.m_Dirty = true;
@@ -1025,6 +1029,14 @@ namespace NULLENGINE
 
 	void ImGuiLayer::NewSceneImpl()
 	{
+		NEngine::Instance().SetEngineState(IEngine::EDIT);
+
+		if (NEngine::Instance().GetEngineState() != IEngine::EDIT)
+		{
+			NLE_CORE_WARN("Unable to create new scene during Game Runtime");
+			return;
+		}
+
 		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
 
 		eventManager->QueueEvent(std::make_unique<SceneSwitchEvent>(m_PannelData.m_Context->m_Name, "New Scene"));
@@ -1035,12 +1047,24 @@ namespace NULLENGINE
 
 	void ImGuiLayer::SaveSceneImpl()
 	{
+		if (NEngine::Instance().GetEngineState() != IEngine::EDIT)
+		{
+			NLE_CORE_WARN("Unable to save during Game Runtime");
+			return;
+		}
+
 		m_PannelData.m_Context->Serialize();
 
 		NLE_CORE_INFO("Scene: {0} successfully saved", m_PannelData.m_Context->m_Name);
 	}
 	void ImGuiLayer::SaveSceneAsImpl()
 	{
+		if (NEngine::Instance().GetEngineState() != IEngine::EDIT)
+		{
+			NLE_CORE_WARN("Unable to save during Game Runtime");
+			return;
+		}
+
 		const std::string& nextScene = FileDialog::SaveFile("Null Engine Scene (*.json)\0*.json\0");
 
 		m_PannelData.m_Context->Serialize(nextScene);
@@ -1049,6 +1073,12 @@ namespace NULLENGINE
 	}
 	void ImGuiLayer::OpenSceneImpl()
 	{
+		if (NEngine::Instance().GetEngineState() != IEngine::EDIT)
+		{
+			NLE_CORE_WARN("Unable to switch scene during Game Runtime");
+			return;
+		}
+
 		const std::string& nextScene = FileDialog::OpenFile("Null Engine Scene (*.scene)\0*.scene\0");
 
 		if (!nextScene.empty())

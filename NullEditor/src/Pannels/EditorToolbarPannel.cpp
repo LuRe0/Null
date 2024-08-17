@@ -99,6 +99,8 @@ namespace NULLENGINE
 			{
 			case NULLENGINE::IEngine::EDIT:
 			{
+				m_Parent->SaveSceneImpl();
+
 				if (m_CurrentMode == MODE_WINDOWED)
 				{
 					NEngine::Instance().SetEngineState(IEngine::RUN_WINDOWED);
@@ -110,9 +112,6 @@ namespace NULLENGINE
 					NEngine::Instance().SetEngineState(IEngine::RUN_MAXIMIZED);
 					eventManager->QueueEvent(std::make_unique<EngineRunStateEvent>(NEngine::RUN_MAXIMIZED));
 				}
-
-
-				m_Parent->SaveSceneImpl();
 
 				break;
 			}

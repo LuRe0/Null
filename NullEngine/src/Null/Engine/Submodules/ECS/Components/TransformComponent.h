@@ -15,7 +15,7 @@ namespace NULLENGINE
 
 		// Constructor with default values
 		TransformComponent(glm::vec3 translation = glm::vec3(0.0f),
-			glm::vec3 scale = glm::vec3(50.0f),
+			glm::vec3 scale = glm::vec3(50.0f,50.0f,1.0f),
 			glm::vec3 rotation = glm::vec3(0.0f),
 			bool dirty = true)
 			: m_Translation(translation),

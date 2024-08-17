@@ -27,7 +27,7 @@
 namespace NULLENGINE
 {
 
-	void Scene::Load(const std::string& name, const JSON& sceneData)
+	void Scene::Load(const JSON& sceneData)
 	{
 		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
 		NEntityFactory* entityFactory = NEngine::Instance().Get<NEntityFactory>();
@@ -47,18 +47,24 @@ namespace NULLENGINE
 
 			Entity entity = entityFactory->CreateEntity(entityData, registry);
 
+			const std::string& name = jsonWrapper.GetString("name", "Entity(" + std::to_string(entity.GetID()) + ")");
+
+			entity.SetName(name);
 
 			if (entityData.contains("components"))
 			{
-				const std::string& name = jsonWrapper.GetString("name", "Entity(" + std::to_string(entity.GetID()) + ")");
-
-				entity.SetName(name);
 
 				for (const auto& [componentName, componentData] : entityData["components"].items())
 				{
 					componentFactory->CreateUniqueComponent(componentName + "Component", componentData, registry, entity.GetID());
 				}
 
+			}
+
+
+			if (entityData.contains("children"))
+			{
+				HandleChildren(entity, entityData["children"], registry, entityFactory, componentFactory, eventManager);
 			}
 
 			m_Entities.push_back(entity);
@@ -69,7 +75,40 @@ namespace NULLENGINE
 	}
 
 
+	// Recursive function to handle nested children
+	void Scene::HandleChildren(Entity& parentEntity, const nlohmann::json& childrenData, NRegistry* registry, 
+		NEntityFactory* entityFactory, NComponentFactory* componentFactory, NEventManager* eventManager)
+	{
+		for (const auto& childData : childrenData)
+		{
+			Entity childEntity = entityFactory->CreateEntity(childData, registry);
 
+			const std::string& childName = childData.contains("name") ? childData["name"].get<std::string>() : "ChildEntity(" + std::to_string(childEntity.GetID()) + ")";
+			childEntity.SetName(childName);
+
+
+			if (childData.contains("components"))
+			{
+				for (const auto& [componentName, componentData] : childData["components"].items())
+				{
+					componentFactory->CreateUniqueComponent(componentName + "Component", componentData, registry, childEntity.GetID());
+				}
+
+			}
+
+			registry->AddComponent<ParentComponent>(childEntity.GetID(), parentEntity.GetID());
+			auto& childrenComponent = registry->GetOrAddComponent<ChildrenComponent>(parentEntity.GetID());
+			childrenComponent.m_Children.push_back(childEntity.GetID());
+
+			if (childData.contains("children"))
+			{
+				HandleChildren(childEntity, childData["children"], registry, entityFactory, componentFactory, eventManager);
+			}
+
+			m_Entities.push_back(childEntity);
+			eventManager->TriggerEvent(EntityCreatedEvent(childEntity.GetID()));
+		}
+	}
 
 	void Scene::Init()
 	{
@@ -146,6 +185,9 @@ namespace NULLENGINE
 
 		for (auto& entity : m_Entities)
 		{
+			if (registry->HasComponent<ParentComponent>(entity.GetID()))
+				continue;
+
 			JSON entityJson;
 			entityJson["name"] = entity.GetName();
 
@@ -170,6 +212,48 @@ namespace NULLENGINE
 			}
 
 			entityJson["components"] = componentsJson;
+
+
+
+			if (registry->HasComponent<ChildrenComponent>(entity.GetID()))
+			{
+				const auto& childrenComponent = registry->GetComponent<ChildrenComponent>(entity.GetID());
+				JSON childrenJson = JSON::array();
+
+				for (auto& childID : childrenComponent.m_Children)
+				{
+					auto& childEntity = GetEntity(childID);
+					JSON childEntityJson;
+					childEntityJson["name"] = childEntity.GetName();
+
+					if (!childEntity.m_Archetype.empty())
+						childEntityJson["archetype"] = childEntity.m_Archetype;
+
+					JSON childComponentsJson;
+					auto& childSignature = registry->EntitySignature(childEntity.GetID());
+
+					for (size_t i = 0; i < childSignature.size(); i++)
+					{
+						if (childSignature.test(i))
+						{
+							auto& childComponent = registry->GetComponent(childEntity.GetID(), i);
+
+							if (!childComponent.m_SerializeToScene)
+								continue;
+
+							JSON childCompJson = compFactory->WriteComponent(&childComponent);
+							childComponentsJson.merge_patch(childCompJson);
+						}
+					}
+
+					childEntityJson["components"] = childComponentsJson;
+					childrenJson.push_back(childEntityJson);
+				}
+
+				entityJson["children"] = childrenJson;
+			}
+
+
 			entitiesJson.push_back(entityJson);
 		}
 

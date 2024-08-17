@@ -22,6 +22,9 @@
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/matrix_decompose.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/euler_angles.hpp>
 
 #include <ImGuizmo/ImGuizmo.h>
 #include <box2d/b2_body.h>
@@ -293,7 +296,7 @@ namespace NULLENGINE
 		for (auto& pannel : m_Pannels)
 			pannel.get()->OnImGUIRender();
 
-	
+
 
 		switch (NEngine::Instance().GetEngineState())
 		{
@@ -477,26 +480,112 @@ namespace NULLENGINE
 					glm::vec3 translation, rotation, scale;
 					DecomposeTransform(transformMatrix, translation, rotation, scale);
 
-					glm::vec3 deltaRotation = glm::degrees(rotation) - transform.m_Rotation;
+					const float epsilon = 1e-5f;  // Define a small tolerance value
 
-					if (transform.m_Translation != translation)
+
+					if ((m_GuizmoType & ImGuizmo::TRANSLATE) != 0)
 					{
-						transform.m_Translation = translation;
 
+						if (glm::any(glm::epsilonNotEqual(transform.m_Translation, translation, epsilon)))
+						{
+							if (entity.Has<ParentComponent>())
+							{
+								auto& parentComp = entity.Get<ParentComponent>();
+								// Get the parent's world transform and update the child
+								TransformComponent& parentTransform = entity.GetFromEntity<TransformComponent>(parentComp.m_Parent);
+
+								glm::mat4 inverseParentTransform = glm::inverse(parentTransform.m_TransformMatrix);
+
+								auto localTranslation = glm::vec3((inverseParentTransform * glm::vec4(translation, 1.0f)));
+
+								if (glm::any(glm::epsilonNotEqual(transform.m_Translation, localTranslation, epsilon)))
+								{
+									transform.m_Translation = localTranslation;
+								}
+							}
+							else
+							{
+								transform.m_Translation = translation;
+							}
+
+							transform.m_DirectManipulation = true;
+						}
+					}
+
+					if ((m_GuizmoType & ImGuizmo::ROTATE) != 0)
+					{
+						if (glm::any(glm::epsilonNotEqual(transform.m_Rotation, rotation, epsilon)))
+						{
+
+							if (entity.Has<ParentComponent>())
+							{
+								auto& parentComp = entity.Get<ParentComponent>();
+								// Get the parent's world transform and update the child
+								TransformComponent& parentTransform = entity.GetFromEntity<TransformComponent>(parentComp.m_Parent);
+								// Extract parent rotation as Euler angles (assume in degrees)
+								glm::vec3 parentRotationEuler = parentTransform.m_Rotation; // Euler angles in degrees
+
+								// Convert parent rotation to quaternion
+								glm::vec3 parentRotationRadians = glm::radians(parentRotationEuler);
+								glm::quat parentRotation = glm::quat(glm::yawPitchRoll(parentRotationRadians.y, parentRotationRadians.x, parentRotationRadians.z));
+
+								// Convert child rotation from Euler angles (assume in degrees)
+								glm::vec3 childRotationEuler = glm::degrees(rotation); // Euler angles in degrees
+								glm::vec3 childRotationRadians = glm::radians(childRotationEuler);
+								glm::quat childRotation = glm::quat(glm::yawPitchRoll(childRotationRadians.y, childRotationRadians.x, childRotationRadians.z));
+
+								// Compute local rotation by applying the inverse of the parent’s rotation
+								glm::quat localRotation = glm::normalize(glm::inverse(parentRotation) * childRotation);
+
+								// Convert local rotation back to Euler angles
+								glm::vec3 localRotationEuler = glm::degrees(glm::eulerAngles(localRotation));
+
+								glm::vec3 localdeltaRotation = localRotationEuler - transform.m_Rotation;
+
+								if (glm::any(glm::epsilonNotEqual(localdeltaRotation, glm::vec3(0.0f), epsilon)))
+								{
+									transform.m_Rotation += localdeltaRotation;
+								}
+							}
+							else
+							{
+								glm::vec3 deltaRotation = glm::degrees(rotation) - transform.m_Rotation;
+
+								if (glm::any(glm::epsilonNotEqual(deltaRotation, glm::vec3(0.0f), epsilon)))
+								{
+									transform.m_Rotation += deltaRotation;
+								}
+							}
+						}
 						transform.m_DirectManipulation = true;
 					}
-					if (deltaRotation != glm::vec3(0.0f))
+
+					if ((m_GuizmoType & ImGuizmo::SCALE) != 0)
 					{
-						transform.m_Rotation += deltaRotation;
-						transform.m_DirectManipulation = true;
+
+						if (glm::any(glm::epsilonNotEqual(transform.m_Scale, scale, epsilon)))
+						{
+							if (entity.Has<ParentComponent>())
+							{
+								auto& parentComp = entity.Get<ParentComponent>();
+								// Get the parent's world transform and update the child
+								TransformComponent& parentTransform = entity.GetFromEntity<TransformComponent>(parentComp.m_Parent);
+
+
+								auto localScale = scale / parentTransform.m_Scale;
+
+								if (glm::any(glm::epsilonNotEqual(transform.m_Scale, localScale, epsilon)))
+								{
+									transform.m_Scale = localScale;
+								}
+							}
+							else
+							{
+								transform.m_Scale = scale;
+							}
+						}
 					}
 
-					if (transform.m_Scale != scale)
-					{
-						transform.m_Scale = scale;
-					}
-
-		
 					transform.m_Dirty = true;
 
 				}
@@ -633,11 +722,11 @@ namespace NULLENGINE
 			//NLE_CORE_WARN("Mouse = {0},{1}", mouseX, mouseY); 
 
 			buffer.Unbind();
-			if (ImGui::IsItemClicked() && !ImGuizmo ::IsUsing() && pixel > 0)
+			if (ImGui::IsItemClicked() && !ImGuizmo::IsOver() && pixel > 0)
 			{
 				m_PannelData.m_SelectedEntity = pixel;
 
-				if(m_GuizmoType == -1)
+				if (m_GuizmoType == -1)
 					SetGuizmo(ImGuizmo::OPERATION::TRANSLATE);
 			}
 		}
@@ -719,7 +808,7 @@ namespace NULLENGINE
 
 		ImGui::End();
 	}
-	
+
 	void ImGuiLayer::WindowedSceneLayer()
 	{
 		NRenderer* renderer = NEngine::Instance().Get<NRenderer>();
@@ -1113,7 +1202,7 @@ namespace NULLENGINE
 			OpenSceneImpl();
 		}
 
-		if ((ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl)) && 
+		if ((ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl)) &&
 			(ImGui::IsKeyDown(ImGuiKey_LeftAlt) || ImGui::IsKeyDown(ImGuiKey_RightAlt)) && ImGui::IsKeyPressed(ImGuiKey_S))
 		{
 			SetAsDefaultSceneImpl();

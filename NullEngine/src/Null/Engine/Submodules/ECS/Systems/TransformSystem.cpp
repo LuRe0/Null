@@ -201,32 +201,32 @@ namespace NULLENGINE
 		if (!childTransform.m_Enabled)
 			return;
 
-		if (childTransform.m_Dirty)
-		{
-			glm::mat4 inverseParentTransform = glm::inverse(parentTransform.m_TransformMatrix);
+		//if (childTransform.m_Dirty && !parentTransform.m_Dirty)
+		//{
+		//	glm::mat4 inverseParentTransform = glm::inverse(parentTransform.m_TransformMatrix);
 
-			childTransform.m_Translation = glm::vec3((inverseParentTransform * glm::vec4(childTransform.m_Translation, 1.0f)));
-			childTransform.m_Scale = childTransform.m_Scale / parentTransform.m_Scale;
+		//	childTransform.m_Translation = glm::vec3((inverseParentTransform * glm::vec4(childTransform.m_Translation, 1.0f)));
+		//	childTransform.m_Scale = childTransform.m_Scale / parentTransform.m_Scale;
 
-			// Extract parent rotation as Euler angles (assume in degrees)
-			glm::vec3 parentRotationEuler = parentTransform.m_Rotation; // Euler angles in degrees
+		//	// Extract parent rotation as Euler angles (assume in degrees)
+		//	glm::vec3 parentRotationEuler = parentTransform.m_Rotation; // Euler angles in degrees
 
-			// Convert parent rotation to quaternion
-			glm::vec3 parentRotationRadians = glm::radians(parentRotationEuler);
-			glm::quat parentRotation = glm::quat(glm::yawPitchRoll(parentRotationRadians.y, parentRotationRadians.x, parentRotationRadians.z));
+		//	// Convert parent rotation to quaternion
+		//	glm::vec3 parentRotationRadians = glm::radians(parentRotationEuler);
+		//	glm::quat parentRotation = glm::quat(glm::yawPitchRoll(parentRotationRadians.y, parentRotationRadians.x, parentRotationRadians.z));
 
-			// Convert child rotation from Euler angles (assume in degrees)
-			glm::vec3 childRotationEuler = childTransform.m_Rotation; // Euler angles in degrees
-			glm::vec3 childRotationRadians = glm::radians(childRotationEuler);
-			glm::quat childRotation = glm::quat(glm::yawPitchRoll(childRotationRadians.y, childRotationRadians.x, childRotationRadians.z));
+		//	// Convert child rotation from Euler angles (assume in degrees)
+		//	glm::vec3 childRotationEuler = childTransform.m_Rotation; // Euler angles in degrees
+		//	glm::vec3 childRotationRadians = glm::radians(childRotationEuler);
+		//	glm::quat childRotation = glm::quat(glm::yawPitchRoll(childRotationRadians.y, childRotationRadians.x, childRotationRadians.z));
 
-			// Compute local rotation by applying the inverse of the parent’s rotation
-			glm::quat localRotation = glm::normalize(glm::inverse(parentRotation) * childRotation);
+		//	// Compute local rotation by applying the inverse of the parent’s rotation
+		//	glm::quat localRotation = glm::normalize(glm::inverse(parentRotation) * childRotation);
 
-			// Convert local rotation back to Euler angles
-			glm::vec3 localRotationEuler = glm::degrees(glm::eulerAngles(localRotation));
-			childTransform.m_Rotation = localRotationEuler;
-		}
+		//	// Convert local rotation back to Euler angles
+		//	glm::vec3 localRotationEuler = glm::degrees(glm::eulerAngles(localRotation));
+		//	childTransform.m_Rotation = localRotationEuler;
+		//}
 
 		// Compute the child's local transform matrix
 		glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), childTransform.m_Translation);
@@ -289,39 +289,16 @@ namespace NULLENGINE
 
 		if (ImGui::DragFloat3("Translation", glm::value_ptr(transform.m_Translation), 0.5f))
 		{
-			// Handle the change in translation
-			//if (entity.Has<Rigidbody2DComponent>())
-			//{
-			//	Rigidbody2DComponent& rb2d = entity.Get<Rigidbody2DComponent>();
-			//	
-			//	auto pos = physicsSys->PixelsToMeters(transform.m_Translation.x, transform.m_Translation.y);
-			//	if(rb2d.m_RuntimeBody)
-			//		rb2d.m_RuntimeBody->SetTransform({ pos.x, pos.y }, transform.m_Rotation.z);
-			//}
-
 			transform.m_Dirty = transform.m_DirectManipulation = true;
-
 		}
 
 		if (ImGui::DragFloat3("Rotation", glm::value_ptr(transform.m_Rotation), 0.5f))
 		{
-			// Handle the change in rotation
-			//if (entity.Has<Rigidbody2DComponent>())
-			//{
-			//	Rigidbody2DComponent& rb2d = entity.Get<Rigidbody2DComponent>();
-
-			//	auto pos = physicsSys->PixelsToMeters(transform.m_Translation.x, transform.m_Translation.y);
-			//	if(rb2d.m_RuntimeBody)
-			//		rb2d.m_RuntimeBody->SetTransform(rb2d.m_RuntimeBody->GetPosition(), transform.m_Rotation.z);
-			//}
-
 			transform.m_Dirty = transform.m_DirectManipulation = true;
-
 		}
 
 		if (ImGui::DragFloat3("Scale", glm::value_ptr(transform.m_Scale), 0.5f))
 		{
-			// Handle the change in scale
 			transform.m_Dirty = true;
 		}
 

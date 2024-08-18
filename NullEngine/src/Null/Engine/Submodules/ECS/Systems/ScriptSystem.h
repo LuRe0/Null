@@ -60,10 +60,10 @@ namespace NULLENGINE
 		void AddScript(EntityID id, const std::string& script);
 		void RemoveScript(EntityID id, const std::string& script);
 
-		void OnScriptAdded(const ScriptCreatedEvent& e);
-		void OnScriptModified(const ScriptModifiedEvent& e);
-		void OnScriptRemoved(const ScriptRemovedEvent& e);
-		void OnSceneSwitched(const SceneSwitchEvent& e);
+		bool OnScriptAdded(const ScriptCreatedEvent& e);
+		bool OnScriptModified(const ScriptModifiedEvent& e);
+		bool OnScriptRemoved(const ScriptRemovedEvent& e);
+		bool OnSceneSwitched(const SceneSwitchEvent& e);
 
 		static void CreateScriptComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
 

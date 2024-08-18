@@ -60,11 +60,7 @@ namespace NULLENGINE
         float GetZoom() const;
 
 
-        void OnWindowResize(const WindowResizeEvent& e);
-        void OnMouseScrolled(const MouseScrolledEvent& e);
-
-        //static void OnMouseMoved(const MouseMoveEvent& event);
-
+        bool OnWindowResize(const WindowResizeEvent& e);
     private:
         glm::vec2 m_Position;
 

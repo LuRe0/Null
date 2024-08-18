@@ -34,8 +34,8 @@ end
 function RedSquareBehavior:Update(dt)
     -- Update code here
     local rb2d = pEntity:get_component(Rigidbody2D)
-
     MoveBox()
+    -- Trace.debug("Here")
 
     RedSquareBehavior.Accel = RedSquareBehavior.Accel * 1.0 / (1.0 + dt * rb2d.linear_damping)
 
@@ -77,6 +77,7 @@ function MoveBox()
 
     
     RedSquareBehavior.Jerk = RedSquareBehavior.Jerk * RedSquareBehavior.Speed
+    
     
 end
 

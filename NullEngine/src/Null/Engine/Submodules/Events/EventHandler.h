@@ -35,7 +35,7 @@
 namespace NULLENGINE
 {
 	template<typename T>
-	using EventCallback = std::function<void(const T& e)>;
+	using EventCallback = std::function<bool(const T& e)>;
 	
 	enum EventPriority 
 	{
@@ -48,9 +48,9 @@ namespace NULLENGINE
 
 	class IEventHandler {
 	public:
-		void Exec(const Event& e)
+		bool Exec(const Event& e)
 		{
-			Call(e);
+			return Call(e);
 		}
 
 		virtual Event::EventType GetType() const = 0;
@@ -59,7 +59,7 @@ namespace NULLENGINE
 		virtual ~IEventHandler() = default;
 
 	private:
-		virtual void Call(const Event& e) = 0;
+		virtual bool Call(const Event& e) = 0;
 	};
 
 	template<typename T>
@@ -71,10 +71,10 @@ namespace NULLENGINE
 			, m_Priority(priority) {};
 
 	private:
-		void Call(const Event& e) override
+		bool Call(const Event& e) override
 		{
 			if (e.GetEventType() == T::GetStaticEventType()) {
-				m_handler(static_cast<const T&>(e));
+				return m_handler(static_cast<const T&>(e));
 			}
 		}
 

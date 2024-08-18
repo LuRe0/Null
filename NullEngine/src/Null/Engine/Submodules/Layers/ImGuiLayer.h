@@ -139,17 +139,8 @@ namespace NULLENGINE
 		//std::unique_ptr<SceneHierarchyPannel> m_SceneHierachyPannel;
 
 		// Member functions for handling events
-		void OnWindowResize(const WindowResizeEvent& e);
-		void OnWindowClose(const WindowCloseEvent& e);
-		void OnKeyPressed(const KeyPressEvent& e);
-		void OnKeyReleased(const KeyReleaseEvent& e);
-		void OnKeyTyped(const KeyTypedEvent& e);
-		//void OnKeyHold(const KeyHoldEvent& event);
-		void OnMousePressed(const MouseButtonPressEvent& e);
-		void OnMouseReleased(const MouseButtonReleaseEvent& e);
-		void OnMouseMove(const MouseMoveEvent& e);
-		void OnMouseScroll(const MouseScrolledEvent& e);
-		void OnSceneSwitched(const SceneSwitchEvent& e);
+		bool OnKeyPressed(const KeyPressEvent& e);
+		bool OnSceneSwitched(const SceneSwitchEvent& e);
 
 		void NewSceneImpl();
 		void SaveSceneAsImpl();

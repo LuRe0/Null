@@ -82,11 +82,10 @@ namespace NULLENGINE
 		void OnEvent(const Event& e);
 
 	
-		static void OnKey(const KeyEvent& event);
-		//void OnKeyHold(const KeyHoldEvent& event);
-		static void OnMouseButton(const MouseButtonEvent& event);
-		static void OnMouseMoved(const MouseMoveEvent& event);
-		static void OnSceneSwitched(const SceneSwitchEvent& event);
+		static bool OnKey(const KeyEvent& event);
+		static bool OnMouseButton(const MouseButtonEvent& event);
+		static bool OnMouseMoved(const MouseMoveEvent& event);
+		static bool OnSceneSwitched(const SceneSwitchEvent& event);
 
 	private:
 		// Private constructor and destructor

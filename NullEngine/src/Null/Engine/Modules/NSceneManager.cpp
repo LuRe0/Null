@@ -103,11 +103,13 @@ namespace NULLENGINE
 		eventManager->QueueEvent(std::make_unique<SceneSwitchEvent>(m_CurrentScene, scene));
 	}
 
-	void NSceneManager::OnSceneSwitch(const SceneSwitchEvent& e)
+	bool NSceneManager::OnSceneSwitch(const SceneSwitchEvent& e)
 	{
 		m_Scenes.clear();
 
 		SwitchScene(e.GetNextScene());
+
+		return true;
 	}
 
 	void NSceneManager::Update(float dt)

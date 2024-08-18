@@ -76,7 +76,7 @@ namespace NULLENGINE
 
 
 	// Recursive function to handle nested children
-	void Scene::HandleChildren(Entity& parentEntity, const nlohmann::json& childrenData, NRegistry* registry, 
+	void Scene::HandleChildren(Entity& parentEntity, const nlohmann::json& childrenData, NRegistry* registry,
 		NEntityFactory* entityFactory, NComponentFactory* componentFactory, NEventManager* eventManager)
 	{
 		for (const auto& childData : childrenData)
@@ -118,6 +118,56 @@ namespace NULLENGINE
 		{
 			registry->AddEntityToSystem(entity.GetID());
 		}
+	}
+
+	JSON Scene::SerializeChildren(Entity& child, NRegistry* registry, NComponentFactory* componentFactory)
+	{
+
+
+		JSON childEntityJson;
+		childEntityJson["name"] = child.GetName();
+
+		if (!child.m_Archetype.empty())
+			childEntityJson["archetype"] = child.m_Archetype;
+
+		JSON childComponentsJson;
+		auto& childComponents = registry->EntityComponents(child.GetID());
+
+		for (auto& comp : childComponents)
+		{
+
+			auto& childComponent = registry->GetComponent(child.GetID(), comp);
+
+			if (!childComponent.m_SerializeToScene)
+				continue;
+
+			JSON childCompJson = componentFactory->WriteComponent(&childComponent);
+
+			if (!childCompJson.is_null())
+			{
+				childComponentsJson.merge_patch(childCompJson);
+			}
+		}
+
+		childEntityJson["components"] = childComponentsJson;
+
+		if (registry->HasComponent<ChildrenComponent>(child.GetID()))
+		{
+
+			const auto& childrenComponent = registry->GetComponent<ChildrenComponent>(child.GetID());
+			JSON childrenJson = JSON::array();
+
+			for (auto& childID : childrenComponent.m_Children)
+			{
+				auto& childEntity = GetEntity(childID);
+				auto childEntityJson = SerializeChildren(childEntity, registry, componentFactory);
+				childrenJson.push_back(childEntityJson);
+			}
+
+			childEntityJson["children"] = childrenJson;
+		}
+
+		return childEntityJson;
 	}
 
 	EntityID Scene::CreateEmptyEntity(const std::string& name)
@@ -195,18 +245,19 @@ namespace NULLENGINE
 				entityJson["archetype"] = entity.m_Archetype;
 
 			JSON componentsJson;
-			auto& signature = registry->EntitySignature(entity.GetID());
+			auto& components = registry->EntityComponents(entity.GetID());
 
-			for (size_t i = 0; i < signature.size(); i++)
+			for (auto& comp : components)
 			{
-				if (signature.test(i))
+
+				auto& component = registry->GetComponent(entity.GetID(), comp);
+
+				if (!component.m_SerializeToScene)
+					continue;
+
+				JSON compJson = compFactory->WriteComponent(&component);
+				if (!compJson.is_null()) 
 				{
-					auto& component = registry->GetComponent(entity.GetID(), i);
-
-					if (!component.m_SerializeToScene)
-						continue;
-
-					JSON compJson = compFactory->WriteComponent(&component);
 					componentsJson.merge_patch(compJson); // Merge component JSON into the entity's components JSON
 				}
 			}
@@ -223,30 +274,7 @@ namespace NULLENGINE
 				for (auto& childID : childrenComponent.m_Children)
 				{
 					auto& childEntity = GetEntity(childID);
-					JSON childEntityJson;
-					childEntityJson["name"] = childEntity.GetName();
-
-					if (!childEntity.m_Archetype.empty())
-						childEntityJson["archetype"] = childEntity.m_Archetype;
-
-					JSON childComponentsJson;
-					auto& childSignature = registry->EntitySignature(childEntity.GetID());
-
-					for (size_t i = 0; i < childSignature.size(); i++)
-					{
-						if (childSignature.test(i))
-						{
-							auto& childComponent = registry->GetComponent(childEntity.GetID(), i);
-
-							if (!childComponent.m_SerializeToScene)
-								continue;
-
-							JSON childCompJson = compFactory->WriteComponent(&childComponent);
-							childComponentsJson.merge_patch(childCompJson);
-						}
-					}
-
-					childEntityJson["components"] = childComponentsJson;
+					auto childEntityJson = SerializeChildren(childEntity, registry, compFactory);
 					childrenJson.push_back(childEntityJson);
 				}
 

@@ -92,11 +92,15 @@ namespace NULLENGINE
 			}
 		}
 	}
-	void NEventManager::TriggerEvent(const Event& event_)
+	bool NEventManager::TriggerEvent(const Event& event_)
 	{
-		for (auto& handler : m_Subscribers[event_.GetEventType()]) {
-			handler->Exec(event_);
+		bool handled = true;
+		for (auto& handler : m_Subscribers[event_.GetEventType()]) 
+		{
+			handled = handler->Exec(event_);
 		}
+
+		return handled;
 	}
 
 	void NEventManager::QueueEvent(std::unique_ptr<Event>&& event)
@@ -104,18 +108,29 @@ namespace NULLENGINE
 		m_EventsQueue.emplace_back(std::move(event));
 	}
 
+	void NEventManager::QueueAsync(std::unique_ptr<Event>&& event)
+	{
+		m_AsychEventsQueue.emplace_back(std::move(event));
+	}
+
 
 	void NEventManager::DispatchEvents()
 	{
-		for (auto eventIt = m_EventsQueue.begin(); eventIt != m_EventsQueue.end();) {
-			if (!eventIt->get()->Handled) {
-				TriggerEvent(*eventIt->get());
+		for (auto eventIt = m_EventsQueue.begin(); eventIt != m_EventsQueue.end();) 
+		{
+			if (TriggerEvent(*eventIt->get()))
 				eventIt = m_EventsQueue.erase(eventIt);
-			}
-			else {
+			else
 				++eventIt;
-			}
 		}
+
+		m_EventsQueue.insert(
+			m_EventsQueue.end(),
+			std::make_move_iterator(m_AsychEventsQueue.begin()),
+			std::make_move_iterator(m_AsychEventsQueue.end())
+		);
+
+		m_AsychEventsQueue.clear();
 	}
 	void NEventManager::RegisterToScripAPI(sol::state& lua)
 	{

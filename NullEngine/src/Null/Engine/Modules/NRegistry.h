@@ -309,9 +309,9 @@ namespace NULLENGINE
 
 		std::queue<EntityID> m_RecycledEntity;
 
-		void OnEntityDestroyed(const EntityDestroyedEvent& e);
-		void OnEntityRemoveComponent(const EntityRemoveComponentEvent& e);
-		void OnSceneSwitch(const SceneSwitchEvent& e);
+		bool OnEntityDestroyed(const EntityDestroyedEvent& e);
+		bool OnEntityRemoveComponent(const EntityRemoveComponentEvent& e);
+		bool OnSceneSwitch(const SceneSwitchEvent& e);
 
 
 		NRegistry(NRegistry const&);

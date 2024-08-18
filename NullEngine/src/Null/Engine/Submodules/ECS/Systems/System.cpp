@@ -132,27 +132,31 @@ namespace NULLENGINE
 		}
 	}
 
-	void ISystem::OnEntityCreate(const EntityModifiedEvent& e)
+	bool ISystem::OnEntityCreate(const EntityModifiedEvent& e)
 	{
 		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
 
 		CheckEntity(e.GetID(), registry);
+		return true;
 	}
 
-	void ISystem::OnEntityComponentRemoved(const EntityRemoveComponentEvent& e)
+	bool ISystem::OnEntityComponentRemoved(const EntityRemoveComponentEvent& e)
 	{
 		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
 		UpdateEntityList(e.GetID(), registry);
+		return true;
 	}
 
-	void ISystem::OnSceneSwitch(const SceneSwitchEvent& e)
+	bool ISystem::OnSceneSwitch(const SceneSwitchEvent& e)
 	{
 		m_Entities.clear();
+		return true;
 	}
 
-	void ISystem::OnEntityDestroyed(const EntityDestroyedEvent& e)
+	bool ISystem::OnEntityDestroyed(const EntityDestroyedEvent& e)
 	{
 		Remove(e.GetID());
+		return true;
 	}
 
 

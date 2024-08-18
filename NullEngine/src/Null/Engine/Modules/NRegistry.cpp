@@ -150,7 +150,7 @@ namespace NULLENGINE
 		return m_EntityComponentSignatures[m_EntityToIndexMap[entityID]].GetSetIndices();
 	}
 
-	void NRegistry::OnEntityDestroyed(const EntityDestroyedEvent& e)
+	bool NRegistry::OnEntityDestroyed(const EntityDestroyedEvent& e)
 	{
 		auto& signatures = EntitySignature(e.GetID());
 
@@ -163,14 +163,20 @@ namespace NULLENGINE
 		}
 
 		m_RecycledEntity.push(e.GetID());
+
+		return true;
+
 	}
 
 
-	void NRegistry::OnEntityRemoveComponent(const EntityRemoveComponentEvent& e)
+	bool NRegistry::OnEntityRemoveComponent(const EntityRemoveComponentEvent& e)
 	{
 		RemoveComponent(e.GetID(), e.GetComponentID());
+
+		return true;
+
 	}
-	void NRegistry::OnSceneSwitch(const SceneSwitchEvent& e)
+	bool NRegistry::OnSceneSwitch(const SceneSwitchEvent& e)
 	{
 		std::vector<std::unique_ptr<IComponentManager>> m_ComponentManagers;
 
@@ -183,5 +189,8 @@ namespace NULLENGINE
 		m_IndexToEntityMap.clear();
 		m_EntityComponentSignatures.clear();
 		m_NumEntities = 0;
+
+		return true;
+
 	}
 }

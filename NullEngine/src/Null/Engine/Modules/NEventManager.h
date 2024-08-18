@@ -72,8 +72,13 @@ namespace NULLENGINE
 		/// 
 		/// </summary>
 		/// <param name="event"></param>
-		void TriggerEvent(const Event& event);
+		bool TriggerEvent(const Event& event);
 		void QueueEvent(std::unique_ptr<Event>&& event);
+
+		/// <summary>
+		/// Use to add events to queue from within an event.
+		/// </summary>
+		void QueueAsync(std::unique_ptr<Event>&& event);
 		void DispatchEvents();
 
 		NEventManager() : m_EventId(0) {}
@@ -88,6 +93,7 @@ namespace NULLENGINE
 		NEventManager& operator=(NEventManager const&) = delete;
 
 		std::vector<std::unique_ptr<Event>> m_EventsQueue;
+		std::vector<std::unique_ptr<Event>> m_AsychEventsQueue;
 
 		std::unordered_map <std::uint32_t, std::vector<std::unique_ptr<IEventHandler>>> m_Subscribers;
 

@@ -330,7 +330,7 @@ namespace NULLENGINE
 		eventManager->QueueEvent(std::move(e.Clone()));
 	}
 
-	void Input::OnKey(const KeyEvent& e)
+	bool Input::OnKey(const KeyEvent& e)
 	{
 
 		int key = e.GetKeyCode();
@@ -356,10 +356,11 @@ namespace NULLENGINE
 		}
 
 
+		return true;
 
 	}
 
-	void Input::OnMouseButton(const MouseButtonEvent& e)
+	bool Input::OnMouseButton(const MouseButtonEvent& e)
 	{
 		int button = e.GetButton();
 		switch (e.GetEventType())
@@ -377,16 +378,18 @@ namespace NULLENGINE
 		default:
 			break;
 		}
+		return true;
 
 	}
 
-	void Input::OnMouseMoved(const MouseMoveEvent& e)
+	bool Input::OnMouseMoved(const MouseMoveEvent& e)
 	{
 		m_MousePos.x = e.GetX();
 		m_MousePos.y = e.GetY();
+		return true;
 	}
 
-	void Input::OnSceneSwitched(const SceneSwitchEvent& event)
+	bool Input::OnSceneSwitched(const SceneSwitchEvent& event)
 	{
 		for (int key = GLFW_KEY_SPACE; key <= GLFW_KEY_LAST; ++key) 
 		{
@@ -397,6 +400,7 @@ namespace NULLENGINE
 		{
 			m_MouseState[button] = false;
 		}
+		return true;
 	}
 
 }

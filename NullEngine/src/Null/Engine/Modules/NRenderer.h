@@ -97,7 +97,7 @@ namespace NULLENGINE
 
 		RenderStorage m_RenderStorage;
 
-		void OnWindowResize(const WindowResizeEvent& e);
+		bool OnWindowResize(const WindowResizeEvent& e);
 
 		struct RenderDataComparator {
 			bool operator()(const std::unique_ptr<ElementData>& a, const std::unique_ptr<ElementData>& b) const {

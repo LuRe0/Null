@@ -78,8 +78,7 @@ namespace NULLENGINE
         void Write(JSON& json) override;
 
 
-        void OnWindowResize(const WindowResizeEvent& e);
-        void OnMouseScrolled(const MouseScrolledEvent& e);
+        bool OnWindowResize(const WindowResizeEvent& e);
     private:
         void UpdateProjectionMatrix();
         // calculates the front vector from the Camera's (updated) Euler Angles

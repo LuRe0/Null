@@ -88,7 +88,7 @@ namespace NULLENGINE
 
 		void LoadScene(const std::string& scene);
 
-		void OnSceneSwitch(const SceneSwitchEvent& e);
+		bool OnSceneSwitch(const SceneSwitchEvent& e);
 
 
 		NSceneManager(NSceneManager const&) = delete;

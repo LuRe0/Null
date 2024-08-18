@@ -573,16 +573,19 @@ namespace NULLENGINE
 		}
 	}
 
-	void ScriptSystem::OnScriptAdded(const ScriptCreatedEvent& e)
+	bool ScriptSystem::OnScriptAdded(const ScriptCreatedEvent& e)
 	{
 		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
 		ScriptComponent& scriptComponent = registry->GetComponent<ScriptComponent>(e.GetEntityID());
 		scriptComponent.m_Script_Names.push_back(e.GetScriptName());
 		AddScript(e.GetEntityID(), e.GetScriptName());
+
+		return true;
+
 	}
 
 
-	void ScriptSystem::OnScriptModified(const ScriptModifiedEvent& e)
+	bool ScriptSystem::OnScriptModified(const ScriptModifiedEvent& e)
 	{
 		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
 		NScriptingInterface* scriptingInterface = m_Parent->Get< NScriptingInterface>();
@@ -639,22 +642,26 @@ namespace NULLENGINE
 
 			}
 		}
+		return true;
 	}
 
-	void ScriptSystem::OnScriptRemoved(const ScriptRemovedEvent& e)
+	bool ScriptSystem::OnScriptRemoved(const ScriptRemovedEvent& e)
 	{
 		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
 		ScriptComponent& scriptComponent = registry->GetComponent<ScriptComponent>(e.GetEntityID());
 
 		RemoveScript(e.GetEntityID(), e.GetScriptName());
+		return true;
 	}
 
-	void ScriptSystem::OnSceneSwitched(const SceneSwitchEvent& e)
+	bool ScriptSystem::OnSceneSwitched(const SceneSwitchEvent& e)
 	{
 		for (const auto entityId : GetSystemEntities())
 		{
 			InitializeScripts(entityId);
 		}
+
+		return true;
 	}
 
 }

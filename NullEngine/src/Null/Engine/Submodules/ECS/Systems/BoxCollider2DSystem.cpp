@@ -99,6 +99,15 @@ namespace NULLENGINE
 			// The depth is the z-component of the camera space position
 			float depth = cameraSpacePosition.z;
 
+			if (m_Parent->HasComponent<ParentComponent>(entityId))
+			{
+				auto& parentComp = m_Parent->GetComponent<ParentComponent>(entityId);
+
+				TransformComponent& parentTransform = m_Parent->GetComponent<TransformComponent>(parentComp.m_Parent);
+
+				translation = (parentTransform.m_TransformMatrix * glm::vec4(translation, 1.0f));
+			}
+
 			glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), translation);
 			// Calculate rotation matrix (assuming Euler angles in radians)
 			glm::mat4 rotationMatrix = glm::toMat4(glm::quat(glm::radians(glm::vec3(0,0, rot))));
@@ -106,6 +115,7 @@ namespace NULLENGINE
 			glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(bc2d.m_Scale, 1.0f));
 
 			glm::mat4 matrix = translationMatrix * rotationMatrix * scaleMatrix;
+
 
 	/*		matrix, meshManager->Get("Quad"), "", glm::vec4(0, 1, 0, 1), "",
 				0, entityId, 0.05f, 0.005f, RenderData::INSTANCED)*/

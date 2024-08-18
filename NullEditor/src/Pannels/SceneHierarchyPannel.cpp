@@ -88,7 +88,7 @@ namespace NULLENGINE
 
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 100);
 			std::string id = "ID:" + std::to_string(entity.GetID());
-			ImGui::Text(id.c_str());
+			ImGui::TextColored(ImVec4(0, 1, 0, 1), id.c_str());
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(0);
 			bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)(entity.GetID()), flags, entity.GetName().c_str());
@@ -184,6 +184,14 @@ namespace NULLENGINE
 	{
 		ImGuiTreeNodeFlags flags = (m_PannelData->m_SelectedEntity == entity.GetID() ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
 
+		ImVec2 cursorPos = ImGui::GetCursorPos(); // Save the current cursor position
+
+		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 100);
+		std::string id = "ID:" + std::to_string(entity.GetID());
+		ImGui::TextColored(ImVec4(0,1,0,1), id.c_str());
+		ImGui::SameLine();
+
+		ImGui::SetCursorPos(cursorPos);
 		bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)(entity.GetID()), flags, entity.GetName().c_str());
 
 		if (ImGui::IsItemClicked() || ImGui::IsItemClicked(1))

@@ -201,8 +201,9 @@ namespace NULLENGINE
 		if (!childTransform.m_Enabled)
 			return;
 
-		//if (childTransform.m_Dirty && !parentTransform.m_Dirty)
-		//{
+		if (!parentTransform.m_Dirty)
+			return;
+
 		//	glm::mat4 inverseParentTransform = glm::inverse(parentTransform.m_TransformMatrix);
 
 		//	childTransform.m_Translation = glm::vec3((inverseParentTransform * glm::vec4(childTransform.m_Translation, 1.0f)));
@@ -240,6 +241,7 @@ namespace NULLENGINE
 
 		// Mark the child's transform as clean
 	
+		childTransform.m_DirectManipulation = true;
 
 		// Recursively update the child’s children
 		if (registry->HasComponent<ChildrenComponent>(childId))

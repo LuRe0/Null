@@ -458,4 +458,29 @@ namespace NULLENGINE
 
         EVENT_CLASS_TYPE(EngineEditState)
     };
+
+
+    class InitializeBox2DEvent : public Event
+    {
+    public:
+        InitializeBox2DEvent(uint32_t eID)
+            : m_EntityID(eID)
+        {}
+
+
+        const uint32_t& GetEntityID() const { return m_EntityID; }
+
+
+        std::string Print() const override
+        {
+            std::stringstream ss;
+            ss << "InitializeBox2DEvent";
+            return ss.str();
+        }
+
+        EVENT_CLASS_TYPE(InitializeBox2D)
+
+    private:
+        const uint32_t m_EntityID;
+    };
 }

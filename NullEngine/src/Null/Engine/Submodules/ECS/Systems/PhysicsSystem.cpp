@@ -19,10 +19,11 @@
 #include <box2d/b2_fixture.h>
 #include <magic_enum/magic_enum.hpp>
 #include "Null/Engine/Submodules/Events/IEvents.h"
-#include <glm/gtc/matrix_transform.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
+#include <glm/gtx/euler_angles.hpp>
 //******************************************************************************//
 // Public Variables															    //
 //******************************************************************************//
@@ -60,13 +61,14 @@ namespace NULLENGINE
 		SUBSCRIBE_EVENT(EntityRemoveComponentEvent, &PhysicsSystem::OnEntityComponentRemoved, eventManager, EventPriority::High);
 		SUBSCRIBE_EVENT(EntityAddComponentEvent, &PhysicsSystem::OnEntityComponentAdded, eventManager, EventPriority::High);
 		SUBSCRIBE_EVENT(SceneSwitchEvent, &PhysicsSystem::OnSceneSwitched, eventManager, EventPriority::High);
+		SUBSCRIBE_EVENT(InitializeBox2DEvent, &PhysicsSystem::OnSceneStart, eventManager, EventPriority::High);
 
 		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
 
 
 		for (const auto entityId : GetSystemEntities())
 		{
-			InitializePhysics(entityId, registry);
+			eventManager->QueueEvent(std::make_unique<InitializeBox2DEvent>(entityId));
 		}
 
 	}
@@ -86,6 +88,42 @@ namespace NULLENGINE
 		const int32_t velocityIterations = 6;
 		const int32_t positionIterations = 2;
 
+		for (const auto entityId : GetSystemEntities())
+		{
+			TransformComponent& transform = m_Parent->GetComponent<TransformComponent>(entityId);
+
+
+			if (!transform.m_DirectManipulation)
+				continue;
+
+			Rigidbody2DComponent& rb2d = m_Parent->GetComponent<Rigidbody2DComponent>(entityId);
+			b2Body* body = rb2d.m_RuntimeBody;
+
+			if (body)
+			{
+
+				auto rotation = transform.m_Rotation;
+				auto translation = transform.m_Translation;
+
+				if (m_Parent->HasComponent<ParentComponent>(entityId))
+				{
+					auto& parentComp = m_Parent->GetComponent<ParentComponent>(entityId);
+
+					TransformComponent& parentTransform = m_Parent->GetComponent<TransformComponent>(parentComp.m_Parent);
+
+					LocalToWorldPos(transform, translation, rotation);
+				}
+
+
+				auto pos = PixelsToMeters(translation.x, translation.y);
+				body->SetTransform({ pos.x, pos.y }, rotation.z);
+
+				transform.m_DirectManipulation = false;
+			}
+
+		}
+
+
 		m_PhysicsWorld->Step(dt, velocityIterations, positionIterations);
 
 		for (const auto entityId : GetSystemEntities())
@@ -101,13 +139,8 @@ namespace NULLENGINE
 
 				body->SetAwake(rb2d.m_Enabled);
 
-				if (transform.m_DirectManipulation)
-				{
-					auto pos = PixelsToMeters(transform.m_Translation.x, transform.m_Translation.y);
-					body->SetTransform({ pos.x, pos.y }, transform.m_Rotation.z);
-
-					transform.m_DirectManipulation = false;
-				}
+				if (!rb2d.m_Enabled)
+					continue;
 
 				const auto& position = body->GetPosition();
 
@@ -121,6 +154,15 @@ namespace NULLENGINE
 				transform.m_Translation.y = newPos.y;
 
 				transform.m_Rotation.z = body->GetAngle();
+
+				if (m_Parent->HasComponent<ParentComponent>(entityId))
+				{
+					auto& parentComp = m_Parent->GetComponent<ParentComponent>(entityId);
+
+					TransformComponent& parentTransform = m_Parent->GetComponent<TransformComponent>(parentComp.m_Parent);
+					WorldToLocalPos(transform, parentTransform);
+				}
+
 
 				transform.m_Dirty = true;
 			}
@@ -371,7 +413,7 @@ namespace NULLENGINE
 						rb2d.m_Type = static_cast<Rigidbody2DComponent::BodyType>(i);
 						rb2d.m_RuntimeBody->SetType(static_cast<b2BodyType>(rb2d.m_Type));
 					}
-					if (isSelected) 
+					if (isSelected)
 					{
 						ImGui::SetItemDefaultFocus(); // Set focus on the selected item
 					}
@@ -423,17 +465,64 @@ namespace NULLENGINE
 		//update body when data changes
 	}
 
-
-	void PhysicsSystem::OnEntityCreated(const EntityCreatedEvent& e)
+	void PhysicsSystem::LocalToWorldPos(TransformComponent& transform, glm::vec3& translation, glm::vec3& rotation)
 	{
+		glm::vec3 eulerRadians = glm::radians(rotation);
+
+		// Create a quaternion from Euler angles (yaw, pitch, roll)
+		auto orientation = glm::quat(glm::yawPitchRoll(eulerRadians.y, eulerRadians.x, eulerRadians.z));
+
+		glm::vec3 scale;
+		glm::vec3 skew; // usually can be set to glm::vec3(0.0f)
+		glm::vec4 perspective; // usually can be set to glm::vec4(0.0f)
+		glm::decompose(transform.m_TransformMatrix, scale, orientation, translation, skew, perspective);
+
+
+		glm::vec3 localRotationEuler = glm::degrees(glm::eulerAngles(orientation));
+		rotation = localRotationEuler;
+	}
+
+	void PhysicsSystem::WorldToLocalPos(TransformComponent& transform, TransformComponent& parentTransform)
+	{
+		glm::mat4 inverseParentTransform = glm::inverse(parentTransform.m_TransformMatrix);
+
+		transform.m_Translation = glm::vec3((inverseParentTransform * glm::vec4(transform.m_Translation, 1.0f)));
+
+		// Extract parent rotation as Euler angles (assume in degrees)
+		glm::vec3 parentRotationEuler = parentTransform.m_Rotation; // Euler angles in degrees
+
+		// Convert parent rotation to quaternion
+		glm::vec3 parentRotationRadians = glm::radians(parentRotationEuler);
+		glm::quat parentRotation = glm::quat(glm::yawPitchRoll(parentRotationRadians.y, parentRotationRadians.x, parentRotationRadians.z));
+
+		// Convert child rotation from Euler angles (assume in degrees)
+		glm::vec3 childRotationEuler = transform.m_Rotation; // Euler angles in degrees
+		glm::vec3 childRotationRadians = glm::radians(childRotationEuler);
+		glm::quat childRotation = glm::quat(glm::yawPitchRoll(childRotationRadians.y, childRotationRadians.x, childRotationRadians.z));
+
+		// Compute local rotation by applying the inverse of the parent’s rotation
+		glm::quat localRotation = glm::normalize(glm::inverse(parentRotation) * childRotation);
+
+		// Convert local rotation back to Euler angles
+		glm::vec3 localRotationEuler = glm::degrees(glm::eulerAngles(localRotation));
+		transform.m_Rotation = localRotationEuler;
+	}
+
+	bool PhysicsSystem::OnEntityCreated(const EntityCreatedEvent& e)
+	{
+		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
 		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+
 		const auto& entityList = GetSystemEntities();
 
 		if (std::find(entityList.begin(), entityList.end(), e.GetID()) != entityList.end())
-			InitializePhysics(e.GetID(), registry);
+			eventManager->QueueAsync(std::make_unique<InitializeBox2DEvent>(e.GetID()));
+
+
+		return true;
 	}
 
-	void PhysicsSystem::OnEntityComponentRemoved(const EntityRemoveComponentEvent& e)
+	bool PhysicsSystem::OnEntityComponentRemoved(const EntityRemoveComponentEvent& e)
 	{
 		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
 
@@ -465,11 +554,13 @@ namespace NULLENGINE
 
 			}
 		}
+		return true;
 	}
 
-	void PhysicsSystem::OnEntityComponentAdded(const EntityAddComponentEvent& e)
+	bool PhysicsSystem::OnEntityComponentAdded(const EntityAddComponentEvent& e)
 	{
 		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
 
 		if (e.GetComponentID() == Component<Rigidbody2DComponent>::GetID() ||
 			e.GetComponentID() == Component<TransformComponent>::GetID() ||
@@ -481,12 +572,14 @@ namespace NULLENGINE
 				(registry->HasComponent<BoxCollider2DComponent>(e.GetID()) ||
 					registry->HasComponent<CircleCollider2DComponent>(e.GetID())))
 			{
-				InitializePhysics(e.GetID(), registry);
+				eventManager->QueueAsync(std::make_unique<InitializeBox2DEvent>(e.GetID()));
 			}
 		}
+
+		return true;
 	}
 
-	void PhysicsSystem::OnSceneSwitched(const SceneSwitchEvent& e)
+	bool PhysicsSystem::OnSceneSwitched(const SceneSwitchEvent& e)
 	{
 		for (size_t i = 0; i < m_Entities.size(); i++)
 		{
@@ -516,9 +609,26 @@ namespace NULLENGINE
 				rb2d.m_RuntimeBody = nullptr;
 			}
 		}
+
+		return true;
 	}
 
-	void PhysicsSystem::InitializePhysics(EntityID entityId, NRegistry* registry)
+	bool PhysicsSystem::OnSceneStart(const InitializeBox2DEvent& e)
+	{
+		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+
+		if (registry->HasComponent<Rigidbody2DComponent>(e.GetEntityID()) &&
+			registry->HasComponent<TransformComponent>(e.GetEntityID()) &&
+			(registry->HasComponent<BoxCollider2DComponent>(e.GetEntityID()) ||
+				registry->HasComponent<CircleCollider2DComponent>(e.GetEntityID())))
+		{
+			return InitializePhysics(e.GetEntityID(), registry);
+		}
+
+		return false;
+	}
+
+	bool PhysicsSystem::InitializePhysics(EntityID entityId, NRegistry* registry)
 	{
 		TransformComponent& transform = registry->GetComponent<TransformComponent>(entityId);
 		Rigidbody2DComponent& rb2d = registry->GetComponent<Rigidbody2DComponent>(entityId);
@@ -527,7 +637,25 @@ namespace NULLENGINE
 
 		bodyDef.type = (b2BodyType)rb2d.m_Type;
 
-		auto pos = PixelsToMeters(transform.m_Translation.x, transform.m_Translation.y);
+		glm::vec3 translation = transform.m_Translation;
+		glm::vec3 rotation = transform.m_Rotation;
+
+
+		if (registry->HasComponent<ParentComponent>(entityId))
+		{
+			auto& parentComp = registry->GetComponent<ParentComponent>(entityId);
+
+			TransformComponent& parentTransform = registry->GetComponent<TransformComponent>(parentComp.m_Parent);
+
+			if (parentTransform.m_Dirty)
+			{
+				return false;
+			}
+
+			LocalToWorldPos(transform, translation, rotation);
+		}
+
+		auto pos = PixelsToMeters(translation.x, translation.y);
 		auto vel = PixelsToMeters(rb2d.m_LinearVelocity.x, rb2d.m_LinearVelocity.y);
 
 		bodyDef.position.Set(pos.x, pos.y);
@@ -536,7 +664,7 @@ namespace NULLENGINE
 		bodyDef.angularDamping = rb2d.m_AngularDamping;
 		bodyDef.linearDamping = rb2d.m_LinearDamping;
 		bodyDef.gravityScale = rb2d.m_GravityScale;
-		bodyDef.angle = transform.m_Rotation.z;
+		bodyDef.angle = rotation.z;
 
 
 		rb2d.m_RuntimeBody = m_PhysicsWorld->CreateBody(&bodyDef);
@@ -588,6 +716,8 @@ namespace NULLENGINE
 
 			cc2d.m_RuntimeFixture = rb2d.m_RuntimeBody->CreateFixture(&fixDef);
 		}
+
+		return true;
 	}
 
 }

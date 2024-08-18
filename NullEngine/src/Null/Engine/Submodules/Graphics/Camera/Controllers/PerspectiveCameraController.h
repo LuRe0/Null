@@ -59,8 +59,8 @@ namespace NULLENGINE
         void ProcessKeyboardInput(float dt);
         void ProcessMouseInput(float dt);
 
-        void OnMouseScrolled(const MouseScrolledEvent& e);
-        void OnMouseMove(const MouseMoveEvent& e);
+        bool OnMouseScrolled(const MouseScrolledEvent& e);
+        bool OnMouseMove(const MouseMoveEvent& e);
 
         bool m_ConstrainPitch = false;
 

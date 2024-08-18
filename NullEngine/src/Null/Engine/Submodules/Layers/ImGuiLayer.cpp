@@ -642,15 +642,6 @@ namespace NULLENGINE
 		}
 	}
 
-	void ImGuiLayer::OnWindowResize(const WindowResizeEvent& e)
-	{
-		//ImGuiIO& io = ImGui::GetIO();
-
-		//io.DisplaySize = ImVec2(e.GetWidth(), e.GetHeight());
-		//io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
-		//glViewport(0, 0, e.GetWidth(), e.GetHeight());
-	}
-
 	void ImGuiLayer::WindowedEditSceneLayer()
 	{
 		NRenderer* renderer = NEngine::Instance().Get<NRenderer>();
@@ -975,70 +966,16 @@ namespace NULLENGINE
 		m_ViewportSize = {};
 	}
 
-	void ImGuiLayer::OnWindowClose(const WindowCloseEvent& e)
-	{
-		NLE_CORE_INFO("{0}", e.Print());
-	}
-
-	void ImGuiLayer::OnKeyPressed(const KeyPressEvent& e)
+	bool ImGuiLayer::OnKeyPressed(const KeyPressEvent& e)
 	{
 		KeyboardShortcuts(e);
+		return true;
 	}
 
-	void ImGuiLayer::OnKeyReleased(const KeyReleaseEvent& e)
+	bool ImGuiLayer::OnSceneSwitched(const SceneSwitchEvent& e)
 	{
-		ImGuiIO& io = ImGui::GetIO();
-
-		io.KeysDown[e.GetKeyCode()] = false;
-	}
-
-	void ImGuiLayer::OnKeyTyped(const KeyTypedEvent& e)
-	{
-		ImGuiIO& io = ImGui::GetIO();
-		int keycode = e.GetKeyCode();
-
-		if (keycode > 0 && keycode < 0x10000)
-			io.AddInputCharacter((unsigned short)keycode);
-	}
-
-	//void ImGuiLayer::OnKeyHold(const KeyHoldEvent& event)
-	//{
-	//}
-
-	void ImGuiLayer::OnMousePressed(const MouseButtonPressEvent& e)
-	{
-		ImGuiIO& io = ImGui::GetIO();
-
-		io.MouseDown[e.GetButton()] = true;
-	}
-
-
-	void ImGuiLayer::OnMouseReleased(const MouseButtonReleaseEvent& e)
-	{
-		ImGuiIO& io = ImGui::GetIO();
-
-		io.MouseDown[e.GetButton()] = false;
-	}
-
-	void ImGuiLayer::OnMouseMove(const MouseMoveEvent& e)
-	{
-		ImGuiIO& io = ImGui::GetIO();
-
-		io.MousePos = ImVec2(e.GetX(), e.GetY());
-	}
-
-	void ImGuiLayer::OnMouseScroll(const MouseScrolledEvent& e)
-	{
-		ImGuiIO& io = ImGui::GetIO();
-
-		io.MouseWheelH += e.GetXOffset();
-		io.MouseWheel += e.GetYOffset();
-
-	}
-
-	void ImGuiLayer::OnSceneSwitched(const SceneSwitchEvent& e)
-	{
-		//m_PannelData.m_SelectedEntity = {};
+		m_PannelData.m_SelectedEntity = {};
+		return true;
 	}
 
 	bool DecomposeTransform(const glm::mat4& transform, glm::vec3& translation, glm::vec3& rotation, glm::vec3& scale)

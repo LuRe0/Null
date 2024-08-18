@@ -118,22 +118,23 @@ namespace NULLENGINE
 		//}
 	}
 
-	void OrthographicCameraController::OnMouseScrolled(const MouseScrolledEvent& e)
+	bool OrthographicCameraController::OnMouseScrolled(const MouseScrolledEvent& e)
 	{
 		if (!m_Enabled)
-			return;
+			return false;
 
 		float zoom = m_Camera->GetZoom();
 
 		zoom -= e.GetYOffset() * m_MouseSensitivity;
 
 		m_Camera->SetZoom(zoom);
+		return true;
 	}
 
-	void OrthographicCameraController::OnMouseMove(const MouseMoveEvent& e)
+	bool OrthographicCameraController::OnMouseMove(const MouseMoveEvent& e)
 	{
 		if (!m_Enabled)
-			return;
+			return false;
 
 		float xpos = static_cast<float>(e.GetX());
 		float ypos = static_cast<float>(e.GetY());
@@ -161,6 +162,7 @@ namespace NULLENGINE
 			// Reset mouse flag when control is not held
 			m_FirstMouse = true;
 		}
+		return true;
 	}
 
 }

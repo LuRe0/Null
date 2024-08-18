@@ -138,9 +138,10 @@ namespace NULLENGINE
         return camera;
     }
 
-    void NCameraManager::OnRuntimeStop(const EngineEditStateEvent& e)
+    bool NCameraManager::OnRuntimeStop(const EngineEditStateEvent& e)
     {
         SetCurrentCamera("Editor3D");
+        return true;
     }
 
 

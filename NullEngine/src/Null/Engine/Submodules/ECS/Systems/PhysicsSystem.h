@@ -37,6 +37,7 @@ namespace NULLENGINE
 
 	class BoxCollider2DComponent;
 	class Rigidbody2DComponent;
+	class TransformComponent;
 
 	class NLE_API PhysicsSystem : public ISystem
 	{
@@ -74,13 +75,16 @@ namespace NULLENGINE
 		static JSON WriteRigidbody2DComponent(BaseComponent* component);
 		void ViewRigidbody2DComponent(Entity& entityID);
 
+		void LocalToWorldPos(TransformComponent& transform, glm::vec3& translation, glm::vec3& rotation);
+		void WorldToLocalPos(TransformComponent& transform, TransformComponent& parentTransform);
 
-		void InitializePhysics(EntityID entityID, NRegistry* registry);
+		bool InitializePhysics(EntityID entityID, NRegistry* registry);
 
-		void OnEntityCreated(const EntityCreatedEvent& e);
-		void OnEntityComponentRemoved(const EntityRemoveComponentEvent& e);
-		void OnEntityComponentAdded(const EntityAddComponentEvent& e);
-		void OnSceneSwitched(const SceneSwitchEvent& e);
+		bool OnEntityCreated(const EntityCreatedEvent& e);
+		bool OnEntityComponentRemoved(const EntityRemoveComponentEvent& e);
+		bool OnEntityComponentAdded(const EntityAddComponentEvent& e);
+		bool OnSceneSwitched(const SceneSwitchEvent& e);
+		bool OnSceneStart(const InitializeBox2DEvent& e);
 
 		float m_Thickness = 0.55f;
 		glm::vec4 m_Color = glm::vec4(0, 0, 1, 1);

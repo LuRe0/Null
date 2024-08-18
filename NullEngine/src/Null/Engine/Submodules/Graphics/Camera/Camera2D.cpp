@@ -120,7 +120,7 @@ namespace NULLENGINE
 		return m_Zoom;
 	}
 
-	void Camera2D::OnWindowResize(const WindowResizeEvent& e)
+	bool Camera2D::OnWindowResize(const WindowResizeEvent& e)
 	{
 
 		m_AspectRatio = e.GetHeight() != 0 ? static_cast<float>(e.GetWidth()) / static_cast<float>(e.GetHeight()) : m_AspectRatio;
@@ -139,13 +139,7 @@ namespace NULLENGINE
 		SetProjection(left, right, bottom, top);
 
 		m_IsDirty = true;
-	}
-
-	void Camera2D::OnMouseScrolled(const MouseScrolledEvent& e)
-	{
-		//m_Zoom -= e.GetYOffset() * 0.25f;
-
-		//SetZoom(m_Zoom);
+		return true;
 	}
 
 }

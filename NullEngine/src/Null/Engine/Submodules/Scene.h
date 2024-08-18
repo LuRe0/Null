@@ -84,6 +84,7 @@ namespace NULLENGINE
 		void HandleChildren(Entity& parentEntity, const nlohmann::json& childrenData, NRegistry* registry, 
 			NEntityFactory* entityFactory, NComponentFactory* componentFactory, NEventManager* eventManager);
 
+		JSON SerializeChildren(Entity& child, NRegistry* registry, NComponentFactory* componentFactory);
 		EntityID CreateEmptyEntity(const std::string& name);
 
 		EntityID LoadArchetype(const std::string& name);

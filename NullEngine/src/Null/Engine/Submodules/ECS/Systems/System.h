@@ -149,10 +149,10 @@ namespace NULLENGINE
 		void UpdateEntityList(EntityID entityID, NRegistry* registry);
 
 
-		void OnEntityCreate(const EntityModifiedEvent& e);
-		void OnEntityDestroyed(const EntityDestroyedEvent& e);
-		void OnEntityComponentRemoved(const EntityRemoveComponentEvent& e);
-		void OnSceneSwitch(const SceneSwitchEvent& e);
+		bool OnEntityCreate(const EntityModifiedEvent& e);
+		bool OnEntityDestroyed(const EntityDestroyedEvent& e);
+		bool OnEntityComponentRemoved(const EntityRemoveComponentEvent& e);
+		bool OnSceneSwitch(const SceneSwitchEvent& e);
 
 
 	protected:

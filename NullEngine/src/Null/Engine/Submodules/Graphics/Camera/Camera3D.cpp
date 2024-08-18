@@ -181,21 +181,14 @@ namespace NULLENGINE
 
 	}
 
-	void Camera3D::OnWindowResize(const WindowResizeEvent& e)
+	bool Camera3D::OnWindowResize(const WindowResizeEvent& e)
 	{
 		//SetZoom(1280.0f / e.GetWidth());
 
 		m_Aspect = e.GetHeight() != 0 ? static_cast<float>(e.GetWidth()) / static_cast<float>(e.GetHeight()) : m_Aspect;
 
 		m_IsDirty = true;
-	}
-
-	void Camera3D::OnMouseScrolled(const MouseScrolledEvent& e)
-	{
-	    m_Zoom -= (float)e.GetYOffset();
-
-
-		m_IsDirty = true;
+		return true;
 	}
 
 	void Camera3D::UpdateProjectionMatrix()

@@ -166,7 +166,7 @@ namespace NULLENGINE
 	}
 
 
-	void CameraSystem::OnRuntimeStart(const EngineRunStateEvent& e)
+	bool CameraSystem::OnRuntimeStart(const EngineRunStateEvent& e)
 	{
 		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
 		NCameraManager* camManager = NEngine::Instance().Get<NCameraManager>();
@@ -187,6 +187,8 @@ namespace NULLENGINE
 				camManager->SetCurrentCamera(cam.m_Name);
 			}
 		}
+
+		return true;
 	}
 
 	void CameraSystem::CreateCameraComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id)

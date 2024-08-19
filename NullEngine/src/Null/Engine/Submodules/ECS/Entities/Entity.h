@@ -72,6 +72,18 @@ namespace NULLENGINE
 			return m_Parent->HasComponent<T>(m_ID);
 		}
 
+		template <typename T, typename ...TArgs>
+		void Add(TArgs&& ...args)
+		{
+			m_Parent->AddComponent<T>(m_ID, std::forward<TArgs>(args)...);
+		}
+
+		template <typename T>
+		void Remove()
+		{
+			m_Parent->RemoveComponent<T>(m_ID);
+		}
+
 		template <typename T>
 		bool QueryFromEntity(EntityID id) const
 		{

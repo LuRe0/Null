@@ -34,9 +34,6 @@ namespace NULLENGINE
 		ImGui::Begin("Scene Hierarchy");
 
 
-
-	
-
 		ImGui::PushItemWidth(100);
 		ImGui::Text("Scene Name: "); ImGui::SameLine();
 
@@ -141,10 +138,43 @@ namespace NULLENGINE
 
 						// Recursive call to draw the child entity and its children
 						DrawEntityNode(childEntity);
+
+						if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+						{
+							if (m_PannelData->m_SelectedEntity == childEntity)
+							{
+								ImGui::SetDragDropPayload("ENTITY_CHILD_TARGET", &childEntity.m_ID, sizeof(uint32_t));
+								ImGui::Text("Dragging %s", childEntity.m_Name.c_str());
+							}
+							ImGui::EndDragDropSource();
+						}
 					}
 				}
 				ImGui::TreePop();
 			}
+
+			if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+			{
+				if (m_PannelData->m_SelectedEntity == entity.m_ID)
+				{
+					ImGui::SetDragDropPayload("ENTITY_TARGET", &entity.m_ID, sizeof(uint32_t));
+					ImGui::Text("Dragging %s", entity.m_Name.c_str());
+				}
+				ImGui::EndDragDropSource();
+			}
+
+
+			if (ImGui::BeginDragDropTarget())
+			{
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ENTITY_TARGET"))
+				{
+					uint32_t entityID = *((uint32_t*)payload->Data);
+
+					SeparateEntities(m_PannelData->m_Context->GetEntity(entityID));
+				}
+				ImGui::EndDragDropTarget();
+			}
+
 
 
 		}
@@ -165,6 +195,7 @@ namespace NULLENGINE
 
 
 		ImGui::EndChild();
+
 		if (ImGui::BeginDragDropTarget())
 		{
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ENTITY_FILE"))
@@ -178,6 +209,17 @@ namespace NULLENGINE
 		}
 
 
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ENTITY_CHILD_TARGET"))
+			{
+				uint32_t entityID = *((uint32_t*)payload->Data);
+
+				SeparateEntities(m_PannelData->m_Context->GetEntity(entityID));
+			}
+			ImGui::EndDragDropTarget();
+		}
+
 		ImGui::End();
 	}
 	void SceneHierarchyPannel::DrawEntityNode(Entity& entity)
@@ -188,7 +230,7 @@ namespace NULLENGINE
 
 		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 100);
 		std::string id = "ID:" + std::to_string(entity.GetID());
-		ImGui::TextColored(ImVec4(0,1,0,1), id.c_str());
+		ImGui::TextColored(ImVec4(0, 1, 0, 1), id.c_str());
 		ImGui::SameLine();
 
 		ImGui::SetCursorPos(cursorPos);
@@ -212,9 +254,38 @@ namespace NULLENGINE
 
 					// Recursive call to draw the child entity and its children
 					DrawEntityNode(childEntity);
+
+					if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+					{
+						ImGui::SetDragDropPayload("ENTITY_CHILD_TARGET", &entity.m_ID, sizeof(uint32_t));
+						ImGui::Text("Dragging %s", entity.m_Name.c_str());
+						ImGui::EndDragDropSource();
+					}
 				}
 			}
 			ImGui::TreePop();
+		}
+	}
+	void SceneHierarchyPannel::ParentEntities(Entity& entity)
+	{
+
+	}
+	void SceneHierarchyPannel::SeparateEntities(Entity& entity)
+	{
+		if (entity.Has<ParentComponent>())
+		{
+			auto& pComp = entity.Get<ParentComponent>();
+
+			Entity& parentEntity = m_PannelData->m_Context->GetEntity(pComp.m_Parent);
+
+			auto& cComp = parentEntity.Get<ChildrenComponent>();
+			auto& vec = cComp.m_Children;
+			vec.erase(std::remove(vec.begin(), vec.end(), entity.m_ID), vec.end());
+			if (vec.empty())
+			{
+				parentEntity.Remove < ChildrenComponent >();
+			}
+			entity.Remove<ParentComponent>();
 		}
 	}
 }

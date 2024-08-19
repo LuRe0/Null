@@ -45,6 +45,9 @@ namespace NULLENGINE
 		void DrawEntityNode(Entity& entity);
 		SceneHierarchyPannel(SceneHierarchyPannel const&) = delete;
 		SceneHierarchyPannel& operator=(SceneHierarchyPannel const&) = delete;
+
+		void ParentEntities(Entity& entity);
+		void SeparateEntities(Entity& entity);
 	};
 
 }

@@ -232,31 +232,107 @@ namespace NULLENGINE
 		CircleCollider2DComponent& cc2d = entity.Get<CircleCollider2DComponent>();
 		PhysicsSystem* physicsSys = NEngine::Instance().Get<PhysicsSystem>();
 
-		ImGui::DragFloat2("Offset", glm::value_ptr(cc2d.m_Offset), 0.5f);
-		ImGui::DragFloat("radius", &cc2d.m_Radius, 0.5f);
-		ImGui::DragFloat("Density", &cc2d.m_Density, 0.5f);
-		ImGui::DragFloat("Friction", &cc2d.m_Friction, 0.5f, 0, 1.0f);
-		ImGui::DragFloat("Resitution", &cc2d.m_Restitution, 0.5f);
-		ImGui::DragFloat("Resitution Threshold", &cc2d.m_RestitutionThreshold, 0.5f);
-
 		if (cc2d.m_RuntimeFixture)
 		{
 
-			cc2d.m_RuntimeFixture->SetDensity(cc2d.m_Density);
-			cc2d.m_RuntimeFixture->SetFriction(cc2d.m_Friction);
-			cc2d.m_RuntimeFixture->SetRestitution(cc2d.m_Restitution);
-			cc2d.m_RuntimeFixture->SetRestitutionThreshold(cc2d.m_RestitutionThreshold);
+			if (ImGui::DragFloat2("Offset", glm::value_ptr(cc2d.m_Offset), 0.5f))
+			{
+				auto offset = physicsSys->PixelsToMeters(cc2d.m_Offset.x, cc2d.m_Offset.y);
 
-			auto offset = physicsSys->PixelsToMeters(cc2d.m_Offset.x, cc2d.m_Offset.y);
-			auto radius = physicsSys->PixelsToMeters(cc2d.m_Radius);
+				glm::vec3 childOffset(0.0f);
 
+				CalculateOffset(childOffset, entity);
 
-			dynamic_cast<b2CircleShape*>(cc2d.m_RuntimeFixture->GetShape())->m_p.Set(offset.x, offset.y);
-			dynamic_cast<b2CircleShape*>(cc2d.m_RuntimeFixture->GetShape())->m_radius = radius;
+				auto childWorldPositionMeters = PhysicsSystem::PixelsToMeters(childOffset.x, childOffset.y);
+
+				// Combine the child’s world position and the collider’s local offset
+				b2Vec2 finalOffset(childWorldPositionMeters.x + offset.x,
+					childWorldPositionMeters.y + offset.y);
+
+				dynamic_cast<b2CircleShape*>(cc2d.m_RuntimeFixture->GetShape())->m_p.Set(finalOffset.x, finalOffset.y);
+			}
+
+			if (ImGui::DragFloat("radius", &cc2d.m_Radius, 0.5f))
+			{
+				auto radius = PhysicsSystem::PixelsToMeters(cc2d.m_Radius);
+
+				dynamic_cast<b2CircleShape*>(cc2d.m_RuntimeFixture->GetShape())->m_radius = radius;
+			}
+			if (ImGui::DragFloat("Density", &cc2d.m_Density, 0.5f))
+				cc2d.m_RuntimeFixture->SetDensity(cc2d.m_Density);
+
+			if (ImGui::DragFloat("Friction", &cc2d.m_Friction, 0.5f, 0, 1.0f))
+				cc2d.m_RuntimeFixture->SetFriction(cc2d.m_Friction);
+
+			if (ImGui::DragFloat("Resitution", &cc2d.m_Restitution, 0.5f))
+				cc2d.m_RuntimeFixture->SetRestitution(cc2d.m_Restitution);
+
+			if (ImGui::DragFloat("Resitution Threshold", &cc2d.m_RestitutionThreshold, 0.5f))
+				cc2d.m_RuntimeFixture->SetRestitutionThreshold(cc2d.m_RestitutionThreshold);
+
 		}
 		else
 		{
 			ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Warning: Requires Rigidbody2D component to enable physics");
 		}
 	}
+
+
+
+	void CircleCollider2DSystem::CalculateOffset(glm::vec3& offset, Entity& entity)
+	{
+		auto* sceneManager = NEngine::Instance().Get<NSceneManager>();
+
+		if (entity.Has<ParentComponent>())
+		{
+			auto& pComp = entity.Get<ParentComponent>();
+
+			Entity& parent = sceneManager->GetCurrentScene()->GetEntity(pComp.m_Parent);
+
+			if (parent.Has<Rigidbody2DComponent>())
+			{
+				auto& parentTransform = parent.Get<TransformComponent>();
+				auto& transform = entity.Get<TransformComponent>();
+
+				auto rotation = transform.m_Rotation;
+				auto translation = transform.m_Translation;
+
+				PhysicsSystem::LocalToWorldPos(transform, translation, rotation);
+
+				offset = translation - parentTransform.m_Translation;
+			}
+			else
+			{
+				CalculateOffset_rec(offset, entity, parent, sceneManager);
+			}
+		}
+	}
+
+	void CircleCollider2DSystem::CalculateOffset_rec(glm::vec3& offset, Entity& entity, Entity& parent, NSceneManager* sceneManager)
+	{
+		if (parent.Has<ParentComponent>())
+		{
+			auto& pComp = parent.Get<ParentComponent>();
+
+			Entity& grandParent = sceneManager->GetCurrentScene()->GetEntity(pComp.m_Parent);
+
+			if (grandParent.Has<Rigidbody2DComponent>())
+			{
+				auto& parentTransform = grandParent.Get<TransformComponent>();
+				auto& transform = entity.Get<TransformComponent>();
+
+				auto rotation = transform.m_Rotation;
+				auto translation = transform.m_Translation;
+
+				PhysicsSystem::LocalToWorldPos(transform, translation, rotation);
+
+				offset = translation - parentTransform.m_Translation;
+			}
+			else
+			{
+				CalculateOffset_rec(offset, entity, grandParent, sceneManager);
+			}
+		}
+	}
+
 }

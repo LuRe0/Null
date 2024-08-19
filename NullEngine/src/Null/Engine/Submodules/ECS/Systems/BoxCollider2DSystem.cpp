@@ -87,7 +87,7 @@ namespace NULLENGINE
 			if (!bc2d.m_RuntimeFixture)
 				continue;
 
-			auto translation = (transform.m_Translation + glm::vec3(bc2d.m_Offset, transform.m_Translation.z + transform.m_Scale.z*0.5f + 0.50f));
+			auto translation = (transform.m_Translation);
 			auto rot = bc2d.m_RuntimeFixture->GetBody()->GetAngle();
 
 
@@ -108,20 +108,22 @@ namespace NULLENGINE
 				translation = (parentTransform.m_TransformMatrix * glm::vec4(translation, 1.0f));
 			}
 
+			translation += glm::vec3(bc2d.m_Offset, transform.m_Translation.z + transform.m_Scale.z * 0.5f + 0.50f);
+
 			glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), translation);
 			// Calculate rotation matrix (assuming Euler angles in radians)
-			glm::mat4 rotationMatrix = glm::toMat4(glm::quat(glm::radians(glm::vec3(0,0, rot))));
+			glm::mat4 rotationMatrix = glm::toMat4(glm::quat(glm::radians(glm::vec3(0, 0, rot))));
 
 			glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(bc2d.m_Scale, 1.0f));
 
 			glm::mat4 matrix = translationMatrix * rotationMatrix * scaleMatrix;
 
 
-	/*		matrix, meshManager->Get("Quad"), "", glm::vec4(0, 1, 0, 1), "",
-				0, entityId, 0.05f, 0.005f, RenderData::INSTANCED)*/
-			//model, mesh, spritesrc, tint, shadername, frameindex, entity
+			/*		matrix, meshManager->Get("Quad"), "", glm::vec4(0, 1, 0, 1), "",
+						0, entityId, 0.05f, 0.005f, RenderData::INSTANCED)*/
+						//model, mesh, spritesrc, tint, shadername, frameindex, entity
 			renderer->AddDebugRenderCall(std::make_unique<ElementData>(matrix, meshManager->Get("Quad"), nullptr, m_Color, "", 0,
-									entityId, m_Thickness, 0.005f, RenderData::INSTANCED, depth));
+				entityId, m_Thickness, 0.005f, RenderData::INSTANCED, depth));
 		}
 	}
 
@@ -202,7 +204,7 @@ namespace NULLENGINE
 						}
 					}
 				)
-		);
+			);
 	}
 
 
@@ -245,33 +247,110 @@ namespace NULLENGINE
 	void BoxCollider2DSystem::ViewBoxCollider2DComponent(Entity& entity)
 	{
 		BoxCollider2DComponent& bc2d = entity.Get<BoxCollider2DComponent>();
-		PhysicsSystem* physicsSys = NEngine::Instance().Get<PhysicsSystem>();
-
-
-		ImGui::DragFloat2("Offset", glm::value_ptr(bc2d.m_Offset), 0.5f);
-		ImGui::DragFloat2("Scale", glm::value_ptr(bc2d.m_Scale), 0.5f);
-		ImGui::DragFloat("Density", &bc2d.m_Density, 0.5f);
-		ImGui::DragFloat("Friction", &bc2d.m_Friction, 0.5f, 0, 1.0f);
-		ImGui::DragFloat("Resitution", &bc2d.m_Restitution, 0.5f);
-		ImGui::DragFloat("Resitution Threshold", &bc2d.m_RestitutionThreshold, 0.5f);
 
 		if (bc2d.m_RuntimeFixture)
 		{
 
-			bc2d.m_RuntimeFixture->SetDensity(bc2d.m_Density);
-			bc2d.m_RuntimeFixture->SetFriction(bc2d.m_Friction);
-			bc2d.m_RuntimeFixture->SetRestitution(bc2d.m_Restitution);
-			bc2d.m_RuntimeFixture->SetRestitutionThreshold(bc2d.m_RestitutionThreshold);
+			if (ImGui::DragFloat2("Offset", glm::value_ptr(bc2d.m_Offset), 0.5f))
+			{
+				auto scale = PhysicsSystem::PixelsToMeters(bc2d.m_Scale.x / 2, bc2d.m_Scale.y / 2);
+				auto offset = PhysicsSystem::PixelsToMeters(bc2d.m_Offset.x, bc2d.m_Offset.y);
+				glm::vec3 childOffset(0.0f);
 
+				CalculateOffset(childOffset, entity);
 
-			auto scale = physicsSys->PixelsToMeters(bc2d.m_Scale.x/2, bc2d.m_Scale.y / 2);
-			auto offset = physicsSys->PixelsToMeters(bc2d.m_Offset.x, bc2d.m_Offset.y);
+				auto childWorldPositionMeters = PhysicsSystem::PixelsToMeters(childOffset.x, childOffset.y);
 
-			dynamic_cast<b2PolygonShape*>(bc2d.m_RuntimeFixture->GetShape())->SetAsBox(scale.x, scale.y, b2Vec2(offset.x, offset.y), 0.0f);
+				// Combine the child’s world position and the collider’s local offset
+				b2Vec2 finalOffset(childWorldPositionMeters.x + offset.x,
+					childWorldPositionMeters.y + offset.y);
+
+				dynamic_cast<b2PolygonShape*>(bc2d.m_RuntimeFixture->GetShape())->SetAsBox(scale.x, scale.y, b2Vec2(finalOffset.x, finalOffset.y), 0.0f);
+
+			}
+
+			if (ImGui::DragFloat2("Scale", glm::value_ptr(bc2d.m_Scale), 0.5f))
+			{
+				auto scale = PhysicsSystem::PixelsToMeters(bc2d.m_Scale.x / 2, bc2d.m_Scale.y / 2);
+
+				auto* shape = dynamic_cast<b2PolygonShape*>(bc2d.m_RuntimeFixture->GetShape());
+
+				shape->SetAsBox(scale.x, scale.y, shape->m_centroid, 0.0f);
+			}
+			if (ImGui::DragFloat("Density", &bc2d.m_Density, 0.5f))
+				bc2d.m_RuntimeFixture->SetDensity(bc2d.m_Density);
+
+			if (ImGui::DragFloat("Friction", &bc2d.m_Friction, 0.5f, 0, 1.0f))
+				bc2d.m_RuntimeFixture->SetFriction(bc2d.m_Friction);
+
+			if (ImGui::DragFloat("Resitution", &bc2d.m_Restitution, 0.5f))
+				bc2d.m_RuntimeFixture->SetRestitution(bc2d.m_Restitution);
+
+			if (ImGui::DragFloat("Resitution Threshold", &bc2d.m_RestitutionThreshold, 0.5f))
+				bc2d.m_RuntimeFixture->SetRestitutionThreshold(bc2d.m_RestitutionThreshold);
+
 		}
 		else
 		{
 			ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Warning: Requires Rigidbody2D component to enable physics");
 		}
 	}
+
+	void BoxCollider2DSystem::CalculateOffset(glm::vec3& offset, Entity& entity)
+	{
+		auto* sceneManager = NEngine::Instance().Get<NSceneManager>();
+
+		if (entity.Has<ParentComponent>())
+		{
+			auto& pComp = entity.Get<ParentComponent>();
+
+			Entity& parent = sceneManager->GetCurrentScene()->GetEntity(pComp.m_Parent);
+
+			if (parent.Has<Rigidbody2DComponent>())
+			{
+				auto& parentTransform = parent.Get<TransformComponent>();
+				auto& transform = entity.Get<TransformComponent>();
+
+				auto rotation = transform.m_Rotation;
+				auto translation = transform.m_Translation;
+
+				PhysicsSystem::LocalToWorldPos(transform, translation, rotation);
+
+				offset = translation - parentTransform.m_Translation;
+			}
+			else
+			{
+				CalculateOffset_rec(offset, entity, parent, sceneManager);
+			}
+		}
+	}
+
+	void BoxCollider2DSystem::CalculateOffset_rec(glm::vec3& offset, Entity& entity, Entity& parent, NSceneManager* sceneManager)
+	{
+		if (parent.Has<ParentComponent>())
+		{
+			auto& pComp = parent.Get<ParentComponent>();
+
+			Entity& grandParent = sceneManager->GetCurrentScene()->GetEntity(pComp.m_Parent);
+
+			if (grandParent.Has<Rigidbody2DComponent>())
+			{
+				auto& parentTransform = grandParent.Get<TransformComponent>();
+				auto& transform = entity.Get<TransformComponent>();
+
+				auto rotation = transform.m_Rotation;
+				auto translation = transform.m_Translation;
+
+				PhysicsSystem::LocalToWorldPos(transform, translation, rotation);
+
+				offset = translation - parentTransform.m_Translation;
+			}
+			else
+			{
+				CalculateOffset_rec(offset, entity, grandParent, sceneManager);
+			}
+		}
+	}
+
+
 }

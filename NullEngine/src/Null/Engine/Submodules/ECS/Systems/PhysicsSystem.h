@@ -38,6 +38,7 @@ namespace NULLENGINE
 	class BoxCollider2DComponent;
 	class Rigidbody2DComponent;
 	class TransformComponent;
+	class NRegistry;
 
 	class NLE_API PhysicsSystem : public ISystem
 	{
@@ -62,12 +63,14 @@ namespace NULLENGINE
 		// Conversion factor
 		const float GetPixelPerMeter() { return m_Pixels_Per_Meter; } // 1 meter = 64 pixels
 
-		const glm::vec2 MetersToPixels(float x, float y);
-		const glm::vec2 PixelsToMeters(float x, float y);
+		static const glm::vec2 MetersToPixels(float x, float y);
+		static const glm::vec2 PixelsToMeters(float x, float y);
 
-		const float MetersToPixels(float meters);
-		const float PixelsToMeters(float pixels);
+		static const float MetersToPixels(float meters);
+		static const float PixelsToMeters(float pixels);
 
+		static void LocalToWorldPos(TransformComponent& transform, glm::vec3& translation, glm::vec3& rotation);
+		static void WorldToLocalPos(TransformComponent& transform, TransformComponent& parentTransform);
 	private:
 		b2World* m_PhysicsWorld;
 
@@ -75,11 +78,12 @@ namespace NULLENGINE
 		static JSON WriteRigidbody2DComponent(BaseComponent* component);
 		void ViewRigidbody2DComponent(Entity& entityID);
 
-		void LocalToWorldPos(TransformComponent& transform, glm::vec3& translation, glm::vec3& rotation);
-		void WorldToLocalPos(TransformComponent& transform, TransformComponent& parentTransform);
 
 		bool InitializePhysics(EntityID entityID, NRegistry* registry);
-
+		bool InitializeColliders(EntityID entityID, NRegistry* registry, Rigidbody2DComponent& rb2d);
+		bool InitializeChildrenColliders(EntityID entityID, NRegistry* registry, Rigidbody2DComponent& rb2d, TransformComponent& parentTransform);
+		//bool HasRequiredComponents(NRegistry* registry, EntityID entityID);
+		//bool HandleParents(NRegistry* registry, EntityID entityID);
 		bool OnEntityCreated(const EntityCreatedEvent& e);
 		bool OnEntityComponentRemoved(const EntityRemoveComponentEvent& e);
 		bool OnEntityComponentAdded(const EntityAddComponentEvent& e);
@@ -91,7 +95,7 @@ namespace NULLENGINE
 
 		const glm::vec3 GRAVITY = glm::vec3(0.0f, -9.81, 0.0f);
 		// Conversion factor
-		float m_Pixels_Per_Meter = 64.0f; // 1 meter = 64 pixels
+		static float m_Pixels_Per_Meter; // 1 meter = 64 pixels
 
 
 		bool m_Simulate = false;

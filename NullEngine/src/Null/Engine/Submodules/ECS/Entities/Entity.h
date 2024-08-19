@@ -73,9 +73,9 @@ namespace NULLENGINE
 		}
 
 		template <typename T>
-		bool QueryFromEntity() const
+		bool QueryFromEntity(EntityID id) const
 		{
-			return m_Parent->HasComponent<T>(m_ID);
+			return m_Parent->HasComponent<T>(id);
 		}
 
 		BaseComponent& GetComponent(const std::string& componentName);

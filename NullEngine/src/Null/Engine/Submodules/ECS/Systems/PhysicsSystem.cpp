@@ -35,6 +35,8 @@
 
 namespace NULLENGINE
 {
+	float PhysicsSystem::m_Pixels_Per_Meter = 64.0f;
+
 	PhysicsSystem::PhysicsSystem() : m_PhysicsWorld(nullptr)
 	{
 		Require<TransformComponent>();
@@ -107,9 +109,9 @@ namespace NULLENGINE
 
 				if (m_Parent->HasComponent<ParentComponent>(entityId))
 				{
-					auto& parentComp = m_Parent->GetComponent<ParentComponent>(entityId);
+					//auto& parentComp = m_Parent->GetComponent<ParentComponent>(entityId);
 
-					TransformComponent& parentTransform = m_Parent->GetComponent<TransformComponent>(parentComp.m_Parent);
+					//TransformComponent& parentTransform = m_Parent->GetComponent<TransformComponent>(parentComp.m_Parent);
 
 					LocalToWorldPos(transform, translation, rotation);
 				}
@@ -508,6 +510,19 @@ namespace NULLENGINE
 		transform.m_Rotation = localRotationEuler;
 	}
 
+	//bool PhysicsSystem::HasRequiredComponents(NRegistry* registry, EntityID entityID)
+	//{
+	//	bool hasrb2d = registry->HasComponent<Rigidbody2DComponent>(entityID);
+	//	bool hastransform = registry->HasComponent<TransformComponent>(entityID);
+	//	bool hasColliders = (registry->HasComponent<BoxCollider2DComponent>(entityID) ||
+	//		registry->HasComponent<CircleCollider2DComponent>(entityID));
+
+	//	//if (!hasrb2d)
+	//	//{
+	//	//	if
+	//	//}
+	//}
+
 	bool PhysicsSystem::OnEntityCreated(const EntityCreatedEvent& e)
 	{
 		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
@@ -526,27 +541,39 @@ namespace NULLENGINE
 	{
 		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
 
-		if (e.GetComponentID() == Component<Rigidbody2DComponent>::GetID() || e.GetComponentID() == Component<BoxCollider2DComponent>::GetID())
+		if (e.GetComponentID() == Component<Rigidbody2DComponent>::GetID())
 		{
 			if (registry->HasComponent<Rigidbody2DComponent>(e.GetID()))
 			{
 				Rigidbody2DComponent& rb2d = registry->GetComponent<Rigidbody2DComponent>(e.GetID());
 
-				if (registry->HasComponent<BoxCollider2DComponent>(e.GetID()))
-				{
-					BoxCollider2DComponent& bc2d = registry->GetComponent<BoxCollider2DComponent>(e.GetID());
-
-					if (bc2d.m_RuntimeFixture)
-					{
-						rb2d.m_RuntimeBody->DestroyFixture(bc2d.m_RuntimeFixture);
-
-						bc2d.m_RuntimeFixture = nullptr;
-					}
-
-				}
-
 				if (rb2d.m_RuntimeBody)
 				{
+					if (registry->HasComponent<BoxCollider2DComponent>(e.GetID()))
+					{
+						BoxCollider2DComponent& bc2d = registry->GetComponent<BoxCollider2DComponent>(e.GetID());
+
+						if (bc2d.m_RuntimeFixture)
+						{
+							rb2d.m_RuntimeBody->DestroyFixture(bc2d.m_RuntimeFixture);
+
+							bc2d.m_RuntimeFixture = nullptr;
+						}
+
+					}
+
+					if (registry->HasComponent<CircleCollider2DComponent>(e.GetID()))
+					{
+						CircleCollider2DComponent& cc2d = registry->GetComponent<CircleCollider2DComponent>(e.GetID());
+
+						if (cc2d.m_RuntimeFixture)
+						{
+							rb2d.m_RuntimeBody->DestroyFixture(cc2d.m_RuntimeFixture);
+
+							cc2d.m_RuntimeFixture = nullptr;
+						}
+					}
+
 					m_PhysicsWorld->DestroyBody(rb2d.m_RuntimeBody);
 
 					rb2d.m_RuntimeBody = nullptr;
@@ -562,15 +589,12 @@ namespace NULLENGINE
 		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
 		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
 
-		if (e.GetComponentID() == Component<Rigidbody2DComponent>::GetID() ||
-			e.GetComponentID() == Component<TransformComponent>::GetID() ||
-			e.GetComponentID() == Component<BoxCollider2DComponent>::GetID() ||
-			e.GetComponentID() == Component<CircleCollider2DComponent>::GetID())
+		const auto& entityList = GetSystemEntities();
+
+		if (std::find(entityList.begin(), entityList.end(), e.GetID()) != entityList.end())
 		{
-			if (registry->HasComponent<Rigidbody2DComponent>(e.GetID()) &&
-				registry->HasComponent<TransformComponent>(e.GetID()) &&
-				(registry->HasComponent<BoxCollider2DComponent>(e.GetID()) ||
-					registry->HasComponent<CircleCollider2DComponent>(e.GetID())))
+			if (e.GetComponentID() == Component<BoxCollider2DComponent>::GetID() ||
+				e.GetComponentID() == Component<CircleCollider2DComponent>::GetID())
 			{
 				eventManager->QueueAsync(std::make_unique<InitializeBox2DEvent>(e.GetID()));
 			}
@@ -602,6 +626,20 @@ namespace NULLENGINE
 
 			}
 
+
+			if (registry->HasComponent<CircleCollider2DComponent>(id))
+			{
+				CircleCollider2DComponent& cc2d = registry->GetComponent<CircleCollider2DComponent>(id);
+
+				if (cc2d.m_RuntimeFixture)
+				{
+					rb2d.m_RuntimeBody->DestroyFixture(cc2d.m_RuntimeFixture);
+
+					cc2d.m_RuntimeFixture = nullptr;
+				}
+
+			}
+
 			if (rb2d.m_RuntimeBody)
 			{
 				m_PhysicsWorld->DestroyBody(rb2d.m_RuntimeBody);
@@ -617,104 +655,239 @@ namespace NULLENGINE
 	{
 		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
 
-		if (registry->HasComponent<Rigidbody2DComponent>(e.GetEntityID()) &&
-			registry->HasComponent<TransformComponent>(e.GetEntityID()) &&
-			(registry->HasComponent<BoxCollider2DComponent>(e.GetEntityID()) ||
-				registry->HasComponent<CircleCollider2DComponent>(e.GetEntityID())))
-		{
-			return InitializePhysics(e.GetEntityID(), registry);
-		}
-
-		return false;
+		return InitializePhysics(e.GetEntityID(), registry);
 	}
 
 	bool PhysicsSystem::InitializePhysics(EntityID entityId, NRegistry* registry)
 	{
 		TransformComponent& transform = registry->GetComponent<TransformComponent>(entityId);
 		Rigidbody2DComponent& rb2d = registry->GetComponent<Rigidbody2DComponent>(entityId);
-
-		b2BodyDef bodyDef;
-
-		bodyDef.type = (b2BodyType)rb2d.m_Type;
-
-		glm::vec3 translation = transform.m_Translation;
-		glm::vec3 rotation = transform.m_Rotation;
-
-
-		if (registry->HasComponent<ParentComponent>(entityId))
+		if (!rb2d.m_RuntimeBody)
 		{
-			auto& parentComp = registry->GetComponent<ParentComponent>(entityId);
+			b2BodyDef bodyDef;
 
-			TransformComponent& parentTransform = registry->GetComponent<TransformComponent>(parentComp.m_Parent);
+			bodyDef.type = (b2BodyType)rb2d.m_Type;
 
-			if (parentTransform.m_Dirty)
+			glm::vec3 translation = transform.m_Translation;
+			glm::vec3 rotation = transform.m_Rotation;
+
+
+			if (registry->HasComponent<ParentComponent>(entityId))
 			{
-				return false;
+				auto& parentComp = registry->GetComponent<ParentComponent>(entityId);
+
+				TransformComponent& parentTransform = registry->GetComponent<TransformComponent>(parentComp.m_Parent);
+
+				if (parentTransform.m_Dirty)
+				{
+					return false;
+				}
+
+				LocalToWorldPos(transform, translation, rotation);
 			}
 
-			LocalToWorldPos(transform, translation, rotation);
+			auto pos = PixelsToMeters(translation.x, translation.y);
+			auto vel = PixelsToMeters(rb2d.m_LinearVelocity.x, rb2d.m_LinearVelocity.y);
+
+			bodyDef.position.Set(pos.x, pos.y);
+			bodyDef.linearVelocity.Set(vel.x, vel.y);
+			bodyDef.angularVelocity = rb2d.m_AngularVelocity;
+			bodyDef.angularDamping = rb2d.m_AngularDamping;
+			bodyDef.linearDamping = rb2d.m_LinearDamping;
+			bodyDef.gravityScale = rb2d.m_GravityScale;
+			bodyDef.angle = rotation.z;
+
+
+			rb2d.m_RuntimeBody = m_PhysicsWorld->CreateBody(&bodyDef);
+
+			rb2d.m_RuntimeBody->SetFixedRotation(rb2d.m_FixedRotation);
 		}
 
-		auto pos = PixelsToMeters(translation.x, translation.y);
-		auto vel = PixelsToMeters(rb2d.m_LinearVelocity.x, rb2d.m_LinearVelocity.y);
+		if (rb2d.m_RuntimeBody)
+			return InitializeColliders(entityId, registry, rb2d);
 
-		bodyDef.position.Set(pos.x, pos.y);
-		bodyDef.linearVelocity.Set(vel.x, vel.y);
-		bodyDef.angularVelocity = rb2d.m_AngularVelocity;
-		bodyDef.angularDamping = rb2d.m_AngularDamping;
-		bodyDef.linearDamping = rb2d.m_LinearDamping;
-		bodyDef.gravityScale = rb2d.m_GravityScale;
-		bodyDef.angle = rotation.z;
+		return true;
+	}
 
-
-		rb2d.m_RuntimeBody = m_PhysicsWorld->CreateBody(&bodyDef);
-
-		rb2d.m_RuntimeBody->SetFixedRotation(rb2d.m_FixedRotation);
-
-		if (registry->HasComponent<BoxCollider2DComponent>(entityId))
+	bool PhysicsSystem::InitializeColliders(EntityID entityID, NRegistry* registry, Rigidbody2DComponent& rb2d)
+	{
+		if (registry->HasComponent<BoxCollider2DComponent>(entityID))
 		{
-			BoxCollider2DComponent& bc2d = registry->GetComponent<BoxCollider2DComponent>(entityId);
+			BoxCollider2DComponent& bc2d = registry->GetComponent<BoxCollider2DComponent>(entityID);
 
-			b2PolygonShape boxShape;
 
-			auto scale = PixelsToMeters(bc2d.m_Scale.x / 2, bc2d.m_Scale.y / 2);
-			auto offset = PixelsToMeters(bc2d.m_Offset.x, bc2d.m_Offset.y);
+			if (!bc2d.m_RuntimeFixture)
+			{
+				b2PolygonShape boxShape;
 
-			boxShape.SetAsBox(scale.x, scale.y, b2Vec2(offset.x, offset.y), 0.0f);
+				auto scale = PixelsToMeters(bc2d.m_Scale.x / 2, bc2d.m_Scale.y / 2);
+				auto offset = PixelsToMeters(bc2d.m_Offset.x, bc2d.m_Offset.y);
 
-			b2FixtureDef fixDef;
+				boxShape.SetAsBox(scale.x, scale.y, b2Vec2(offset.x, offset.y), 0.0f);
 
-			fixDef.shape = &boxShape;
-			fixDef.density = bc2d.m_Density;
-			fixDef.friction = bc2d.m_Friction;
-			fixDef.restitution = bc2d.m_Restitution;
-			fixDef.restitutionThreshold = bc2d.m_RestitutionThreshold;
+				b2FixtureDef fixDef;
 
-			bc2d.m_RuntimeFixture = rb2d.m_RuntimeBody->CreateFixture(&fixDef);
+				fixDef.shape = &boxShape;
+				fixDef.density = bc2d.m_Density;
+				fixDef.friction = bc2d.m_Friction;
+				fixDef.restitution = bc2d.m_Restitution;
+				fixDef.restitutionThreshold = bc2d.m_RestitutionThreshold;
+
+				bc2d.m_RuntimeFixture = rb2d.m_RuntimeBody->CreateFixture(&fixDef);
+			}
 		}
 
-		if (registry->HasComponent<CircleCollider2DComponent>(entityId))
+		if (registry->HasComponent<CircleCollider2DComponent>(entityID))
 		{
-			CircleCollider2DComponent& cc2d = registry->GetComponent<CircleCollider2DComponent>(entityId);
+			CircleCollider2DComponent& cc2d = registry->GetComponent<CircleCollider2DComponent>(entityID);
 
-			b2CircleShape circleShape;
+			if (!cc2d.m_RuntimeFixture)
+			{
+				b2CircleShape circleShape;
 
-			auto offset = PixelsToMeters(cc2d.m_Offset.x, cc2d.m_Offset.y);
-			auto radius = PixelsToMeters(cc2d.m_Radius);
+				auto offset = PixelsToMeters(cc2d.m_Offset.x, cc2d.m_Offset.y);
+				auto radius = PixelsToMeters(cc2d.m_Radius);
 
 
-			circleShape.m_p.Set(offset.x, offset.y);
-			circleShape.m_radius = radius;
+				circleShape.m_p.Set(offset.x, offset.y);
+				circleShape.m_radius = radius;
 
-			b2FixtureDef fixDef;
+				b2FixtureDef fixDef;
 
-			fixDef.shape = &circleShape;
-			fixDef.density = cc2d.m_Density;
-			fixDef.friction = cc2d.m_Friction;
-			fixDef.restitution = cc2d.m_Restitution;
-			fixDef.restitutionThreshold = cc2d.m_RestitutionThreshold;
+				fixDef.shape = &circleShape;
+				fixDef.density = cc2d.m_Density;
+				fixDef.friction = cc2d.m_Friction;
+				fixDef.restitution = cc2d.m_Restitution;
+				fixDef.restitutionThreshold = cc2d.m_RestitutionThreshold;
 
-			cc2d.m_RuntimeFixture = rb2d.m_RuntimeBody->CreateFixture(&fixDef);
+				cc2d.m_RuntimeFixture = rb2d.m_RuntimeBody->CreateFixture(&fixDef);
+			}
+		}
+
+		if (registry->HasComponent<ChildrenComponent>(entityID))
+		{
+			auto transform = registry->GetComponent<TransformComponent>(entityID);
+
+			if (transform.m_Dirty)
+				return false;
+
+			auto& cComp = registry->GetComponent<ChildrenComponent>(entityID);
+
+			auto& children = cComp.m_Children;
+
+			bool ret = true;
+			for (auto& child : children)
+			{
+				if (registry->HasComponent<Rigidbody2DComponent>(child))
+					continue;
+				
+				ret = InitializeChildrenColliders(child, registry, rb2d, transform);
+			}
+
+			return ret;
+		}
+
+		return true;
+	}
+
+	bool PhysicsSystem::InitializeChildrenColliders(EntityID entityID, NRegistry* registry, Rigidbody2DComponent& rb2d, TransformComponent& parentTransform)
+	{
+		TransformComponent& transform = registry->GetComponent<TransformComponent>(entityID);
+
+		auto rotation = transform.m_Rotation;
+		auto translation = transform.m_Translation;
+
+		LocalToWorldPos(transform, translation, rotation);
+
+		if (registry->HasComponent<BoxCollider2DComponent>(entityID))
+		{
+			BoxCollider2DComponent& bc2d = registry->GetComponent<BoxCollider2DComponent>(entityID);
+
+			if (!bc2d.m_RuntimeFixture)
+			{
+				b2PolygonShape boxShape;
+				auto childOffset = translation - parentTransform.m_Translation;
+				auto scale = PixelsToMeters(bc2d.m_Scale.x / 2, bc2d.m_Scale.y / 2);
+				auto childWorldPositionMeters = PixelsToMeters(childOffset.x, childOffset.y);
+
+				// Convert collider’s local offset to meters
+				auto colliderOffsetMeters = PixelsToMeters(bc2d.m_Offset.x, bc2d.m_Offset.y);
+
+				// Combine the child’s world position and the collider’s local offset
+				b2Vec2 finalOffset(childWorldPositionMeters.x + colliderOffsetMeters.x,
+					childWorldPositionMeters.y + colliderOffsetMeters.y);
+
+				boxShape.SetAsBox(scale.x, scale.y, b2Vec2(finalOffset.x, finalOffset.y), 0.0f);
+
+				b2FixtureDef fixDef;
+
+				fixDef.shape = &boxShape;
+				fixDef.density = bc2d.m_Density;
+				fixDef.friction = bc2d.m_Friction;
+				fixDef.restitution = bc2d.m_Restitution;
+				fixDef.restitutionThreshold = bc2d.m_RestitutionThreshold;
+
+				bc2d.m_RuntimeFixture = rb2d.m_RuntimeBody->CreateFixture(&fixDef);
+			}
+		}
+
+		if (registry->HasComponent<CircleCollider2DComponent>(entityID))
+		{
+			auto transform = registry->GetComponent<TransformComponent>(entityID);
+
+			if (transform.m_Dirty)
+				return false;
+
+			CircleCollider2DComponent& cc2d = registry->GetComponent<CircleCollider2DComponent>(entityID);
+
+			if (!cc2d.m_RuntimeFixture)
+			{
+				b2CircleShape circleShape;
+
+				auto radius = PixelsToMeters(cc2d.m_Radius);
+				auto childOffset = translation - parentTransform.m_Translation;
+
+				auto childWorldPositionMeters = PixelsToMeters(childOffset.x, childOffset.y);
+
+				// Convert collider’s local offset to meters
+				auto colliderOffsetMeters = PixelsToMeters(cc2d.m_Offset.x, cc2d.m_Offset.y);
+
+				// Combine the child’s world position and the collider’s local offset
+				b2Vec2 finalOffset(childWorldPositionMeters.x + colliderOffsetMeters.x,
+					childWorldPositionMeters.y + colliderOffsetMeters.y);
+
+				circleShape.m_p.Set(finalOffset.x, finalOffset.y);
+				circleShape.m_radius = radius;
+
+				b2FixtureDef fixDef;
+
+				fixDef.shape = &circleShape;
+				fixDef.density = cc2d.m_Density;
+				fixDef.friction = cc2d.m_Friction;
+				fixDef.restitution = cc2d.m_Restitution;
+				fixDef.restitutionThreshold = cc2d.m_RestitutionThreshold;
+
+				cc2d.m_RuntimeFixture = rb2d.m_RuntimeBody->CreateFixture(&fixDef);
+			}
+		}
+
+
+		if (registry->HasComponent<ChildrenComponent>(entityID))
+		{
+			auto& cComp = registry->GetComponent<ChildrenComponent>(entityID);
+
+			auto& children = cComp.m_Children;
+
+			bool ret = true;
+			for (auto& child : children)
+			{
+				if (registry->HasComponent<Rigidbody2DComponent>(child))
+					continue;
+
+				ret = InitializeChildrenColliders(child, registry, rb2d, parentTransform);
+			}
+
+			return ret;
 		}
 
 		return true;

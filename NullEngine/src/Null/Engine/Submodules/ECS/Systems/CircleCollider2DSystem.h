@@ -67,6 +67,10 @@ namespace NULLENGINE
 		glm::vec4 m_Color = glm::vec4(1, 0.54, 0.31, 0.75);
 
 		void ViewCircleCollider2DComponent(Entity& entityID);
+
+		void CalculateOffset(glm::vec3& offset, Entity& entity);
+		void CalculateOffset_rec(glm::vec3& offset, Entity& entity, Entity& parent, NSceneManager* sceneManager);
+
 	};
 
 }

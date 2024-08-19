@@ -66,6 +66,9 @@ namespace NULLENGINE
 		static void CreateBoxCollider2DComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
 		void ViewBoxCollider2DComponent(Entity& entityID);
 
+
+		void CalculateOffset(glm::vec3& offset, Entity& entity);
+		void CalculateOffset_rec(glm::vec3& offset, Entity& entity, Entity& parent, NSceneManager* sceneManager);
 	};
 
 }

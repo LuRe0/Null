@@ -483,4 +483,58 @@ namespace NULLENGINE
     private:
         const uint32_t m_EntityID;
     };
+
+
+    class EntityParentedEvent : public Event
+    {
+    public:
+        EntityParentedEvent(uint32_t parentID, uint32_t childID)
+            : m_ParentID(parentID), m_ChildID(childID)
+        {}
+
+
+        const uint32_t& GetParentID() const { return m_ParentID; }
+        const uint32_t& GetChildID() const { return m_ChildID; }
+
+
+        std::string Print() const override
+        {
+            std::stringstream ss;
+            ss << "EntityParentedEvent";
+            return ss.str();
+        }
+
+        EVENT_CLASS_TYPE(EntityParented)
+
+    private:
+        const uint32_t m_ParentID;
+        const uint32_t m_ChildID;
+    };
+
+
+    class EntitySeparatedEvent : public Event
+    {
+    public:
+        EntitySeparatedEvent(uint32_t parentID, uint32_t childID)
+            : m_ParentID(parentID), m_ChildID(childID)
+        {}
+
+
+        const uint32_t& GetParentID() const { return m_ParentID; }
+        const uint32_t& GetChildID() const { return m_ChildID; }
+
+
+        std::string Print() const override
+        {
+            std::stringstream ss;
+            ss << "EntitySeparatedEvent";
+            return ss.str();
+        }
+
+        EVENT_CLASS_TYPE(EntitySeparated)
+
+    private:
+        const uint32_t m_ParentID;
+        const uint32_t m_ChildID;
+    };
 }

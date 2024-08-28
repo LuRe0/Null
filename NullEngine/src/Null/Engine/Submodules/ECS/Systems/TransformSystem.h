@@ -69,6 +69,10 @@ namespace NULLENGINE
 
 		void ViewTransformComponent(Entity& entity);
 
+
+		bool OnEntityParented(const EntityParentedEvent& e);
+		bool OnEntitySeparated(const EntitySeparatedEvent& e);
+
 	};
 
 }

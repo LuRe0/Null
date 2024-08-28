@@ -56,10 +56,13 @@ namespace NULLENGINE
 	{
 		ISystem::Init();
 
-		//NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
 
 
 		//SUBSCRIBE_EVENT(WindowResizeEvent, &TransformSystem::OnWindowResize, eventManager);
+
+		SUBSCRIBE_EVENT(EntityParentedEvent, &TransformSystem::OnEntityParented, eventManager, EventPriority::High);
+		SUBSCRIBE_EVENT(EntitySeparatedEvent, &TransformSystem::OnEntitySeparated, eventManager, EventPriority::High);
 	}
 
 	void TransformSystem::Update(float dt)
@@ -80,16 +83,26 @@ namespace NULLENGINE
 					transform.m_Scale.z = 1.0f;
 				}
 
-				glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), transform.m_Translation);
-				// Calculate rotation matrix (assuming Euler angles in radians)
-				glm::mat4 rotationMatrix = glm::toMat4(glm::quat(glm::radians(transform.m_Rotation)));
+				if (!registry->HasComponent<ParentComponent>(entityId))
 
-				glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), transform.m_Scale);
+				{
+					glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), transform.m_Translation);
+					// Calculate rotation matrix (assuming Euler angles in radians)
+					glm::mat4 rotationMatrix = glm::toMat4(glm::quat(glm::radians(transform.m_Rotation)));
 
-				transform.m_TransformMatrix = translationMatrix * rotationMatrix * scaleMatrix;
+					glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), transform.m_Scale);
 
+					transform.m_TransformMatrix = translationMatrix * rotationMatrix * scaleMatrix;
 
+				}
 
+				if (registry->HasComponent<ParentComponent>(entityId))
+				{
+					auto& parentComp = registry->GetComponent<ParentComponent>(entityId);
+					// Get the parent's world transform and update the child
+					TransformComponent& parentTransform = registry->GetComponent<TransformComponent>(parentComp.m_Parent);
+					UpdateChildTransform(entityId, parentTransform, registry);
+				}
 				if (registry->HasComponent<ChildrenComponent>(entityId))
 				{
 					auto& childrenComp = registry->GetComponent<ChildrenComponent>(entityId);
@@ -98,13 +111,7 @@ namespace NULLENGINE
 						UpdateChildTransform(childId, transform, registry);
 					}
 				}
-				else if (registry->HasComponent<ParentComponent>(entityId))
-				{
-					auto& parentComp = registry->GetComponent<ParentComponent>(entityId);
-					// Get the parent's world transform and update the child
-					TransformComponent& parentTransform = registry->GetComponent<TransformComponent>(parentComp.m_Parent);
-					UpdateChildTransform(entityId, parentTransform, registry);
-				}
+
 
 				//if (m_Parent->HasComponent<Rigidbody2DComponent>(entityId))
 				//{
@@ -201,8 +208,8 @@ namespace NULLENGINE
 		if (!childTransform.m_Enabled)
 			return;
 
-		if (!parentTransform.m_Dirty)
-			return;
+	/*	if (!parentTransform.m_Dirty)
+			return;*/
 
 		//	glm::mat4 inverseParentTransform = glm::inverse(parentTransform.m_TransformMatrix);
 
@@ -230,6 +237,7 @@ namespace NULLENGINE
 		//}
 
 		// Compute the child's local transform matrix
+		//PhysicsSystem::LocalToWorldPos(childTransform, childTransform.m_Translation, childTransform.m_Rotation, childTransform.m_Scale);
 		glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), childTransform.m_Translation);
 		glm::mat4 rotationMatrix = glm::toMat4(glm::quat(glm::radians(childTransform.m_Rotation)));
 		glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), childTransform.m_Scale);
@@ -241,7 +249,7 @@ namespace NULLENGINE
 
 		// Mark the child's transform as clean
 	
-		childTransform.m_DirectManipulation = true;
+		childTransform.m_DirectManipulation  = true;
 
 		// Recursively update the child’s children
 		if (registry->HasComponent<ChildrenComponent>(childId))
@@ -304,5 +312,82 @@ namespace NULLENGINE
 			transform.m_Dirty = true;
 		}
 
+	}
+	bool TransformSystem::OnEntityParented(const EntityParentedEvent& e)
+	{
+		auto* sceneManager = NEngine::Instance().Get<NSceneManager>();
+
+		auto& parent = sceneManager->GetCurrentScene()->GetEntity(e.GetParentID());
+		auto& child = sceneManager->GetCurrentScene()->GetEntity(e.GetChildID());
+
+		auto& parentTransform = parent.Get<TransformComponent>();
+		auto& childTransform = child.Get<TransformComponent>();
+
+		auto rotation = parentTransform.m_Rotation;
+		auto scale = parentTransform.m_Scale;
+		auto translation = parentTransform.m_Translation;
+
+		PhysicsSystem::LocalToWorldPos(parentTransform, translation, rotation, scale);
+
+		glm::mat4 inverseParentTransform = glm::inverse(parentTransform.m_TransformMatrix);
+
+		childTransform.m_Translation = glm::vec3((inverseParentTransform * glm::vec4(childTransform.m_Translation, 1.0f)));
+		childTransform.m_Scale = childTransform.m_Scale / scale;
+
+		// Extract parent rotation as Euler angles (assume in degrees)
+		glm::vec3 parentRotationEuler = rotation; // Euler angles in degrees
+
+		// Convert parent rotation to quaternion
+		glm::vec3 parentRotationRadians = glm::radians(parentRotationEuler);
+		glm::quat parentRotation = glm::quat(glm::yawPitchRoll(parentRotationRadians.y, parentRotationRadians.x, parentRotationRadians.z));
+
+		// Convert child rotation from Euler angles (assume in degrees)
+		glm::vec3 childRotationEuler = childTransform.m_Rotation; // Euler angles in degrees
+		glm::vec3 childRotationRadians = glm::radians(childRotationEuler);
+		glm::quat childRotation = glm::quat(glm::yawPitchRoll(childRotationRadians.y, childRotationRadians.x, childRotationRadians.z));
+
+		// Compute local rotation by applying the inverse of the parent’s rotation
+		glm::quat localRotation = glm::normalize(glm::inverse(parentRotation) * childRotation);
+
+		// Convert local rotation back to Euler angles
+		glm::vec3 localRotationEuler = glm::degrees(glm::eulerAngles(localRotation));
+		childTransform.m_Rotation = localRotationEuler;
+
+		return true;
+	}
+	bool TransformSystem::OnEntitySeparated(const EntitySeparatedEvent& e)
+	{
+		auto* sceneManager = NEngine::Instance().Get<NSceneManager>();
+
+		auto& parent = sceneManager->GetCurrentScene()->GetEntity(e.GetParentID());
+		auto& child = sceneManager->GetCurrentScene()->GetEntity(e.GetChildID());
+
+		auto& parentTransform = parent.Get<TransformComponent>();
+		auto& childTransform = child.Get<TransformComponent>();
+
+		// Apply parent's transformation to child's translation
+		childTransform.m_Translation = glm::vec3(parentTransform.m_TransformMatrix * glm::vec4(childTransform.m_Translation, 1.0f));
+
+		// Scale the child's scale by the parent's scale
+		childTransform.m_Scale = childTransform.m_Scale * parentTransform.m_Scale;
+
+		// Convert parent rotation to quaternion
+		glm::vec3 parentRotationEuler = parentTransform.m_Rotation;
+		glm::vec3 parentRotationRadians = glm::radians(parentRotationEuler);
+		glm::quat parentRotation = glm::quat(glm::yawPitchRoll(parentRotationRadians.y, parentRotationRadians.x, parentRotationRadians.z));
+
+		// Convert child rotation from Euler angles
+		glm::vec3 childRotationEuler = childTransform.m_Rotation;
+		glm::vec3 childRotationRadians = glm::radians(childRotationEuler);
+		glm::quat childRotation = glm::quat(glm::yawPitchRoll(childRotationRadians.y, childRotationRadians.x, childRotationRadians.z));
+
+		// Compute world rotation by applying the parent's rotation
+		glm::quat worldRotation = glm::normalize(parentRotation * childRotation);
+
+		// Convert world rotation back to Euler angles
+		glm::vec3 worldRotationEuler = glm::degrees(glm::eulerAngles(worldRotation));
+		childTransform.m_Rotation = worldRotationEuler;
+
+		return true;
 	}
 }

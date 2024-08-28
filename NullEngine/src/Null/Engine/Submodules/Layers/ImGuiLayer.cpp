@@ -542,7 +542,7 @@ namespace NULLENGINE
 
 								glm::vec3 localdeltaRotation = localRotationEuler - transform.m_Rotation;
 
-								if (glm::any(glm::epsilonNotEqual(localdeltaRotation, glm::vec3(0.0f), epsilon)))
+								if (glm::length(localdeltaRotation) > epsilon)
 								{
 									transform.m_Rotation += localdeltaRotation;
 								}
@@ -551,11 +551,11 @@ namespace NULLENGINE
 							{
 								glm::vec3 deltaRotation = glm::degrees(rotation) - transform.m_Rotation;
 
-								if (glm::any(glm::epsilonNotEqual(deltaRotation, glm::vec3(0.0f), epsilon)))
+								if (glm::length(deltaRotation) > epsilon)
 								{
 									transform.m_Rotation += deltaRotation;
 								}
-							}
+							}  
 						}
 						transform.m_DirectManipulation = true;
 					}
@@ -719,6 +719,10 @@ namespace NULLENGINE
 
 				if (m_GuizmoType == -1)
 					SetGuizmo(ImGuizmo::OPERATION::TRANSLATE);
+			}
+			else if (ImGui::IsMouseClicked(0) && pixel <= 0)
+			{
+				m_PannelData.m_SelectedEntity = {};
 			}
 		}
 

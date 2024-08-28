@@ -64,6 +64,8 @@ namespace NULLENGINE
 		SUBSCRIBE_EVENT(EntityAddComponentEvent, &PhysicsSystem::OnEntityComponentAdded, eventManager, EventPriority::High);
 		SUBSCRIBE_EVENT(SceneSwitchEvent, &PhysicsSystem::OnSceneSwitched, eventManager, EventPriority::High);
 		SUBSCRIBE_EVENT(InitializeBox2DEvent, &PhysicsSystem::OnSceneStart, eventManager, EventPriority::High);
+		SUBSCRIBE_EVENT(EntityParentedEvent, &PhysicsSystem::OnEntityParented, eventManager, EventPriority::High);
+		SUBSCRIBE_EVENT(EntitySeparatedEvent, &PhysicsSystem::OnEntitySeparated, eventManager, EventPriority::High);
 
 		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
 
@@ -484,6 +486,22 @@ namespace NULLENGINE
 		rotation = localRotationEuler;
 	}
 
+	void PhysicsSystem::LocalToWorldPos(TransformComponent& transform, glm::vec3& translation, glm::vec3& rotation, glm::vec3& scale)
+	{
+		glm::vec3 eulerRadians = glm::radians(rotation);
+
+		// Create a quaternion from Euler angles (yaw, pitch, roll)
+		auto orientation = glm::quat(glm::yawPitchRoll(eulerRadians.y, eulerRadians.x, eulerRadians.z));
+
+		glm::vec3 skew; // usually can be set to glm::vec3(0.0f)
+		glm::vec4 perspective; // usually can be set to glm::vec4(0.0f)
+		glm::decompose(transform.m_TransformMatrix, scale, orientation, translation, skew, perspective);
+
+
+		glm::vec3 localRotationEuler = glm::degrees(glm::eulerAngles(orientation));
+		rotation = localRotationEuler;
+	}
+
 	void PhysicsSystem::WorldToLocalPos(TransformComponent& transform, TransformComponent& parentTransform)
 	{
 		glm::mat4 inverseParentTransform = glm::inverse(parentTransform.m_TransformMatrix);
@@ -584,6 +602,148 @@ namespace NULLENGINE
 		return true;
 	}
 
+	bool PhysicsSystem::OnEntityParented(const EntityParentedEvent& e)
+	{
+		auto* sceneManager = NEngine::Instance().Get<NSceneManager>();
+
+		auto& parent = sceneManager->GetCurrentScene()->GetEntity(e.GetParentID());
+		auto& child = sceneManager->GetCurrentScene()->GetEntity(e.GetChildID());
+
+		if (parent.Has<Rigidbody2DComponent>())
+		{
+			auto& rb2d = parent.Get<Rigidbody2DComponent>();
+
+			if (!child.Has<Rigidbody2DComponent>())
+			{
+				if (child.Has<BoxCollider2DComponent>() ||
+					child.Has<CircleCollider2DComponent>())
+				{
+					if (child.Has<BoxCollider2DComponent>())
+					{
+						BoxCollider2DComponent& bc2d = child.Get<BoxCollider2DComponent>();
+
+
+						if (!bc2d.m_RuntimeFixture)
+						{
+							b2PolygonShape boxShape;
+
+							auto scale = PixelsToMeters(bc2d.m_Scale.x / 2, bc2d.m_Scale.y / 2);
+							auto offset = PixelsToMeters(bc2d.m_Offset.x, bc2d.m_Offset.y);
+
+							boxShape.SetAsBox(scale.x, scale.y, b2Vec2(offset.x, offset.y), 0.0f);
+
+							b2FixtureDef fixDef;
+
+							fixDef.shape = &boxShape;
+							fixDef.density = bc2d.m_Density;
+							fixDef.friction = bc2d.m_Friction;
+							fixDef.restitution = bc2d.m_Restitution;
+							fixDef.restitutionThreshold = bc2d.m_RestitutionThreshold;
+
+							bc2d.m_RuntimeFixture = rb2d.m_RuntimeBody->CreateFixture(&fixDef);
+						}
+					}
+
+					if (child.Has<CircleCollider2DComponent>())
+					{
+						CircleCollider2DComponent& cc2d = child.Get<CircleCollider2DComponent>();
+
+						if (!cc2d.m_RuntimeFixture)
+						{
+							b2CircleShape circleShape;
+
+							auto offset = PixelsToMeters(cc2d.m_Offset.x, cc2d.m_Offset.y);
+							auto radius = PixelsToMeters(cc2d.m_Radius);
+
+
+							circleShape.m_p.Set(offset.x, offset.y);
+							circleShape.m_radius = radius;
+
+							b2FixtureDef fixDef;
+
+							fixDef.shape = &circleShape;
+							fixDef.density = cc2d.m_Density;
+							fixDef.friction = cc2d.m_Friction;
+							fixDef.restitution = cc2d.m_Restitution;
+							fixDef.restitutionThreshold = cc2d.m_RestitutionThreshold;
+
+							cc2d.m_RuntimeFixture = rb2d.m_RuntimeBody->CreateFixture(&fixDef);
+						}
+					}
+
+				}
+			}
+		}
+		else
+		{
+			if (parent.Has<ParentComponent>())
+			{
+				auto& pComp = parent.Get<ParentComponent>();
+
+				auto& gParent = sceneManager->GetCurrentScene()->GetEntity(pComp.m_Parent);
+
+				HandleParenting_Rec(sceneManager,gParent, child);
+			}
+		}
+
+		return true;
+	}
+
+	bool PhysicsSystem::OnEntitySeparated(const EntitySeparatedEvent& e)
+	{
+		auto* sceneManager = NEngine::Instance().Get<NSceneManager>();
+
+		auto& parent = sceneManager->GetCurrentScene()->GetEntity(e.GetParentID());
+		auto& child = sceneManager->GetCurrentScene()->GetEntity(e.GetChildID());
+
+		if (parent.Has<Rigidbody2DComponent>())
+		{
+			auto& rb2d = parent.Get<Rigidbody2DComponent>();
+
+			if (!child.Has<Rigidbody2DComponent>())
+			{
+				if (child.Has<BoxCollider2DComponent>() ||
+					child.Has<CircleCollider2DComponent>())
+				{
+					if (child.Has<BoxCollider2DComponent>())
+					{
+						BoxCollider2DComponent& bc2d = child.Get<BoxCollider2DComponent>();
+
+
+						if (!bc2d.m_RuntimeFixture)
+						{
+							rb2d.m_RuntimeBody->DestroyFixture(bc2d.m_RuntimeFixture);
+						}
+					}
+
+					if (child.Has<CircleCollider2DComponent>())
+					{
+						CircleCollider2DComponent& cc2d = child.Get<CircleCollider2DComponent>();
+
+						if (cc2d.m_RuntimeFixture)
+						{
+							rb2d.m_RuntimeBody->DestroyFixture(cc2d.m_RuntimeFixture);
+						}
+					}
+
+				}
+			}
+		}
+		else
+		{
+			if (parent.Has<ParentComponent>())
+			{
+				auto& pComp = parent.Get<ParentComponent>();
+
+				auto& gParent = sceneManager->GetCurrentScene()->GetEntity(pComp.m_Parent);
+
+				HandleSeparation_Rec(sceneManager, gParent, child);
+			}
+		}
+
+		return true;
+	}
+
 	bool PhysicsSystem::OnEntityComponentAdded(const EntityAddComponentEvent& e)
 	{
 		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
@@ -656,6 +816,134 @@ namespace NULLENGINE
 		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
 
 		return InitializePhysics(e.GetEntityID(), registry);
+	}
+
+	void PhysicsSystem::HandleParenting_Rec(NSceneManager* sceneManager,Entity& parent, Entity& child)
+	{
+		if (parent.Has<Rigidbody2DComponent>())
+		{
+			auto& rb2d = parent.Get<Rigidbody2DComponent>();
+
+			if (!child.Has<Rigidbody2DComponent>())
+			{
+				if (child.Has<BoxCollider2DComponent>() ||
+					child.Has<CircleCollider2DComponent>())
+				{
+					if (child.Has<BoxCollider2DComponent>())
+					{
+						BoxCollider2DComponent& bc2d = child.Get<BoxCollider2DComponent>();
+
+
+						if (!bc2d.m_RuntimeFixture)
+						{
+							b2PolygonShape boxShape;
+
+							auto scale = PixelsToMeters(bc2d.m_Scale.x / 2, bc2d.m_Scale.y / 2);
+							auto offset = PixelsToMeters(bc2d.m_Offset.x, bc2d.m_Offset.y);
+
+							boxShape.SetAsBox(scale.x, scale.y, b2Vec2(offset.x, offset.y), 0.0f);
+
+							b2FixtureDef fixDef;
+
+							fixDef.shape = &boxShape;
+							fixDef.density = bc2d.m_Density;
+							fixDef.friction = bc2d.m_Friction;
+							fixDef.restitution = bc2d.m_Restitution;
+							fixDef.restitutionThreshold = bc2d.m_RestitutionThreshold;
+
+							bc2d.m_RuntimeFixture = rb2d.m_RuntimeBody->CreateFixture(&fixDef);
+						}
+					}
+
+					if (child.Has<CircleCollider2DComponent>())
+					{
+						CircleCollider2DComponent& cc2d = child.Get<CircleCollider2DComponent>();
+
+						if (!cc2d.m_RuntimeFixture)
+						{
+							b2CircleShape circleShape;
+
+							auto offset = PixelsToMeters(cc2d.m_Offset.x, cc2d.m_Offset.y);
+							auto radius = PixelsToMeters(cc2d.m_Radius);
+
+
+							circleShape.m_p.Set(offset.x, offset.y);
+							circleShape.m_radius = radius;
+
+							b2FixtureDef fixDef;
+
+							fixDef.shape = &circleShape;
+							fixDef.density = cc2d.m_Density;
+							fixDef.friction = cc2d.m_Friction;
+							fixDef.restitution = cc2d.m_Restitution;
+							fixDef.restitutionThreshold = cc2d.m_RestitutionThreshold;
+
+							cc2d.m_RuntimeFixture = rb2d.m_RuntimeBody->CreateFixture(&fixDef);
+						}
+					}
+
+				}
+			}
+		}
+		else
+		{
+			if (parent.Has<ParentComponent>())
+			{
+				auto& pComp = parent.Get<ParentComponent>();
+
+				auto& gParent = sceneManager->GetCurrentScene()->GetEntity(pComp.m_Parent);
+
+				HandleParenting_Rec(sceneManager,gParent, child);
+			}
+		}
+	}
+
+	void PhysicsSystem::HandleSeparation_Rec(NSceneManager* sceneManager, Entity& parent, Entity& child)
+	{
+		if (parent.Has<Rigidbody2DComponent>())
+		{
+			auto& rb2d = parent.Get<Rigidbody2DComponent>();
+
+			if (!child.Has<Rigidbody2DComponent>())
+			{
+				if (child.Has<BoxCollider2DComponent>() ||
+					child.Has<CircleCollider2DComponent>())
+				{
+					if (child.Has<BoxCollider2DComponent>())
+					{
+						BoxCollider2DComponent& bc2d = child.Get<BoxCollider2DComponent>();
+
+
+						if (!bc2d.m_RuntimeFixture)
+						{
+							rb2d.m_RuntimeBody->DestroyFixture(bc2d.m_RuntimeFixture);
+						}
+					}
+
+					if (child.Has<CircleCollider2DComponent>())
+					{
+						CircleCollider2DComponent& cc2d = child.Get<CircleCollider2DComponent>();
+
+						if (cc2d.m_RuntimeFixture)
+						{
+							rb2d.m_RuntimeBody->DestroyFixture(cc2d.m_RuntimeFixture);
+						}
+					}
+
+				}
+			}
+		}
+		else
+		{
+			if (parent.Has<ParentComponent>())
+			{
+				auto& pComp = parent.Get<ParentComponent>();
+
+				auto& gParent = sceneManager->GetCurrentScene()->GetEntity(pComp.m_Parent);
+
+				HandleSeparation_Rec(sceneManager, gParent, child);
+			}
+		}
 	}
 
 	bool PhysicsSystem::InitializePhysics(EntityID entityId, NRegistry* registry)

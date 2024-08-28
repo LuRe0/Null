@@ -70,6 +70,7 @@ namespace NULLENGINE
 		static const float PixelsToMeters(float pixels);
 
 		static void LocalToWorldPos(TransformComponent& transform, glm::vec3& translation, glm::vec3& rotation);
+		static void LocalToWorldPos(TransformComponent& transform, glm::vec3& translation, glm::vec3& rotation, glm::vec3& scale);
 		static void WorldToLocalPos(TransformComponent& transform, TransformComponent& parentTransform);
 	private:
 		b2World* m_PhysicsWorld;
@@ -86,10 +87,16 @@ namespace NULLENGINE
 		//bool HandleParents(NRegistry* registry, EntityID entityID);
 		bool OnEntityCreated(const EntityCreatedEvent& e);
 		bool OnEntityComponentRemoved(const EntityRemoveComponentEvent& e);
+		bool OnEntityParented(const EntityParentedEvent& e);
+		bool OnEntitySeparated(const EntitySeparatedEvent& e);
 		bool OnEntityComponentAdded(const EntityAddComponentEvent& e);
 		bool OnSceneSwitched(const SceneSwitchEvent& e);
 		bool OnSceneStart(const InitializeBox2DEvent& e);
 
+
+
+		void HandleParenting_Rec(NSceneManager* sceneManager, Entity& parent, Entity& child);
+		void HandleSeparation_Rec(NSceneManager* sceneManager, Entity& parent, Entity& child);
 		float m_Thickness = 0.55f;
 		glm::vec4 m_Color = glm::vec4(0, 0, 1, 1);
 

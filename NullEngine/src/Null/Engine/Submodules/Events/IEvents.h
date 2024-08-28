@@ -45,6 +45,7 @@ namespace NULLENGINE
 			InitializeBox2D,
 			ScriptCreated, ScriptRemoved, ScriptModified,
 			EngineRunState, EngineEditState,
+			EntityParented, EntitySeparated,
 		};
 
 		virtual std::unique_ptr<Event> Clone() const = 0;

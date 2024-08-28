@@ -146,7 +146,7 @@ namespace NULLENGINE
 		if (!jsonWrapper.Empty())
 		{
 			comp->m_Fade = jsonWrapper.GetFloat("fade", 0.005f);
-			comp->m_Thickness = jsonWrapper.GetFloat("thickness", 1.0f);
+			comp->m_Thickness = std::clamp(comp->m_Thickness, 0.02f, jsonWrapper.GetFloat("thickness", 1.0f));
 
 			comp->m_FrameIndex = jsonWrapper.GetInt("frameindex", 0);
 			glm::vec2 dimension = jsonWrapper.GetVec2("dimension", { 1.0f, 1.0f });
@@ -201,7 +201,7 @@ namespace NULLENGINE
 
 
 
-		ImGui::DragFloat("Thickness", &sprite.m_Thickness, 0.01f, 0);
+		ImGui::DragFloat("Thickness", &sprite.m_Thickness, 0.02f, 0.01f, 1.0f);
 
 		ImGui::DragFloat("Fade", &sprite.m_Fade, 0.001f, 0);
 

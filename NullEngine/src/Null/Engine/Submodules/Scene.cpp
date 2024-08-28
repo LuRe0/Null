@@ -182,6 +182,8 @@ namespace NULLENGINE
 
 		m_Entities.push_back(entity);
 
+		entity.Add<TransformComponent>();
+
 		eventManager->QueueEvent(std::make_unique<EntityCreatedEvent>(entity.GetID()));
 
 		return entity.GetID();

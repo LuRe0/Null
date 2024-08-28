@@ -108,7 +108,7 @@ namespace NULLENGINE
 				translation = (parentTransform.m_TransformMatrix * glm::vec4(translation, 1.0f));
 			}
 
-			translation += glm::vec3(bc2d.m_Offset, transform.m_Translation.z + transform.m_Scale.z * 0.5f + 0.50f);
+			translation += glm::vec3(bc2d.m_Offset, transform.m_Translation.z + transform.m_Scale.z * 0.5f + 1.0f);
 
 			glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), translation);
 			// Calculate rotation matrix (assuming Euler angles in radians)
@@ -123,7 +123,7 @@ namespace NULLENGINE
 						0, entityId, 0.05f, 0.005f, RenderData::INSTANCED)*/
 						//model, mesh, spritesrc, tint, shadername, frameindex, entity
 			renderer->AddDebugRenderCall(std::make_unique<ElementData>(matrix, meshManager->Get("Quad"), nullptr, m_Color, "", 0,
-				entityId, m_Thickness, 0.005f, RenderData::INSTANCED, depth));
+				entityId, m_Thickness, 0.005f, RenderData::INSTANCED, -depth));
 		}
 	}
 

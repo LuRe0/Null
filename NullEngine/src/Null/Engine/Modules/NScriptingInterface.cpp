@@ -373,6 +373,13 @@ return Template_Script
                 [](glm::vec3& a, glm::vec3& b) { return glm::distance(a, b); },
                 [](glm::vec4& a, glm::vec4& b) { return glm::distance(a, b); }
         ));
+        lua.set_function("length",
+            sol::overload(
+                [](glm::vec2& a) { return glm::length(a); },
+                [](glm::vec3& a) { return glm::length(a); },
+                [](glm::vec4& a) { return glm::length(a); }
+        ));
+
 
         lua.set_function("mix",
             sol::overload(

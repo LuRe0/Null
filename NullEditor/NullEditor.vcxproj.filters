@@ -15,6 +15,9 @@
     <ClInclude Include="src\Pannels\EditorConsolePannel.h">
       <Filter>Pannels</Filter>
     </ClInclude>
+    <ClInclude Include="src\Pannels\EditorToolbarPannel.h">
+      <Filter>Pannels</Filter>
+    </ClInclude>
     <ClInclude Include="src\Pannels\ModuleStatsPannel.h">
       <Filter>Pannels</Filter>
     </ClInclude>
@@ -24,7 +27,6 @@
     <ClInclude Include="src\Pannels\ScenePropertyPannel.h">
       <Filter>Pannels</Filter>
     </ClInclude>
-    <ClInclude Include="src\Pannels\EditorToolbarPannel.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\NullEditor.cpp" />
@@ -37,6 +39,9 @@
     <ClCompile Include="src\Pannels\EditorConsolePannel.cpp">
       <Filter>Pannels</Filter>
     </ClCompile>
+    <ClCompile Include="src\Pannels\EditorToolbarPannel.cpp">
+      <Filter>Pannels</Filter>
+    </ClCompile>
     <ClCompile Include="src\Pannels\ModuleStatsPannel.cpp">
       <Filter>Pannels</Filter>
     </ClCompile>
@@ -46,6 +51,5 @@
     <ClCompile Include="src\Pannels\ScenePropertyPannel.cpp">
       <Filter>Pannels</Filter>
     </ClCompile>
-    <ClCompile Include="src\Pannels\EditorToolbarPannel.cpp" />
   </ItemGroup>
 </Project>

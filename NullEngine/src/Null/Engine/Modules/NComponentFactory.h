@@ -172,6 +172,18 @@ namespace NULLENGINE
             m_TypeRegistry["get_component"][Component<T>::GetID()] = [](Entity& entity, sol::this_state s) {
                 return get_component<T>(entity, s);
                 };
+
+            m_TypeRegistry["has_component"][Component<T>::GetID()] = [](Entity& entity, sol::this_state s) {
+                return has_component<T>(entity, s);
+                };
+
+            m_TypeRegistry["remove_component"][Component<T>::GetID()] = [](Entity& entity, sol::this_state s) {
+                return remove_component<T>(entity, s);
+                };
+
+            m_TypeRegistry["add_component"][Component<T>::GetID()] = [](Entity& entity, sol::this_state s) {
+                return add_component<T>(entity, s);
+                };
         }
     };
 

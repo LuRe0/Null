@@ -59,6 +59,7 @@ extern NULLENGINE::Application* NULLENGINE::CreateApplication();
 		app->Shutdown();
 		app->Unload();
 
+
 		delete app;
 	}
 #else

@@ -90,6 +90,8 @@ namespace NULLENGINE
 		EntityID LoadArchetype(const std::string& name);
 
 		Entity& GetEntity(const EntityID& entityID);
+
+		bool HasEntity(const EntityID& entityID);
 		
 		void Serialize(const std::string& name = "");
 

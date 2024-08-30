@@ -79,6 +79,8 @@ namespace NULLENGINE
 		SUBSCRIBE_EVENT(ScriptModifiedEvent, &ScriptSystem::OnScriptModified, eventManager, EventPriority::High);
 		SUBSCRIBE_EVENT(ScriptRemovedEvent, &ScriptSystem::OnScriptRemoved, eventManager, EventPriority::High);
 		SUBSCRIBE_EVENT(SceneSwitchEvent, &ScriptSystem::OnSceneSwitched, eventManager, EventPriority::Low);
+		SUBSCRIBE_EVENT(CollisionEnterEvent, &ScriptSystem::OnCollisionEnter, eventManager, EventPriority::High);
+		SUBSCRIBE_EVENT(CollisionExitEvent, &ScriptSystem::OnCollisionExit, eventManager, EventPriority::High);
 
 
 	}
@@ -236,7 +238,7 @@ namespace NULLENGINE
 
 		ScriptComponent& script = entity.Get<ScriptComponent>();
 
-		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen  |  ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_FramePadding;
+		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_FramePadding;
 		flags |= ImGuiTreeNodeFlags_OpenOnDoubleClick;
 		flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
 
@@ -261,7 +263,7 @@ namespace NULLENGINE
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 0.5f, 0.5f, 1.0f));
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(1.0f, 0.3f, 0.3f, 1.0f));
 
-	
+
 			if (ImGui::SmallButton("X"))
 			{
 				removed = true;
@@ -479,7 +481,11 @@ namespace NULLENGINE
 			sol::table script = m_LuaState.script_file(fullPath, scriptComponent.m_Environment);
 			//scriptComponent.m_Script_Names.push_back(scriptname);
 
-			scriptComponent.m_Environment["pEntity"] = &scene->GetCurrentScene()->GetEntity(id);
+			auto& pEntity = scene->GetCurrentScene()->GetEntity(id);
+			scriptComponent.m_Environment["pEntity"] = &pEntity;
+
+
+
 
 			sol::table data = script["data"];
 			for (auto& pair : data)
@@ -540,7 +546,7 @@ namespace NULLENGINE
 		}
 
 
-		auto newScr = scriptComponent.m_Scripts.back();
+		auto& newScr = scriptComponent.m_Scripts.back();
 		if (newScr.valid())
 		{
 			sol::function start_func = newScr["Start"];
@@ -661,6 +667,68 @@ namespace NULLENGINE
 			InitializeScripts(entityId);
 		}
 
+		return true;
+	}
+
+	bool ScriptSystem::OnCollisionEnter(const CollisionEnterEvent& e)
+	{
+		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+		auto* sceneManager = NEngine::Instance().Get<NSceneManager>();
+		auto* scene = sceneManager->GetCurrentScene();
+		if (scene->HasEntity(e.GetEntityB()))
+		{
+			auto& entityB = scene->GetEntity(e.GetEntityB()); // Get the Entity directly
+
+			if (registry->HasComponent<ScriptComponent>(e.GetEntityA()))
+			{
+				ScriptComponent& scriptComponent = registry->GetComponent<ScriptComponent>(e.GetEntityA());
+
+				for (size_t i = 0; i < scriptComponent.m_Scripts.size(); i++)
+				{
+					auto& script = scriptComponent.m_Scripts[i];
+
+					if (script.valid())
+					{
+						sol::function collision_enter_func = script["OnCollisionEnter"];
+
+						if (collision_enter_func.valid())
+						{
+							collision_enter_func(script, entityB); // Pass the actual Entity
+						}
+					}
+				}
+			}
+		}
+
+		return true;
+	}
+
+	bool ScriptSystem::OnCollisionExit(const CollisionExitEvent& e)
+	{
+		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+		auto* sceneManager = NEngine::Instance().Get<NSceneManager>();
+		auto* scene = sceneManager->GetCurrentScene();
+		if (scene->HasEntity(e.GetEntityB()))
+		{
+			auto& entityB = scene->GetEntity(e.GetEntityB()); // Get the Entity directly
+
+			ScriptComponent& scriptComponent = registry->GetComponent<ScriptComponent>(e.GetEntityA());
+
+			for (size_t i = 0; i < scriptComponent.m_Scripts.size(); i++)
+			{
+				auto& script = scriptComponent.m_Scripts[i];
+
+				if (script.valid())
+				{
+					sol::function collision_exit_func = script["OnCollisionExit"];
+					if (collision_exit_func.valid())
+					{
+						collision_exit_func(script, entityB);
+					}
+				}
+			}
+
+		}
 		return true;
 	}
 

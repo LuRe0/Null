@@ -46,6 +46,7 @@ namespace NULLENGINE
 			ScriptCreated, ScriptRemoved, ScriptModified,
 			EngineRunState, EngineEditState,
 			EntityParented, EntitySeparated,
+			CollisionEnter, CollisionExit,
 		};
 
 		virtual std::unique_ptr<Event> Clone() const = 0;

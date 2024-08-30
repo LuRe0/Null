@@ -86,6 +86,7 @@ namespace NULLENGINE
 		//bool HasRequiredComponents(NRegistry* registry, EntityID entityID);
 		//bool HandleParents(NRegistry* registry, EntityID entityID);
 		bool OnEntityCreated(const EntityCreatedEvent& e);
+		bool OnEntityDestroyed(const EntityDestroyedEvent& e);
 		bool OnEntityComponentRemoved(const EntityRemoveComponentEvent& e);
 		bool OnEntityParented(const EntityParentedEvent& e);
 		bool OnEntitySeparated(const EntitySeparatedEvent& e);
@@ -106,6 +107,8 @@ namespace NULLENGINE
 
 
 		bool m_Simulate = false;
+
+		//ContactListener m_ContactListener;
 	};
 
 }

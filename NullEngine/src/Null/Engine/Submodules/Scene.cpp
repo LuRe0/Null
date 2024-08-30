@@ -214,6 +214,13 @@ namespace NULLENGINE
 		return *it;
 	}
 
+	bool Scene::HasEntity(const EntityID& entityID)
+	{
+		auto it = std::find(m_Entities.begin(), m_Entities.end(), entityID);
+
+		return it != m_Entities.end();
+	}
+
 	void Scene::Serialize(const std::string& name)
 	{
 		std::string filePath = "";
@@ -325,11 +332,28 @@ namespace NULLENGINE
 
 			auto& component = registry->GetComponent(entity.GetID(), signature[i]);
 			JSON compJson = compFactory->WriteComponent(&component);
-			componentsJson.merge_patch(compJson); // Merge component JSON into the entity's components JSON
-
+			if (!compJson.is_null())
+			{
+				componentsJson.merge_patch(compJson); // Merge component JSON into the entity's components JSON
+			}
 		}
 
 		entityJson["components"] = componentsJson;
+
+		if (registry->HasComponent<ChildrenComponent>(entity.GetID()))
+		{
+			const auto& childrenComponent = registry->GetComponent<ChildrenComponent>(entity.GetID());
+			JSON childrenJson = JSON::array();
+
+			for (auto& childID : childrenComponent.m_Children)
+			{
+				auto& childEntity = GetEntity(childID);
+				auto childEntityJson = SerializeChildren(childEntity, registry, compFactory);
+				childrenJson.push_back(childEntityJson);
+			}
+
+			entityJson["children"] = childrenJson;
+		}
 
 		outFile << entityJson.dump(4);
 
@@ -388,6 +412,29 @@ namespace NULLENGINE
 		if (it != m_Entities.end())
 		{
 			it->SetIsDestroyed(true);
+
+			if (it->Has<ChildrenComponent>())
+			{
+				auto& cComp = it->Get<ChildrenComponent>();
+				for (auto& child : cComp.m_Children)
+					DeleteEntity(child);
+			}
+
+			if (it->Has<ParentComponent>())
+			{
+				auto& pComp = it->Get<ParentComponent>();
+
+				auto& parentEnt = GetEntity(pComp.m_Parent);
+
+				auto& cComp = parentEnt.Get<ChildrenComponent>();
+
+				auto& children = cComp.m_Children;
+
+				children.erase(
+					std::remove(children.begin(), children.end(), it->GetID()),
+					children.end()
+				);
+			}
 		}
 	}
 

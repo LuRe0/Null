@@ -205,7 +205,6 @@ namespace NULLENGINE
     void NEntityFactory::RegisterToScripAPI(sol::state& lua)
     {
         lua.new_usertype<Entity>("Entity",
-        	sol::no_constructor,  // Disable direct construction
             "get_component", [](Entity& entity, const sol::table& comp, sol::this_state s)
             {
                 //const auto has_comp
@@ -213,15 +212,37 @@ namespace NULLENGINE
 
                 return component ? component.as<sol::reference>() : sol::lua_nil_t{};
             },
-            //"HasComponent", [](Entity& entity, const sol::table& comp)
-            //{
-            //    //const auto has_comp
-            //    auto component = NComponentFactory::InvokeSolFunctions(NComponentFactory::GetIdType(comp));
+            "add_component", [](Entity& entity, const sol::table& comp, sol::this_state s)
+            {
+                //const auto has_comp
+                auto component = NComponentFactory::InvokeSolFunctions(NComponentFactory::GetIdType(comp), "add_component", entity, s);
 
-            //    return component ? component.ca
-            //},
-        	"ID", &Entity::m_ID,
-        	"Name", &Entity::m_Name
+                return component ? component.as<sol::reference>() : sol::lua_nil_t{};
+            },
+            "has_component", [](Entity& entity, const sol::table& comp, sol::this_state s)
+            {
+                //const auto has_comp
+                auto hasComp = NComponentFactory::InvokeSolFunctions(NComponentFactory::GetIdType(comp), "has_component", entity,s);
+
+                return hasComp ? hasComp.as<bool>() : false;
+            },
+            "remove_component", [](Entity& entity, const sol::table& comp, sol::this_state s)
+            {
+                //const auto has_comp
+                auto hasComp = NComponentFactory::InvokeSolFunctions(NComponentFactory::GetIdType(comp), "remove_component", entity,s);
+
+                return hasComp ? hasComp.as<bool>() : false;
+            },
+            "destroy", [](Entity& entity)
+            {
+                NSceneManager* sceneManager = NEngine::Instance().Get<NSceneManager>();
+
+                sceneManager->GetCurrentScene()->DeleteEntity(entity.m_ID);
+            },
+        	"id", &Entity::m_ID,
+        	"name", &Entity::m_Name
+  
         );
+
     }
 }

@@ -65,6 +65,10 @@ namespace NULLENGINE
 		bool OnScriptRemoved(const ScriptRemovedEvent& e);
 		bool OnSceneSwitched(const SceneSwitchEvent& e);
 
+		bool OnCollisionEnter(const CollisionEnterEvent& e);
+		bool OnCollisionExit(const CollisionExitEvent& e);
+
+
 		static void CreateScriptComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
 
 		static JSON WriteScriptComponent(BaseComponent* component);

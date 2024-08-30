@@ -14,6 +14,7 @@
 #include "imgui.h"
 #include <box2d/b2_world.h>
 #include <box2d/b2_body.h>
+#include <box2d/b2_contact.h>
 #include <box2d/b2_polygon_shape.h>
 #include <box2d/b2_circle_shape.h>
 #include <box2d/b2_fixture.h>
@@ -24,6 +25,7 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
 #include <glm/gtx/euler_angles.hpp>
+#include "Null/Engine/Submodules/ECS/Entities/Entity.h"
 //******************************************************************************//
 // Public Variables															    //
 //******************************************************************************//
@@ -35,6 +37,37 @@
 
 namespace NULLENGINE
 {
+	class NLE_API ContactListener : public b2ContactListener
+	{
+	public:
+		void BeginContact(b2Contact* contact) override
+		{
+			NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+
+			b2Body* bodyA = contact->GetFixtureA()->GetBody();
+			b2Body* bodyB = contact->GetFixtureB()->GetBody();
+
+			Entity* userDataA = reinterpret_cast<Entity*>(bodyA->GetUserData().pointer);
+			Entity* userDataB = reinterpret_cast<Entity*>(bodyB->GetUserData().pointer);
+
+			eventManager->TriggerEvent(CollisionEnterEvent(userDataA->GetID(), userDataB->GetID()));
+			eventManager->TriggerEvent(CollisionEnterEvent(userDataB->GetID(), userDataA->GetID()));
+			//NLE_CORE_DEBUG("{0} hit {1}", userDataA->m_Name, userDataB->m_Name);
+		}
+		void EndContact(b2Contact* contact) override
+		{
+			//NLE_CORE_DEBUG("Collision ended");
+		}
+		void PreSolve(b2Contact* contact, const b2Manifold* oldManifold) override
+		{
+			//NLE_CORE_DEBUG("What to do");
+		}
+		void PostSolve(b2Contact* contact, const b2ContactImpulse* impulse) override
+		{
+			//NLE_CORE_DEBUG("It is done");
+		}
+	};
+	static ContactListener s_ContactListener;
 	float PhysicsSystem::m_Pixels_Per_Meter = 64.0f;
 
 	PhysicsSystem::PhysicsSystem() : m_PhysicsWorld(nullptr)
@@ -51,6 +84,7 @@ namespace NULLENGINE
 	{
 		auto gravity = PixelsToMeters(GRAVITY.x, GRAVITY.y);
 		m_PhysicsWorld = new b2World({ gravity.x, gravity.y });
+		m_PhysicsWorld->SetContactListener(&s_ContactListener);
 	}
 
 	void PhysicsSystem::Init()
@@ -60,6 +94,7 @@ namespace NULLENGINE
 		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
 
 		SUBSCRIBE_EVENT(EntityCreatedEvent, &PhysicsSystem::OnEntityCreated, eventManager, EventPriority::Low);
+		SUBSCRIBE_EVENT(EntityDestroyedEvent, &PhysicsSystem::OnEntityDestroyed, eventManager, EventPriority::High);
 		SUBSCRIBE_EVENT(EntityRemoveComponentEvent, &PhysicsSystem::OnEntityComponentRemoved, eventManager, EventPriority::High);
 		SUBSCRIBE_EVENT(EntityAddComponentEvent, &PhysicsSystem::OnEntityComponentAdded, eventManager, EventPriority::High);
 		SUBSCRIBE_EVENT(SceneSwitchEvent, &PhysicsSystem::OnSceneSwitched, eventManager, EventPriority::High);
@@ -555,6 +590,59 @@ namespace NULLENGINE
 		return true;
 	}
 
+	bool PhysicsSystem::OnEntityDestroyed(const EntityDestroyedEvent& e)
+	{
+		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+
+		const auto& entityList = GetSystemEntities();
+
+		if (std::find(entityList.begin(), entityList.end(), e.GetID()) != entityList.end())
+		{
+			if (registry->HasComponent<Rigidbody2DComponent>(e.GetID()))
+			{
+				Rigidbody2DComponent& rb2d = registry->GetComponent<Rigidbody2DComponent>(e.GetID());
+
+				if (rb2d.m_RuntimeBody)
+				{
+					if (registry->HasComponent<BoxCollider2DComponent>(e.GetID()))
+					{
+						BoxCollider2DComponent& bc2d = registry->GetComponent<BoxCollider2DComponent>(e.GetID());
+
+						if (bc2d.m_RuntimeFixture)
+						{
+							rb2d.m_RuntimeBody->DestroyFixture(bc2d.m_RuntimeFixture);
+
+							bc2d.m_RuntimeFixture = nullptr;
+						}
+
+					}
+
+					if (registry->HasComponent<CircleCollider2DComponent>(e.GetID()))
+					{
+						CircleCollider2DComponent& cc2d = registry->GetComponent<CircleCollider2DComponent>(e.GetID());
+
+						if (cc2d.m_RuntimeFixture)
+						{
+							rb2d.m_RuntimeBody->DestroyFixture(cc2d.m_RuntimeFixture);
+
+							cc2d.m_RuntimeFixture = nullptr;
+						}
+					}
+
+
+
+					m_PhysicsWorld->DestroyBody(rb2d.m_RuntimeBody);
+
+					rb2d.m_RuntimeBody = nullptr;
+				}
+			}
+		}
+
+		//ISystem::OnEntityDestroyed(e);
+		return true;
+	}
+
 	bool PhysicsSystem::OnEntityComponentRemoved(const EntityRemoveComponentEvent& e)
 	{
 		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
@@ -591,6 +679,8 @@ namespace NULLENGINE
 							cc2d.m_RuntimeFixture = nullptr;
 						}
 					}
+
+
 
 					m_PhysicsWorld->DestroyBody(rb2d.m_RuntimeBody);
 
@@ -948,6 +1038,8 @@ namespace NULLENGINE
 
 	bool PhysicsSystem::InitializePhysics(EntityID entityId, NRegistry* registry)
 	{
+		auto* sceneManager = NEngine::Instance().Get<NSceneManager>();
+
 		TransformComponent& transform = registry->GetComponent<TransformComponent>(entityId);
 		Rigidbody2DComponent& rb2d = registry->GetComponent<Rigidbody2DComponent>(entityId);
 		if (!rb2d.m_RuntimeBody)
@@ -985,10 +1077,11 @@ namespace NULLENGINE
 			bodyDef.gravityScale = rb2d.m_GravityScale;
 			bodyDef.angle = rotation.z;
 
-
 			rb2d.m_RuntimeBody = m_PhysicsWorld->CreateBody(&bodyDef);
-
 			rb2d.m_RuntimeBody->SetFixedRotation(rb2d.m_FixedRotation);
+
+			auto* entity = &sceneManager->GetCurrentScene()->GetEntity(entityId);
+			rb2d.m_RuntimeBody->GetUserData().pointer = reinterpret_cast<uintptr_t>(entity);
 		}
 
 		if (rb2d.m_RuntimeBody)

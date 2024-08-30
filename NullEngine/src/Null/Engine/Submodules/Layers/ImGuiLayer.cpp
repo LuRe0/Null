@@ -720,10 +720,10 @@ namespace NULLENGINE
 				if (m_GuizmoType == -1)
 					SetGuizmo(ImGuizmo::OPERATION::TRANSLATE);
 			}
-			else if (ImGui::IsMouseClicked(0) && pixel <= 0)
-			{
-				m_PannelData.m_SelectedEntity = {};
-			}
+			//else if (ImGui::IsMouseClicked(0) && !ImGuizmo::IsOver() && pixel <= 0)
+			//{
+			//	m_PannelData.m_SelectedEntity = {};
+			//}
 		}
 
 

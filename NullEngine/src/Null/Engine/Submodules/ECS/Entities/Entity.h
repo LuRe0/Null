@@ -72,6 +72,12 @@ namespace NULLENGINE
 			return m_Parent->HasComponent<T>(m_ID);
 		}
 
+		template <typename T>
+		void Remove() const
+		{
+			m_Parent->RemoveComponent<T>(m_ID);
+		}
+
 		template <typename T, typename ...TArgs>
 		void Add(TArgs&& ...args)
 		{
@@ -130,12 +136,34 @@ namespace NULLENGINE
 		friend class ComponentInspectorPannel;
 	};
 
+	template <typename T>
+	auto add_component(Entity& entity, sol::this_state s)
+	{
+		entity.Add<T>();
+
+		auto& comp = entity.Get<T>();
+
+		return sol::make_reference(s, std::ref(comp));
+	}
 
 	template <typename T>
 	auto get_component(Entity& entity, sol::this_state s)
 	{
 		auto& comp = entity.Get<T>();
 		return sol::make_reference(s, std::ref(comp));
+	}
+
+	template <typename T>
+	auto has_component(Entity& entity, sol::this_state s)
+	{
+		return sol::make_object(s, entity.Has<T>());
+	}
+
+	template <typename T>
+	auto remove_component(Entity& entity, sol::this_state s)
+	{
+		entity.Remove<T>();
+		return sol::make_object(s, entity.Has<T>());
 	}
 
 	//template<typename T>

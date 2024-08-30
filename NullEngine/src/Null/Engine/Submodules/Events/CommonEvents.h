@@ -537,4 +537,61 @@ namespace NULLENGINE
         const uint32_t m_ParentID;
         const uint32_t m_ChildID;
     };
+
+
+
+    class CollisionOccuredEvent : public Event
+    {
+    public:
+        CollisionOccuredEvent(uint32_t oA, uint32_t oB)
+            : m_EntityA(oA), m_EntityB(oB)
+        {}
+
+
+        const uint32_t& GetEntityA() const { return m_EntityA; }
+        const uint32_t& GetEntityB() const { return m_EntityB; }
+    private:
+        const uint32_t m_EntityA;
+        const uint32_t m_EntityB;
+    };
+
+
+    class CollisionEnterEvent : public CollisionOccuredEvent
+    {
+    public:
+        CollisionEnterEvent(uint32_t oA, uint32_t oB)
+            : CollisionOccuredEvent(oA, oB)
+        {
+
+        }
+
+        std::string Print() const override
+        {
+            std::stringstream ss;
+            ss << "CollisionEnterEvent";
+            return ss.str();
+        }
+
+        EVENT_CLASS_TYPE(CollisionEnter)
+    };
+
+    class CollisionExitEvent : public CollisionOccuredEvent
+    {
+    public:
+        CollisionExitEvent(uint32_t oA, uint32_t oB)
+            : CollisionOccuredEvent(oA, oB)
+        {
+
+        }
+
+        std::string Print() const override
+        {
+            std::stringstream ss;
+            ss << "CollisionExitEvent";
+            return ss.str();
+        }
+
+        EVENT_CLASS_TYPE(CollisionExit)
+    };
+
 }

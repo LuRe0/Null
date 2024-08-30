@@ -22,6 +22,9 @@
     <Filter Include="Null\Engine\Submodules">
       <UniqueIdentifier>{57920A45-438C-3397-2CF9-C9A718929903}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Null\Engine\Submodules\Collision">
+      <UniqueIdentifier>{32E0A3F3-1E31-8F35-4795-7DF73345229F}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Null\Engine\Submodules\ECS">
       <UniqueIdentifier>{21DA4412-0DEA-F0E2-76A3-550162D2DF7B}</UniqueIdentifier>
     </Filter>
@@ -46,11 +49,20 @@
     <Filter Include="Null\Engine\Submodules\Graphics\Buffers">
       <UniqueIdentifier>{F33293C9-5FC2-54B4-68BE-35CCD4CC8FC0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Null\Engine\Submodules\Graphics\Buffers\BatchRenderer">
+      <UniqueIdentifier>{DBF7E9C6-4714-DCB7-10EC-48257CC74579}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Null\Engine\Submodules\Graphics\Camera">
       <UniqueIdentifier>{0FF5A573-FB46-7D63-E465-BA73D056964C}</UniqueIdentifier>
     </Filter>
     <Filter Include="Null\Engine\Submodules\Graphics\Camera\Controllers">
       <UniqueIdentifier>{F581DDBF-E115-D367-4ADA-2C1C368D0D5A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Null\Engine\Submodules\Graphics\Mesh">
+      <UniqueIdentifier>{93C4C193-7FAB-838B-28FC-E9A814C2FCF1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes">
+      <UniqueIdentifier>{DC5469E7-4866-118E-D1B7-A3CD3DC89AC7}</UniqueIdentifier>
     </Filter>
     <Filter Include="Null\Engine\Submodules\Graphics\Shader">
       <UniqueIdentifier>{3D907099-29E2-4789-1201-8599FEF16072}</UniqueIdentifier>
@@ -87,6 +99,9 @@
       <Filter>Null\Engine\Modules</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Modules\NComponentFactory.h">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Modules\NDebugManager.h">
       <Filter>Null\Engine\Modules</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Modules\NEntityFactory.h">
@@ -128,6 +143,9 @@
     <ClInclude Include="src\Null\Engine\NEngine.h">
       <Filter>Null\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Collision\ContactListener.h">
+      <Filter>Null\Engine\Submodules\Collision</Filter>
+    </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\ComponentManager.h">
       <Filter>Null\Engine\Submodules</Filter>
     </ClInclude>
@@ -137,7 +155,13 @@
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\BoxCollider2DComponent.h">
       <Filter>Null\Engine\Submodules\ECS\Components</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\CameraComponent.h">
+      <Filter>Null\Engine\Submodules\ECS\Components</Filter>
+    </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\IComponent.h">
+      <Filter>Null\Engine\Submodules\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\Parent-ChildComponents.h">
       <Filter>Null\Engine\Submodules\ECS\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\Rigidbody2DComponent.h">
@@ -164,6 +188,15 @@
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\AnimationSystem.h">
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\BoxCollider2DSystem.h">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\CameraSystem.h">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\CircleCollider2DSystem.h">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\PhysicsSystem.h">
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClInclude>
@@ -187,6 +220,24 @@
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\Events\IEvents.h">
       <Filter>Null\Engine\Submodules\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\BatchRenderer.h">
+      <Filter>Null\Engine\Submodules\Graphics\Buffers\BatchRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\CircleBatchRenderer.h">
+      <Filter>Null\Engine\Submodules\Graphics\Buffers\BatchRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\CubeBatchRenderer.h">
+      <Filter>Null\Engine\Submodules\Graphics\Buffers\BatchRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\LineBatchRenderer.h">
+      <Filter>Null\Engine\Submodules\Graphics\Buffers\BatchRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\QuadBatchRenderer.h">
+      <Filter>Null\Engine\Submodules\Graphics\Buffers\BatchRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\TriangleBatchRenderer.h">
+      <Filter>Null\Engine\Submodules\Graphics\Buffers\BatchRenderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BufferData.h">
       <Filter>Null\Engine\Submodules\Graphics\Buffers</Filter>
@@ -224,11 +275,23 @@
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\Controllers\PerspectiveCameraController.h">
       <Filter>Null\Engine\Submodules\Graphics\Camera\Controllers</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\CircleInstanceMesh.h">
+      <Filter>Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\CubeInstanceMesh.h">
+      <Filter>Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\LineInstanceMesh.h">
+      <Filter>Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes</Filter>
+    </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\QuadInstanceMesh.h">
-      <Filter>Null\Engine\Submodules\Graphics</Filter>
+      <Filter>Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\TriangleInstanceMesh.h">
+      <Filter>Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Mesh\Mesh.h">
-      <Filter>Null\Engine\Submodules\Graphics</Filter>
+      <Filter>Null\Engine\Submodules\Graphics\Mesh</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Shader\Shader.h">
       <Filter>Null\Engine\Submodules\Graphics\Shader</Filter>
@@ -267,22 +330,6 @@
       <Filter>Null\Tools</Filter>
     </ClInclude>
     <ClInclude Include="src\stdafx.h" />
-    <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\CameraComponent.h" />
-    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\CameraSystem.h" />
-    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\BatchRenderer.h" />
-    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\QuadBatchRenderer.h" />
-    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\TriangleInstanceMesh.h" />
-    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\TriangleBatchRenderer.h" />
-    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\CubeInstanceMesh.h" />
-    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\CubeBatchRenderer.h" />
-    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\CircleBatchRenderer.h" />
-    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\CircleInstanceMesh.h" />
-    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\LineInstanceMesh.h" />
-    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\BoxCollider2DSystem.h" />
-    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\CircleCollider2DSystem.h" />
-    <ClInclude Include="src\Null\Engine\Modules\NDebugManager.h" />
-    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\LineBatchRenderer.h" />
-    <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\Parent-ChildComponents.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Null\Application.cpp">
@@ -304,6 +351,9 @@
       <Filter>Null\Engine\Modules</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Modules\NComponentFactory.cpp">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Modules\NDebugManager.cpp">
       <Filter>Null\Engine\Modules</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Modules\NEntityFactory.cpp">
@@ -345,6 +395,9 @@
     <ClCompile Include="src\Null\Engine\NEngine.cpp">
       <Filter>Null\Engine</Filter>
     </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Collision\ContactListener.cpp">
+      <Filter>Null\Engine\Submodules\Collision</Filter>
+    </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\ComponentManager.cpp">
       <Filter>Null\Engine\Submodules</Filter>
     </ClCompile>
@@ -358,6 +411,15 @@
       <Filter>Null\Engine\Submodules\ECS\Entities</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\AnimationSystem.cpp">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\BoxCollider2DSystem.cpp">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\CameraSystem.cpp">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\CircleCollider2DSystem.cpp">
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\PhysicsSystem.cpp">
@@ -383,6 +445,9 @@
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\Events\IEvents.cpp">
       <Filter>Null\Engine\Submodules\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\BatchRenderer.cpp">
+      <Filter>Null\Engine\Submodules\Graphics\Buffers\BatchRenderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Buffers\EBO.cpp">
       <Filter>Null\Engine\Submodules\Graphics\Buffers</Filter>
@@ -414,11 +479,23 @@
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\Controllers\PerspectiveCameraController.cpp">
       <Filter>Null\Engine\Submodules\Graphics\Camera\Controllers</Filter>
     </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\CircleInstanceMesh.cpp">
+      <Filter>Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\CubeInstanceMesh.cpp">
+      <Filter>Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\LineInstanceMesh.cpp">
+      <Filter>Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes</Filter>
+    </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\QuadInstanceMesh.cpp">
-      <Filter>Null\Engine\Submodules\Graphics</Filter>
+      <Filter>Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\TriangleInstanceMesh.cpp">
+      <Filter>Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Mesh\Mesh.cpp">
-      <Filter>Null\Engine\Submodules\Graphics</Filter>
+      <Filter>Null\Engine\Submodules\Graphics\Mesh</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Shader\Shader.cpp">
       <Filter>Null\Engine\Submodules\Graphics\Shader</Filter>
@@ -454,14 +531,5 @@
       <Filter>Null\Tools</Filter>
     </ClCompile>
     <ClCompile Include="src\stdafx.cpp" />
-    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\CameraSystem.cpp" />
-    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\BatchRenderer.cpp" />
-    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\TriangleInstanceMesh.cpp" />
-    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\CubeInstanceMesh.cpp" />
-    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\CircleInstanceMesh.cpp" />
-    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\LineInstanceMesh.cpp" />
-    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\BoxCollider2DSystem.cpp" />
-    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\CircleCollider2DSystem.cpp" />
-    <ClCompile Include="src\Null\Engine\Modules\NDebugManager.cpp" />
   </ItemGroup>
 </Project>

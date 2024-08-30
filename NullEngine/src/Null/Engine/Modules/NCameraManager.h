@@ -127,6 +127,7 @@ namespace NULLENGINE
 
 
         bool OnRuntimeStop(const EngineEditStateEvent& e);
+        bool OnRuntimePause(const EnginePauseStateEvent& e);
 
 
         NCameraManager(NCameraManager const&);

@@ -60,6 +60,8 @@ namespace NULLENGINE
 		void AddScript(EntityID id, const std::string& script);
 		void RemoveScript(EntityID id, const std::string& script);
 
+		bool OnEntityCreated(const EntityCreatedEvent& e);
+
 		bool OnScriptAdded(const ScriptCreatedEvent& e);
 		bool OnScriptModified(const ScriptModifiedEvent& e);
 		bool OnScriptRemoved(const ScriptRemovedEvent& e);

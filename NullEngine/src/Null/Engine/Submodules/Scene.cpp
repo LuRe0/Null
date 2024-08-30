@@ -68,9 +68,11 @@ namespace NULLENGINE
 			}
 
 			m_Entities.push_back(entity);
-			eventManager->TriggerEvent(EntityCreatedEvent(entity.GetID()));
+			eventManager->QueueAsync(std::make_unique<EntityCreatedEvent>(entity.GetID()));
 
 		}
+
+		//eventManager->QueueAsync(std::make_unique<SceneLoadedEvent>(entity.GetID()));
 
 	}
 
@@ -106,7 +108,10 @@ namespace NULLENGINE
 			}
 
 			m_Entities.push_back(childEntity);
-			eventManager->TriggerEvent(EntityCreatedEvent(childEntity.GetID()));
+			eventManager->QueueAsync(std::make_unique<EntityCreatedEvent>(childEntity.GetID()));
+
+			//eventManager->QueueAsync(std::make_unique<EntityParentedEvent>(parentEntity.m_ID, childEntity.m_ID));
+
 		}
 	}
 
@@ -390,12 +395,32 @@ namespace NULLENGINE
 		outputFile.close();
 	}
 
+	void Scene::ReloadScene()
+	{
+		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+
+		auto engineState = NEngine::Instance().GetEngineState();
+
+		eventManager->QueueEvent(std::make_unique<EngineEditStateEvent>(NEngine::PAUSE));
+
+		eventManager->QueueEvent(std::make_unique<SceneSwitchEvent>(GetName(), GetName()));
+
+		eventManager->QueueEvent(std::make_unique<EngineEditStateEvent>(engineState));
+
+	}
+
 	void Scene::RegisterToScripAPI(sol::state& lua)
 	{
 		lua.new_usertype<Scene>(
 			"NScene",
-			"InstantiateEntity", &Scene::LoadArchetype,
-			"GetAllActiveEntities", &Scene::GetManagedEntities
+			"instantiate_archetype", [](Scene* sc, const std::string& name)
+			{
+				sc->LoadArchetype(name);
+			},
+			"reload", [](Scene* sc)
+			{
+				sc->ReloadScene();
+			}
 		);
 	}
 
@@ -419,22 +444,6 @@ namespace NULLENGINE
 				for (auto& child : cComp.m_Children)
 					DeleteEntity(child);
 			}
-
-			if (it->Has<ParentComponent>())
-			{
-				auto& pComp = it->Get<ParentComponent>();
-
-				auto& parentEnt = GetEntity(pComp.m_Parent);
-
-				auto& cComp = parentEnt.Get<ChildrenComponent>();
-
-				auto& children = cComp.m_Children;
-
-				children.erase(
-					std::remove(children.begin(), children.end(), it->GetID()),
-					children.end()
-				);
-			}
 		}
 	}
 
@@ -452,6 +461,24 @@ namespace NULLENGINE
 			if (m_Entities[i].GetIsDestroyed())
 			{
 				eventManager->QueueEvent(std::make_unique<EntityDestroyedEvent>(m_Entities[i].GetID()));
+
+
+				if (m_Entities[i].Has<ParentComponent>())
+				{
+					auto& pComp = m_Entities[i].Get<ParentComponent>();
+
+					auto& parentEnt = GetEntity(pComp.m_Parent);
+
+					auto& cComp = parentEnt.Get<ChildrenComponent>();
+
+					auto& children = cComp.m_Children;
+
+					children.erase(
+						std::remove(children.begin(), children.end(), m_Entities[i].GetID()),
+						children.end()
+					);
+					bool deez = false;
+				}
 
 				RemoveEntity(i);
 

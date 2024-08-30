@@ -185,10 +185,12 @@ namespace NULLENGINE
 			else 
 			{
 				camManager->SetCurrentCamera(cam.m_Name);
+
+				return true;
 			}
 		}
 
-		return true;
+		return false;
 	}
 
 	void CameraSystem::CreateCameraComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id)

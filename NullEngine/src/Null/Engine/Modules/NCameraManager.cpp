@@ -65,6 +65,7 @@ namespace NULLENGINE
         NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
 
         SUBSCRIBE_EVENT(EngineEditStateEvent, &NCameraManager::OnRuntimeStop, eventManager, EventPriority::High);
+        SUBSCRIBE_EVENT(EnginePauseStateEvent, &NCameraManager::OnRuntimePause, eventManager, EventPriority::High);
 
 
        for (auto& cam : m_Cameras3D)
@@ -140,11 +141,19 @@ namespace NULLENGINE
 
     bool NCameraManager::OnRuntimeStop(const EngineEditStateEvent& e)
     {
-        SetCurrentCamera("Editor3D");
+        if (e.GetState() == NEngine::EDIT)
+        {
+            SetCurrentCamera("Editor3D");
+        }
         return true;
     }
 
 
+    bool NCameraManager::OnRuntimePause(const EnginePauseStateEvent& e)
+    {
+        SetCurrentCamera("Editor3D");
+        return true;
+    }
 
     void NCameraManager::SetCurrentCamera(const std::string& name)
     {

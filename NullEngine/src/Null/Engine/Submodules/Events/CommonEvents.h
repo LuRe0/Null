@@ -342,6 +342,30 @@ namespace NULLENGINE
     };
 
 
+    class SceneLoadedEvent : public Event {
+    public:
+        SceneLoadedEvent(const std::string& from, const std::string& to)
+            : m_CurrentScene(from)
+            , m_NextScene(to) {}
+
+        std::string Print() const override
+        {
+            std::stringstream ss;
+            ss << "SceneLoadedEvent: from: " << m_CurrentScene << ", to: " << m_NextScene;
+            return ss.str();
+        }
+
+        const std::string& GetCurrentScene() const { return m_CurrentScene; }
+        const std::string& GetNextScene() const { return m_NextScene; }
+
+        EVENT_CLASS_TYPE(SceneLoaded)
+
+    private:
+        const std::string m_CurrentScene;
+        const std::string m_NextScene;
+    };
+
+
     class ScriptCreatedEvent : public Event 
     {
     public:
@@ -458,6 +482,22 @@ namespace NULLENGINE
 
         EVENT_CLASS_TYPE(EngineEditState)
     };
+
+    class EnginePauseStateEvent : public EngineStateEvent {
+    public:
+        EnginePauseStateEvent(IEngine::EngineState enginestate)
+            : EngineStateEvent(enginestate) {}
+
+        std::string Print() const override
+        {
+            std::stringstream ss;
+            ss << "KeyReleaseEvent: State = EDIT";
+            return ss.str();
+        }
+
+        EVENT_CLASS_TYPE(EnginePauseState)
+    };
+
 
 
     class InitializeBox2DEvent : public Event

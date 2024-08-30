@@ -43,15 +43,17 @@ namespace NULLENGINE
 		void BeginContact(b2Contact* contact) override
 		{
 			NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+			NSceneManager* sceneManager = NEngine::Instance().Get<NSceneManager>();
+			Scene* scene = sceneManager->GetCurrentScene();
 
 			b2Body* bodyA = contact->GetFixtureA()->GetBody();
 			b2Body* bodyB = contact->GetFixtureB()->GetBody();
 
-			Entity* userDataA = reinterpret_cast<Entity*>(bodyA->GetUserData().pointer);
-			Entity* userDataB = reinterpret_cast<Entity*>(bodyB->GetUserData().pointer);
+			EntityID userDataA = bodyA->GetUserData().pointer;
+			EntityID userDataB = bodyB->GetUserData().pointer;
 
-			eventManager->TriggerEvent(CollisionEnterEvent(userDataA->GetID(), userDataB->GetID()));
-			eventManager->TriggerEvent(CollisionEnterEvent(userDataB->GetID(), userDataA->GetID()));
+			eventManager->TriggerEvent(CollisionEnterEvent(userDataA, userDataB));
+			eventManager->TriggerEvent(CollisionEnterEvent(userDataB, userDataA));
 			//NLE_CORE_DEBUG("{0} hit {1}", userDataA->m_Name, userDataB->m_Name);
 		}
 		void EndContact(b2Contact* contact) override
@@ -1080,8 +1082,8 @@ namespace NULLENGINE
 			rb2d.m_RuntimeBody = m_PhysicsWorld->CreateBody(&bodyDef);
 			rb2d.m_RuntimeBody->SetFixedRotation(rb2d.m_FixedRotation);
 
-			auto* entity = &sceneManager->GetCurrentScene()->GetEntity(entityId);
-			rb2d.m_RuntimeBody->GetUserData().pointer = reinterpret_cast<uintptr_t>(entity);
+			auto& entity = sceneManager->GetCurrentScene()->GetEntity(entityId);
+			rb2d.m_RuntimeBody->GetUserData().pointer = entity.GetID();
 		}
 
 		if (rb2d.m_RuntimeBody)

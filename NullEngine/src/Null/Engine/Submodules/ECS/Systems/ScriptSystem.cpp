@@ -81,6 +81,7 @@ namespace NULLENGINE
 		SUBSCRIBE_EVENT(SceneSwitchEvent, &ScriptSystem::OnSceneSwitched, eventManager, EventPriority::Low);
 		SUBSCRIBE_EVENT(CollisionEnterEvent, &ScriptSystem::OnCollisionEnter, eventManager, EventPriority::High);
 		SUBSCRIBE_EVENT(CollisionExitEvent, &ScriptSystem::OnCollisionExit, eventManager, EventPriority::High);
+		SUBSCRIBE_EVENT(EntityCreatedEvent, &ScriptSystem::OnEntityCreated, eventManager, EventPriority::Low);
 
 
 	}
@@ -203,10 +204,14 @@ namespace NULLENGINE
 		for (size_t i = 0; i < script.m_Script_Names.size(); ++i) {
 			const std::string& scriptName = script.m_Script_Names[i];
 			const auto& defaults = script.m_ScriptDefaults.at(scriptName);
-			const sol::table& scriptTable = script.m_Scripts[i]["data"];
 
-			nlohmann::json scriptDiffs = ScriptHelper::GenerateScriptDifferences(scriptTable, defaults);
-			defaultsJSON["scripts"][scriptName] = scriptDiffs;
+			if (!script.m_Scripts.empty())
+			{
+				const sol::table& scriptTable = script.m_Scripts[i]["data"];
+
+				nlohmann::json scriptDiffs = ScriptHelper::GenerateScriptDifferences(scriptTable, defaults);
+				defaultsJSON["scripts"][scriptName] = scriptDiffs;
+			}
 		}
 
 
@@ -482,7 +487,7 @@ namespace NULLENGINE
 			//scriptComponent.m_Script_Names.push_back(scriptname);
 
 			auto& pEntity = scene->GetCurrentScene()->GetEntity(id);
-			scriptComponent.m_Environment["pEntity"] = &pEntity;
+			scriptComponent.m_Environment["pEntity"] = pEntity;
 
 
 
@@ -577,6 +582,16 @@ namespace NULLENGINE
 			scriptComponent.m_Scripts.erase(scriptComponent.m_Scripts.begin() + index);
 			m_LuaState[script.c_str()] = sol::nil;
 		}
+	}
+
+	bool ScriptSystem::OnEntityCreated(const EntityCreatedEvent& e)
+	{
+		const auto& entityList = GetSystemEntities();
+
+		if (std::find(entityList.begin(), entityList.end(), e.GetID()) != entityList.end())
+			InitializeScripts(e.GetID());
+
+		return true;
 	}
 
 	bool ScriptSystem::OnScriptAdded(const ScriptCreatedEvent& e)
@@ -675,6 +690,8 @@ namespace NULLENGINE
 		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
 		auto* sceneManager = NEngine::Instance().Get<NSceneManager>();
 		auto* scene = sceneManager->GetCurrentScene();
+		//auto& entityA = scene->GetEntity(e.GetEntityA()); // Get the Entity directly
+
 		if (scene->HasEntity(e.GetEntityB()))
 		{
 			auto& entityB = scene->GetEntity(e.GetEntityB()); // Get the Entity directly

@@ -190,6 +190,12 @@ namespace NULLENGINE
 		m_EntityComponentSignatures.clear();
 		m_NumEntities = 0;
 
+		while (!m_RecycledEntity.empty())
+		{
+			m_RecycledEntity.pop();
+		}
+
+
 		return true;
 
 	}

@@ -3,7 +3,12 @@
 local BallBehaviour = {
     data = 
     {
-        speed = { value = 500, serialize = true }
+        speed = { value = 750, serialize = true },
+        boost = { value = 10, serialize = true },
+        boostDuration = { value = 2, serialize = true },
+
+        tempSpeed = { value = 0, serialize = false },
+        elapsedTime = { value = 0, serialize = false }
     }
 }
 
@@ -33,17 +38,29 @@ function BallBehaviour:Update(dt)
     local rb2d = pEntity:get_component(Rigidbody2D)
     local vel = rb2d.linear_velocity
 
+    BallBehaviour.elapsedTime = BallBehaviour.elapsedTime + dt
+
+    
+    local t = BallBehaviour.elapsedTime / BallBehaviour.boostDuration
+
+
+
+    if t > 1.0 then
+        t = 1.0
+    end
+
     if vel.x ~= 0 or vel.y ~= 0 then
         vel = normalize(vel)
         vel = vel * BallBehaviour.speed
     else
-        vel = b2Vec2(0, 0)  -- Or set to an appropriate default direction
+        vel = b2Vec2(0, 0)  
     end
 
-    vel = vel * BallBehaviour.speed
+    vel = vel * (BallBehaviour.speed + BallBehaviour.tempSpeed)
     -- Trace.debug("{0}, {1}", vel.x, vel.y)
     rb2d:set_linear_velocity(vel)
 
+    BallBehaviour.tempSpeed = lerp(BallBehaviour.tempSpeed, 0, t)
 end
 
 function BallBehaviour:Exit()
@@ -57,24 +74,34 @@ function BallBehaviour:OnCollisionEnter(otherEntity)
 
     if otherEntity then
         if(otherEntity:has_component(Rigidbody2D)) then
-            local otherRb2d = otherEntity:get_component(Rigidbody2D)
-            local rb2d = pEntity:get_component(Rigidbody2D)
-            local vel = rb2d.linear_velocity
-            local otherVel = otherRb2d.linear_velocity;
-            local newVel = vel + otherVel;
+            if(otherEntity.name == "Player") then
+                local otherRb2d = otherEntity:get_component(Rigidbody2D)
+                local rb2d = pEntity:get_component(Rigidbody2D)
+                local vel = rb2d.linear_velocity
+                local otherVel = otherRb2d.linear_velocity;
+                local newVel = vel + otherVel;
 
-            if newVel.x ~= 0 or newVel.y ~= 0 then
-                newVel = normalize(newVel)
-                newVel = newVel * BallBehaviour.speed
+                if newVel.x ~= 0 or newVel.y ~= 0 then
+                    newVel = normalize(newVel)
+                    newVel = newVel * (BallBehaviour.speed +BallBehaviour.tempSpeed)
+                else
+                    newVel = b2Vec2(0, 0)  -- Or set to an appropriate default direction
+                end
+
+                newVel = newVel * (BallBehaviour.speed + BallBehaviour.tempSpeed) * 1.5
+
+                -- Trace.debug("here")
+
+                rb2d:set_linear_velocity(newVel)
+       
+            
+                BallBehaviour.tempSpeed = BallBehaviour.boost;
+                BallBehaviour.elapsedTime = 0;
             else
-                newVel = b2Vec2(0, 0)  -- Or set to an appropriate default direction
+                     
+                BallBehaviour.tempSpeed = BallBehaviour.boost/2;
+                BallBehaviour.elapsedTime = 0;
             end
-
-            newVel = newVel * BallBehaviour.speed * 1.5
-
-            -- Trace.debug("here")
-
-            rb2d:set_linear_velocity(newVel)
         end
     end
 end

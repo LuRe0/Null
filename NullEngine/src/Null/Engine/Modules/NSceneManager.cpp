@@ -88,12 +88,42 @@ namespace NULLENGINE
 	{
 		lua.new_usertype<NSceneManager>(
 			"NSceneManager",
-			"CurrentScene", &NSceneManager::GetCurrentScene,
-			"LoadScene", &NSceneManager::LoadScene
+			"instantiate_archetype", [](NSceneManager* scMan, const std::string& name)
+			{
+				scMan->GetCurrentScene()->LoadArchetype(name);
+			},
+			"restart", [](NSceneManager* scMan)
+			{
+				NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+
+
+				auto engineState = NEngine::Instance().GetEngineState();
+
+				eventManager->QueueEvent(std::make_unique<EnginePauseStateEvent>(NEngine::PAUSE));
+
+				eventManager->QueueEvent(std::make_unique<SceneSwitchEvent>(scMan->GetCurrentScene()->GetName(), scMan->GetCurrentScene()->GetName()));
+
+				eventManager->QueueEvent(std::make_unique<EngineRunStateEvent>(engineState));
+
+			},
+			"load", [](NSceneManager* scMan, const std::string& name)
+			{
+
+				NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+
+				auto engineState = NEngine::Instance().GetEngineState();
+
+				eventManager->QueueEvent(std::make_unique<EnginePauseStateEvent>(NEngine::PAUSE));
+
+				eventManager->QueueEvent(std::make_unique<SceneSwitchEvent>(scMan->GetCurrentScene()->GetName(), name));
+
+				eventManager->QueueEvent(std::make_unique<EngineRunStateEvent>(engineState));
+
+			}
 		);
 
 		// Expose the existing instance to Lua under a different global variable
-		lua["SceneManager"] = this;
+		lua["Scene"] = this;
 	}
 
 	void NSceneManager::LoadScene(const std::string& scene)
@@ -180,5 +210,6 @@ namespace NULLENGINE
 		RegisterScene(sceneName, std::move(scene));
 
 		m_CurrentScene = sceneName;
+
 	}
 }

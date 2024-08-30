@@ -41,10 +41,10 @@ namespace NULLENGINE
 			KeyPress, KeyRelease, KeyHold, KeyTyped,
 			MouseMove, MouseButtonPress, MouseButtonRelease, MouseButtonHold, MouseScrolled,
 			EntityCreated, EntityDestroyed,EntityAddComponent, EntityRemoveComponent,
-			SceneSwitch,
+			SceneSwitch, SceneLoaded,
 			InitializeBox2D,
 			ScriptCreated, ScriptRemoved, ScriptModified,
-			EngineRunState, EngineEditState,
+			EngineRunState, EngineEditState, EnginePauseState,
 			EntityParented, EntitySeparated,
 			CollisionEnter, CollisionExit,
 		};

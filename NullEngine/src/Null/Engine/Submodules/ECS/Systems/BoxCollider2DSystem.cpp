@@ -108,7 +108,9 @@ namespace NULLENGINE
 				translation = (parentTransform.m_TransformMatrix * glm::vec4(translation, 1.0f));
 			}
 
-			translation += glm::vec3(bc2d.m_Offset, transform.m_Translation.z + transform.m_Scale.z * 0.5f + 1.0f);
+			translation += camManager->GetCurrentCamera()->GetCameraType() == Camera::PERSPECTIVE ?
+				(glm::vec3(bc2d.m_Offset, transform.m_Translation.z + transform.m_Scale.z * 0.5f + 1.0f)) :
+				(glm::vec3(bc2d.m_Offset, transform.m_Translation.z + 1.0f));
 
 			glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), translation);
 			// Calculate rotation matrix (assuming Euler angles in radians)

@@ -4,9 +4,9 @@ local PlayerMovement = {
     data = 
     {
         Speed = { value = 250, serialize = true },
-        Accel = { value = vec2(0, 0), serialize = true },
-        Jerk =  { value = vec2(0, 0), serialize = true },
-        startPos =  { value = -475, serialize = false }
+        Accel = { value = vec2(0, 0), serialize = false },
+        Jerk =  { value = vec2(0, 0), serialize = false  },
+        startPos =  { value = -475, serialize = false },
     }
 }
 
@@ -84,7 +84,17 @@ function PlayerMovement:OnCollisionEnter(otherEntity)
     if otherEntity then
 
         if(otherEntity:has_component(Transform)) then
-            -- Trace.debug("here")
+
+            local sprite = pEntity:get_component(Sprite)
+
+            if sprite then
+                local r = Random.range_float(0.1,1.0)
+                local g = Random.range_float(r,1.0)
+                local b = Random.range_float(g,1.0)
+                local newtint = vec4(r, g, b, 1)
+                sprite:set_tint(newtint)
+            end
+    
         end
     end
 

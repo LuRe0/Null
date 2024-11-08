@@ -226,6 +226,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /Y /
     <ClInclude Include="src\Null\Tools\FileDialog.h" />
     <ClInclude Include="src\Null\Tools\ImguiSink.h" />
     <ClInclude Include="src\Null\Tools\JsonWrapper.h" />
+    <ClInclude Include="src\Null\Tools\Random.h" />
     <ClInclude Include="src\Null\Tools\ScriptHelper.h" />
     <ClInclude Include="src\Null\Tools\Trace.h" />
     <ClInclude Include="src\stdafx.h" />
@@ -294,6 +295,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /Y /
     <ClCompile Include="src\Null\Tools\FileDialog.cpp" />
     <ClCompile Include="src\Null\Tools\ImguiSink.cpp" />
     <ClCompile Include="src\Null\Tools\JsonWrapper.cpp" />
+    <ClCompile Include="src\Null\Tools\Random.cpp" />
     <ClCompile Include="src\Null\Tools\ScriptHelper.cpp" />
     <ClCompile Include="src\Null\Tools\Trace.cpp" />
     <ClCompile Include="src\stdafx.cpp">

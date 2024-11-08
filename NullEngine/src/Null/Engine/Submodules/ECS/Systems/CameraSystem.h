@@ -68,6 +68,7 @@ namespace NULLENGINE
 		void ViewCameraComponent(Entity& entity);
 
 		bool m_ShowCreationMenu = false;
+		bool m_Preview = false;
 		std::string m_CameraName = "New Camera";
 		Camera::CameraType m_CameraType = Camera::ORTHOGRAPHIC;
 		size_t m_MainCameraCount = 0;

@@ -50,6 +50,7 @@
 #include "Null/Engine/Misc/Time.h"
 #include "Null/Engine/Misc/Input.h"
 #include "Null/Tools/Trace.h"
+#include "Null/Tools/Random.h"
 #include "Null/Tools/JsonWrapper.h"
 
 

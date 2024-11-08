@@ -1,0 +1,213 @@
+{
+    "entities": [
+        {
+            "components": {
+                "BoxCollider2D": {
+                    "density": 1.0,
+                    "friction": 0.5,
+                    "offset": [
+                        0.0,
+                        0.0
+                    ],
+                    "restitution": 0.0,
+                    "restitutionThreshold": 0.5,
+                    "scale": [
+                        50.0,
+                        50.0
+                    ]
+                },
+                "Camera": {
+                    "mainCamera": true,
+                    "name": "Default2D",
+                    "position": [
+                        0.0,
+                        0.0
+                    ],
+                    "rotation": 0.0,
+                    "type": "Camera2D",
+                    "zoom": 1.247563362121582
+                },
+                "Rigidbody2D": {
+                    "angularDamping": 0.0,
+                    "angularVelocity": 0.0,
+                    "fixedRotation": true,
+                    "gravityScale": 1.0,
+                    "linearDamping": 0.0,
+                    "linearVelocity": [
+                        0.0,
+                        0.0
+                    ],
+                    "type": 2
+                },
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "fade": 0.004999999888241291,
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "",
+                    "thickness": 1.0,
+                    "tint": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        50.0,
+                        50.0,
+                        1.0
+                    ],
+                    "translation": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "block"
+        },
+        {
+            "components": {
+                "BoxCollider2D": {
+                    "density": 1.0,
+                    "friction": 0.5,
+                    "offset": [
+                        0.0,
+                        0.0
+                    ],
+                    "restitution": 0.0,
+                    "restitutionThreshold": 0.5,
+                    "scale": [
+                        1100.0,
+                        50.0
+                    ]
+                },
+                "Rigidbody2D": {
+                    "angularDamping": 0.0,
+                    "angularVelocity": 0.0,
+                    "fixedRotation": true,
+                    "gravityScale": 1.0,
+                    "linearDamping": 0.0,
+                    "linearVelocity": [
+                        0.0,
+                        0.0
+                    ],
+                    "type": 0
+                },
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "fade": 0.004999999888241291,
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "",
+                    "thickness": 1.0,
+                    "tint": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        1100.822509765625,
+                        50.0,
+                        1.0
+                    ],
+                    "translation": [
+                        0.0,
+                        -200.8905487060547,
+                        0.0
+                    ]
+                }
+            },
+            "name": "OtherBlock"
+        },
+        {
+            "components": {
+                "BoxCollider2D": {
+                    "density": 1.0,
+                    "friction": 0.5,
+                    "offset": [
+                        0.0,
+                        0.0
+                    ],
+                    "restitution": 0.0,
+                    "restitutionThreshold": 0.5,
+                    "scale": [
+                        25.0,
+                        50.0
+                    ]
+                },
+                "Rigidbody2D": {
+                    "angularDamping": 0.0,
+                    "angularVelocity": 0.0,
+                    "fixedRotation": true,
+                    "gravityScale": 1.0,
+                    "linearDamping": 0.0,
+                    "linearVelocity": [
+                        0.0,
+                        0.0
+                    ],
+                    "type": 2
+                },
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "fade": 0.004999999888241291,
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "",
+                    "thickness": 1.0,
+                    "tint": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        24.941692352294922,
+                        50.0,
+                        1.0
+                    ],
+                    "translation": [
+                        -153.4501953125,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Block 3"
+        }
+    ]
+}

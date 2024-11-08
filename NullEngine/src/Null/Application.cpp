@@ -104,6 +104,7 @@ namespace NULLENGINE
 	void Application::Init()
 	{
 		Input::Instance().Init();
+		Random::Init();
 		m_NullEngine->Init();
 
 		NWindow* window = m_NullEngine->Get<NWindow>();

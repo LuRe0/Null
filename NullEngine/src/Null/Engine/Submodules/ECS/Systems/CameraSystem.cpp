@@ -227,10 +227,10 @@ namespace NULLENGINE
 	{
 		CameraComponent& Camera = entity.Get<CameraComponent>();
 
+		NCameraManager* camManager = NEngine::Instance().Get<NCameraManager>();
 
 		if (!Camera.m_Camera)
 		{
-			NCameraManager* camManager = NEngine::Instance().Get<NCameraManager>();
 			NWindow* window = m_Parent->Get<NWindow>();
 
 			const auto& names3D = camManager->Get3DCameraNames();
@@ -356,6 +356,13 @@ namespace NULLENGINE
 			//ImGui::Text("Main Camera: ");
 			//std::string checkboxLabel = "##Main Camera " + std::to_string(Camera.ID());
 			ImGui::Checkbox("Main Camera", &Camera.m_IsMainCamera);
+
+			if(Camera.m_IsMainCamera)
+				if (ImGui::Checkbox("Preview", &m_Preview))
+				{
+					camManager->SetCurrentCamera(Camera.m_Name);
+				}
+
 			Camera.m_Camera->View();
 		}
 

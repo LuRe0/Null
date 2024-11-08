@@ -249,7 +249,10 @@ namespace NULLENGINE
 
 			// Calculate the translation with the correct depth
 			//auto translation = glm::vec3(transform.m_Translation.x, transform.m_Translation.y, (transform.m_Translation.z + transform.m_Scale.z * 0.5f + 0.50f));
-			auto translation = (transform.m_Translation + glm::vec3(offset, transform.m_Translation.z + transform.m_Scale.z + 0.50f));
+
+			auto translation = camManager->GetCurrentCamera()->GetCameraType() == Camera::PERSPECTIVE ?
+				(transform.m_Translation + glm::vec3(offset, transform.m_Translation.z + transform.m_Scale.z + 0.50f)) :
+				(transform.m_Translation + glm::vec3(offset, transform.m_Translation.z + 0.50f));
 
 			// Calculate the angle of rotation based on the linear velocity vector
 			float rot = glm::atan(rb2d.m_LinearVelocity.y, rb2d.m_LinearVelocity.x);
@@ -849,6 +852,22 @@ namespace NULLENGINE
 				e.GetComponentID() == Component<CircleCollider2DComponent>::GetID())
 			{
 				eventManager->QueueAsync(std::make_unique<InitializeBox2DEvent>(e.GetID()));
+			}
+		}
+		else
+		{
+			if (registry->HasComponent<ParentComponent>(e.GetID()))
+			{
+				auto& pComp = registry->GetComponent<ParentComponent>(e.GetID());
+
+				if (std::find(entityList.begin(), entityList.end(), pComp.m_Parent) != entityList.end())
+				{
+					if (e.GetComponentID() == Component<BoxCollider2DComponent>::GetID() ||
+						e.GetComponentID() == Component<CircleCollider2DComponent>::GetID())
+					{
+						eventManager->QueueAsync(std::make_unique<InitializeBox2DEvent>(pComp.m_Parent));
+					}
+				}
 			}
 		}
 

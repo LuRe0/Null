@@ -265,6 +265,39 @@
                         }
                     },
                     "name": "Edge 2"
+                },
+                {
+                    "components": {
+                        "CircleCollider2D": {
+                            "density": 1.0,
+                            "friction": 0.5,
+                            "offset": [
+                                0.0,
+                                0.0
+                            ],
+                            "radius": 15.0,
+                            "restitution": 0.0,
+                            "restitutionThreshold": 0.5
+                        },
+                        "Transform": {
+                            "rotation": [
+                                0.0,
+                                -0.0,
+                                0.0
+                            ],
+                            "scale": [
+                                0.4000000059604645,
+                                2.0,
+                                1.0
+                            ],
+                            "translation": [
+                                0.012000000104308128,
+                                0.0,
+                                0.0
+                            ]
+                        }
+                    },
+                    "name": "Center"
                 }
             ],
             "components": {
@@ -291,7 +324,7 @@
                     ],
                     "rotation": 0.0,
                     "type": "Camera2D",
-                    "zoom": 1.0
+                    "zoom": 0.9039999842643738
                 },
                 "Rigidbody2D": {
                     "angularDamping": 0.0,
@@ -308,7 +341,7 @@
                 "Script": {
                     "scripts": {
                         "PlayerMovement": {
-                            "Speed": 100000.0
+                            "Speed": 65000.0
                         }
                     }
                 },
@@ -378,9 +411,9 @@
                 "Script": {
                     "scripts": {
                         "BallBehaviour": {
-                            "boost": 20.0,
+                            "boost": 10.0,
                             "boostDuration": 150.0,
-                            "speed": 25.0
+                            "speed": 20.0
                         }
                     }
                 },
@@ -7394,6 +7427,46 @@
                 }
             },
             "name": "BottomWall"
+        },
+        {
+            "components": {
+                "Sprite": {
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "fade": 0.004999999888241291,
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "shadername": "default",
+                    "texture": "",
+                    "thickness": 1.0,
+                    "tint": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        681.8172607421875,
+                        1080.0,
+                        1.0
+                    ],
+                    "translation": [
+                        0.0,
+                        0.0,
+                        -28.054336547851563
+                    ]
+                }
+            },
+            "name": "background"
         }
     ]
 }

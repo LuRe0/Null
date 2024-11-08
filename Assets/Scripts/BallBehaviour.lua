@@ -8,7 +8,9 @@ local BallBehaviour = {
         boostDuration = { value = 2, serialize = true },
 
         tempSpeed = { value = 0, serialize = false },
-        elapsedTime = { value = 0, serialize = false }
+        elapsedTime = { value = 0, serialize = false },
+        dead = { value = 0, serialize = false },
+        -- alive = { value = "yes", serialize = true },
     }
 }
 
@@ -73,6 +75,13 @@ function BallBehaviour:OnCollisionEnter(otherEntity)
     -- Check if otherEntity is valid
 
     if otherEntity then
+        local sprite = pEntity:get_component(Sprite)
+
+        if sprite then
+            local newtint = vec4(Random.range_float(0.1,1.0), Random.range_float(0.1,1.0), Random.range_float(0.1,1.0), 1)
+            sprite:set_tint(newtint)
+        end
+
         if(otherEntity:has_component(Rigidbody2D)) then
             if(otherEntity.name == "Player") then
                 local otherRb2d = otherEntity:get_component(Rigidbody2D)
@@ -87,7 +96,7 @@ function BallBehaviour:OnCollisionEnter(otherEntity)
                 else
                     newVel = b2Vec2(0, 0)  -- Or set to an appropriate default direction
                 end
-
+ 
                 newVel = newVel * (BallBehaviour.speed + BallBehaviour.tempSpeed) * 1.5
 
                 -- Trace.debug("here")

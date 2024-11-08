@@ -89,9 +89,10 @@ namespace NULLENGINE
 			if (!cc2D.m_RuntimeFixture)
 				continue;
 
+			auto translation = camManager->GetCurrentCamera()->GetCameraType() == Camera::PERSPECTIVE ?
+				(transform.m_Translation + glm::vec3(cc2D.m_Offset, transform.m_Translation.z + transform.m_Scale.z + 0.50f)) :
+				(transform.m_Translation + glm::vec3(cc2D.m_Offset, transform.m_Translation.z + 0.50f));
 
-
-			auto translation = (transform.m_Translation + glm::vec3(cc2D.m_Offset, transform.m_Translation.z + transform.m_Scale.z + 0.50f));
 			auto rot = cc2D.m_RuntimeFixture->GetBody()->GetAngle();
 
 			

@@ -107,9 +107,8 @@ return Template_Script
 
         switch (NEngine::Instance().GetEngineState())
         {
-        case NULLENGINE::IEngine::RUN_MAXIMIZED: // Handle maximized state
         case NULLENGINE::IEngine::RUN_WINDOWED:  // Handle windowed state
-        case NULLENGINE::IEngine::SIMULATE:
+        case NULLENGINE::IEngine::EDIT:
         {
             for (auto& scripts : m_ScriptList)
             {
@@ -134,6 +133,7 @@ return Template_Script
 	{
 		const auto& modules = m_Parent->GetModules();
 		Input::RegisterToScripAPI(lua);
+		Random::RegisterToScripAPI(lua);
 		Trace::RegisterToScripAPI(lua);
 		RegisterMathStructures(lua);
       

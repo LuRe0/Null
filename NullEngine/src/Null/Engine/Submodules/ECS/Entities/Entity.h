@@ -108,9 +108,12 @@ namespace NULLENGINE
 
 		void SetName(const std::string& name);
 
+		void SetParentArchetype(const std::string& name);
+
 		void SetArchetype(const std::string& name);
 
 		std::string GetName() const { return m_Name; };
+		std::string GetParentName() const { return m_ParentArchetype; };
 
 		EntityID GetID() const { return m_ID; }
 
@@ -123,8 +126,8 @@ namespace NULLENGINE
 		std::string m_Name;
 
 		std::string m_Archetype;
-
-
+		
+		std::string m_ParentArchetype;
 
 		EntityID m_ID;
 

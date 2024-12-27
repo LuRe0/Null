@@ -118,6 +118,11 @@ namespace NULLENGINE
 	void Scene::Init()
 	{
 		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+
+
+		SUBSCRIBE_EVENT(EntityLoadedEvent, &Scene::OnEntityAdded, eventManager, EventPriority::High);
+
 
 		for (const auto& entity : m_Entities)
 		{
@@ -207,6 +212,8 @@ namespace NULLENGINE
 
 		entityFactory->CloneOrCreateArchetype(name, entity, componentFactory, registry, JSON());
 
+		eventManager->QueueAsync(std::make_unique<EntityCreatedEvent>(entity.GetID()));
+
 		return entity.GetID();
 	}
 
@@ -217,6 +224,14 @@ namespace NULLENGINE
 		NLE_CORE_ASSERT(it != m_Entities.end(), "Entity not found", entityID);
 
 		return *it;
+	}
+
+	void Scene::AddEntity(const Entity& entity)
+	{
+		if (!HasEntity(entity.GetID()))
+		{
+			m_Entities.push_back(entity);
+		}
 	}
 
 	bool Scene::HasEntity(const EntityID& entityID)
@@ -429,6 +444,13 @@ namespace NULLENGINE
 	{
 		std::swap(m_Entities.back(), m_Entities[pos]);
 		m_Entities.pop_back();
+	}
+
+	bool Scene::OnEntityAdded(const EntityLoadedEvent& e)
+	{
+		AddEntity(e.GetEntity());
+
+		return true;
 	}
 
 	void Scene::DeleteEntity(EntityID entityID)

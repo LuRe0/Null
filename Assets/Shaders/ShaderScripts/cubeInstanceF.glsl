@@ -70,12 +70,19 @@ void main()
         case 31: l_Texture = texture(u_Textures[31], v_TexCoord); break;
     }
 
+    if(l_Texture.a == 0)
+	{
+		discard;
+	}
+
     if(index >= 0)
         FragColor = l_Texture * v_Color * v_Tint;
     else
         FragColor = v_Color * v_Tint;
 
     FragColor *= squareFade;
+
+    if(FragColor.a < 0.1) discard;
 
 	FragID = v_EntityID;
 }

@@ -67,12 +67,15 @@ void main()
         case 31: l_Texture = texture(u_Textures[31], v_TexCoord); break;
     }
 
+
     if(index >= 0)
         FragColor = l_Texture * v_Color * v_Tint;
     else
         FragColor = v_Color * v_Tint;
 
     FragColor.a *= circle;
+
+    if(FragColor.a < 0.1) discard;
 
 	FragID = v_EntityID;
 }

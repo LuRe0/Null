@@ -1,0 +1,185 @@
+{
+    "children": [
+        {
+            "components": {
+                "CircleCollider2D": {
+                    "density": 1.0,
+                    "friction": 0.5,
+                    "offset": [
+                        0.0,
+                        0.0
+                    ],
+                    "radius": 15.0,
+                    "restitution": 0.0,
+                    "restitutionThreshold": 0.5
+                },
+                "Transform": {
+                    "rotation": [
+                        1.6559379218961112e-06,
+                        1.4854749679216184e-06,
+                        0.0
+                    ],
+                    "scale": [
+                        5.0,
+                        5.0,
+                        1.0
+                    ],
+                    "translation": [
+                        -0.4088827669620514,
+                        0.08654403686523438,
+                        2.008770261241466e-09
+                    ]
+                }
+            },
+            "name": "Edge 1"
+        },
+        {
+            "components": {
+                "CircleCollider2D": {
+                    "density": 1.0,
+                    "friction": 0.5,
+                    "offset": [
+                        0.0,
+                        0.0
+                    ],
+                    "radius": 15.0,
+                    "restitution": 0.0,
+                    "restitutionThreshold": 0.5
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        -0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        5.0,
+                        5.0,
+                        1.0
+                    ],
+                    "translation": [
+                        0.4482026696205139,
+                        -0.0269927978515625,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Edge 2"
+        },
+        {
+            "components": {
+                "CircleCollider2D": {
+                    "density": 1.0,
+                    "friction": 0.5,
+                    "offset": [
+                        0.0,
+                        0.0
+                    ],
+                    "radius": 15.0,
+                    "restitution": 0.0,
+                    "restitutionThreshold": 0.5
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        -0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        0.4000000059604645,
+                        2.0,
+                        1.0
+                    ],
+                    "translation": [
+                        0.012000000104308128,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Center"
+        }
+    ],
+    "components": {
+        "BoxCollider2D": {
+            "density": 1.0,
+            "friction": 0.5,
+            "offset": [
+                0.0,
+                0.0
+            ],
+            "restitution": 1.0,
+            "restitutionThreshold": 0.0,
+            "scale": [
+                125.0,
+                25.0
+            ]
+        },
+        "Camera": {
+            "mainCamera": true,
+            "name": "MainCamera",
+            "position": [
+                0.0,
+                0.0
+            ],
+            "rotation": 0.0,
+            "type": "Camera2D",
+            "zoom": 0.9039999842643738
+        },
+        "Rigidbody2D": {
+            "angularDamping": 0.0,
+            "angularVelocity": 0.0,
+            "fixedRotation": true,
+            "gravityScale": 0.0,
+            "linearDamping": 10.0,
+            "linearVelocity": [
+                0.0,
+                0.0
+            ],
+            "type": 2
+        },
+        "Script": {
+            "scripts": {
+                "PlayerMovement": {
+                    "Speed": 65000.0
+                }
+            }
+        },
+        "Sprite": {
+            "dimension": [
+                1,
+                1
+            ],
+            "fade": 0.4359999895095825,
+            "frameindex": 0,
+            "meshname": "Quad",
+            "shadername": "default",
+            "texture": "",
+            "thickness": 0.3100000023841858,
+            "tint": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+            ]
+        },
+        "Transform": {
+            "rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                125.0,
+                25.0,
+                1.0
+            ],
+            "translation": [
+                0.0,
+                -475.0,
+                0.0
+            ]
+        }
+    },
+    "name": "Player"
+}

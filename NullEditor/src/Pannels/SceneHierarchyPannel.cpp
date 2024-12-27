@@ -68,7 +68,10 @@ namespace NULLENGINE
 			{
 				const std::string& archetype = FileDialog::OpenFile("Null Engine archetype (*.ent)\0*.ent\0");
 				if (!archetype.empty())
-					m_PannelData->m_SelectedEntity = m_PannelData->m_Context->LoadArchetype(archetype);
+				{
+					m_PannelData->m_SelectedEntity = {};
+					m_PannelData->m_Context->LoadArchetype(archetype);
+				}
 			}
 			ImGui::EndPopup();
 		}
@@ -322,8 +325,11 @@ namespace NULLENGINE
 		auto& cComp = parentEntity.Get<ChildrenComponent>();
 		cComp.m_Children.push_back(entity.m_ID);
 
+
 		if (!entity.Has<ParentComponent>())
 			entity.Add< ParentComponent>();
+
+		entity.SetParentArchetype(parentEntity.m_Archetype);
 
 		auto& pComp = entity.Get<ParentComponent>();
 		pComp.m_Parent = parentEntity.m_ID;
@@ -339,6 +345,8 @@ namespace NULLENGINE
 
 		if (entity.Has<ParentComponent>())
 		{
+			entity.SetParentArchetype("");
+
 			auto& pComp = entity.Get<ParentComponent>();
 
 			Entity& parentEntity = m_PannelData->m_Context->GetEntity(pComp.m_Parent);

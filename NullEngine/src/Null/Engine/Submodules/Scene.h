@@ -91,6 +91,8 @@ namespace NULLENGINE
 
 		Entity& GetEntity(const EntityID& entityID);
 
+		void AddEntity(const Entity& entity);
+
 		bool HasEntity(const EntityID& entityID);
 		
 		void Serialize(const std::string& name = "");
@@ -116,6 +118,10 @@ namespace NULLENGINE
 		Scene& operator=(Scene const&) = delete;
 
 		void RemoveEntity(size_t pos);
+
+
+		bool OnEntityAdded(const EntityLoadedEvent& e);
+
 
 		struct Transition 
 		{

@@ -15,6 +15,7 @@
 #include "stdafx.h"
 #include "Null/Core.h"
 #include "IEvents.h"
+//#include "Null/Engine/Submodules/ECS/Entities/Entity.h"
 
 //******************************************************************************//
 // Definitions  														        //
@@ -34,11 +35,11 @@
 namespace NULLENGINE
 {
 
-
 #define EVENT_CLASS_TYPE(type) static Event::EventType GetStaticEventType() { return EventType::##type; } \
                                virtual Event::EventType GetEventType() const override { return GetStaticEventType(); } \
                                virtual const char* GetName() const override { return #type; } \
                                std::unique_ptr<Event> Clone() const override  { return std::make_unique<type##Event>(*this); }
+
 
     class NLE_API WindowResizeEvent : public Event {
     public:
@@ -280,6 +281,25 @@ namespace NULLENGINE
         }
         EVENT_CLASS_TYPE(EntityCreated)
     };
+
+
+    class Entity;
+    class EntityLoadedEvent : public Event
+    {
+    public:
+        EntityLoadedEvent(const Entity& ent) : m_Entity(ent)
+        {}
+
+        std::string Print() const override;
+
+        const Entity& GetEntity() const { return m_Entity; }
+
+        EVENT_CLASS_TYPE(EntityLoaded)
+
+    private:
+        const Entity& m_Entity;
+    };
+
 
     class EntityDestroyedEvent : public EntityModifiedEvent {
     public:

@@ -11,6 +11,7 @@
 //******************************************************************************//
 #include "stdafx.h"
 #include "CommonEvents.h"
+#include "Null/Engine/Submodules/ECS/Entities/Entity.h"
 
 
 
@@ -22,4 +23,12 @@
 //******************************************************************************//
 // Function Declarations												        //
 //******************************************************************************//
+
+
+std::string NULLENGINE::EntityLoadedEvent::Print() const
+{
+    std::stringstream ss;
+    ss << "EntityCreatedEvent: ID=" << m_Entity.GetID();
+    return ss.str();
+}
 

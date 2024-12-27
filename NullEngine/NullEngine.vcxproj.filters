@@ -22,9 +22,6 @@
     <Filter Include="Null\Engine\Submodules">
       <UniqueIdentifier>{57920A45-438C-3397-2CF9-C9A718929903}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Null\Engine\Submodules\Collision">
-      <UniqueIdentifier>{32E0A3F3-1E31-8F35-4795-7DF73345229F}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Null\Engine\Submodules\ECS">
       <UniqueIdentifier>{21DA4412-0DEA-F0E2-76A3-550162D2DF7B}</UniqueIdentifier>
     </Filter>
@@ -320,6 +317,9 @@
     <ClInclude Include="src\Null\Tools\JsonWrapper.h">
       <Filter>Null\Tools</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Tools\Random.h">
+      <Filter>Null\Tools</Filter>
+    </ClInclude>
     <ClInclude Include="src\Null\Tools\ScriptHelper.h">
       <Filter>Null\Tools</Filter>
     </ClInclude>
@@ -327,7 +327,6 @@
       <Filter>Null\Tools</Filter>
     </ClInclude>
     <ClInclude Include="src\stdafx.h" />
-    <ClInclude Include="src\Null\Tools\Random.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Null\Application.cpp">
@@ -519,6 +518,9 @@
     <ClCompile Include="src\Null\Tools\JsonWrapper.cpp">
       <Filter>Null\Tools</Filter>
     </ClCompile>
+    <ClCompile Include="src\Null\Tools\Random.cpp">
+      <Filter>Null\Tools</Filter>
+    </ClCompile>
     <ClCompile Include="src\Null\Tools\ScriptHelper.cpp">
       <Filter>Null\Tools</Filter>
     </ClCompile>
@@ -526,6 +528,5 @@
       <Filter>Null\Tools</Filter>
     </ClCompile>
     <ClCompile Include="src\stdafx.cpp" />
-    <ClCompile Include="src\Null\Tools\Random.cpp" />
   </ItemGroup>
 </Project>

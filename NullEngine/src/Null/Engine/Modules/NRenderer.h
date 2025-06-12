@@ -43,7 +43,7 @@ namespace NULLENGINE
 	class NLE_API NRenderer : public IModule
 	{
 	public:
-		NRenderer() = default;
+		NRenderer();
 		~NRenderer() = default;
 
 		/// <summary>
@@ -84,18 +84,12 @@ namespace NULLENGINE
 
 		void ResizeFramebuffer(unsigned int width, unsigned int height);
 
-		void ClearRender(float r = 0.1f, float g = 0.1f, float b = 0.1f, float a = 1.0f);
+		template<typename TBatcher>
+		TBatcher* AddBatcher(const std::string& name, std::size_t count);
+
+		void ClearRender();
 		static void ClearRenderS();
 	private:
-		struct RenderStorage
-		{
-
-			RenderData::RenderType RenderType;
-
-		};
-		
-
-		RenderStorage m_RenderStorage;
 
 		bool OnWindowResize(const WindowResizeEvent& e);
 
@@ -136,9 +130,18 @@ namespace NULLENGINE
 
 		void RenderToScreen();
 
-		float m_WinWidth;
-		float m_WinHeight;
+		float m_WinWidth = 0.0f;
+		float m_WinHeight = 0.0f;
 
+		std::vector<float> m_ClearColor = { 0.1f, 0.1f, 0.1f, 1.0f };
 	};
 
+	template<typename TBatcher>
+	inline TBatcher* NRenderer::AddBatcher(const std::string& name, std::size_t count)
+	{
+		if(!m_Batchers.contains(name))
+			m_Batchers.emplace(name, std::make_unique<TBatcher>(count));
+
+		return dynamic_cast<TBatcher*>(m_Batchers[name].get());
+	}
 }

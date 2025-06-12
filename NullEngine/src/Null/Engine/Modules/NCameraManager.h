@@ -119,6 +119,8 @@ namespace NULLENGINE
             return componentNames;
         }
 
+        bool IsWithinFrustum(const glm::vec3& center, const glm::vec3& halfExtents)  const;
+
 	private:
 		std::unordered_map<std::string, std::unique_ptr<Camera2D>> m_Cameras2D;
 		std::unordered_map<std::string, std::unique_ptr<Camera3D>> m_Cameras3D;

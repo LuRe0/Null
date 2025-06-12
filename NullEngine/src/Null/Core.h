@@ -19,11 +19,16 @@
 //******************************************************************************//
 
 #ifdef NLE_PLATFORM_WINDOWS
+#if NLE_DYNAMIC_LINK
 	#ifdef NLE_BUILD_DLL
 		#define NLE_API __declspec(dllexport)
 	#else
 		#define NLE_API __declspec(dllimport)
 	#endif
+#else
+	#define NLE_API
+#endif
+
 #else
 	#error NullEngine only supports Windows.
 

@@ -81,6 +81,7 @@
       <AdditionalIncludeDirectories>..\NullEngine\vendor\spdlog\include;..\NullEngine\vendor\magic_enum\magic_enum\include;..\NullEngine\src;src;..\NullEngine\vendor\GLFW\include;..\NullEngine\vendor\Glad\include;..\NullEngine\vendor\imgui;..\NullEngine\vendor\imGuizmo;..\NullEngine\vendor\JSON\include;..\NullEngine\vendor\glm;..\NullEngine\vendor\filewatch;..\NullEngine\vendor\sol2\sol2\include;..\NullEngine\vendor\lua\lua\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -96,6 +97,7 @@
       <AdditionalIncludeDirectories>..\NullEngine\vendor\spdlog\include;..\NullEngine\vendor\magic_enum\magic_enum\include;..\NullEngine\src;src;..\NullEngine\vendor\GLFW\include;..\NullEngine\vendor\Glad\include;..\NullEngine\vendor\imgui;..\NullEngine\vendor\imGuizmo;..\NullEngine\vendor\JSON\include;..\NullEngine\vendor\glm;..\NullEngine\vendor\filewatch;..\NullEngine\vendor\sol2\sol2\include;..\NullEngine\vendor\lua\lua\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -111,6 +113,7 @@
       <AdditionalIncludeDirectories>..\NullEngine\vendor\spdlog\include;..\NullEngine\vendor\magic_enum\magic_enum\include;..\NullEngine\src;src;..\NullEngine\vendor\GLFW\include;..\NullEngine\vendor\Glad\include;..\NullEngine\vendor\imgui;..\NullEngine\vendor\imGuizmo;..\NullEngine\vendor\JSON\include;..\NullEngine\vendor\glm;..\NullEngine\vendor\filewatch;..\NullEngine\vendor\sol2\sol2\include;..\NullEngine\vendor\lua\lua\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -126,6 +129,7 @@
     <ClInclude Include="src\Pannels\ModuleStatsPannel.h" />
     <ClInclude Include="src\Pannels\SceneHierarchyPannel.h" />
     <ClInclude Include="src\Pannels\ScenePropertyPannel.h" />
+    <ClInclude Include="src\Pannels\TimePannel.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\NullEditor.cpp" />
@@ -136,6 +140,7 @@
     <ClCompile Include="src\Pannels\ModuleStatsPannel.cpp" />
     <ClCompile Include="src\Pannels\SceneHierarchyPannel.cpp" />
     <ClCompile Include="src\Pannels\ScenePropertyPannel.cpp" />
+    <ClCompile Include="src\Pannels\TimePannel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NullEngine\NullEngine.vcxproj">

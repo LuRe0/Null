@@ -108,6 +108,8 @@ namespace NULLENGINE
 		};
 
 		void SortSubscribers(std::uint32_t eventId);
+
+		bool m_IsRunningEvent = false;
 	};
 
 #define SUBSCRIBE_EVENT(EVENT_TYPE, EVENT_CALLBACK, EVENT_MANAGER, PRIORITY) \

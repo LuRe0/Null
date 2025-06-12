@@ -82,7 +82,7 @@ namespace NULLENGINE
 		meshLayouts.push_back({ 4, GL_FLOAT, 4 * sizeof(float) });
 		meshLayouts.push_back({ 2, GL_FLOAT, 2 * sizeof(float) });
 
-		SetupVertexBuffer(m_VertexData, meshLayouts, false, m_VertexData.size());
+		SetupVertexBuffer(m_VertexData, meshLayouts, false, static_cast<uint32_t>(m_VertexData.size()));
 
 		SetupIndexBuffer(indexData);
 
@@ -142,7 +142,7 @@ namespace NULLENGINE
 		meshLayouts.push_back({ 4, GL_FLOAT, 4 * sizeof(float) });
 		meshLayouts.push_back({ 2, GL_FLOAT, 2 * sizeof(float) });
 
-		SetupVertexBuffer(m_VertexData, meshLayouts, false, m_VertexData.size());
+		SetupVertexBuffer(m_VertexData, meshLayouts, false, static_cast<uint32_t>(m_VertexData.size()));
 
 		SetupIndexBuffer(indexData);
 		SetupVertexAttributes();
@@ -150,6 +150,10 @@ namespace NULLENGINE
 		m_Buffer.m_EBO.Unbind();
 		m_Buffer.m_VBO.Unbind();
 		m_Buffer.m_VAO.Unbind();
+	}
+
+	Mesh::Mesh() : m_xHalfSize(0), m_yHalfSize(0), m_Name("")
+	{
 	}
 
 

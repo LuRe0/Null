@@ -80,14 +80,19 @@ namespace NULLENGINE
 #define NLE_CORE_DEBUG(...)		::NULLENGINE::Trace::GetCoreLogger()->debug(__VA_ARGS__)
 #define NLE_CORE_ERROR(...)		::NULLENGINE::Trace::GetCoreLogger()->error(__VA_ARGS__)
 //#define NLE_CORE_FATAL(...)		::NULLENGINE::Trace::GetCoreLogger()->fatal(__VA_ARGS__)
-#define NLE_CORE_ASSERT(condition,...) \
+#define NLE_CORE_ASSERT(condition, ...) \
     do { \
         if (!(condition)) { \
             NLE_CORE_ERROR("Assertion failed: {0}", __VA_ARGS__); \
-            assert(false, __VA_ARGS_); \
+            assert(false); \
         } \
-    } while (0)
+    } while(0)
 
+#define NLE_CORE_THROW(msg, ...) \
+    do { \
+        NLE_CORE_ERROR(msg, __VA_ARGS__); \
+        throw std::runtime_error(fmt::format(msg, ##__VA_ARGS__)); \
+    } while(0)
 
 
 
@@ -95,4 +100,10 @@ namespace NULLENGINE
 #define NLE_INFO(...)		::NULLENGINE::Trace::GetClientLogger()->info(__VA_ARGS__)
 #define NLE_WARN(...)		::NULLENGINE::Trace::GetClientLogger()->warn(__VA_ARGS__)
 #define NLE_ERROR(...)		::NULLENGINE::Trace::GetClientLogger()->error(__VA_ARGS__)
-#define NLE_DEBUG(...)		::NULLENGINE::Trace::GetClientLogger()->debug(__VA_ARGS__)
+
+#ifdef NLE_DEBUG
+#undef NLE_DEBUG
+#endif
+
+#define NLE_DEBUG(...) ::NULLENGINE::Trace::GetClientLogger()->debug(__VA_ARGS__)
+

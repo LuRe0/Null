@@ -46,7 +46,9 @@ using JSON = nlohmann::json;
 
 namespace NULLENGINE
 {
-
+	NRenderer::NRenderer() : m_WinHeight(0), m_WinWidth(0)
+	{
+	}
 	void NRenderer::Load()
 	{
 
@@ -189,8 +191,8 @@ namespace NULLENGINE
 		NWindow* window = NEngine::Instance().Get<NWindow>();
 		SUBSCRIBE_EVENT(WindowResizeEvent, &NRenderer::OnWindowResize, eventManager, EventPriority::Low);
 
-		m_WinWidth = window->Width();
-		m_WinHeight = window->Height();
+		m_WinWidth = static_cast<float>(window->Width());
+		m_WinHeight = static_cast<float>(window->Height());
 
 
 		glEnable(GL_BLEND);
@@ -201,13 +203,13 @@ namespace NULLENGINE
 		//glEnable(GL_CULL_FACE);
 		//glCullFace(GL_FRONT); // Or GL_FRONT, depending on your winding order
 
-		m_Batchers.emplace("Cube", std::make_unique<CubeBatchRenderer<Instance, CubeInstanceMesh, 10000>>());
-		m_Batchers.emplace("Line", std::make_unique<LineBatchRenderer<Instance, LineInstanceMesh, 5000>>());
-		m_Batchers.emplace("Triangle", std::make_unique<TriangleBatchRenderer<Instance, TriangleInstanceMesh, 10000>>());
-		m_Batchers.emplace("Circle", std::make_unique<CircleBatchRenderer<Instance, CircleInstanceMesh, 10000>>());
-		m_Batchers.emplace("Quad", std::make_unique<QuadBatchRenderer<Instance, QuadInstanceMesh, 10000>>());
+		m_Batchers.emplace("Cube", std::make_unique<CubeBatchRenderer<Instance, CubeInstanceMesh>>(10000));
+		m_Batchers.emplace("Line", std::make_unique<LineBatchRenderer<Instance, LineInstanceMesh>>(5000));
+		m_Batchers.emplace("Triangle", std::make_unique<TriangleBatchRenderer<Instance, TriangleInstanceMesh>>(10000));
+		m_Batchers.emplace("Circle", std::make_unique<CircleBatchRenderer<Instance, CircleInstanceMesh>>(10000));
+		m_Batchers.emplace("Quad", std::make_unique<QuadBatchRenderer<Instance, QuadInstanceMesh>>(10000));
 
-		m_Framebuffers.insert(std::make_pair("Scene", Framebuffer(m_WinWidth, m_WinHeight)));
+		m_Framebuffers.insert(std::make_pair("Scene", Framebuffer(static_cast<unsigned int>(m_WinWidth), static_cast<unsigned int>(m_WinHeight))));
 
 		Framebuffer& buffer = m_Framebuffers.at("Scene");
 
@@ -280,6 +282,9 @@ namespace NULLENGINE
 		//	ImGui::Text("Textures Rendered: %d", m_RenderStorage.Stats.TextureCount);
 		//else
 		//	ImGui::Text("Textures Rendered: %d", m_RenderStorage.TexturesUsed.size());
+
+		ImGui::DragFloat4("Clear Color", m_ClearColor.data(), 0.01f, 0.0f, 1.0f);
+
 		for (auto& batch : m_Batchers)
 		{
 			batch.second.get()->ImguiView();
@@ -338,15 +343,16 @@ namespace NULLENGINE
 		}
 	}
 
-	void NRenderer::ClearRender(float r, float g, float b, float a)
+	void NRenderer::ClearRender()
 	{
-		glClearColor(r, g, b, a);
+		glClearColor(m_ClearColor[0], m_ClearColor[1], m_ClearColor[2], m_ClearColor[3]);
+
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
 	void NRenderer::ClearRenderS()
 	{
-		glClearColor(.1, .1, .1, 1);
+		glClearColor(.1f, .1f, .1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
@@ -354,15 +360,15 @@ namespace NULLENGINE
 	{
 		if (!m_Parent->GetIsEditorEnabled())
 		{
-			m_WinWidth = e.GetWidth();
-			m_WinHeight = e.GetHeight();
+			m_WinWidth = static_cast<float>(e.GetWidth());
+			m_WinHeight = static_cast<float>(e.GetHeight());
 
 			for (auto& fb : m_Framebuffers)
 			{
-				fb.second.Resize(m_WinWidth, m_WinHeight);
+				fb.second.Resize(static_cast<unsigned int>(m_WinWidth), static_cast<unsigned int>(m_WinHeight));
 			}
 
-			SetViewport(0, 0, m_WinWidth, m_WinHeight);
+			SetViewport(0, 0, static_cast<uint32_t>(m_WinWidth), static_cast<uint32_t>(m_WinHeight));
 		}
 
 		return true;

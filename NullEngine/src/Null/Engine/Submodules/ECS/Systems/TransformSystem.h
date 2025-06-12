@@ -33,7 +33,7 @@
 
 namespace NULLENGINE
 {
-	class TransformComponent;
+	struct TransformComponent;
 
 	class NLE_API TransformSystem : public ISystem
 	{

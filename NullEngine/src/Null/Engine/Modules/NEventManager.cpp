@@ -103,9 +103,12 @@ namespace NULLENGINE
 		return handled;
 	}
 
-	void NEventManager::QueueEvent(std::unique_ptr<Event>&& event)
+	void NEventManager::QueueEvent(std::unique_ptr<Event>&& inEvent)
 	{
-		m_EventsQueue.emplace_back(std::move(event));
+		if(!m_IsRunningEvent)
+			m_EventsQueue.emplace_back(std::move(inEvent));
+		else
+			m_AsychEventsQueue.emplace_back(std::move(inEvent));
 	}
 
 	void NEventManager::QueueAsync(std::unique_ptr<Event>&& event)
@@ -116,6 +119,7 @@ namespace NULLENGINE
 
 	void NEventManager::DispatchEvents()
 	{
+		m_IsRunningEvent = true;
 		for (auto eventIt = m_EventsQueue.begin(); eventIt != m_EventsQueue.end();) 
 		{
 			if (TriggerEvent(*eventIt->get()))
@@ -123,7 +127,7 @@ namespace NULLENGINE
 			else
 				++eventIt;
 		}
-
+		m_IsRunningEvent = false;
 		m_EventsQueue.insert(
 			m_EventsQueue.end(),
 			std::make_move_iterator(m_AsychEventsQueue.begin()),

@@ -61,6 +61,7 @@ namespace NULLENGINE
 
 
         bool OnWindowResize(const WindowResizeEvent& e);
+        bool IsWithinFrustum(const glm::vec3& center, const glm::vec3& halfExtents) const;
     private:
         glm::vec2 m_Position;
 

@@ -42,7 +42,7 @@ namespace NULLENGINE
 {
 	bool DecomposeTransform(const glm::mat4& transform, glm::vec3& translation, glm::vec3& rotation, glm::vec3& scale);
 
-	ImGuiLayer::ImGuiLayer()
+	ImGuiLayer::ImGuiLayer() : m_viewportBounds{ glm::vec2(0.0f), glm::vec2(0.0f) }, m_FlyMode(false), m_CameraController(nullptr)
 	{
 
 	}
@@ -411,7 +411,7 @@ namespace NULLENGINE
 		NWindow* window = NEngine::Instance().Get<NWindow>();
 
 		ImGuiIO& io = ImGui::GetIO();
-		io.DisplaySize = ImVec2(window->Width(), window->Height());
+		io.DisplaySize = ImVec2(static_cast<float>(window->Width()), static_cast<float>(window->Height()));
 
 		// Rendering
 		ImGui::Render();
@@ -663,8 +663,8 @@ namespace NULLENGINE
 
 		if (m_ViewportSize != *((glm::vec2*)&viewportPanelSize))
 		{
-			buffer.Resize(viewportPanelSize.x, viewportPanelSize.y);
-			m_CameraController->OnResize(viewportPanelSize.x, viewportPanelSize.y);
+			buffer.Resize(static_cast<unsigned int>(viewportPanelSize.x), static_cast<unsigned int>(viewportPanelSize.y));
+			m_CameraController->OnResize(static_cast<unsigned int>(viewportPanelSize.x), static_cast<unsigned int>(viewportPanelSize.y));
 			m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
 		}
 
@@ -702,7 +702,7 @@ namespace NULLENGINE
 		{
 
 			// Convert mouse coordinates to match OpenGL's bottom-left origin
-			mouseY = viewportSize.y - mouseY;
+			mouseY = static_cast<int>(viewportSize.y - mouseY);
 
 			buffer.Bind();
 
@@ -829,7 +829,7 @@ namespace NULLENGINE
 
 		if (m_ViewportSize != *((glm::vec2*)&viewportPanelSize))
 		{
-			buffer.Resize(viewportPanelSize.x, viewportPanelSize.y);
+			buffer.Resize(static_cast<unsigned int>(viewportPanelSize.x), static_cast<unsigned int>(viewportPanelSize.y));
 			m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
 			ResizeCamera();
 		}
@@ -912,7 +912,7 @@ namespace NULLENGINE
 
 		if (m_ViewportSize != *((glm::vec2*)&viewportPanelSize))
 		{
-			buffer.Resize(viewportPanelSize.x, viewportPanelSize.y);
+			buffer.Resize(static_cast<unsigned int>(viewportPanelSize.x), static_cast<unsigned int>(viewportPanelSize.y));
 			m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
 			ResizeCamera();
 		}
@@ -961,7 +961,7 @@ namespace NULLENGINE
 		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
 		eventManager->QueueEvent(std::make_unique<WindowResizeEvent>(m_ViewportSize.x, m_ViewportSize.y));
 
-		m_CameraController->OnResize(m_ViewportSize.x, m_ViewportSize.y);
+		m_CameraController->OnResize(static_cast<unsigned int>(m_ViewportSize.x), static_cast<unsigned int>(m_ViewportSize.y));
 
 	}
 
@@ -1010,7 +1010,7 @@ namespace NULLENGINE
 		translation = vec3(LocalMatrix[3]);
 		LocalMatrix[3] = vec4(0, 0, 0, LocalMatrix[3].w);
 
-		vec3 Row[3], Pdum3;
+		vec3 Row[3];
 
 		// Now get scale and shear.
 		for (length_t i = 0; i < 3; ++i)

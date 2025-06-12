@@ -48,19 +48,19 @@ namespace NULLENGINE
 				switch (str.first)
 				{
 				case spdlog::level::trace:
-					ImGui::TextColored({1,1,1,1},str.second.c_str());
+					ImGui::TextColored({1.0f,1.0f,1.0f,1.0f},str.second.c_str());
 					break;
 				case spdlog::level::info:
-					ImGui::TextColored({ 0,1,0,1 },str.second.c_str());
+					ImGui::TextColored({ 0.0f,1.0f,0.0f,1.0f },str.second.c_str());
 					break;
 				case spdlog::level::warn:
-					ImGui::TextColored({ 0.99,0.72,0.01,1 },str.second.c_str());
+					ImGui::TextColored({ 0.99f,0.72f,0.01f,1.0f },str.second.c_str());
 					break;
 				case spdlog::level::err:
-					ImGui::TextColored({ 1,0,0,1 },str.second.c_str());
+					ImGui::TextColored({ 1.0f,0.0f,0.0f,1.0f },str.second.c_str());
 					break;
 				case spdlog::level::debug:
-					ImGui::TextColored({ 0.01,0.82,0.98,1 },str.second.c_str());
+					ImGui::TextColored({ 0.01f,0.82f,0.98f,1.0f },str.second.c_str());
 					break;
 				default:
 					break;

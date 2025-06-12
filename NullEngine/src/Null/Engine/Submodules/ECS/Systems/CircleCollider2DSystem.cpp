@@ -67,7 +67,7 @@ namespace NULLENGINE
 	{
 		ISystem::RenderImGui();
 
-		ImGui::ColorEdit4("Collider Color", glm::value_ptr(m_Color), 0.5f);
+		ImGui::ColorEdit4("Collider Color", glm::value_ptr(m_Color));
 		ImGui::DragFloat("Collider Thickness", &m_Thickness, 0.5f);
 	}
 

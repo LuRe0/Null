@@ -86,7 +86,7 @@ namespace NULLENGINE
 		{
 			if (!m_ResourceList.contains(name))
 			{
-				T* resource = new T(name,std::forward<TArgs>(args)...);
+				T* resource = new T(name, std::forward<TArgs>(args)...);
 
 				Add(name, resource);
 

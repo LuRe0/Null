@@ -40,6 +40,7 @@ namespace NULLENGINE
 
 		// Get the delta time
 		static float DeltaTime() {return m_DeltaTime;}
+		static int FPS() { return m_FPS;}
 
 		//! Initialize class
 		static Time& Instance()
@@ -59,5 +60,8 @@ namespace NULLENGINE
 		static double m_PreviousTime;
 		static float m_DeltaTime;
 
+		static int m_FrameCount;
+		static int m_FPS;
+		static double m_FPSLastTime;
 	};
 }

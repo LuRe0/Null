@@ -47,7 +47,7 @@ namespace NULLENGINE
         };
         //const std::vector<unsigned int> m_textureIDs;
 
-        RenderType m_Type;
+        RenderType m_Type = RenderType::INSTANCED;
     };
 
     struct ElementData : public RenderData
@@ -66,7 +66,7 @@ namespace NULLENGINE
         // Default constructor
         ElementData()
             : model(glm::mat4(1.0f)), mesh(nullptr), spriteSrc(nullptr),
-            tintColor(glm::vec4(1.0f)), shaderName(""), frameIndex(0), entity(0)
+            tintColor(glm::vec4(1.0f)), shaderName(""), frameIndex(0), entity(0), thickness(0.0f), fade(0.0f), depth(1.0f)
         {
             m_Type = RenderType::ELEMENT;
         }

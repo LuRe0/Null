@@ -34,7 +34,7 @@
 namespace NULLENGINE
 {
 	using EntityID = uint32_t;
-	class NLE_API BaseComponent;
+	struct NLE_API BaseComponent;
 
 	class NLE_API IComponentManager
 	{

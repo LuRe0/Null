@@ -61,17 +61,17 @@ namespace NULLENGINE
         void SetEnabled(bool enable) { m_Enabled = enable; if(!enable) m_FirstMouse = true; };
   
     protected:
-        float m_MovementSpeed;
+        float m_MovementSpeed = 0.0f;
 
-        float m_MouseSensitivity;
+        float m_MouseSensitivity = 0.0f;
 
-        float m_ScrollSensitivity;
+        float m_ScrollSensitivity = 0.0f;
 
         float m_SpeedScale = 2.0f;
 
-        glm::vec2 m_LastMousePos;
+        glm::vec2 m_LastMousePos = glm::vec2(0.0f,0.0f);
 
-        bool m_FirstMouse;
+        bool m_FirstMouse = false;
 
         bool m_Enabled = true;
 

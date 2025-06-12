@@ -1,0 +1,15 @@
+{
+    "components": 
+    {
+        "Transform": {
+            "translation": [-150, 300, 0],
+            "scale": [50, 50, 1],
+            "rotation": [0, 0, 0]
+        },
+        "Tilemap": {
+            "name": "Level1",
+            "path": "tilemaptest",
+            "scale": 3.0
+        }
+    }
+}

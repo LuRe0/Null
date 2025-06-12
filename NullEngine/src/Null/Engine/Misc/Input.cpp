@@ -33,12 +33,12 @@
 
 namespace NULLENGINE
 {
-	glm::vec2 Input::m_MousePos(0.0f, 0.0f);
-	std::unordered_map<int, bool> Input::m_KeyState;
-	std::unordered_map<int, bool> Input::m_PrevKeyState;
-	std::unordered_map<int, bool> Input::m_KeyRepeatState;
-	std::unordered_map<int, bool> Input::m_MouseState;
-	std::unordered_map<int, bool> Input::m_PrevMouseState;
+	static glm::vec2 m_MousePos;
+	static std::unordered_map<int, bool> m_KeyState;
+	static std::unordered_map<int, bool> m_PrevKeyState;
+	static std::unordered_map<int, bool> m_KeyRepeatState;
+	static std::unordered_map<int, bool> m_MouseState;
+	static std::unordered_map<int, bool> m_PrevMouseState;
 
 	void Input::Init()
 	{

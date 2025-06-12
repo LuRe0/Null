@@ -27,6 +27,9 @@
     <ClInclude Include="src\Pannels\ScenePropertyPannel.h">
       <Filter>Pannels</Filter>
     </ClInclude>
+    <ClInclude Include="src\Pannels\TimePannel.h">
+      <Filter>Pannels</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\NullEditor.cpp" />
@@ -49,6 +52,9 @@
       <Filter>Pannels</Filter>
     </ClCompile>
     <ClCompile Include="src\Pannels\ScenePropertyPannel.cpp">
+      <Filter>Pannels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Pannels\TimePannel.cpp">
       <Filter>Pannels</Filter>
     </ClCompile>
   </ItemGroup>

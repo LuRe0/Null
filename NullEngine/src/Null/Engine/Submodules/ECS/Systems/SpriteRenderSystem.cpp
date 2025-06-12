@@ -62,6 +62,9 @@ namespace NULLENGINE
 		NRegistry* m_Parent = NEngine::Instance().Get<NRegistry>();
 		NCameraManager* camManager = NEngine::Instance().Get<NCameraManager>();
 
+		glm::mat4 viewMatrix = camManager->GetCurrentCamera()->GetViewMatrix();
+
+
 		for (const auto entityId : GetSystemEntities())
 		{
 			TransformComponent& transform = m_Parent->GetComponent<TransformComponent>(entityId);
@@ -70,7 +73,8 @@ namespace NULLENGINE
 			if (!sprite.m_Enabled)
 				continue;
 
-			glm::mat4 viewMatrix = camManager->GetCurrentCamera()->GetViewMatrix();
+			if (!camManager->IsWithinFrustum(transform.m_Translation, (transform.m_Scale/2.0f)))
+				continue;
 
 			glm::vec4 worldPosition = transform.m_TransformMatrix * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -152,7 +156,7 @@ namespace NULLENGINE
 			glm::vec2 dimension = jsonWrapper.GetVec2("dimension", { 1.0f, 1.0f });
 			auto src = jsonWrapper.GetString("texture", "");
 			if (!src.empty())
-				comp->m_SpriteSource = spritesrcManager->Create(src, dimension.x, dimension.y);
+				comp->m_SpriteSource = spritesrcManager->Create(src, static_cast<int>(dimension.x), static_cast<int>(dimension.y));
 			else
 				comp->m_SpriteSource = nullptr;
 
@@ -317,7 +321,7 @@ namespace NULLENGINE
 			ImGui::EndPopup();
 		}
 
-		ImGui::ColorEdit4("Tint", glm::value_ptr(sprite.m_Color), 0.5f);
+		ImGui::ColorEdit4("Tint", glm::value_ptr(sprite.m_Color));
 
 		const auto& shaderNames = shaderManager->GetResourceNames();
 

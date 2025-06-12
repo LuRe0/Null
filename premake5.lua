@@ -39,6 +39,7 @@ project "NullEngine"
     kind "StaticLib"
     language "C++"
     cppdialect "C++20"
+    staticruntime "on"
 
     targetdir ("bin/" .. outputDir .. "/%{prj.name}")
     objdir ("bin-int/" .. outputDir .. "/%{prj.name}")
@@ -90,31 +91,24 @@ project "NullEngine"
         "opengl32.lib"
     }
 
-    postbuildcommands
-    {
-        ("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputDir .. "/sandbox"),
-        ("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputDir .. "/NullEditor")
-    }
 
     filter "system.windows"
-        cppdialect "C++20"
-        staticruntime "On"
         systemversion "latest"
 
-        filter "configurations:Debug"
-            defines "NLE_DEBUG"
-            buildoptions "/MDd"
-            symbols "On"
+     filter "configurations:Debug"
+        symbols "on"
+        runtime "Debug"
+        defines "NLE_DEBUG"
 
-        filter "configurations:Release"
-            defines "NLE_RELEASE"
-            buildoptions "/MD"
-            symbols "On"
+    filter "configurations:Release"
+        defines "NLE_RELEASE"
+        runtime "Release"
+        symbols "on"
 
-        filter "configurations:Dist"
-            defines "NLE_DIST"
-            buildoptions "/MT"
-            symbols "On"
+    filter "configurations:Dist"
+        defines "NLE_DIST"
+        runtime "Release"
+        symbols "on"
 
 
     
@@ -124,7 +118,7 @@ project "Sandbox"
     kind "ConsoleApp"
     language "C++"
     cppdialect "C++20"
-    -- staticruntime "on"
+    staticruntime "on"
 
     targetdir ("bin/" .. outputDir .. "/%{prj.name}")
     objdir ("bin-int/" .. outputDir .. "/%{prj.name}")
@@ -162,28 +156,26 @@ project "Sandbox"
     }
 
     filter "system.windows"
-        cppdialect "C++20"
-        staticruntime "On"
         systemversion "latest"
 
-        filter "configurations:Debug"
-            defines "NLE_DEBUG"
-            symbols "On"
+    filter "configurations:Debug"
+        defines "NLE_DEBUG"
+        symbols "on"
 
-        filter "configurations:Release"
-            defines "NLE_RELEASE"
-            symbols "On"
+    filter "configurations:Release"
+        defines "NLE_RELEASE"
+        optimize "on"
 
-        filter "configurations:Dist"
-            defines "NLE_DIST"
-            symbols "On"
+    filter "configurations:Dist"
+        defines "NLE_DIST"
+        optimize "on"
 
 project "NullEditor" 
     location "NullEditor"
     kind "ConsoleApp"
     language "C++"
     cppdialect "C++20"
-    -- staticruntime "on"
+    staticruntime "on"
 
     targetdir ("bin/" .. outputDir .. "/%{prj.name}")
     objdir ("bin-int/" .. outputDir .. "/%{prj.name}")
@@ -227,15 +219,15 @@ project "NullEditor"
         staticruntime "On"
         systemversion "latest"
 
-        filter "configurations:Debug"
-            defines "NLE_DEBUG"
-            symbols "On"
+    filter "configurations:Debug"
+        defines "NLE_DEBUG"
+        symbols "On"
 
-        filter "configurations:Release"
-            defines "NLE_RELEASE"
-            symbols "On"
+    filter "configurations:Release"
+        defines "NLE_RELEASE"
+        symbols "On"
 
-        filter "configurations:Dist"
-            defines "NLE_DIST"
-            symbols "On"
+    filter "configurations:Dist"
+        defines "NLE_DIST"
+        symbols "On"
 

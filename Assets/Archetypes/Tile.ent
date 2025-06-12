@@ -1,0 +1,7 @@
+{
+    "components": 
+    {
+        "Transform": { "translation": [-150, 300, 0], "scale": [50, 50, 1], "rotation": [0, 0, 0] },
+        "Sprite": {"frameindex": 0,  "texture": "", "dimension": [1,1], "tint": [1, 1, 1, 1], "shadername": "default", "meshname": "Quad" }
+    }
+}

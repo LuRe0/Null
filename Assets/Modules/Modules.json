@@ -25,6 +25,9 @@
             "type": "NTextureManager"
         },
         {
+            "type": "NTilesetManager"
+        },
+        {
             "type": "NSpriteSourceManager"
         },
         {
@@ -53,6 +56,9 @@
         },
         {
             "type": "AnimationSystem"
+        },
+        {
+            "type": "TilemapRenderSystem"
         },
         {
             "type": "SpriteRenderSystem"

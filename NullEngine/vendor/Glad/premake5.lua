@@ -1,5 +1,6 @@
 project "Glad"
 	kind "StaticLib"
+	staticruntime "On"
 	language "C"
 
 
@@ -21,7 +22,6 @@ project "Glad"
 
 	filter "system:windows"
 		systemversion "latest"
-		staticruntime "On"
 		
 	filter "configurations:Debug"
 		symbols "On"

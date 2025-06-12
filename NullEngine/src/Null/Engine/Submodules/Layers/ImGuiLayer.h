@@ -60,9 +60,9 @@ namespace NULLENGINE
 
 		virtual void OnImGUIRender() = 0;
 	protected:
-		PannelData* m_PannelData;
+		PannelData* m_PannelData = nullptr;
 
-		ImGuiLayer* m_Parent;
+		ImGuiLayer* m_Parent = nullptr;
 	};
 
 

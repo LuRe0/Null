@@ -92,13 +92,6 @@ namespace NULLENGINE
 		Input() {}
 		~Input() {}
 
-		static glm::vec2 m_MousePos;
-		static std::unordered_map<int, bool> m_KeyState;
-		static std::unordered_map<int, bool> m_PrevKeyState;
-		static std::unordered_map<int, bool> m_KeyRepeatState;
-		static std::unordered_map<int, bool> m_MouseState;
-		static std::unordered_map<int, bool> m_PrevMouseState;
-
 		static void RegisterGLFWKeys(sol::state& lua);
 
 	};

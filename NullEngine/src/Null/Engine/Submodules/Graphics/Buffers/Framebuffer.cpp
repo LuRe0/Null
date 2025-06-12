@@ -42,8 +42,8 @@ namespace NULLENGINE
 	Framebuffer::Framebuffer(unsigned int width, unsigned int height) 
 	{
 
-		m_WinWidth = width;
-		m_WinHeight = height;
+		m_WinWidth = static_cast<float>(width);
+		m_WinHeight = static_cast<float>(height);
 
 		//glViewport(0, 0, width, height);
 
@@ -57,7 +57,7 @@ namespace NULLENGINE
 
 	void Framebuffer::Init()
 	{
-		CreateFramebuffer(m_WinWidth, m_WinHeight);
+		CreateFramebuffer(static_cast<unsigned int>(m_WinWidth), static_cast<unsigned int>(m_WinHeight));
 	}
 
 	void Framebuffer::Shutdown()
@@ -69,7 +69,7 @@ namespace NULLENGINE
 	void Framebuffer::Bind() const
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, m_FramebufferID);
-		glViewport(0, 0, m_WinWidth, m_WinHeight);
+		glViewport(0, 0, static_cast<GLsizei>(m_WinWidth), static_cast<GLsizei>(m_WinHeight));
 	}
 
 	void Framebuffer::ClearRender() const
@@ -114,12 +114,12 @@ namespace NULLENGINE
 			glGenTextures(1, &colorAttachment);
 			glBindTexture(GL_TEXTURE_2D, colorAttachment);
 			m_ColorAttachments.push_back(colorAttachment);
-			glTexImage2D(GL_TEXTURE_2D, 0, formats[i].m_InternalFormat, m_WinWidth, m_WinHeight, 0, formats[i].m_Format, formats[i].m_Type, nullptr);
+			glTexImage2D(GL_TEXTURE_2D, 0, formats[i].m_InternalFormat, static_cast<GLsizei>(m_WinWidth), static_cast<GLsizei>(m_WinHeight), 0, formats[i].m_Format, formats[i].m_Type, nullptr);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, colorAttachment, 0);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, static_cast<GLenum>(GL_COLOR_ATTACHMENT0 + i), GL_TEXTURE_2D, colorAttachment, 0);
 
 		}
 		// Set the list of draw buffers
@@ -133,7 +133,7 @@ namespace NULLENGINE
 				drawBuffers.push_back(GL_COLOR_ATTACHMENT0 + i);
 			}
 
-			glDrawBuffers(drawBuffers.size(), drawBuffers.data());
+			glDrawBuffers(static_cast<GLsizei>(drawBuffers.size()), drawBuffers.data());
 
 		}
 		else
@@ -153,7 +153,7 @@ namespace NULLENGINE
 		Bind();
 		unsigned int colorAttachment = m_ColorAttachments[index];
 		glBindTexture(GL_TEXTURE_2D, colorAttachment);
-		glTexImage2D(GL_TEXTURE_2D, 0, format, m_WinWidth, m_WinHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+		glTexImage2D(GL_TEXTURE_2D, 0, format, static_cast<GLsizei>(m_WinWidth), static_cast<GLsizei>(m_WinHeight), 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentType, GL_TEXTURE_2D, colorAttachment, 0);
@@ -177,8 +177,8 @@ namespace NULLENGINE
 
 	void Framebuffer::Resize(unsigned int width, unsigned int height)
 	{
-		m_WinWidth = width;
-		m_WinHeight = height;
+		m_WinWidth = static_cast<float>(width);
+		m_WinHeight = static_cast<float>(height);
 		if (!m_ColorAttachments.size()) return;
 
 		Bind();

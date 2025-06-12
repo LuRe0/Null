@@ -51,7 +51,7 @@ namespace NULLENGINE
 
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, data.size() * sizeof(unsigned int), data.data(), GL_STATIC_DRAW);
 
-        m_Count = data.size();
+        m_Count = static_cast<unsigned int>(data.size());
     }
 
     EBO::EBO()

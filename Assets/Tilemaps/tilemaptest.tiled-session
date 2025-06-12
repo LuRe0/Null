@@ -1,0 +1,41 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "tilemaptest.tmj",
+    "expandedProjectPaths": [
+    ],
+    "fileStates": {
+        "C:/Users/lucre/Desktop/Null Engine/NullEngine/Assets/Tilesets/tilesettest.tsj": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "C:/Users/lucre/Desktop/Null Engine/NullEngine/Assets/Tilesets/tilesettest.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tilemaptest.tmj": {
+            "scale": 1,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 456.5,
+                "y": 322.5
+            }
+        }
+    },
+    "last.externalTilesetPath": "C:/Users/lucre/Desktop/Null Engine/NullEngine/Assets/Tilesets",
+    "last.imagePath": "C:/Users/lucre/Desktop/Null Engine/NullEngine/Assets/Textures",
+    "map.lastUsedFormat": "json",
+    "openFiles": [
+        "tilemaptest.tmj"
+    ],
+    "project": "tilemaptest.tiled-project",
+    "recentFiles": [
+        "tilemaptest.tmj",
+        "C:/Users/lucre/Desktop/Null Engine/NullEngine/Assets/Tilesets/tilesettest.tsj",
+        "C:/Users/lucre/Desktop/Null Engine/NullEngine/Assets/Tilesets/tilesettest.tsx"
+    ],
+    "tileset.lastUsedFilter": "JSON tileset files (*.tsj *.json)",
+    "tileset.lastUsedFormat": "json"
+}

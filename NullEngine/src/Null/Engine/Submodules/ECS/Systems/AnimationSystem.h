@@ -33,7 +33,7 @@
 
 namespace NULLENGINE
 {
-	class AnimationComponent;
+	struct AnimationComponent;
 
 	class NLE_API AnimationSystem : public ISystem
 	{

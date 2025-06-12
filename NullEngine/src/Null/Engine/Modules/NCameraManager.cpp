@@ -155,6 +155,11 @@ namespace NULLENGINE
         return true;
     }
 
+    bool NCameraManager::IsWithinFrustum(const glm::vec3& center, const glm::vec3& halfExtents) const
+    {
+        return m_CurrentCamera->IsWithinFrustum(center, halfExtents);
+    }
+
     void NCameraManager::SetCurrentCamera(const std::string& name)
     {
         if (auto camera2D = GetCamera<Camera2D>(name)) {

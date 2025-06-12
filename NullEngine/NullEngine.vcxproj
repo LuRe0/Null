@@ -29,13 +29,13 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
+    <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
+    <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
@@ -79,7 +79,7 @@
       <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\magic_enum\magic_enum\include;vendor\GLFW\include;vendor\Glad\include;vendor\JSON\include;vendor\Box2D\include;vendor\glm;vendor\stb\stb;vendor\filewatch;vendor\imgui;vendor\imGuizmo;vendor\sol2\sol2\include;vendor\lua\lua\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
-      <AdditionalOptions>/MDd %(AdditionalOptions)</AdditionalOptions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -89,10 +89,6 @@
     <Lib>
       <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
-    <PostBuildEvent>
-      <Command>IF EXIST ..\bin\Debug-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /Y /I ..\bin\Debug-windows-x86_64\NullEngine\NullEngine.lib ..\bin\Debug-windows-x86_64\sandbox &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Debug-windows-x86_64\NullEngine\NullEngine.lib ..\bin\Debug-windows-x86_64\sandbox &gt; nul)
-IF EXIST ..\bin\Debug-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /Y /I ..\bin\Debug-windows-x86_64\NullEngine\NullEngine.lib ..\bin\Debug-windows-x86_64\NullEditor &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Debug-windows-x86_64\NullEngine\NullEngine.lib ..\bin\Debug-windows-x86_64\NullEditor &gt; nul)</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -103,7 +99,7 @@ IF EXIST ..\bin\Debug-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /Y 
       <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\magic_enum\magic_enum\include;vendor\GLFW\include;vendor\Glad\include;vendor\JSON\include;vendor\Box2D\include;vendor\glm;vendor\stb\stb;vendor\filewatch;vendor\imgui;vendor\imGuizmo;vendor\sol2\sol2\include;vendor\lua\lua\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
-      <AdditionalOptions>/MD %(AdditionalOptions)</AdditionalOptions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -113,10 +109,6 @@ IF EXIST ..\bin\Debug-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /Y 
     <Lib>
       <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
-    <PostBuildEvent>
-      <Command>IF EXIST ..\bin\Release-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /Y /I ..\bin\Release-windows-x86_64\NullEngine\NullEngine.lib ..\bin\Release-windows-x86_64\sandbox &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Release-windows-x86_64\NullEngine\NullEngine.lib ..\bin\Release-windows-x86_64\sandbox &gt; nul)
-IF EXIST ..\bin\Release-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /Y /I ..\bin\Release-windows-x86_64\NullEngine\NullEngine.lib ..\bin\Release-windows-x86_64\NullEditor &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Release-windows-x86_64\NullEngine\NullEngine.lib ..\bin\Release-windows-x86_64\NullEditor &gt; nul)</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
     <ClCompile>
@@ -127,7 +119,7 @@ IF EXIST ..\bin\Release-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /
       <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\magic_enum\magic_enum\include;vendor\GLFW\include;vendor\Glad\include;vendor\JSON\include;vendor\Box2D\include;vendor\glm;vendor\stb\stb;vendor\filewatch;vendor\imgui;vendor\imGuizmo;vendor\sol2\sol2\include;vendor\lua\lua\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
-      <AdditionalOptions>/MT %(AdditionalOptions)</AdditionalOptions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -137,10 +129,6 @@ IF EXIST ..\bin\Release-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /
     <Lib>
       <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
-    <PostBuildEvent>
-      <Command>IF EXIST ..\bin\Dist-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /Y /I ..\bin\Dist-windows-x86_64\NullEngine\NullEngine.lib ..\bin\Dist-windows-x86_64\sandbox &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Dist-windows-x86_64\NullEngine\NullEngine.lib ..\bin\Dist-windows-x86_64\sandbox &gt; nul)
-IF EXIST ..\bin\Dist-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /Y /I ..\bin\Dist-windows-x86_64\NullEngine\NullEngine.lib ..\bin\Dist-windows-x86_64\NullEditor &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Dist-windows-x86_64\NullEngine\NullEngine.lib ..\bin\Dist-windows-x86_64\NullEditor &gt; nul)</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\NIncludes.h" />
@@ -165,6 +153,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /Y /
     <ClInclude Include="src\Null\Engine\Modules\NShaderManager.h" />
     <ClInclude Include="src\Null\Engine\Modules\NSpriteSourceManager.h" />
     <ClInclude Include="src\Null\Engine\Modules\NTextureManager.h" />
+    <ClInclude Include="src\Null\Engine\Modules\NTilesetManager.h" />
     <ClInclude Include="src\Null\Engine\Modules\NWindow.h" />
     <ClInclude Include="src\Null\Engine\NEngine.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ComponentManager.h" />
@@ -173,10 +162,12 @@ IF EXIST ..\bin\Dist-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /Y /
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\CameraComponent.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\IComponent.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\Parent-ChildComponents.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\ParticleSystemComponent.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\Rigidbody2DComponent.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\ScriptComponent.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\SpriteComponent.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\TagComponent.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\TilemapComponent.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\TransformComponent.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\VariableContainer\VariableContainer.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Entities\Entity.h" />
@@ -184,10 +175,12 @@ IF EXIST ..\bin\Dist-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /Y /
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\BoxCollider2DSystem.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\CameraSystem.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\CircleCollider2DSystem.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\ParticleSystem.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\PhysicsSystem.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\ScriptSystem.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\SpriteRenderSystem.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\System.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\TilemapRenderSystem.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\TransformSystem.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Events\CommonEvents.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Events\EventHandler.h" />
@@ -197,6 +190,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /Y /
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\CubeBatchRenderer.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\LineBatchRenderer.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\QuadBatchRenderer.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\TilemapBatchRenderer.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\TriangleBatchRenderer.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BufferData.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\EBO.h" />
@@ -210,6 +204,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /Y /
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\Controllers\CameraController.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\Controllers\OrthographicCameraController.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\Controllers\PerspectiveCameraController.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\Frustum\Frustum.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\CircleInstanceMesh.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\CubeInstanceMesh.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\LineInstanceMesh.h" />
@@ -222,6 +217,8 @@ IF EXIST ..\bin\Dist-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /Y /
     <ClInclude Include="src\Null\Engine\Submodules\Layers\ImGuiLayer.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Layers\Layer.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Scene.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Tilemap.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Tileset.h" />
     <ClInclude Include="src\Null\EntryPoint.h" />
     <ClInclude Include="src\Null\Tools\FileDialog.h" />
     <ClInclude Include="src\Null\Tools\ImguiSink.h" />
@@ -251,6 +248,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /Y /
     <ClCompile Include="src\Null\Engine\Modules\NShaderManager.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NSpriteSourceManager.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NTextureManager.cpp" />
+    <ClCompile Include="src\Null\Engine\Modules\NTilesetManager.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NWindow.cpp" />
     <ClCompile Include="src\Null\Engine\NEngine.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\ComponentManager.cpp" />
@@ -261,10 +259,12 @@ IF EXIST ..\bin\Dist-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /Y /
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\BoxCollider2DSystem.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\CameraSystem.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\CircleCollider2DSystem.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\ParticleSystem.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\PhysicsSystem.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\ScriptSystem.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\SpriteRenderSystem.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\System.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\TilemapRenderSystem.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\TransformSystem.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Events\CommonEvents.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Events\EventHandler.cpp" />
@@ -280,6 +280,7 @@ IF EXIST ..\bin\Dist-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /Y /
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\Controllers\CameraController.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\Controllers\OrthographicCameraController.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\Controllers\PerspectiveCameraController.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\Frustum\Frustum.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\CircleInstanceMesh.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\CubeInstanceMesh.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\LineInstanceMesh.cpp" />
@@ -292,6 +293,8 @@ IF EXIST ..\bin\Dist-windows-x86_64\NullEngine\NullEngine.lib\ (xcopy /Q /E /Y /
     <ClCompile Include="src\Null\Engine\Submodules\Layers\ImGuiLayer.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Layers\Layer.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Scene.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\Tilemap.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\Tileset.cpp" />
     <ClCompile Include="src\Null\Tools\FileDialog.cpp" />
     <ClCompile Include="src\Null\Tools\ImguiSink.cpp" />
     <ClCompile Include="src\Null\Tools\JsonWrapper.cpp" />

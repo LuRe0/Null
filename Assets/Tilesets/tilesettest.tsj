@@ -1,0 +1,14 @@
+{ "columns":9,
+ "image":"..\/Textures\/MapTiles.png",
+ "imageheight":288,
+ "imagewidth":288,
+ "margin":0,
+ "name":"tilesettest",
+ "spacing":0,
+ "tilecount":81,
+ "tiledversion":"1.10.1",
+ "tileheight":32,
+ "tilewidth":32,
+ "type":"tileset",
+ "version":"1.10"
+}

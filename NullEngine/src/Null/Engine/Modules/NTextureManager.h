@@ -85,7 +85,7 @@ namespace NULLENGINE
 		}
 		
 		std::unordered_map<std::string, uint32_t> m_TextureSlots;
-		uint32_t m_NextIndex;
+		uint32_t m_NextIndex = 0;
 	};
 
 }

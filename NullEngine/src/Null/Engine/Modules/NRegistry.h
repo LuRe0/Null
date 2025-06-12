@@ -209,6 +209,7 @@ namespace NULLENGINE
 				assert(false);
 			}
 
+			NLE_CORE_THROW("Attempted to retrieve {0} which entity {1} does not possess!", componentID, entityID);
 		}
 
 		template <typename T>
@@ -231,10 +232,12 @@ namespace NULLENGINE
 			}
 			else
 			{
-				NLE_CORE_ERROR("Attempted to retrieve {0} {1} which entity {1} does not possess!", Component<T>::TypeName(), Component<T>::GetID(), entityID);
-				assert(false);
+				NLE_CORE_ASSERT(false, "Attempted to retrieve {0} {1} which entity {1} does not possess!", Component<T>::TypeName(), Component<T>::GetID(), entityID);
 			}
 
+			// Avoid warning by returning a reference to a static dummy.
+			static T dummy;
+			return dummy;
 		}
 
 
@@ -270,6 +273,11 @@ namespace NULLENGINE
 				}
 			}
 
+			NLE_CORE_ASSERT(false, "Attempted to retrieve {0} {1} which entity {1} does not possess!", Component<T>::TypeName(), Component<T>::GetID(), entityID);
+
+			// Avoid warning by returning a reference to a static dummy.
+			static T dummy;
+			return dummy;
 		}
 
 

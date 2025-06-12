@@ -33,7 +33,7 @@
 
 namespace NULLENGINE
 {
-	class CircleCollider2DComponent;
+	struct CircleCollider2DComponent;
 	class NLE_API CircleCollider2DSystem : public ISystem
 	{
 	public:

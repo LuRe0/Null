@@ -37,7 +37,7 @@
 
 namespace NULLENGINE
 {
-	class NLE_API ContactListener : public b2ContactListener
+	class ContactListener : public b2ContactListener
 	{
 	public:
 		void BeginContact(b2Contact* contact) override
@@ -49,8 +49,8 @@ namespace NULLENGINE
 			b2Body* bodyA = contact->GetFixtureA()->GetBody();
 			b2Body* bodyB = contact->GetFixtureB()->GetBody();
 
-			EntityID userDataA = bodyA->GetUserData().pointer;
-			EntityID userDataB = bodyB->GetUserData().pointer;
+			EntityID userDataA = static_cast<EntityID>(bodyA->GetUserData().pointer);
+			EntityID userDataB = static_cast<EntityID>(bodyB->GetUserData().pointer);
 
 			eventManager->TriggerEvent(CollisionEnterEvent(userDataA, userDataB));
 			eventManager->TriggerEvent(CollisionEnterEvent(userDataB, userDataA));
@@ -292,7 +292,7 @@ namespace NULLENGINE
 		ImGui::SetNextItemWidth(100.0f); // Set the width of the DragFloat
 		ImGui::DragFloat("##Pixels Per Meter", &m_Pixels_Per_Meter, 0.5f, 4, 128);
 
-		ImGui::ColorEdit4("Vector Color", glm::value_ptr(m_Color), 0.5f);
+		ImGui::ColorEdit4("Vector Color", glm::value_ptr(m_Color));
 	}
 
 	void PhysicsSystem::Unload()

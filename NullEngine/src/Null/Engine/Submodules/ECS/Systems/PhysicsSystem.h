@@ -35,9 +35,9 @@ class b2World;
 namespace NULLENGINE
 {
 
-	class BoxCollider2DComponent;
-	class Rigidbody2DComponent;
-	class TransformComponent;
+	struct BoxCollider2DComponent;
+	struct Rigidbody2DComponent;
+	struct TransformComponent;
 	class NRegistry;
 
 	class NLE_API PhysicsSystem : public ISystem

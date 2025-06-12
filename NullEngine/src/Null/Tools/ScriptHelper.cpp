@@ -86,7 +86,6 @@ namespace NULLENGINE
 				return JSON(v);
 			}
 			else if constexpr (std::is_same_v<T, std::string>) {
-				char buffer[256];
 				std::string v = arg;
 				return JSON(v);
 			}
@@ -189,7 +188,7 @@ namespace NULLENGINE
 			}
 			else if constexpr (std::is_same_v<T, std::string>) {
 				char buffer[256];
-				std::strncpy(buffer, arg.c_str(), sizeof(buffer));
+				strncpy_s(buffer, sizeof(buffer), arg.c_str(), _TRUNCATE);
 				buffer[sizeof(buffer) - 1] = 0;
 				if (ImGui::InputText(key.c_str(), buffer, sizeof(buffer))) {
 					value = std::string(buffer);
@@ -240,7 +239,7 @@ namespace NULLENGINE
 				else if (objArg.is<std::string>()) {
 					std::string v = objArg.as<std::string>();
 					char buffer[256];
-					std::strncpy(buffer, v.c_str(), sizeof(buffer));
+					strncpy_s(buffer, sizeof(buffer), v.c_str(), _TRUNCATE);
 					buffer[sizeof(buffer) - 1] = 0;
 					if (ImGui::InputText(key.c_str(), buffer, sizeof(buffer))) {
 						value = std::string(buffer);

@@ -245,7 +245,7 @@ namespace NULLENGINE
 
 				ImGui::Separator();
 
-				ImGui::TextColored(ImVec4(0.3,0.4,1,1), "Perspective");
+				ImGui::TextColored(ImVec4(0.3f,0.4f,1.0f,1.0f), "Perspective");
 				for (auto name : names3D)
 				{
 
@@ -258,7 +258,7 @@ namespace NULLENGINE
 					}
 				}
 
-				ImGui::TextColored(ImVec4(0.3, 0.4, 1, 1), "Orthographic");
+				ImGui::TextColored(ImVec4(0.3f, 0.4f, 1.0f, 1.0f), "Orthographic");
 
 				for (auto name : names2D)
 				{
@@ -320,7 +320,7 @@ namespace NULLENGINE
 				}
 
 
-				if (ImGui::Button("Create", ImVec2(120, 0)))
+				if (ImGui::Button("Create", ImVec2(120.0f, 0.0f)))
 				{
 
 					if (m_CameraType == Camera::ORTHOGRAPHIC)
@@ -340,7 +340,7 @@ namespace NULLENGINE
 					m_CameraName = "New Camera";
 				}
 				ImGui::SameLine();
-				if (ImGui::Button("Cancel", ImVec2(120, 0)))
+				if (ImGui::Button("Cancel", ImVec2(120.0f, 0.0f)))
 				{
 					m_ShowCreationMenu = false; // Close the input box
 					m_CameraName = "New Camera";

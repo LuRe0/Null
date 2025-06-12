@@ -107,7 +107,7 @@ namespace NULLENGINE
 		}
 		else
 		{
-			id = ++m_NumEntities;
+			id = static_cast<EntityID>(++m_NumEntities);
 		}
 
 		if (!m_EntityToIndexMap.contains(id))
@@ -158,7 +158,7 @@ namespace NULLENGINE
 		{
 			if (signatures.test(i))
 			{
-				RemoveComponent(e.GetID(), i);
+				RemoveComponent(e.GetID(), static_cast<uint32_t>(i));
 			}
 		}
 

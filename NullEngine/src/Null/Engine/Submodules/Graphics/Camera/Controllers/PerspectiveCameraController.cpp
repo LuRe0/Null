@@ -132,11 +132,14 @@ namespace NULLENGINE
 		if (!m_Enabled)
 			return false;
 
-		float zoom = m_Camera->GetZoom();
+		//float zoom = m_Camera->GetZoom();
+		glm::vec3 pos = m_Camera->GetPosition();
 
-		zoom -= e.GetYOffset() * m_MouseSensitivity;
 
-		m_Camera->SetZoom(zoom);
+		pos.z -= e.GetYOffset() * m_MouseSensitivity * m_MovementSpeed;
+
+
+		m_Camera->SetPosition(pos);
 
 		return true;
 	}

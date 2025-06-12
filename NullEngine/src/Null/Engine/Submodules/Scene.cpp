@@ -146,7 +146,7 @@ namespace NULLENGINE
 		for (auto& comp : childComponents)
 		{
 
-			auto& childComponent = registry->GetComponent(child.GetID(), comp);
+			auto& childComponent = registry->GetComponent(child.GetID(), static_cast<uint32_t>(comp));
 
 			if (!childComponent.m_SerializeToScene)
 				continue;
@@ -212,7 +212,7 @@ namespace NULLENGINE
 
 		entityFactory->CloneOrCreateArchetype(name, entity, componentFactory, registry, JSON());
 
-		eventManager->QueueAsync(std::make_unique<EntityCreatedEvent>(entity.GetID()));
+		//eventManager->QueueAsync(std::make_unique<EntityCreatedEvent>(entity.GetID()));
 
 		return entity.GetID();
 	}
@@ -279,7 +279,7 @@ namespace NULLENGINE
 			for (auto& comp : components)
 			{
 
-				auto& component = registry->GetComponent(entity.GetID(), comp);
+				auto& component = registry->GetComponent(entity.GetID(), static_cast<uint32_t>(comp));
 
 				if (!component.m_SerializeToScene)
 					continue;
@@ -350,7 +350,7 @@ namespace NULLENGINE
 		for (size_t i = 0; i < signature.size(); i++)
 		{
 
-			auto& component = registry->GetComponent(entity.GetID(), signature[i]);
+			auto& component = registry->GetComponent(entity.GetID(), static_cast<uint32_t>(signature[i]));
 			JSON compJson = compFactory->WriteComponent(&component);
 			if (!compJson.is_null())
 			{

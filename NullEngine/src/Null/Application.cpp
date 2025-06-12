@@ -49,6 +49,7 @@ namespace NULLENGINE
 		AddCreateFunction<NMeshManager>([&engine]() { engine.Add<NULLENGINE::NMeshManager>(); });
 		AddCreateFunction<NSpriteSourceManager>([&engine]() { engine.Add<NULLENGINE::NSpriteSourceManager>(); });
 		AddCreateFunction<NTextureManager>([&engine]() { engine.Add<NULLENGINE::NTextureManager>(); });
+		AddCreateFunction<NTilesetManager>([&engine]() { engine.Add<NULLENGINE::NTilesetManager>(); });
 		AddCreateFunction<NRegistry>([&engine]() { engine.Add<NULLENGINE::NRegistry>(); });
 		AddCreateFunction<NSceneManager>([&engine]() { engine.Add<NULLENGINE::NSceneManager>(); });
 		AddCreateFunction<NComponentFactory>([&engine]() { engine.Add<NULLENGINE::NComponentFactory>(); });
@@ -57,6 +58,7 @@ namespace NULLENGINE
 		AddCreateFunction<NRenderer>([&engine]() { engine.Add<NULLENGINE::NRenderer>(); });
 		AddCreateFunction<PhysicsSystem>([&engine]() { engine.Add<NULLENGINE::PhysicsSystem>(); });
 		AddCreateFunction<TransformSystem>([&engine]() { engine.Add<NULLENGINE::TransformSystem>(); });
+		AddCreateFunction<TilemapRenderSystem>([&engine]() { engine.Add<NULLENGINE::TilemapRenderSystem>(); });
 		AddCreateFunction<SpriteRenderSystem>([&engine]() { engine.Add<NULLENGINE::SpriteRenderSystem>(); });
 		AddCreateFunction<CircleCollider2DSystem>([&engine]() { engine.Add<NULLENGINE::CircleCollider2DSystem>(); });
 		AddCreateFunction<BoxCollider2DSystem>([&engine]() { engine.Add<NULLENGINE::BoxCollider2DSystem>(); });

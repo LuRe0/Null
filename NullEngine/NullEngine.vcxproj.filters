@@ -70,6 +70,9 @@
     <Filter Include="Null\Tools">
       <UniqueIdentifier>{A071EE46-8C29-3094-F530-09F0E107CB84}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Null\Engine\Submodules\TileSystem">
+      <UniqueIdentifier>{3d638ab6-163d-478e-8e13-226e8f8cab04}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\NIncludes.h" />
@@ -327,6 +330,33 @@
       <Filter>Null\Tools</Filter>
     </ClInclude>
     <ClInclude Include="src\stdafx.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Tileset.h">
+      <Filter>Null\Engine\Submodules\TileSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\TilemapRenderSystem.h">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\TilemapComponent.h">
+      <Filter>Null\Engine\Submodules\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Modules\NTilesetManager.h">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Tilemap.h">
+      <Filter>Null\Engine\Submodules\TileSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\Frustum\Frustum.h">
+      <Filter>Null\Engine\Submodules\Graphics\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\TilemapBatchRenderer.h">
+      <Filter>Null\Engine\Submodules\Graphics\Buffers\BatchRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\ParticleSystem.h">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\ParticleSystemComponent.h">
+      <Filter>Null\Engine\Submodules\ECS\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Null\Application.cpp">
@@ -528,5 +558,23 @@
       <Filter>Null\Tools</Filter>
     </ClCompile>
     <ClCompile Include="src\stdafx.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\Tileset.cpp">
+      <Filter>Null\Engine\Submodules\TileSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\TilemapRenderSystem.cpp">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Modules\NTilesetManager.cpp">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Tilemap.cpp">
+      <Filter>Null\Engine\Submodules\TileSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\Frustum\Frustum.cpp">
+      <Filter>Null\Engine\Submodules\Graphics\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\ParticleSystem.cpp">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

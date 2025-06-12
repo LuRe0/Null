@@ -72,6 +72,8 @@ namespace NULLENGINE
         const float GetYaw() const;
         const float GetZoom() const;
 
+        bool IsWithinFrustum(const glm::vec3& center, const glm::vec3& halfExtents) const;
+
 
         void View() override;
 
@@ -100,5 +102,8 @@ namespace NULLENGINE
         float m_Aspect;
         float m_NearClip = 0.1f;
         float m_FarClip =  5000.0f;
+
+        mutable Frustum m_Frustum;
+        void UpdateFrustum() const;
     };
 }

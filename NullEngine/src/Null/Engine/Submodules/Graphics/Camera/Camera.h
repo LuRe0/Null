@@ -33,7 +33,7 @@
 namespace NULLENGINE
 {
     
-    class Camera 
+    class NLE_API Camera
     {
     public:
         enum CameraType
@@ -42,6 +42,20 @@ namespace NULLENGINE
             ORTHOGRAPHIC,
             PERSPECTIVE,
             PROJECTIONTYPE
+        };
+
+        struct Plane
+        {
+            glm::vec3 point;   // Any point on the plane
+            glm::vec3 normal;  // Normal pointing inward
+        };
+
+        struct Frustum
+        {
+            Plane planes[6]; // 0: near, 1: far, 2: right, 3: left, 4: top, 5: bottom
+
+            static Frustum FromCamera(glm::vec3 position, glm::vec3 up, glm::vec3 right, glm::vec3 front,
+                float aspect, float fovY, float zNear, float zFar);
         };
 
         virtual ~Camera() = default;
@@ -56,6 +70,7 @@ namespace NULLENGINE
 
         virtual void Write(JSON& json) = 0;
 
+        virtual bool IsWithinFrustum(const glm::vec3& center, const glm::vec3& halfExtents) const  = 0;
 
         virtual const glm::mat4 GetViewMatrix() const = 0;
 
@@ -67,9 +82,9 @@ namespace NULLENGINE
     protected:
         glm::mat4 m_ProjectionMatrix = glm::mat4(1.0f);
         glm::mat4 m_ViewMatrix = glm::mat4(1.0f);
-        CameraType m_CameraType;
+        CameraType m_CameraType = CameraType::INVALID;
         std::string m_Name = "";
-        bool m_IsDirty;
+        bool m_IsDirty = true;
     };
 
 	template <typename T>

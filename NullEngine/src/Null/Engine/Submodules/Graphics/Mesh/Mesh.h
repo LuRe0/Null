@@ -51,7 +51,7 @@ namespace NULLENGINE
 
 		Mesh(const std::string& filename);
 		Mesh(const std::string& name, float xHalfSize, float yHalfSize, float uSize, float vSize);
-		Mesh() = default;
+		Mesh();
 		~Mesh();
 
 		template <typename T>
@@ -86,11 +86,11 @@ namespace NULLENGINE
 	protected:
 		Buffer m_Buffer;
 
-		float m_xHalfSize, m_yHalfSize;
+		float m_xHalfSize, m_yHalfSize = .5f;
 
-		std::string m_Name;
+		std::string m_Name = "";
 
-		std::vector<Vertex> m_VertexData;
+		std::vector<Vertex> m_VertexData = std::vector<Vertex>();
 	};
 
 

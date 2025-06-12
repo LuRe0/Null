@@ -24,12 +24,12 @@
 
 namespace NULLENGINE
 {
-	std::unordered_map<std::string, std::function<void(void*, const nlohmann::json&, NRegistry*, EntityID id)>> NComponentFactory::m_componentReader;
-	std::unordered_map<std::string, std::function<nlohmann::json(BaseComponent*)>> NComponentFactory::m_componentWriter;
-	std::unordered_map<std::string, std::function<BaseComponent* ()>> NComponentFactory::m_ComponentCreator;
-	std::unordered_map<std::string, uint32_t> NComponentFactory::m_ComponentNamesToID;
-	std::unordered_map<size_t, std::function<void(Entity&)>> NComponentFactory::m_ComponentInspector;
-	std::unordered_map<std::string, std::unordered_map<uint32_t, std::function<sol::object(Entity&, sol::this_state)>>> NComponentFactory::m_TypeRegistry;
+	NLE_API std::unordered_map<std::string, std::function<void(void*, const nlohmann::json&, NRegistry*, EntityID)>> NComponentFactory::m_componentReader;
+	NLE_API std::unordered_map<std::string, std::function<nlohmann::json(BaseComponent*)>> NComponentFactory::m_componentWriter;
+	NLE_API std::unordered_map<std::string, std::function<BaseComponent* ()>> NComponentFactory::m_ComponentCreator;
+	NLE_API std::unordered_map<std::string, uint32_t> NComponentFactory::m_ComponentNamesToID;
+	NLE_API std::unordered_map<size_t, std::function<void(Entity&)>> NComponentFactory::m_ComponentInspector;
+	NLE_API std::unordered_map<std::string, std::unordered_map<uint32_t, std::function<sol::object(Entity&, sol::this_state)>>> NComponentFactory::m_TypeRegistry;
 
 	void NComponentFactory::Load()
 	{

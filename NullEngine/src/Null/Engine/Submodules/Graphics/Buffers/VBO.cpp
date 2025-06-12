@@ -74,7 +74,7 @@ namespace NULLENGINE
 	void VBO::AttachBuffer(const std::vector<float>& vertices, std::vector<Layout>& layouts, bool dynamic, size_t size)
 	{
 		m_Layouts = layouts;
-		m_Count = size;
+		m_Count = static_cast<unsigned int>(size);
 		m_Instances = 0;
 
 		dynamic ? glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_DYNAMIC_DRAW)
@@ -84,7 +84,7 @@ namespace NULLENGINE
 	void VBO::AttachBuffer(const std::vector<Vertex>& vertices, std::vector<Layout>& layouts, bool dynamic, size_t size)
 	{
 		m_Layouts = layouts;
-		m_Count = size;
+		m_Count = static_cast<unsigned int>(size);
 		m_Instances = 0;
 		dynamic ? glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_DYNAMIC_DRAW)
 			: glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
@@ -93,7 +93,7 @@ namespace NULLENGINE
 	void VBO::AttachBuffer(const std::vector<Instance>& vertices, std::vector<Layout>& layouts, bool dynamic, size_t size)
 	{
 		m_Layouts = layouts;
-		m_Count = size;
+		m_Count = static_cast<unsigned int>(size);
 		dynamic ? glBufferData(GL_ARRAY_BUFFER, m_Count * sizeof(Instance), nullptr, GL_DYNAMIC_DRAW)
 			: glBufferData(GL_ARRAY_BUFFER, m_Count * sizeof(Instance), nullptr, GL_STATIC_DRAW);
 	}
@@ -101,27 +101,27 @@ namespace NULLENGINE
 	void VBO::AttachBuffer(const std::vector<CircleInstance>& vertices, std::vector<Layout>& layouts, bool dynamic, size_t size)
 	{
 		m_Layouts = layouts;
-		m_Count = size;
+		m_Count = static_cast<unsigned int>(size);
 		dynamic ? glBufferData(GL_ARRAY_BUFFER, m_Count * sizeof(CircleInstance), nullptr, GL_DYNAMIC_DRAW)
 			: glBufferData(GL_ARRAY_BUFFER, m_Count * sizeof(CircleInstance), nullptr, GL_STATIC_DRAW);
 	}
 
 	void VBO::UpdateBuffer(const std::vector<Instance>& vertices)
 	{
-		m_Instances = vertices.size();
+		m_Instances = static_cast<unsigned int>(vertices.size());
 		glBufferSubData(GL_ARRAY_BUFFER, 0, m_Instances * sizeof(Instance), vertices.data());
 	}
 
 	void VBO::UpdateBuffer(const std::vector<CircleInstance>& vertices)
 	{
-		m_Instances = vertices.size();
+		m_Instances = static_cast<unsigned int>(vertices.size());
 		glBufferSubData(GL_ARRAY_BUFFER, 0, m_Instances * sizeof(CircleInstance), vertices.data());
 	}
 
 
 	void VBO::UpdateBuffer(const std::vector<Vertex>& vertices)
 	{
-		m_Instances = vertices.size();
+		m_Instances = static_cast<unsigned int>(vertices.size());
 		glBufferSubData(GL_ARRAY_BUFFER, 0, m_Instances * sizeof(Vertex), vertices.data());
 	}
 }

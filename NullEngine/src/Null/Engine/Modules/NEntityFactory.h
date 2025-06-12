@@ -38,6 +38,60 @@ namespace NULLENGINE
 
 	class NLE_API NEntityFactory : public IModule
 	{
+	private:
+
+		struct EntityDefinition
+		{
+			std::string referencedArchetype = ""; // empty if not a reference
+			std::unordered_map<std::string, BaseComponent*> components = std::unordered_map<std::string, BaseComponent*>();
+			std::unordered_map<std::string, EntityDefinition> children = std::unordered_map<std::string, EntityDefinition>();
+		};
+
+		typedef std::unordered_map<std::string, EntityDefinition> ArchetypeContainer;
+
+
+		ArchetypeContainer m_Archetypes;
+
+
+		class ArchetypeHelper
+		{
+		public:
+			ArchetypeHelper();
+			~ArchetypeHelper();
+
+			static void AddArchetype(const std::string& archetype, NEntityFactory::ArchetypeContainer& archetypeContainer);
+			static void AddArchetypeChild(const std::string& archetype, const std::string& child, NEntityFactory::ArchetypeContainer& archetypeContainer);
+
+			static bool HasArchetype(const std::string& archetype, const NEntityFactory::ArchetypeContainer& archetypeContainer);
+			static bool ArchetypeHasComponent(const std::string& archetype, BaseComponent* component, const NEntityFactory::ArchetypeContainer& archetypeContainer);
+			static bool ChildHasComponent(const std::string& archetype, const std::string& child, BaseComponent* component, NEntityFactory::ArchetypeContainer& archetypeContainer);
+
+
+			static void UpdateArchetype(const std::string& archetypeName, BaseComponent* component, NEntityFactory::ArchetypeContainer& archetypeContainer);
+			static void UpdateArchetypeWithChild(const std::string& archetypeName, const std::string& childName, BaseComponent* component, NEntityFactory::ArchetypeContainer& archetypeContainer);
+
+			//void HandleChildren(
+
+
+			static std::unordered_map<std::string, BaseComponent*>& GetArchetypeComponenetList(const std::string& archetypeName, NEntityFactory::ArchetypeContainer& archetypeContainer);
+			static std::unordered_map<std::string, BaseComponent*>& GetArchetypeChildComponenetList(const std::string& archetypeName, const std::string& childName, ArchetypeContainer& archetypeContainer);
+			static ArchetypeContainer& GetChildren(const std::string& archetypeName, NEntityFactory::ArchetypeContainer& archetypeContainer);
+		private:
+		};
+
+
+		//struct ArchetypeData
+		//{
+		//	std::unordered_map<std::string, BaseComponent*> components;
+		//	std::unordered_map<std::string, std::unordered_map<std::string, BaseComponent*>> children;
+
+		//	ArchetypeData() : components(), children()
+		//	{
+
+		//	}
+		//};
+
+		void CloneChild_Rec(Entity& pEntity, const std::string& parentArchetype, NComponentFactory* componentFactory, NRegistry* registry, const JSON& entityData, ArchetypeContainer& archetypeDef);
 	public:
 
 		void Load() override;
@@ -63,7 +117,7 @@ namespace NULLENGINE
 
 
 		void UpdateArchetype(const std::string& archetypeName, BaseComponent* component);
-		void UpdateArchetypeWithChild(const std::string& archetypeName, const std::string& childName, BaseComponent* component);
+		void UpdateArchetypeWithChild(const std::string& archetypeName, const std::string& childName, BaseComponent* component, NEntityFactory::ArchetypeContainer& archetypeContainer);
 
 
 		bool HasArchetype(const std::string& archetypeName) const;
@@ -72,55 +126,14 @@ namespace NULLENGINE
 
 		void ReadArchetype(const std::string& filename, Entity& entity, NComponentFactory* componentFactory, NRegistry* registry, bool isChild= false);
 		void ReadChildrenFromArchetype(Entity& parentEntity, const std::string& archetype, const nlohmann::json& childrenData, NRegistry* registry,
-									  NComponentFactory* componentFactory);
+									  NComponentFactory* componentFactory, NEntityFactory::ArchetypeContainer& archetypeContainer);
 
 		void CloneComponents(NComponentFactory* componentFactory, const std::string& archetype, NRegistry* registry, EntityID id);
-		void CloneChildComponents(NComponentFactory* componentFactory, const std::string& archetype, const std::string& childName, NRegistry* registry, EntityID id);
+		void CloneChildComponents(NComponentFactory* componentFactory, const std::string& archetype, const std::string& childName, NRegistry* registry, EntityID id, NEntityFactory::ArchetypeContainer& archetypeContainer);
 
 		void RegisterToScripAPI(sol::state& lua) override;
 
-	private:
 
-		class ArchetypeManager
-		{
-		public:
-			ArchetypeManager();
-			~ArchetypeManager();
-
-			void AddArchetype(const std::string& archetype);
-			void AddArchetypeChild(const std::string& archetype, const std::string& child);
-
-			bool HasArchetype(const std::string& archetype) const;
-			bool ArchetypeHasComponent(const std::string& archetype, BaseComponent* component) const;
-			bool ChildHasComponent(const std::string& archetype, const std::string& child, BaseComponent* component) const;
-
-
-			void UpdateArchetype(const std::string& archetypeName, BaseComponent* component);
-			void UpdateArchetypeWithChild(const std::string& archetypeName, const std::string& childName, BaseComponent* component);
-
-
-			std::unordered_map<std::string, BaseComponent*>& GetArchetypeComponenetList(const std::string& archetypeName);
-			std::unordered_map<std::string, BaseComponent*>& GetArchetypeChildComponenetList(const std::string& archetypeName, const std::string& childName);
-			std::unordered_map<std::string, std::unordered_map<std::string, BaseComponent*>>& GetChildren(const std::string& archetypeName);
-		private:
-				std::unordered_map<std::string, std::unordered_map<std::string, BaseComponent*>> m_ArchetypeComponents;
-				std::unordered_map<std::string, std::unordered_map<std::string, std::unordered_map<std::string, BaseComponent*>>> m_ChildrenComponent;
-		};
-
-		//struct ArchetypeData
-		//{
-		//	std::unordered_map<std::string, BaseComponent*> components;
-		//	std::unordered_map<std::string, std::unordered_map<std::string, BaseComponent*>> children;
-
-		//	ArchetypeData() : components(), children()
-		//	{
-
-		//	}
-		//};
-	
-		//std::unordered_map<std::string, ArchetypeData> m_Archetypes;
-
-		ArchetypeManager m_ArchetypeManager;
 	};
 
 }

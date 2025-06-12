@@ -53,7 +53,7 @@ namespace NULLENGINE
     {
 
 
-        m_ArchetypeManager.AddArchetype(archetypeName);
+        ArchetypeHelper::AddArchetype(archetypeName, m_Archetypes);
 
 
     }
@@ -133,21 +133,47 @@ namespace NULLENGINE
     {
         NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
 
-        const auto& children = m_ArchetypeManager.GetChildren(parentArchetype);
+        auto& children = ArchetypeHelper::GetChildren(parentArchetype, m_Archetypes);
 
-        for (const auto& child : children)
+        for (auto& child : children)
         {
             Entity childEntity = CreateEntity(registry);
 
             childEntity.SetName(child.first);
             childEntity.SetParentArchetype(parentArchetype);
-            CloneChildComponents(componentFactory, parentArchetype, child.first, registry, childEntity.GetID());
+            CloneChildComponents(componentFactory, parentArchetype, child.first, registry, childEntity.GetID(), m_Archetypes);
 
             registry->AddComponent<ParentComponent>(childEntity.GetID(), pEntity.GetID());
             auto& childrenComponent = registry->GetOrAddComponent<ChildrenComponent>(pEntity.GetID());
             childrenComponent.m_Children.push_back(childEntity.GetID());
 
             eventManager->TriggerEvent(EntityLoadedEvent(childEntity));
+
+            CloneChild_Rec(childEntity, child.first, componentFactory, registry, entityData, children);
+        }
+    }
+
+    void NEntityFactory::CloneChild_Rec(Entity& pEntity, const std::string& parentArchetype, NComponentFactory* componentFactory, NRegistry* registry, const JSON& entityData, ArchetypeContainer& archetypeDef)
+    {
+        NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+
+        auto& children = ArchetypeHelper::GetChildren(parentArchetype, archetypeDef);
+
+        for (auto& child : children)
+        {
+            Entity childEntity = CreateEntity(registry);
+
+            childEntity.SetName(child.first);
+            childEntity.SetParentArchetype(parentArchetype);
+            CloneChildComponents(componentFactory, parentArchetype, child.first, registry, childEntity.GetID(), archetypeDef);
+
+            registry->AddComponent<ParentComponent>(childEntity.GetID(), pEntity.GetID());
+            auto& childrenComponent = registry->GetOrAddComponent<ChildrenComponent>(pEntity.GetID());
+            childrenComponent.m_Children.push_back(childEntity.GetID());
+
+            eventManager->TriggerEvent(EntityLoadedEvent(childEntity));
+
+            CloneChild_Rec(childEntity, child.first, componentFactory, registry, entityData, children);
         }
     }
 
@@ -157,22 +183,22 @@ namespace NULLENGINE
     {
        NLE_CORE_ASSERT(!ArchetypeHasComponent(archetypeName, component), "Component previously added to archetype!", archetypeName);
         
-       m_ArchetypeManager.UpdateArchetype(archetypeName, component);
+       ArchetypeHelper::UpdateArchetype(archetypeName, component, m_Archetypes);
     }
 
-    void NEntityFactory::UpdateArchetypeWithChild(const std::string& archetypeName, const std::string& childName, BaseComponent* component)
+    void NEntityFactory::UpdateArchetypeWithChild(const std::string& archetypeName, const std::string& childName, BaseComponent* component, NEntityFactory::ArchetypeContainer& archetypeContainer)
     {
-        m_ArchetypeManager.UpdateArchetypeWithChild(archetypeName, childName, component); 
+        ArchetypeHelper::UpdateArchetypeWithChild(archetypeName, childName, component, archetypeContainer);
     }
 
     bool NEntityFactory::HasArchetype(const std::string& archetypeName) const
     {
-        return  m_ArchetypeManager.HasArchetype(archetypeName);
+        return  ArchetypeHelper::HasArchetype(archetypeName, m_Archetypes);
     }
     
     bool NEntityFactory::ArchetypeHasComponent(const std::string& archetypeName, BaseComponent* component) const
     {
-        return m_ArchetypeManager.ArchetypeHasComponent(archetypeName, component);
+        return ArchetypeHelper::ArchetypeHasComponent(archetypeName, component, m_Archetypes);
     }
 
     void NEntityFactory::ReadArchetype(const std::string& filename, Entity& entity, NComponentFactory* componentFactory, NRegistry* registry, bool isChild)
@@ -216,26 +242,34 @@ namespace NULLENGINE
             UpdateArchetype(archetypeName, &component);
 
             if (isChild)
-                UpdateArchetypeWithChild(entity.m_ParentArchetype, entity.m_Name, &component);
+                UpdateArchetypeWithChild(entity.m_ParentArchetype, entity.m_Name, &component, m_Archetypes);
         }
 
 
         if (entityData.contains("children"))
         {
-            ReadChildrenFromArchetype(entity, archetypeName, entityData["children"], registry, componentFactory);
+            ReadChildrenFromArchetype(entity, archetypeName, entityData["children"], registry, componentFactory, m_Archetypes);
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="parentEntity"></param>
+    /// <param name="archetype"></param>
+    /// <param name="childrenData"></param>
+    /// <param name="registry"></param>
+    /// <param name="componentFactory"></param>
     void NEntityFactory::ReadChildrenFromArchetype(Entity& parentEntity, const std::string& archetype, const nlohmann::json& childrenData, NRegistry* registry,
-                                                  NComponentFactory* componentFactory)
+                                                  NComponentFactory* componentFactory, NEntityFactory::ArchetypeContainer& archetypeContainer)
     {
         NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
 
         for (const auto& childData : childrenData)
         {
             Entity childEntity = CreateEntity(childData, registry);
-
             const std::string& childName = childData.contains("name") ? childData["name"].get<std::string>() : "ChildEntity(" + std::to_string(childEntity.GetID()) + ")";
+            std::string childArchetypeName = childName;
             childEntity.SetName(childName);
             childEntity.SetParentArchetype(parentEntity.m_Archetype);
 
@@ -246,6 +280,7 @@ namespace NULLENGINE
                 const std::string& archetype = archetypeWrapper.GetString("archetype", "");
 
                 ReadArchetype(archetype, childEntity, componentFactory, registry);
+                childArchetypeName = archetype;
             }
 
 
@@ -254,11 +289,11 @@ namespace NULLENGINE
                 for (const auto& [componentName, componentData] : childData["components"].items())
                 {
                     BaseComponent& component = componentFactory->CreateComponent(componentName + "Component", componentData, registry, childEntity.GetID());
-                    UpdateArchetypeWithChild(archetype, childName, &component);
+                    UpdateArchetypeWithChild(archetype, childName, &component, archetypeContainer);
                 }
             }
 
-            CloneChildComponents(componentFactory, archetype, childName, registry, childEntity.GetID());
+            CloneChildComponents(componentFactory, archetype, childName, registry, childEntity.GetID(), archetypeContainer);
 
             registry->AddComponent<ParentComponent>(childEntity.GetID(), parentEntity.GetID());
             auto& childrenComponent = registry->GetOrAddComponent<ChildrenComponent>(parentEntity.GetID());
@@ -266,7 +301,7 @@ namespace NULLENGINE
 
             if (childData.contains("children"))
             {
-                ReadChildrenFromArchetype(childEntity, archetype, childData["children"], registry, componentFactory);
+                ReadChildrenFromArchetype(childEntity, childArchetypeName, childData["children"], registry, componentFactory, archetypeContainer[archetype].children);
             }
 
             eventManager->QueueAsync(std::make_unique<EntityCreatedEvent>(childEntity.GetID()));
@@ -274,9 +309,16 @@ namespace NULLENGINE
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="componentFactory"></param>
+    /// <param name="archetype"></param>
+    /// <param name="registry"></param>
+    /// <param name="id"></param>
     void NEntityFactory::CloneComponents(NComponentFactory* componentFactory, const std::string& archetype, NRegistry* registry, EntityID id)
     {
-        std::unordered_map<std::string, BaseComponent*>& componentList = m_ArchetypeManager.GetArchetypeComponenetList(archetype);
+        std::unordered_map<std::string, BaseComponent*>& componentList = ArchetypeHelper::GetArchetypeComponenetList(archetype, m_Archetypes);
 
         for (auto component : componentList)
         {
@@ -284,15 +326,28 @@ namespace NULLENGINE
         }
     }
 
-    void NEntityFactory::CloneChildComponents(NComponentFactory* componentFactory, const std::string& archetype, const std::string& childName, NRegistry* registry, EntityID id)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="componentFactory"></param>
+    /// <param name="archetype"></param>
+    /// <param name="childName"></param>
+    /// <param name="registry"></param>
+    /// <param name="id"></param>
+    void NEntityFactory::CloneChildComponents(NComponentFactory* componentFactory, const std::string& archetype, const std::string& childName, NRegistry* registry, EntityID id, NEntityFactory::ArchetypeContainer& archetypeContainer)
     {
-        std::unordered_map<std::string, BaseComponent*>& componentList = m_ArchetypeManager.GetArchetypeChildComponenetList(archetype,childName);
+        std::unordered_map<std::string, BaseComponent*>& componentList = ArchetypeHelper::GetArchetypeChildComponenetList(archetype,childName, archetypeContainer);
 
         for (auto component : componentList)
         {
             componentFactory->CloneComponent(component.first, component.second, JSON(), registry, id);
         }
     }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="lua"></param>
     void NEntityFactory::RegisterToScripAPI(sol::state& lua)
     {
         lua.new_usertype<Entity>("Entity",
@@ -337,19 +392,21 @@ namespace NULLENGINE
 
     }
 
-    NEntityFactory::ArchetypeManager::ArchetypeManager() : m_ArchetypeComponents(), m_ChildrenComponent()
+    NEntityFactory::ArchetypeHelper::ArchetypeHelper()
     {
     }
 
-    NEntityFactory::ArchetypeManager::~ArchetypeManager()
+    NEntityFactory::ArchetypeHelper::~ArchetypeHelper()
     {
     }
 
-    void NEntityFactory::ArchetypeManager::AddArchetype(const std::string& archetype)
+    void NEntityFactory::ArchetypeHelper::AddArchetype(const std::string& archetype, NEntityFactory::ArchetypeContainer& archetypeContainer)
     {
-		if (!m_ArchetypeComponents.contains(archetype))
+		if (!archetypeContainer.contains(archetype))
 		{
-            m_ArchetypeComponents.emplace(archetype, std::unordered_map<std::string, BaseComponent*>());
+            EntityDefinition def;
+
+            archetypeContainer.emplace(archetype, def);
 
 			return;
 		}
@@ -357,13 +414,14 @@ namespace NULLENGINE
         NLE_CORE_INFO("Archetype {0} already exists!", archetype);
     }
 
-    void NEntityFactory::ArchetypeManager::AddArchetypeChild(const std::string& archetype, const std::string& child)
+    void NEntityFactory::ArchetypeHelper::AddArchetypeChild(const std::string& archetype, const std::string& child, NEntityFactory::ArchetypeContainer& archetypeContainer)
     {
-        if (m_ChildrenComponent.contains(archetype))
+        if (archetypeContainer.contains(archetype))
         {
-            if (!m_ChildrenComponent[archetype].contains(child))
+            if (!archetypeContainer[archetype].children.contains(child))
             {
-                m_ChildrenComponent[archetype].emplace(child, std::unordered_map<std::string, BaseComponent*>());
+                EntityDefinition def;
+                archetypeContainer[archetype].children.emplace(child, def);
                 return;
             }
 
@@ -373,43 +431,51 @@ namespace NULLENGINE
         NLE_CORE_INFO("Archetype {0} does not exists!", archetype);
 
     }
-    bool NEntityFactory::ArchetypeManager::HasArchetype(const std::string& archetype) const
+
+    bool NEntityFactory::ArchetypeHelper::HasArchetype(const std::string& archetype, const NEntityFactory::ArchetypeContainer& archetypeContainer)
     {
-        return m_ArchetypeComponents.contains(archetype);
+        return archetypeContainer.contains(archetype);
     }
-    bool NEntityFactory::ArchetypeManager::ArchetypeHasComponent(const std::string& archetype, BaseComponent* component) const
+
+    bool NEntityFactory::ArchetypeHelper::ArchetypeHasComponent(const std::string& archetype, BaseComponent* component, const NEntityFactory::ArchetypeContainer& archetypeContainer) 
     {
-        const std::unordered_map<std::string, BaseComponent*>& componentList = m_ArchetypeComponents.at(archetype);
+        const std::unordered_map<std::string, BaseComponent*>& componentList = archetypeContainer.at(archetype).components;
 
         return componentList.contains(component->Name());
     }
-    bool NEntityFactory::ArchetypeManager::ChildHasComponent(const std::string& archetype, const std::string& child, BaseComponent* component) const
+
+    bool NEntityFactory::ArchetypeHelper::ChildHasComponent(const std::string& archetype, const std::string& child, BaseComponent* component, NEntityFactory::ArchetypeContainer& archetypeContainer)
     {
-        const std::unordered_map<std::string, BaseComponent*> componentList = m_ChildrenComponent.at(archetype).at(child);
+        const std::unordered_map<std::string, BaseComponent*> componentList = archetypeContainer.at(archetype).children.at(child).components;
 
         return componentList.contains(component->Name());
     }
-    void NEntityFactory::ArchetypeManager::UpdateArchetype(const std::string& archetypeName, BaseComponent* component)
+
+    void NEntityFactory::ArchetypeHelper::UpdateArchetype(const std::string& archetypeName, BaseComponent* component, NEntityFactory::ArchetypeContainer& archetypeContainer)
     {
-        m_ArchetypeComponents.at(archetypeName).emplace(std::make_pair(component->Name(), component));
+        archetypeContainer.at(archetypeName).components.emplace(std::make_pair(component->Name(), component));
     }
-    void NEntityFactory::ArchetypeManager::UpdateArchetypeWithChild(const std::string& archetypeName, const std::string& childName, BaseComponent* component)
+
+    void NEntityFactory::ArchetypeHelper::UpdateArchetypeWithChild(const std::string& archetypeName, const std::string& childName, BaseComponent* component, NEntityFactory::ArchetypeContainer& archetypeContainer)
     {
-        m_ChildrenComponent[archetypeName][childName].emplace(std::make_pair(component->Name(), component));
+        archetypeContainer[archetypeName].children[childName].components.emplace(std::make_pair(component->Name(), component));
     }
-    std::unordered_map<std::string, BaseComponent*>& NEntityFactory::ArchetypeManager::GetArchetypeComponenetList(const std::string& archetypeName)
+
+    std::unordered_map<std::string, BaseComponent*>& NEntityFactory::ArchetypeHelper::GetArchetypeComponenetList(const std::string& archetypeName, NEntityFactory::ArchetypeContainer& archetypeContainer)
     {
         // TODO: insert return statement here
-        return m_ArchetypeComponents[archetypeName];
+        return archetypeContainer[archetypeName].components;
     }
-    std::unordered_map<std::string, BaseComponent*>& NEntityFactory::ArchetypeManager::GetArchetypeChildComponenetList(const std::string& archetypeName, const std::string& childName)
+
+    std::unordered_map<std::string, BaseComponent*>& NEntityFactory::ArchetypeHelper::GetArchetypeChildComponenetList(const std::string& archetypeName, const std::string& childName, NEntityFactory::ArchetypeContainer& archetypeContainer)
     {
         // TODO: insert return statement here
-       return  m_ChildrenComponent[archetypeName][childName];
+       return  archetypeContainer[archetypeName].children[childName].components;
     }
-    std::unordered_map<std::string, std::unordered_map<std::string, BaseComponent*>>& NEntityFactory::ArchetypeManager::GetChildren(const std::string& archetypeName)
+
+    NEntityFactory::ArchetypeContainer& NEntityFactory::ArchetypeHelper::GetChildren(const std::string& archetypeName, NEntityFactory::ArchetypeContainer& archetypeContainer)
     {
         // TODO: insert return statement here
-        return  m_ChildrenComponent[archetypeName];
+        return  archetypeContainer[archetypeName].children;
     }
 }

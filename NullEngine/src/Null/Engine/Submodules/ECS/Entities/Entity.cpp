@@ -35,6 +35,10 @@ namespace NULLENGINE
 	{
 	}
 
+	Entity::Entity() : m_ID(0), m_Parent(nullptr)
+	{
+	}
+
 	 BaseComponent& Entity::GetComponent(const std::string& componentName)
 	{
 		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();

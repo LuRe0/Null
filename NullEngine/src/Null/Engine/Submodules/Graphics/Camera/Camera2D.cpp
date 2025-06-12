@@ -142,4 +142,19 @@ namespace NULLENGINE
 		return true;
 	}
 
+
+	bool Camera2D::IsWithinFrustum(const glm::vec3& center, const glm::vec3& halfExtents) const
+	{
+		float left = m_Position.x - (1.0f / m_Zoom) * m_AspectRatio;
+		float right = m_Position.x + (1.0f / m_Zoom) * m_AspectRatio;
+		float bottom = m_Position.y - (1.0f / m_Zoom);
+		float top = m_Position.y + (1.0f / m_Zoom);
+
+		glm::vec2 min = center - glm::vec3(halfExtents.x, halfExtents.y, 0.f);
+		glm::vec2 max = center + glm::vec3(halfExtents.x, halfExtents.y, 0.f);
+
+		return !(max.x < left || min.x > right || max.y < bottom || min.y > top);
+	}
+
+
 }

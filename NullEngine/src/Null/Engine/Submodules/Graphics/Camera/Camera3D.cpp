@@ -60,6 +60,8 @@ namespace NULLENGINE
 
 			UpdateProjectionMatrix();
 
+			UpdateFrustum();
+
 			m_IsDirty = false;
 		}
 
@@ -152,6 +154,32 @@ namespace NULLENGINE
 		return m_Zoom; //to do????
 	}
 
+	void Camera3D::UpdateFrustum() const
+	{
+		glm::mat4 vp = m_ProjectionMatrix * m_ViewMatrix;
+		m_Frustum = Frustum::FromCamera(m_Position, m_Up, m_Right, m_Front, m_Aspect, m_FOV, m_NearClip, m_FarClip);
+	}
+
+	bool Camera3D::IsWithinFrustum(const glm::vec3& center, const glm::vec3& halfExtents) const
+	{
+		for (int i = 0; i < 6; ++i)
+		{
+			const Plane& plane = m_Frustum.planes[i];
+
+			// Project the half extents onto the plane normal to get the radius
+			float r = halfExtents.x * std::abs(plane.normal.x) +
+				halfExtents.y * std::abs(plane.normal.y) +
+				halfExtents.z * std::abs(plane.normal.z);
+
+			// Signed distance from center to plane: dot(normal, (center - point_on_plane))
+			float d = glm::dot(plane.normal, center - plane.point);
+
+			if (d + r < 0)
+				return false;
+		}
+		return true;
+	}
+
 
 	void Camera3D::View()
 	{
@@ -193,7 +221,8 @@ namespace NULLENGINE
 
 	void Camera3D::UpdateProjectionMatrix()
 	{
-		m_ProjectionMatrix = glm::perspective(glm::radians(m_FOV*m_Zoom), m_Aspect, m_NearClip, m_FarClip);
+		float fov = m_FOV / m_Zoom; // Zoom in = smaller FOV
+		m_ProjectionMatrix = glm::perspective(glm::radians(fov), m_Aspect, m_NearClip, m_FarClip);
 	}
 
 	void Camera3D::UpdateCameraVectors()

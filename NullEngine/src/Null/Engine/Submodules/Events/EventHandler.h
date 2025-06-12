@@ -76,6 +76,8 @@ namespace NULLENGINE
 			if (e.GetEventType() == T::GetStaticEventType()) {
 				return m_handler(static_cast<const T&>(e));
 			}
+
+			return false;
 		}
 
 		EventHandler(EventHandler const&) = delete;

@@ -42,7 +42,7 @@ namespace NULLENGINE
 	public:
 		Entity(EntityID id, NRegistry* parent);
 
-		Entity() = default;
+		Entity();
 
 		/// <summary>
 		/// Gets A component attached to the entity
@@ -123,15 +123,15 @@ namespace NULLENGINE
 		}
 
 
-		std::string m_Name;
+		std::string m_Name = "";
 
-		std::string m_Archetype;
+		std::string m_Archetype = "";
 		
-		std::string m_ParentArchetype;
+		std::string m_ParentArchetype = "";
 
-		EntityID m_ID;
+		EntityID m_ID = -1;
 
-		NRegistry* m_Parent;
+		NRegistry* m_Parent = nullptr;
 
 		bool m_isDestroyed = false;
 

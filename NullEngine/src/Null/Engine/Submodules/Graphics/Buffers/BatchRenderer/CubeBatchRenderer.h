@@ -38,13 +38,13 @@ LearnOpenGl license: https://creativecommons.org/licenses/by/4.0/legalcode
 
 namespace NULLENGINE
 {
-	template <typename TInstance, typename TMesh, std::size_t TCount>
+	template <typename TInstance, typename TMesh>
 	class CubeBatchRenderer : public BatchRenderer
 	{
 	public:
-		CubeBatchRenderer()
+		CubeBatchRenderer(std::size_t count)
 		{
-			m_MaxInstances = TCount;
+			m_MaxInstances = count;
 			m_MaxVertices = m_MaxInstances * 24;
 			m_MaxIndices = m_MaxInstances * 36;
 
@@ -72,23 +72,23 @@ namespace NULLENGINE
 	};
 
 
-	template<typename TInstance, typename TMesh, std::size_t TCount>
-	inline void CubeBatchRenderer<TInstance, TMesh, TCount>::BeginBatch()
+	template <typename TInstance, typename TMesh>
+	inline void CubeBatchRenderer<TInstance, TMesh>::BeginBatch()
 	{
 		m_InstanceBuffer.clear();
 		m_InstanceIndexCount = 0;
 		m_TextureSlotIndex = 0;
 	}
 
-	template<typename TInstance, typename TMesh, std::size_t TCount>
-	inline void CubeBatchRenderer<TInstance, TMesh, TCount>::NextBatch()
+	template <typename TInstance, typename TMesh>
+	inline void CubeBatchRenderer<TInstance, TMesh>::NextBatch()
 	{
 		Flush();
 		BeginBatch();
 	}
 
-	template<typename TInstance, typename TMesh, std::size_t TCount>
-	inline void CubeBatchRenderer<TInstance, TMesh, TCount>::Flush()
+	template <typename TInstance, typename TMesh>
+	inline void CubeBatchRenderer<TInstance, TMesh>::Flush()
 	{
 		if (m_InstanceBuffer.empty()) return;
 
@@ -125,7 +125,7 @@ namespace NULLENGINE
 
 		for (size_t i = 0; i < m_TextureSlotIndex; i++)
 		{
-			m_TextureSlots[i]->BindUnit(i);
+			m_TextureSlots[i]->BindUnit(static_cast<uint32_t>(i));
 		}
 
 
@@ -139,8 +139,8 @@ namespace NULLENGINE
 		m_Stats.TextureCount += m_TextureSlotIndex;
 	}
 
-	template<typename TInstance, typename TMesh, std::size_t TCount>
-	inline void CubeBatchRenderer<TInstance, TMesh, TCount>::AddInstance(const ElementData& render)
+	template <typename TInstance, typename TMesh>
+	inline void CubeBatchRenderer<TInstance, TMesh>::AddInstance(const ElementData& render)
 	{
 
 		if (!render.mesh)
@@ -165,7 +165,7 @@ namespace NULLENGINE
 				{
 					if (m_TextureSlots[i]->GetID() == render.spriteSrc->GetTexture()->GetID())
 					{
-						textureIndex = i;
+						textureIndex = static_cast<int>(i);
 						break;
 					}
 				}
@@ -199,8 +199,8 @@ namespace NULLENGINE
 
 	}
 
-	template<typename TInstance, typename TMesh, std::size_t TCount>
-	inline void CubeBatchRenderer<TInstance, TMesh, TCount>::ImguiView()
+	template <typename TInstance, typename TMesh>
+	inline void CubeBatchRenderer<TInstance, TMesh>::ImguiView()
 	{
 		if (!m_Stats.DrawCalls) return;
 
@@ -212,16 +212,16 @@ namespace NULLENGINE
 		ImGui::Text("Textures Rendered: %d", m_Stats.TextureCount);
 	}
 
-	template<typename TInstance, typename TMesh, std::size_t TCount>
-	inline void CubeBatchRenderer<TInstance, TMesh, TCount>::ResetStats()
+	template <typename TInstance, typename TMesh>
+	inline void CubeBatchRenderer<TInstance, TMesh>::ResetStats()
 	{
 		m_Stats.DrawCalls = 0;
 		m_Stats.InstanceCount = 0;
 		m_Stats.TextureCount = 0;
 	}
 
-	template<typename TInstance, typename TMesh, std::size_t TCount>
-	inline void CubeBatchRenderer<TInstance, TMesh, TCount>::BindTextureBuffer()
+	template <typename TInstance, typename TMesh>
+	inline void CubeBatchRenderer<TInstance, TMesh>::BindTextureBuffer()
 	{
 		std::vector<int32_t> samplers(BatchRenderer::m_MaxTextureSlots);
 

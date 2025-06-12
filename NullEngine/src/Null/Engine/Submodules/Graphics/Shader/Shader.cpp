@@ -212,7 +212,7 @@ namespace NULLENGINE
 	{
 		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
 		if (location != -1) {
-			glUniform1iv(location, size, value);
+			glUniform1iv(location, static_cast<GLsizei>(size), value);
 		}
 		else 
 		{
@@ -225,7 +225,7 @@ namespace NULLENGINE
 	}
 	void Shader::setFloat2fv(const std::string& name, size_t size, const float* value) const
 	{
-		glUniform2fv(glGetUniformLocation(m_RendererID, name.c_str()), size, value);
+		glUniform2fv(glGetUniformLocation(m_RendererID, name.c_str()), static_cast<GLsizei>(size), value);
 	}
 
 

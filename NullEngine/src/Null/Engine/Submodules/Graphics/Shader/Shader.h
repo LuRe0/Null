@@ -41,7 +41,8 @@ namespace NULLENGINE
 	{
 	public:
 		Shader(const std::string& name);
-		~Shader();
+		Shader();
+		virtual ~Shader();
 
 		void Bind() const ;
 		void Unbind() const;

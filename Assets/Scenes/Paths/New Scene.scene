@@ -1,3 +1,90 @@
 {
-    "entities": []
+    "entities": [
+        {
+            "components": {
+                "ParticleSystem": {
+                    "Emitters": [
+                        {
+                            "acceleration": [
+                                100.0,
+                                100.0,
+                                100.0
+                            ],
+                            "bufferOffset": 0,
+                            "burstCount": 0.0,
+                            "emissionRate": 10.0,
+                            "emitterAge": 0.0,
+                            "emitterDuration": 10.0,
+                            "emitterID": 0,
+                            "enabled": true,
+                            "endColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                0.0
+                            ],
+                            "endRotation": 0.0,
+                            "endSize": [
+                                500.0,
+                                500.0
+                            ],
+                            "finished": false,
+                            "flags": 0,
+                            "initialVelocity": [
+                                100.0,
+                                100.0,
+                                100.0
+                            ],
+                            "lifetime": 5.0,
+                            "maxParticles": 100,
+                            "name": "NewEmitter",
+                            "position": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "shape": 0,
+                            "shapeSize": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "spawnTimer": 0.0,
+                            "startColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "startIndex": 0,
+                            "startRotation": 0.0,
+                            "startSize": [
+                                500.0,
+                                500.0
+                            ]
+                        }
+                    ],
+                    "name": "sasasa"
+                },
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        50.0,
+                        50.0,
+                        1.0
+                    ],
+                    "translation": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "New Entiy"
+        }
+    ]
 }

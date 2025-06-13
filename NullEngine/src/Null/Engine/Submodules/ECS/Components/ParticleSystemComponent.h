@@ -5,26 +5,26 @@ namespace NULLENGINE
 {
     struct ParticleInstance
     {
-        glm::vec3 position;    // 12 bytes
-        float pad1;            // 4 bytes padding to align next vec3
+        glm::vec3 position;
+        float pad1;
 
-        glm::vec3 velocity;    // 12 bytes
-        float pad2;            // 4 bytes padding
+        glm::vec3 velocity;
+        float pad2;
 
-        glm::vec3 acceleration;// 12 bytes
-        float pad3;            // 4 bytes padding
+        glm::vec3 acceleration;
+        float pad3;
 
-        glm::vec4 color;       // 16 bytes (RGBA)
+        glm::vec4 color;
 
-        float lifetime;        // 4 bytes - total time particle lives
-        float age;             // 4 bytes - how long particle has been alive
-        int alive;             // 4 bytes - bool as int (0 or 1)
-        float pad4;            // 4 bytes padding for alignment
+        float lifetime;
+        float age;
+        int alive;
+        float pad4;
 
-        // Texture index, if you want to support texture atlases or multiple particle textures
-        int textureIndex;      // 4 bytes (optional)
-        float pad5[3];         // Padding to make struct multiple of 16 bytes
-    }; 
+        int textureIndex;
+        float pad5[3];
+    };
+
 
     enum class SpawnShape
     {
@@ -44,7 +44,7 @@ namespace NULLENGINE
 
     struct ParticleEmitter
     {
-        ParticleEmitter();
+        ParticleEmitter() = default;
         // Core
         std::string name;
         uint32_t emitterID = 0;
@@ -68,8 +68,8 @@ namespace NULLENGINE
         bool finished = false;
 
         // Spawn config
-        glm::vec3 initialVelocity = glm::vec3(0.0f);
-        glm::vec3 acceleration = glm::vec3(0.0f); // gravity etc.
+        glm::vec3 initialVelocity = glm::vec3(100.0f);
+        glm::vec3 acceleration = glm::vec3(100.0f); // gravity etc.
 
         glm::vec2 startSize = glm::vec2(1.0f, 0.0f); // startSize → endSize
         glm::vec2 endSize = glm::vec2(1.0f, 0.0f); // startSize → endSize
@@ -101,8 +101,9 @@ namespace NULLENGINE
         std::string m_Name;
         std::vector<ParticleEmitter> m_Emitters;
 
-        ParticleSystemComponent(const std::string& inName = "DefaultSystem")
+        ParticleSystemComponent(const std::string& inName = "DefaultSystem", const  std::vector<ParticleEmitter>& inEmitters = std::vector<ParticleEmitter>())
             : m_Name(inName)
+            , m_Emitters(inEmitters)
         {}
 
         void AddEmitter(const std::string& emitterName, size_t particleStart, size_t particleCount)

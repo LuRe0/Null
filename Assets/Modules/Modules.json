@@ -18,6 +18,10 @@
         {
             "type": "NShaderManager"
         },
+
+        {
+            "type": "NComputeShaderManager"
+        },
         {
             "type": "NMeshManager"
         },
@@ -62,6 +66,9 @@
         },
         {
             "type": "SpriteRenderSystem"
+        },
+        {
+            "type": "ParticleSystem"
         },
         {
             "type": "BoxCollider2DSystem"

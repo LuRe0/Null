@@ -360,6 +360,15 @@
       <Filter>Null\Tools</Filter>
     </ClInclude>
     <ClInclude Include="src\stdafx.h" />
+    <ClInclude Include="SSBO.h">
+      <Filter>Null\Engine\Submodules\Graphics\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\ParticleBatchRenderer.h">
+      <Filter>Null\Engine\Submodules\Graphics\Buffers\BatchRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Modules\NComputeShaderManager.h">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Null\Application.cpp">
@@ -582,5 +591,11 @@
       <Filter>Null\Tools</Filter>
     </ClCompile>
     <ClCompile Include="src\stdafx.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Buffers\SSBO.cpp">
+      <Filter>Null\Engine\Submodules\Graphics\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Modules\NComputeShaderManager.cpp">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -1,0 +1,86 @@
+{
+    "components": {
+        "ParticleSystem": {
+            "Emitters": [
+                {
+                    "acceleration": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "bufferOffset": 0,
+                    "burstCount": 0.0,
+                    "emissionRate": 10.0,
+                    "emitterAge": 0.0,
+                    "emitterDuration": -1.0,
+                    "emitterID": 0,
+                    "enabled": true,
+                    "endColor": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        0.0
+                    ],
+                    "endRotation": 0.0,
+                    "endSize": [
+                        1.0,
+                        0.0
+                    ],
+                    "finished": false,
+                    "flags": 0,
+                    "initialVelocity": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "lifetime": 5.0,
+                    "maxParticles": 100,
+                    "name": "asasasa",
+                    "position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "shape": 0,
+                    "shapeSize": [
+                        4.599999904632568,
+                        1.7000000476837158,
+                        1.0
+                    ],
+                    "spawnTimer": 0.0,
+                    "startColor": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        0.5176470875740051
+                    ],
+                    "startIndex": 0,
+                    "startRotation": 0.0,
+                    "startSize": [
+                        1.0,
+                        0.0
+                    ]
+                }
+            ],
+            "name": "sasasa"
+        },
+        "Transform": {
+            "rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                50.0,
+                50.0,
+                1.0
+            ],
+            "translation": [
+                0.0,
+                0.0,
+                0.0
+            ]
+        }
+    },
+    "name": "New Entiy"
+}

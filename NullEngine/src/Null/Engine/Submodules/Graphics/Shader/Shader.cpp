@@ -185,6 +185,9 @@ namespace NULLENGINE
 		glDetachShader(program, fragmentShader);
 
 	}
+	Shader::Shader()
+	{
+	}
 	Shader::~Shader()
 	{
 		glDeleteProgram(m_RendererID);

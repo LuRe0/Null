@@ -1,7 +1,49 @@
 {
     "entities": [
         {
-            "archetype": "tilemaptest"
+            "archetype": "tilemaptest",
+            "components": {
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        50.0,
+                        50.0,
+                        1.0
+                    ],
+                    "translation": [
+                        -150.0,
+                        300.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Entity(1)"
+        },
+        {
+            "components": {
+                "Transform": {
+                    "rotation": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        50.0,
+                        50.0,
+                        1.0
+                    ],
+                    "translation": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "New Entiy"
         }
     ]
 }

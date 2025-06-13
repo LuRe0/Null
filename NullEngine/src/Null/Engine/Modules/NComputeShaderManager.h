@@ -4,7 +4,7 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	ParticleSystem.h
+// File Name:	NComputeShaderManager.h
 // Author(s):	name
 // 
 //------------------------------------------------------------------------------
@@ -13,10 +13,9 @@
 // Includes																        //
 //******************************************************************************//
 #include "Null/Core.h"
-//#include "Null/Engine/Submodules/ECS/Systems/System.h"
-//#include  "Null/Engine/NEngine.h"
+#include "Null/Engine/Modules/Base/IModule.h"
+#include "Null/Engine/Modules/NResourceManager.h"
 #include "Null/Engine/Submodules/Graphics/Shader/ComputeShader.h"
-#include "Null/Engine/Submodules/Graphics/Buffers/BatchRenderer/BatchRenderer.h"
 
 
 
@@ -37,46 +36,24 @@
 
 namespace NULLENGINE
 {
-	struct ParticleSystemComponent;
-	class NLE_API ParticleSystem : public ISystem
+
+	// Specialize for resource
+	class NLE_API NComputeShaderManager : public NResourceManager<ComputeShader>
 	{
 	public:
 
-		ParticleSystem();
-		void Load() override;
-		//! Virtual Init function
-		void Init() override;
-		//! Virtual Update function
-		void Update(float dt) override;
 
-		void Render() override;
+		void Load() override;
+
+		//! Virtual Init function
+		void Init() override {};
+
+		//! Virtual Update function
+		void Update(float dt) override {};
 
 		void Unload() override;
 		//! Virtual Shutdown function
-		void Shutdown() override;
-
-
-
-
-		void RegisterToScripAPI(sol::state& lua) override;
-
-	private:
-
-		static void CreateParticleSystemComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
-		static JSON WriteParticleSystemComponent(BaseComponent* component);
-
-		void ViewParticleSystemComponent(Entity& entityID);
-
-		bool OnEntityCreated(const EntityCreatedEvent& e);
-
-		void InitParticleBuffer(const std::vector<EntityID>& entityList, NRegistry* registry);
-
-		ComputeShader* m_ComputeShader;
-
-		SSBO m_ParticleSSBO;
-		size_t m_TotalMaxParticles = 0;  // total particle count for all emitters combined
-
-		BatchRenderer* m_Batcher;
+		void Shutdown() override {};
 	};
 
 }

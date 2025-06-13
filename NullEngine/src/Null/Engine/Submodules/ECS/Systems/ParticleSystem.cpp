@@ -11,12 +11,14 @@
 //******************************************************************************//
 #include "stdafx.h"
 #include "ParticleSystem.h"
-#include "Null/Engine/Submodules/Graphics/Mesh/Mesh.h"
+//#include "Null/Engine/Submodules/Graphics/Mesh/Mesh.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "imgui.h"
 #include <misc/cpp/imgui_stdlib.h>
 #include "Null/Engine/Submodules/Events/IEvents.h"
+#include "Null/Engine/Submodules/Graphics/Buffers/BatchRenderer/ParticleBatchRenderer.h"
+
 #include <glad/glad.h> 
 
 
@@ -41,21 +43,33 @@ namespace NULLENGINE
 			[this](Entity& id) { this->ViewParticleSystemComponent(id); }, WriteParticleSystemComponent);
 
 		m_TotalMaxParticles = 0;
+		m_ComputeShader = 0;
 	}
 
 	void ParticleSystem::Load()
 	{
 		ISystem::Load();
+
+		NComputeShaderManager* shaderMan = NEngine::Instance().Get<NComputeShaderManager>();
+		auto shader = shaderMan->Get("particle");
+		m_ComputeShader = dynamic_cast<ComputeShader*>(shader);
 	}
 
 	void ParticleSystem::Init()
 	{
 		ISystem::Init();
 		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+		NRenderer* renderer = NEngine::Instance().Get<NRenderer>();
 
 		SUBSCRIBE_EVENT(EntityCreatedEvent, &ParticleSystem::OnEntityCreated, eventManager, EventPriority::Low);
 
 		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+
+
+		ParticleBatchRenderer<Mesh>* batcher = renderer->AddBatcher<ParticleBatchRenderer<Mesh>>("Particle");
+
+
+		m_Batcher = dynamic_cast<ParticleBatchRenderer<Mesh>*>(batcher);
 
 		InitParticleBuffer(GetSystemEntities(), registry);
 	}
@@ -82,7 +96,7 @@ namespace NULLENGINE
 				m_ComputeShader->setFloat("u_EmitterLifetime", emitter.lifetime);
 
 
-				glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_ParticleSSBO);
+				m_ParticleSSBO.Bind();
 
 				// Dispatch compute shader with number of work groups
 				// Use ceil to cover all particles
@@ -169,6 +183,7 @@ namespace NULLENGINE
 
 					emitter.burstCount = emitterJsonWrapper.GetFloat("burstCount", 0.0f);
 
+
 					comp->m_Emitters.push_back(emitter);
 				}
 			}
@@ -177,7 +192,7 @@ namespace NULLENGINE
 
 		// Add or update component in registry
 		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
-		componentFactory->AddOrUpdate<ParticleSystemComponent>(id, comp, registry, comp->m_Name);
+		componentFactory->AddOrUpdate<ParticleSystemComponent>(id, comp, registry, comp->m_Name, comp->m_Emitters);
 	}
 
 
@@ -239,10 +254,87 @@ namespace NULLENGINE
 		return json;
 	}
 
-
 	void ParticleSystem::ViewParticleSystemComponent(Entity& entity)
 	{
+		ParticleSystemComponent& psComp = entity.Get<ParticleSystemComponent>();
+
+		ImGui::InputText("System Name", &psComp.m_Name);
+
+		if (ImGui::Button("Add Emitter"))
+		{
+			size_t startIndex = 0;
+			for (const auto& e : psComp.m_Emitters)
+				startIndex += e.maxParticles;
+
+			psComp.AddEmitter("NewEmitter", startIndex, 100);
+
+			NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+
+			InitParticleBuffer(GetSystemEntities(), registry);
+		}
+
+		ImGui::Separator();
+
+		for (size_t i = 0; i < psComp.m_Emitters.size(); ++i)
+		{
+			ParticleEmitter& emitter = psComp.m_Emitters[i];
+			std::string label = "Emitter " + std::to_string(i) + ": " + emitter.name;
+
+			if (ImGui::CollapsingHeader(label.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+			{
+				ImGui::Checkbox("Enabled", &emitter.enabled);
+
+				if (ImGui::CollapsingHeader("Core", ImGuiTreeNodeFlags_DefaultOpen))
+				{
+					ImGui::InputText("Name", &emitter.name);
+					ImGui::DragFloat3("Position", glm::value_ptr(emitter.position), 0.1f);
+					ImGui::DragFloat("Emission Rate", &emitter.emissionRate, 0.1f);
+					ImGui::DragInt("Max Particles", reinterpret_cast<int*>(&emitter.maxParticles), 10, 1, 100000);
+					ImGui::DragFloat("Lifetime", &emitter.lifetime, 0.1f);
+				}
+
+				if (ImGui::CollapsingHeader("Spawn Config"))
+				{
+					ImGui::DragFloat3("Initial Velocity", glm::value_ptr(emitter.initialVelocity), 0.1f);
+					ImGui::DragFloat3("Acceleration", glm::value_ptr(emitter.acceleration), 0.1f);
+					ImGui::DragFloat("Burst Count", &emitter.burstCount, 1.0f);
+				}
+
+				if (ImGui::CollapsingHeader("Lifetime & Looping"))
+				{
+					ImGui::DragFloat("Emitter Duration", &emitter.emitterDuration, 0.1f);
+					ImGui::DragFloat("Emitter Age", &emitter.emitterAge, 0.1f);
+					ImGui::Checkbox("Finished", &emitter.finished);
+				}
+
+				if (ImGui::CollapsingHeader("Visuals"))
+				{
+					ImGui::DragFloat2("Start Size", glm::value_ptr(emitter.startSize), 0.05f);
+					ImGui::DragFloat2("End Size", glm::value_ptr(emitter.endSize), 0.05f);
+					ImGui::ColorEdit4("Start Color", glm::value_ptr(emitter.startColor));
+					ImGui::ColorEdit4("End Color", glm::value_ptr(emitter.endColor));
+					ImGui::DragFloat("Start Rotation", &emitter.startRotation, 1.0f);
+					ImGui::DragFloat("End Rotation", &emitter.endRotation, 1.0f);
+				}
+
+				if (ImGui::CollapsingHeader("Shape"))
+				{
+					const char* shapeNames[] = { "Point", "Box", "Sphere" };
+					int currentShape = static_cast<int>(emitter.shape);
+					if (ImGui::Combo("Shape", &currentShape, shapeNames, IM_ARRAYSIZE(shapeNames)))
+					{
+						emitter.shape = static_cast<SpawnShape>(currentShape);
+					}
+
+					ImGui::DragFloat3("Shape Size", glm::value_ptr(emitter.shapeSize), 0.1f);
+				}
+			}
+		}
 	}
+
+
+
+
 
 	bool ParticleSystem::OnEntityCreated(const EntityCreatedEvent& e)
 	{
@@ -263,23 +355,25 @@ namespace NULLENGINE
 		size_t totalNeeded = 0;
 		for (const auto entityId : entityList)
 		{
-			const ParticleSystemComponent& psComp = registry->GetComponent<ParticleSystemComponent>(entityId);
-			for (const ParticleEmitter& emitter : psComp.m_Emitters)
+			ParticleSystemComponent& psComp = registry->GetComponent<ParticleSystemComponent>(entityId);
+			for (ParticleEmitter& emitter : psComp.m_Emitters)
 			{
+				emitter.startIndex = totalNeeded;
 				totalNeeded += emitter.maxParticles;
 			}
 		}
 
-		if (totalNeeded > m_TotalMaxParticles)
+		if (totalNeeded > m_TotalMaxParticles || !m_ParticleSSBO.GetID())
 		{
 			m_TotalMaxParticles = totalNeeded;
+			
+			if (!m_ParticleSSBO.GetID())
+				m_ParticleSSBO.GenerateBuffer();
 
-			if (m_ParticleSSBO == 0)
-				glGenBuffers(1, &m_ParticleSSBO);
 
-			glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_ParticleSSBO);
-			glBufferData(GL_SHADER_STORAGE_BUFFER, m_TotalMaxParticles * sizeof(ParticleInstance), nullptr, GL_DYNAMIC_DRAW);
-			glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+			m_ParticleSSBO.AllocateParticleBuffer(m_TotalMaxParticles);
+
+			dynamic_cast<ParticleBatchRenderer<Mesh>*>(m_Batcher)->SetSSBO(m_ParticleSSBO);
 		}
 	}
 }

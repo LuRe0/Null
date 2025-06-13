@@ -11,7 +11,7 @@
 // Includes																        //
 //******************************************************************************//
 #include "stdafx.h"
-#include "Shader.h"
+#include "ComputeShader.h"
 #include "glad/glad.h"
 #include "glm/glm.hpp"
 
@@ -39,7 +39,7 @@ namespace NULLENGINE
     } while(0)
 
 	ComputeShader::ComputeShader(const std::string& name)
-		: Shader(name)
+		: Shader()
 	{
 		m_Name = name;
 

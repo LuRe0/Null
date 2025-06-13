@@ -46,6 +46,7 @@ namespace NULLENGINE
 		AddCreateFunction<NEventManager>([&engine]() { engine.Add<NULLENGINE::NEventManager>(); });
 		AddCreateFunction<NCameraManager>([&engine]() { engine.Add<NULLENGINE::NCameraManager>(); });
 		AddCreateFunction<NShaderManager>([&engine]() { engine.Add<NULLENGINE::NShaderManager>(); });
+		AddCreateFunction<NComputeShaderManager>([&engine]() { engine.Add<NULLENGINE::NComputeShaderManager>(); });
 		AddCreateFunction<NMeshManager>([&engine]() { engine.Add<NULLENGINE::NMeshManager>(); });
 		AddCreateFunction<NSpriteSourceManager>([&engine]() { engine.Add<NULLENGINE::NSpriteSourceManager>(); });
 		AddCreateFunction<NTextureManager>([&engine]() { engine.Add<NULLENGINE::NTextureManager>(); });
@@ -66,6 +67,7 @@ namespace NULLENGINE
 		AddCreateFunction<ScriptSystem>([&engine]() { engine.Add<NULLENGINE::ScriptSystem>(); });
 		AddCreateFunction<NScriptingInterface>([&engine]() { engine.Add<NULLENGINE::NScriptingInterface>(); });
 		AddCreateFunction<CameraSystem>([&engine]() { engine.Add<NULLENGINE::CameraSystem>(); });
+		AddCreateFunction<ParticleSystem>([&engine]() { engine.Add<NULLENGINE::ParticleSystem>(); });
 
 		m_NullEngine = &engine;
 

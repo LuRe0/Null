@@ -87,6 +87,9 @@ namespace NULLENGINE
 		template<typename TBatcher>
 		TBatcher* AddBatcher(const std::string& name, std::size_t count);
 
+		template<typename TBatcher>
+		TBatcher* AddBatcher(const std::string& name);
+
 		void ClearRender();
 		static void ClearRenderS();
 	private:
@@ -141,6 +144,15 @@ namespace NULLENGINE
 	{
 		if(!m_Batchers.contains(name))
 			m_Batchers.emplace(name, std::make_unique<TBatcher>(count));
+
+		return dynamic_cast<TBatcher*>(m_Batchers[name].get());
+	}
+
+	template<typename TBatcher>
+	inline TBatcher* NRenderer::AddBatcher(const std::string& name)
+	{
+		if (!m_Batchers.contains(name))
+			m_Batchers.emplace(name, std::make_unique<TBatcher>());
 
 		return dynamic_cast<TBatcher*>(m_Batchers[name].get());
 	}

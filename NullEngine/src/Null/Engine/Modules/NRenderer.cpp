@@ -30,6 +30,7 @@ Batch Rendering Code adapted from https://www.youtube.com/watch?v=biGF6oLxgtQ&li
 #include "Null/Engine/Submodules/Graphics/Buffers/BatchRenderer/CubeBatchRenderer.h"
 #include "Null/Engine/Submodules/Graphics/Buffers/BatchRenderer/CircleBatchRenderer.h"
 #include "Null/Engine/Submodules/Graphics/Buffers/BatchRenderer/LineBatchRenderer.h"
+#include "Null/Engine/Submodules/Graphics/Buffers/BatchRenderer/ParticleBatchRenderer.h"
 #include "imgui.h"
 #include "magic_enum/magic_enum.hpp"
 #include <sol/sol.hpp>

@@ -11,7 +11,7 @@ layout(location = 8) in vec2 a_InstanceTexCoords;// Instance texture coordinates
 layout(location = 9) in vec2 a_InstanceTextSize; // Instance texture size
 layout(location = 10) in float a_Thickness; // Instance texture index
 layout(location = 11) in float a_Fade; // Instance texture index
-layout(location = 12) in int a_InstanceTexIndex; // Instance texture index
+layout(location = 12) in int a_InstanceTexIndex; // Instance texture index  
 layout(location = 13) in int a_EntityID;        // Instance entity ID
 
 // Uniforms

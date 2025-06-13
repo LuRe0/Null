@@ -141,6 +141,7 @@
     <ClInclude Include="src\Null\Engine\Modules\Base\IModule.h" />
     <ClInclude Include="src\Null\Engine\Modules\NCameraManager.h" />
     <ClInclude Include="src\Null\Engine\Modules\NComponentFactory.h" />
+    <ClInclude Include="src\Null\Engine\Modules\NComputeShaderManager.h" />
     <ClInclude Include="src\Null\Engine\Modules\NDebugManager.h" />
     <ClInclude Include="src\Null\Engine\Modules\NEntityFactory.h" />
     <ClInclude Include="src\Null\Engine\Modules\NEventManager.h" />
@@ -189,6 +190,7 @@
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\CircleBatchRenderer.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\CubeBatchRenderer.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\LineBatchRenderer.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\ParticleBatchRenderer.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\QuadBatchRenderer.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\TilemapBatchRenderer.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\TriangleBatchRenderer.h" />
@@ -228,6 +230,7 @@
     <ClInclude Include="src\Null\Tools\ScriptHelper.h" />
     <ClInclude Include="src\Null\Tools\Trace.h" />
     <ClInclude Include="src\stdafx.h" />
+    <ClInclude Include="SSBO.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Null\Application.cpp" />
@@ -237,6 +240,7 @@
     <ClCompile Include="src\Null\Engine\Modules\Base\IModule.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NCameraManager.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NComponentFactory.cpp" />
+    <ClCompile Include="src\Null\Engine\Modules\NComputeShaderManager.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NDebugManager.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NEntityFactory.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NEventManager.cpp" />
@@ -273,6 +277,7 @@
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\BatchRenderer.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Buffers\EBO.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Buffers\Framebuffer.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Buffers\SSBO.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Buffers\VAO.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Buffers\VBO.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\Camera.cpp" />

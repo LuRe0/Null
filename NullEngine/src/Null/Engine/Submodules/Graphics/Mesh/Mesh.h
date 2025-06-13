@@ -20,6 +20,7 @@ LearnOpenGl license: https://creativecommons.org/licenses/by/4.0/legalcode
 #include "Null/Engine/Submodules/Graphics/Buffers/VAO.h"
 #include "Null/Engine/Submodules/Graphics/Buffers/VBO.h"
 #include "Null/Engine/Submodules/Graphics/Buffers/EBO.h"
+#include "Null/Engine/Submodules/Graphics/Buffers/SSBO.h"
 #include "Null/Engine/Submodules/Graphics/Buffers/BufferData.h"
 
 //******************************************************************************//
@@ -68,6 +69,12 @@ namespace NULLENGINE
 		void SetupVertexAttributes();
 		void Render(const SpriteSource* spriteSource) const;
 		void RenderTexture(unsigned int texture) const;
+		void RenderInstanced() const;
+
+		void SetSSBO(const SSBO& ssbo)
+		{
+			m_Buffer.m_SSBO = ssbo;
+		}
 
 		void Read(const std::string& filename);
 
@@ -82,6 +89,7 @@ namespace NULLENGINE
 			VAO m_VAO;
 			VBO m_VBO;
 			EBO m_EBO;
+			SSBO m_SSBO;
 		};
 	protected:
 		Buffer m_Buffer;

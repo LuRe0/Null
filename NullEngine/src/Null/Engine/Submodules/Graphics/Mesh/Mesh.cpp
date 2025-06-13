@@ -260,4 +260,24 @@ namespace NULLENGINE
 	}
 
 
+	void Mesh::RenderInstanced() const
+	{
+
+		// Bind VAO for mesh
+		m_Buffer.m_VAO.Bind();
+
+		m_Buffer.m_SSBO.Bind(0);
+
+		// Draw instanced mesh
+		glDrawElementsInstanced(m_Buffer.m_VAO.DrawType(), m_Buffer.m_VAO.ElementCount(), GL_UNSIGNED_INT, 0, m_Buffer.m_SSBO.Capacity()*6);
+
+		m_Buffer.m_VAO.Unbind();
+
+		m_Buffer.m_SSBO.Unbind();
+
+		// Unbind SSBO to avoid side effects (optional)
+		//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, ssboBindingPoint, 0);
+	}
+
+
 }

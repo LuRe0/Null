@@ -1,7 +1,7 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	NShaderManager.cpp
+// File Name:	NComputeShaderManager.cpp
 // Author(s):	Anthon Reid
 // 
 //------------------------------------------------------------------------------
@@ -10,9 +10,8 @@
 // Includes																        //
 //******************************************************************************//
 #include "stdafx.h"
-#include "NShaderManager.h"
+#include "NComputeShaderManager.h"
 #include "Null/Engine/Submodules/ECS/Systems/PhysicsSystem.h"
-#include "Null/Engine/Submodules/Graphics/Shader/ComputeShader.h"
 
 
 
@@ -27,7 +26,7 @@
 
 namespace NULLENGINE
 {
-	void NShaderManager::Load()
+	void NComputeShaderManager::Load()
 	{
 		std::string filePath = std::string("../Assets/Shaders/") + std::string("paths") + std::string(".json");
 
@@ -53,11 +52,17 @@ namespace NULLENGINE
 		{
 			const std::string path = paths["path"];
 
-			Create(path);
+			if (paths.contains("isCompute"))
+			{
+				bool compute = paths["isCompute"];
+
+				if (compute)
+					Create(path);
+			}
 		}
 	}
 
-	void NShaderManager::Unload()
+	void NComputeShaderManager::Unload()
 	{
 		NResourceManager::Unload();
 	}

@@ -12,7 +12,7 @@
 #include "stdafx.h"
 #include "NShaderManager.h"
 #include "Null/Engine/Submodules/ECS/Systems/PhysicsSystem.h"
-#include "Null/Engine/Submodules/Graphics/Shader/Shader.h"
+#include "Null/Engine/Submodules/Graphics/Shader/ComputeShader.h"
 
 
 
@@ -53,7 +53,13 @@ namespace NULLENGINE
 		{
 			const std::string path = paths["path"];
 
-			Create(path);
+			if (paths.contains("isCompute"))
+			{
+				ComputeShader* resource = new ComputeShader(path);
+				Add(path, resource);
+			}
+			else
+				Create(path);
 		}
 	}
 

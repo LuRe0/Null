@@ -17,13 +17,12 @@
 #include "imgui.h"
 #include <misc/cpp/imgui_stdlib.h>
 #include "Null/Engine/Submodules/Events/IEvents.h"
+#include <glad/glad.h> 
 
 
 //******************************************************************************//
 // Public Variables															    //
 //******************************************************************************//
-
-const glm::vec2 GRAVITY(0.0f, -9.81f);
 
 //******************************************************************************//
 // Function Declarations												        //
@@ -40,6 +39,8 @@ namespace NULLENGINE
 
 		componentFactory->Register<ParticleSystemComponent>(CreateParticleSystemComponent,
 			[this](Entity& id) { this->ViewParticleSystemComponent(id); }, WriteParticleSystemComponent);
+
+		m_TotalMaxParticles = 0;
 	}
 
 	void ParticleSystem::Load()
@@ -56,13 +57,48 @@ namespace NULLENGINE
 
 		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
 
-		InitTilemap(GetSystemEntities(), registry);
+		InitParticleBuffer(GetSystemEntities(), registry);
 	}
 
 	void ParticleSystem::Update(float dt)
 	{
+		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
 
+		m_ComputeShader->Bind();
+
+		for (const auto entityId : GetSystemEntities())
+		{
+			ParticleSystemComponent& particleSystem = registry->GetComponent<ParticleSystemComponent>(entityId);
+
+			for (ParticleEmitter& emitter : particleSystem.m_Emitters)
+			{
+				if (!emitter.enabled || emitter.finished)
+					continue;
+
+				// Set uniforms for the compute shader:
+				m_ComputeShader->setFloat("u_DeltaTime", dt);
+				m_ComputeShader->setVec3("u_EmitterPosition", emitter.position);
+				m_ComputeShader->setVec3("u_EmitterAcceleration", emitter.acceleration);
+				m_ComputeShader->setFloat("u_EmitterLifetime", emitter.lifetime);
+
+
+				glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_ParticleSSBO);
+
+				// Dispatch compute shader with number of work groups
+				// Use ceil to cover all particles
+				const GLuint workGroupSize = 256; // must match compute shader local_size_x
+				GLuint groups = static_cast<GLuint>((emitter.maxParticles + workGroupSize - 1) / workGroupSize);
+
+				// Provide emitter offset in SSBO as uniform
+				m_ComputeShader->setInt("u_StartIndex", static_cast<int>(emitter.startIndex));
+
+				m_ComputeShader->Dispatch(groups, 1, 1);
+			}
+		}
+
+		m_ComputeShader->Unbind();
 	}
+
 
 	void ParticleSystem::Render()
 	{
@@ -120,8 +156,8 @@ namespace NULLENGINE
 					emitter.initialVelocity = emitterJsonWrapper.GetVec3("initialVelocity", glm::vec3(0.0f));
 					emitter.acceleration = emitterJsonWrapper.GetVec3("acceleration", glm::vec3(0.0f));
 
-					emitter.startSize = emitterJsonWrapper.GetVec2("sizeRange", glm::vec2(1.0f, 0.0f));
-					emitter.endSize = emitterJsonWrapper.GetVec2("sizeRange", glm::vec2(1.0f, 0.0f));
+					emitter.startSize = emitterJsonWrapper.GetVec2("startSize", glm::vec2(1.0f, 0.0f));
+					emitter.endSize = emitterJsonWrapper.GetVec2("endSize", glm::vec2(1.0f, 0.0f));
 					emitter.startColor = emitterJsonWrapper.GetVec4("startColor", glm::vec4(1.0f));
 					emitter.endColor = emitterJsonWrapper.GetVec4("endColor", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
 
@@ -147,9 +183,62 @@ namespace NULLENGINE
 
 	JSON ParticleSystem::WriteParticleSystemComponent(BaseComponent* component)
 	{
+		nlohmann::json json;
 
-		return JSON();
+		auto& psComp = *static_cast<ParticleSystemComponent*>(component);
+
+		json["ParticleSystem"]["name"] = psComp.m_Name;
+
+		// Emitters array
+		nlohmann::json emittersJson = nlohmann::json::array();
+
+		for (const auto& emitter : psComp.m_Emitters)
+		{
+			nlohmann::json e;
+
+			e["name"] = emitter.name;
+			e["emitterID"] = emitter.emitterID;
+
+			e["position"] = { emitter.position.x, emitter.position.y, emitter.position.z };
+			e["emissionRate"] = emitter.emissionRate;
+			e["lifetime"] = emitter.lifetime;
+			e["spawnTimer"] = emitter.spawnTimer;
+
+			e["maxParticles"] = static_cast<int>(emitter.maxParticles);
+			e["startIndex"] = static_cast<int>(emitter.startIndex);
+			e["bufferOffset"] = static_cast<int>(emitter.bufferOffset);
+
+			e["flags"] = emitter.flags;
+			e["enabled"] = emitter.enabled;
+
+			e["emitterDuration"] = emitter.emitterDuration;
+			e["emitterAge"] = emitter.emitterAge;
+			e["finished"] = emitter.finished;
+
+			e["initialVelocity"] = { emitter.initialVelocity.x, emitter.initialVelocity.y, emitter.initialVelocity.z };
+			e["acceleration"] = { emitter.acceleration.x, emitter.acceleration.y, emitter.acceleration.z };
+
+			e["startSize"] = { emitter.startSize.x, emitter.startSize.y };
+			e["endSize"] = { emitter.endSize.x, emitter.endSize.y };
+			e["startColor"] = { emitter.startColor.r, emitter.startColor.g, emitter.startColor.b, emitter.startColor.a };
+			e["endColor"] = { emitter.endColor.r, emitter.endColor.g, emitter.endColor.b, emitter.endColor.a };
+
+			e["startRotation"] = emitter.startRotation;
+			e["endRotation"] = emitter.endRotation;
+
+			e["shape"] = static_cast<int>(emitter.shape);
+			e["shapeSize"] = { emitter.shapeSize.x, emitter.shapeSize.y, emitter.shapeSize.z };
+
+			e["burstCount"] = emitter.burstCount;
+
+			emittersJson.push_back(e);
+		}
+
+		json["ParticleSystem"]["Emitters"] = emittersJson;
+
+		return json;
 	}
+
 
 	void ParticleSystem::ViewParticleSystemComponent(Entity& entity)
 	{
@@ -164,17 +253,33 @@ namespace NULLENGINE
 		if (std::find(entityList.begin(), entityList.end(), e.GetID()) == entityList.end())
 			return true;
 
-		InitTilemap(entityList, registry);
+		InitParticleBuffer(entityList, registry);
 
 		return true;
 	}
 
-	void ParticleSystem::InitTilemap(const std::vector<EntityID>& entityList, NRegistry* registry)
+	void ParticleSystem::InitParticleBuffer(const std::vector<EntityID>& entityList, NRegistry* registry)
 	{
+		size_t totalNeeded = 0;
 		for (const auto entityId : entityList)
 		{
-			ParticleSystemComponent& tilemapComp = registry->GetComponent<ParticleSystemComponent>(entityId);
+			const ParticleSystemComponent& psComp = registry->GetComponent<ParticleSystemComponent>(entityId);
+			for (const ParticleEmitter& emitter : psComp.m_Emitters)
+			{
+				totalNeeded += emitter.maxParticles;
+			}
 		}
 
+		if (totalNeeded > m_TotalMaxParticles)
+		{
+			m_TotalMaxParticles = totalNeeded;
+
+			if (m_ParticleSSBO == 0)
+				glGenBuffers(1, &m_ParticleSSBO);
+
+			glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_ParticleSSBO);
+			glBufferData(GL_SHADER_STORAGE_BUFFER, m_TotalMaxParticles * sizeof(ParticleInstance), nullptr, GL_DYNAMIC_DRAW);
+			glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+		}
 	}
 }

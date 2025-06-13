@@ -1,3 +1,4 @@
+#include "Shader.h"
 
 //------------------------------------------------------------------------------
 //
@@ -255,6 +256,11 @@ namespace NULLENGINE
 	void Shader::setVec4(const std::string& name, const glm::vec4& value) const
 	{
 		glUniform4fv(glGetUniformLocation(m_RendererID, name.c_str()), 1, glm::value_ptr(value));
+	}
+
+	void Shader::setVec3(const std::string& name, const glm::vec3& value) const
+	{
+		glUniform3fv(glGetUniformLocation(m_RendererID, name.c_str()), 1, glm::value_ptr(value));
 	}
 
 	void Shader::setVec2(const std::string& name, const glm::vec2& value) const

@@ -55,6 +55,9 @@
     <Filter Include="Null\Engine\Submodules\Graphics\Camera\Controllers">
       <UniqueIdentifier>{F581DDBF-E115-D367-4ADA-2C1C368D0D5A}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Null\Engine\Submodules\Graphics\Camera\Frustum">
+      <UniqueIdentifier>{549D0AB3-401B-5B4C-2913-19E415309D74}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Null\Engine\Submodules\Graphics\Mesh">
       <UniqueIdentifier>{93C4C193-7FAB-838B-28FC-E9A814C2FCF1}</UniqueIdentifier>
     </Filter>
@@ -69,9 +72,6 @@
     </Filter>
     <Filter Include="Null\Tools">
       <UniqueIdentifier>{A071EE46-8C29-3094-F530-09F0E107CB84}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Null\Engine\Submodules\TileSystem">
-      <UniqueIdentifier>{3d638ab6-163d-478e-8e13-226e8f8cab04}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -137,6 +137,9 @@
     <ClInclude Include="src\Null\Engine\Modules\NTextureManager.h">
       <Filter>Null\Engine\Modules</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Engine\Modules\NTilesetManager.h">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClInclude>
     <ClInclude Include="src\Null\Engine\Modules\NWindow.h">
       <Filter>Null\Engine\Modules</Filter>
     </ClInclude>
@@ -161,6 +164,9 @@
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\Parent-ChildComponents.h">
       <Filter>Null\Engine\Submodules\ECS\Components</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\ParticleSystemComponent.h">
+      <Filter>Null\Engine\Submodules\ECS\Components</Filter>
+    </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\Rigidbody2DComponent.h">
       <Filter>Null\Engine\Submodules\ECS\Components</Filter>
     </ClInclude>
@@ -171,6 +177,9 @@
       <Filter>Null\Engine\Submodules\ECS\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\TagComponent.h">
+      <Filter>Null\Engine\Submodules\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\TilemapComponent.h">
       <Filter>Null\Engine\Submodules\ECS\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\TransformComponent.h">
@@ -194,6 +203,9 @@
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\CircleCollider2DSystem.h">
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\ParticleSystem.h">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\PhysicsSystem.h">
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClInclude>
@@ -204,6 +216,9 @@
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\System.h">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\TilemapRenderSystem.h">
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\TransformSystem.h">
@@ -231,6 +246,9 @@
       <Filter>Null\Engine\Submodules\Graphics\Buffers\BatchRenderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\QuadBatchRenderer.h">
+      <Filter>Null\Engine\Submodules\Graphics\Buffers\BatchRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\TilemapBatchRenderer.h">
       <Filter>Null\Engine\Submodules\Graphics\Buffers\BatchRenderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\TriangleBatchRenderer.h">
@@ -272,6 +290,9 @@
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\Controllers\PerspectiveCameraController.h">
       <Filter>Null\Engine\Submodules\Graphics\Camera\Controllers</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\Frustum\Frustum.h">
+      <Filter>Null\Engine\Submodules\Graphics\Camera\Frustum</Filter>
+    </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\CircleInstanceMesh.h">
       <Filter>Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes</Filter>
     </ClInclude>
@@ -290,6 +311,9 @@
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Mesh\Mesh.h">
       <Filter>Null\Engine\Submodules\Graphics\Mesh</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Shader\ComputeShader.h">
+      <Filter>Null\Engine\Submodules\Graphics\Shader</Filter>
+    </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Shader\Shader.h">
       <Filter>Null\Engine\Submodules\Graphics\Shader</Filter>
     </ClInclude>
@@ -306,6 +330,12 @@
       <Filter>Null\Engine\Submodules\Layers</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\Scene.h">
+      <Filter>Null\Engine\Submodules</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Tilemap.h">
+      <Filter>Null\Engine\Submodules</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Tileset.h">
       <Filter>Null\Engine\Submodules</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\EntryPoint.h">
@@ -330,33 +360,6 @@
       <Filter>Null\Tools</Filter>
     </ClInclude>
     <ClInclude Include="src\stdafx.h" />
-    <ClInclude Include="src\Null\Engine\Submodules\Tileset.h">
-      <Filter>Null\Engine\Submodules\TileSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\TilemapRenderSystem.h">
-      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\TilemapComponent.h">
-      <Filter>Null\Engine\Submodules\ECS\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Null\Engine\Modules\NTilesetManager.h">
-      <Filter>Null\Engine\Modules</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Null\Engine\Submodules\Tilemap.h">
-      <Filter>Null\Engine\Submodules\TileSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\Frustum\Frustum.h">
-      <Filter>Null\Engine\Submodules\Graphics\Camera</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\TilemapBatchRenderer.h">
-      <Filter>Null\Engine\Submodules\Graphics\Buffers\BatchRenderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\ParticleSystem.h">
-      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\ParticleSystemComponent.h">
-      <Filter>Null\Engine\Submodules\ECS\Components</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Null\Application.cpp">
@@ -416,6 +419,9 @@
     <ClCompile Include="src\Null\Engine\Modules\NTextureManager.cpp">
       <Filter>Null\Engine\Modules</Filter>
     </ClCompile>
+    <ClCompile Include="src\Null\Engine\Modules\NTilesetManager.cpp">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClCompile>
     <ClCompile Include="src\Null\Engine\Modules\NWindow.cpp">
       <Filter>Null\Engine\Modules</Filter>
     </ClCompile>
@@ -446,6 +452,9 @@
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\CircleCollider2DSystem.cpp">
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\ParticleSystem.cpp">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\PhysicsSystem.cpp">
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClCompile>
@@ -456,6 +465,9 @@
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\System.cpp">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\TilemapRenderSystem.cpp">
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\TransformSystem.cpp">
@@ -503,6 +515,9 @@
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\Controllers\PerspectiveCameraController.cpp">
       <Filter>Null\Engine\Submodules\Graphics\Camera\Controllers</Filter>
     </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\Frustum\Frustum.cpp">
+      <Filter>Null\Engine\Submodules\Graphics\Camera\Frustum</Filter>
+    </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\CircleInstanceMesh.cpp">
       <Filter>Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes</Filter>
     </ClCompile>
@@ -521,6 +536,9 @@
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Mesh\Mesh.cpp">
       <Filter>Null\Engine\Submodules\Graphics\Mesh</Filter>
     </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Shader\ComputeShader.cpp">
+      <Filter>Null\Engine\Submodules\Graphics\Shader</Filter>
+    </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Shader\Shader.cpp">
       <Filter>Null\Engine\Submodules\Graphics\Shader</Filter>
     </ClCompile>
@@ -537,6 +555,12 @@
       <Filter>Null\Engine\Submodules\Layers</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\Scene.cpp">
+      <Filter>Null\Engine\Submodules</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Tilemap.cpp">
+      <Filter>Null\Engine\Submodules</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Tileset.cpp">
       <Filter>Null\Engine\Submodules</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Tools\FileDialog.cpp">
@@ -558,23 +582,5 @@
       <Filter>Null\Tools</Filter>
     </ClCompile>
     <ClCompile Include="src\stdafx.cpp" />
-    <ClCompile Include="src\Null\Engine\Submodules\Tileset.cpp">
-      <Filter>Null\Engine\Submodules\TileSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\TilemapRenderSystem.cpp">
-      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Null\Engine\Modules\NTilesetManager.cpp">
-      <Filter>Null\Engine\Modules</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Null\Engine\Submodules\Tilemap.cpp">
-      <Filter>Null\Engine\Submodules\TileSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\Frustum\Frustum.cpp">
-      <Filter>Null\Engine\Submodules\Graphics\Camera</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\ParticleSystem.cpp">
-      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>

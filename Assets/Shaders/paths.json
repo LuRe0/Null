@@ -4,13 +4,13 @@
             "path": "default"
         },
         {
-              "path": "framebuffer"
+            "path": "framebuffer"
         },
         {
             "path": "quadInstance"
         },
         {
-        "path": "triInstance"
+            "path": "triInstance"
         },
         {
             "path": "cubeInstance"
@@ -20,6 +20,10 @@
         },
         {
             "path": "lineInstance"
+        },
+        {
+            "path": "particle",
+            "isCompute": true
         }
     ]
 }

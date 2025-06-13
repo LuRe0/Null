@@ -17,7 +17,7 @@ LearnOpenGl license: https://creativecommons.org/licenses/by/4.0/legalcode
 // Includes																        //
 //******************************************************************************//
 #include "Null/Core.h"
-//#include "glad/glad.h"
+#include "Shader.h"
 
 
 //******************************************************************************//
@@ -37,34 +37,11 @@ LearnOpenGl license: https://creativecommons.org/licenses/by/4.0/legalcode
 
 namespace NULLENGINE
 {
-	class Shader
+	class ComputeShader : public Shader
 	{
 	public:
-		Shader(const std::string& name);
-		~Shader();
+		ComputeShader(const std::string& name);
 
-		void Bind() const ;
-		void Unbind() const;
-		uint32_t GetID() const;
-
-		// utility uniform functions
-		void setBool(const std::string& name, bool value) const;
-		void setInt(const std::string& name, int value) const;
-		void setInt1fv(const std::string& name, size_t size, const int* value) const;
-		void setFloat(const std::string& name, float value) const;
-		void setFloat2fv(const std::string& name, size_t size, const float* value) const;
-		void setMat4(const std::string& name, const glm::mat4& value) const;
-		void setVec4(const std::string& name, const glm::vec4& value) const;
-		void setVec3(const std::string& name, const glm::vec3& value) const;
-		void setVec2(const std::string& name, const glm::vec2& value) const;
-
-		void setFullTransform(glm::mat4 model, glm::mat4 view, glm::mat4 projection) const;
-		void setTextureOffset(float uSize, float vSize)const;
-
-		auto GetUniformLocation(const std::string& name);
-	protected:
-		uint32_t m_RendererID;
-		std::string m_Name;
+		void Dispatch(uint32_t groupsX, uint32_t groupsY = 1, uint32_t groupsZ = 1) const;
 	};
-
 }

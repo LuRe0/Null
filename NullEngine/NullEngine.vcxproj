@@ -211,6 +211,7 @@
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\QuadInstanceMesh.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\TriangleInstanceMesh.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Mesh\Mesh.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Shader\ComputeShader.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Shader\Shader.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\SpriteSource.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Texture.h" />
@@ -287,6 +288,7 @@
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\QuadInstanceMesh.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\TriangleInstanceMesh.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Mesh\Mesh.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Shader\ComputeShader.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Shader\Shader.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\SpriteSource.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Texture.cpp" />

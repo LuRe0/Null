@@ -14,6 +14,7 @@
 //******************************************************************************//
 #include "Null/Core.h"
 #include "Null/Engine/Submodules/ECS/Systems/System.h"
+#include "Null/Engine/Submodules/Graphics/Shader/ComputeShader.h"
 
 
 //******************************************************************************//
@@ -65,7 +66,12 @@ namespace NULLENGINE
 
 		bool OnEntityCreated(const EntityCreatedEvent& e);
 
-		void InitTilemap(const std::vector<EntityID>& entityList, NRegistry* registry);
+		void InitParticleBuffer(const std::vector<EntityID>& entityList, NRegistry* registry);
+
+		ComputeShader* m_ComputeShader;
+
+		unsigned int m_ParticleSSBO = 0;
+		size_t m_TotalMaxParticles = 0;  // total particle count for all emitters combined
 	};
 
 }

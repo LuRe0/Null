@@ -3,6 +3,28 @@
 
 namespace NULLENGINE
 {
+    struct ParticleInstance
+    {
+        glm::vec3 position;    // 12 bytes
+        float pad1;            // 4 bytes padding to align next vec3
+
+        glm::vec3 velocity;    // 12 bytes
+        float pad2;            // 4 bytes padding
+
+        glm::vec3 acceleration;// 12 bytes
+        float pad3;            // 4 bytes padding
+
+        glm::vec4 color;       // 16 bytes (RGBA)
+
+        float lifetime;        // 4 bytes - total time particle lives
+        float age;             // 4 bytes - how long particle has been alive
+        int alive;             // 4 bytes - bool as int (0 or 1)
+        float pad4;            // 4 bytes padding for alignment
+
+        // Texture index, if you want to support texture atlases or multiple particle textures
+        int textureIndex;      // 4 bytes (optional)
+        float pad5[3];         // Padding to make struct multiple of 16 bytes
+    }; 
 
     enum class SpawnShape
     {

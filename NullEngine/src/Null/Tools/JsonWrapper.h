@@ -45,10 +45,22 @@ namespace NULLENGINE
         bool GetBool(const std::string& key, bool defaultValue = false) const;
         std::string GetString(const std::string& key, const std::string& defaultValue = "") const;
 
+        //std::vector<float> GetFloatArray(const std::string& key, size_t expectedSize = 0) const;
+
+        JsonReader GetJSONObject(const std::string& key) const {
+            if (data.contains(key) && data[key].is_object()) {
+                return JsonReader(data[key]);
+            }
+            // Return an empty JsonReader if key is missing or not an object
+            static const nlohmann::json emptyObject = nlohmann::json::object();
+            return JsonReader(emptyObject);
+        }
 
         bool HasData(const std::string& key) const;
 
         bool Empty() const;
+
+        std::vector<float> GetFloatArray(const std::string& key, const std::vector<float>& defaultValues) const;
 
     private:
         const nlohmann::json& data;

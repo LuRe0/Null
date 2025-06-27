@@ -29,7 +29,7 @@ namespace NULLENGINE
 
 		void DeleteBuffer();
 
-		void Bind(unsigned int bindingPoint = 0) const;
+		void Bind(unsigned int bindingPoint) const;
 
 		void Unbind() const;
 

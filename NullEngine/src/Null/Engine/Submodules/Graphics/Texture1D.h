@@ -4,20 +4,15 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	Shader.h
+// File Name:	Texture1D.h
 // Author(s):	name
 // 
 //------------------------------------------------------------------------------
-/*
-Code adapted from https://learnopengl.com
-Made by Joey de Vries https://twitter.com/JoeyDeVriez\
-LearnOpenGl license: https://creativecommons.org/licenses/by/4.0/legalcode
-*/
+
 //******************************************************************************//
 // Includes																        //
 //******************************************************************************//
 #include "Null/Core.h"
-#include "Shader.h"
 
 
 //******************************************************************************//
@@ -37,13 +32,35 @@ LearnOpenGl license: https://creativecommons.org/licenses/by/4.0/legalcode
 
 namespace NULLENGINE
 {
-	class ComputeShader : public Shader
+	class NLE_API Texture1D
 	{
 	public:
-		ComputeShader(const std::string& name);
+		Texture1D() = default;
+		~Texture1D() { Shutdown(); }
 
-		void Dispatch(uint32_t groupsX, uint32_t groupsY = 1, uint32_t groupsZ = 1) const;
+		void Init(int size, unsigned int internalFormat = 0x8235 /*GL_R32I*/,
+			unsigned int format = 0x8D94 /*GL_RED_INTEGER*/,
+			unsigned int type = 0x1404 /*GL_INT*/);
 
-		std::string PreprocessShader(const std::string& filePath, std::unordered_set<std::string>& includedFiles);
+		//void Init(int size, GLenum internalFormat = GL_R32I, GLenum format = GL_RED_INTEGER, GLenum type = GL_INT);
+
+
+
+		void Update(const int* data);
+
+
+		void BindUnit(uint32_t slot) const;
+
+		void Unbind() const;
+	
+
+		void Shutdown();
+
+		unsigned int GetID() const { return m_TextureID; }
+		int GetSize() const { return m_Size; }
+
+	private:
+		unsigned int m_TextureID = 0;
+		int m_Size = 0;
 	};
 }

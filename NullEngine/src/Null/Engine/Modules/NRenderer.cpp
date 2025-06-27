@@ -133,6 +133,11 @@ namespace NULLENGINE
 		m_Batchers[render.mesh->GetName()].get()->AddInstance(render);
 	}
 
+	void NRenderer::RenderParticles(const ParticleData* renderData)
+	{
+		static_cast<ParticleBatchRenderer<Mesh>*>(m_Batchers["Particle"].get())->AddInstance(*renderData);
+	}
+
 	void NRenderer::EndRender()
 	{
 		//m_RenderQueue.clear();
@@ -262,6 +267,20 @@ namespace NULLENGINE
 			m_DebugRenderQueue.pop();
 		}
 
+
+
+		while (!m_ParticleRenderQueue.empty())
+		{
+			// Access the element with the highest priority (greatest depth)
+			auto& renderData = m_ParticleRenderQueue.top();
+
+			// Process/render the object
+			RenderParticles(renderData.get());
+
+			// Remove the element from the queue
+			m_ParticleRenderQueue.pop();
+		}
+
 		//for (auto& renderData : m_RenderQueue)
 		//{
 		//	RenderScene(renderData.get());
@@ -318,6 +337,11 @@ namespace NULLENGINE
 	void NRenderer::AddDebugRenderCall(std::unique_ptr<ElementData>&& render)
 	{
 		m_DebugRenderQueue.push(std::move(render));
+	}
+
+	void NRenderer::AddParticleRenderCall(std::unique_ptr<ParticleData>&& render)
+	{
+		m_ParticleRenderQueue.push(std::move(render));
 	}
 
 	//void NRenderer::AddElementRenderCall(const ElementData& render)

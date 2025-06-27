@@ -75,6 +75,24 @@ namespace NULLENGINE
     }
 
 
+    std::vector<float> JsonReader::GetFloatArray(const std::string& key, const std::vector<float>& defaultValues) const
+    {
+        if (data.contains(key) && data[key].is_array())
+        {
+            std::vector<float> result;
+            for (const auto& elem : data[key])
+                result.push_back(elem.get<float>());
+
+            // Pad if too short
+            if (result.size() < defaultValues.size())
+                result.resize(defaultValues.size(), 0.0f); // or defaultValues[i] if you want to fill with matching defaults
+
+            return result;
+        }
+
+        return defaultValues;
+    }
+
 
 
     void JsonWriter::SetVec2(const std::string& key, const glm::vec2& value) {

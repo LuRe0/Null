@@ -18,6 +18,7 @@
 #include "Null/Engine/Submodules/Graphics/Buffers/Framebuffer.h"
 #include <Null/Engine/Submodules/Graphics/Buffers/RenderData.h>
 #include <Null/Engine/Submodules/Graphics/Buffers/BatchRenderer/BatchRenderer.h>
+#include <setjmp.h>
 
 
 //******************************************************************************//
@@ -76,6 +77,7 @@ namespace NULLENGINE
 
 		void AddRenderCall(std::unique_ptr<ElementData>&& render);
 		void AddDebugRenderCall(std::unique_ptr<ElementData>&& render);
+		void AddParticleRenderCall(std::unique_ptr<ParticleData>&& render);
 
 		bool HasRenderImGui() const override { return true; }
 
@@ -114,6 +116,13 @@ namespace NULLENGINE
 			RenderDataComparator
 		> m_DebugRenderQueue;
 
+		std::priority_queue<
+			std::unique_ptr<ParticleData>,
+			std::vector<std::unique_ptr<ParticleData>>,
+			ParticleDepthCompare
+		> m_ParticleRenderQueue;
+
+
 		//std::vector<std::unique_ptr<ElementData>> m_RenderQueue;
 
 		std::unordered_map<std::string, Framebuffer> m_Framebuffers;
@@ -127,6 +136,7 @@ namespace NULLENGINE
 		void RenderScene(const ElementData* renderData);
 		void RenderElement(const ElementData& renderData);
 		void RenderInstances(const ElementData& renderData);
+		void RenderParticles(const ParticleData* renderData);
 
 		void EndRender();
 		void Flush();

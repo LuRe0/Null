@@ -52,6 +52,7 @@ namespace NULLENGINE
 		void setBool(const std::string& name, bool value) const;
 		void setInt(const std::string& name, int value) const;
 		void setInt1fv(const std::string& name, size_t size, const int* value) const;
+		void setUInt(const std::string& name, unsigned int value) const;
 		void setFloat(const std::string& name, float value) const;
 		void setFloat2fv(const std::string& name, size_t size, const float* value) const;
 		void setMat4(const std::string& name, const glm::mat4& value) const;

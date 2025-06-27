@@ -21,6 +21,7 @@ LearnOpenGl license: https://creativecommons.org/licenses/by/4.0/legalcode
 #include "Null/Engine/Submodules/Graphics/Buffers/VBO.h"
 #include "Null/Engine/Submodules/Graphics/Buffers/EBO.h"
 #include "Null/Engine/Submodules/Graphics/Buffers/SSBO.h"
+#include "Null/Engine/Submodules/Graphics/Buffers/UBO.h"
 #include "Null/Engine/Submodules/Graphics/Buffers/BufferData.h"
 
 //******************************************************************************//
@@ -76,6 +77,22 @@ namespace NULLENGINE
 			m_Buffer.m_SSBO = ssbo;
 		}
 
+		template <typename T>
+		void UpdateUBO(const T* vertexData, size_t size)
+		{
+			if (m_Buffer.m_UBO.GetID() == 0)
+			{
+				m_Buffer.m_UBO.GenerateBuffer();
+			}
+
+			if (m_Buffer.m_UBO.Capacity() < size)
+			{
+				m_Buffer.m_UBO.Allocate(size);
+			}
+
+			m_Buffer.m_UBO.UpdateData(vertexData.data(), size);
+		}
+
 		void Read(const std::string& filename);
 
 		const std::string& GetName() const { return m_Name; }
@@ -90,6 +107,7 @@ namespace NULLENGINE
 			VBO m_VBO;
 			EBO m_EBO;
 			SSBO m_SSBO;
+			UBO m_UBO;
 		};
 	protected:
 		Buffer m_Buffer;

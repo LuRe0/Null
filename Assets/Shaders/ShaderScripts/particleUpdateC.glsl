@@ -13,7 +13,8 @@ struct ParticleInstance {
     float _pad3;
 
     vec2 scale;
-    float _pad6[2]; 
+    float rotation;
+    float _pad6;
 
     vec4 color;
 
@@ -25,6 +26,7 @@ struct ParticleInstance {
     int textureIndex;
     float _pad5[3];
 };
+
 
 layout(std430, binding = 0) buffer ParticleBuffer
 {
@@ -45,26 +47,29 @@ uniform int   u_EmitCount;
 #include "ParticleModifierScripts/PhysicsModifier.glsl"
 #include "ParticleModifierScripts/ColorModifier.glsl"
 #include "ParticleModifierScripts/VortexModifier.glsl"
+#include "ParticleModifierScripts/RotationModifier.glsl"
+#include "ParticleModifierScripts/FadeModifier.glsl"
 #include "ParticleModifierScripts/AttractionModifier.glsl"
 #include "ParticleModifierScripts/WindModifier.glsl"
 #include "ParticleModifierScripts/GravityModifier.glsl"
+#include "ParticleModifierScripts/RevolutionModifier.glsl"
 
 
 
 
-void onInit(inout ParticleInstance p, uint index)
-{
-    float seed = float(index) + float(u_StartIndex) * 1000.0;
+// void onInit(inout ParticleInstance p, uint index)
+// {
+//     float seed = float(index) + float(u_StartIndex) * 1000.0;
 
-    p.alive = 1;
-    vec3 dir;
+//     p.alive = 1;
+//     vec3 dir;
     
-    Init_Shape(p, seed, dir);
-    Init_Color(p, seed);
-    Init_Age(p, seed);
-    Init_Size(p, seed);
-    Init_Physics(p, dir);
-}
+//     Init_Shape(p, seed, dir);
+//     Init_Color(p, seed);
+//     Init_Age(p, seed);
+//     Init_Size(p, seed);
+//     Init_Physics(p, dir);
+// }
 
 
 void onUpdate(inout ParticleInstance p)
@@ -72,10 +77,14 @@ void onUpdate(inout ParticleInstance p)
     Update_Age(p);
     Update_Size(p);
     Update_Color(p);
-    // Update_Attraction(p);
-    // Update_Vortex(p);
+    Update_Fade(p);
+    Update_Rotation(p);
+    Update_Attraction(p);
     Update_Wind(p);
-    // Update_Gravity(p);
+    Update_Vortex(p);
+    Update_Gravity(p);
+    Update_Gravity(p);
+    Update_Revolution(p);
     Update_Physics(p);
 }
 
@@ -84,11 +93,21 @@ void onUpdate(inout ParticleInstance p)
 void onExit(inout ParticleInstance p)
 {
     p.alive = 0;
+    p.age = 0.0;
+    p.lifetime = 0.0;
+    p.scale = vec2(0.0);
+    p.velocity = vec3(0.0);
+    p.acceleration = vec3(0.0);
+    p.color = vec4(0.0, 0.0, 0.0, 0.0);
 }
 
 void main()
 {
-    uint index = gl_GlobalInvocationID.x + uint(u_StartIndex);
+    uint localID = gl_GlobalInvocationID.x;
+    if (localID >= u_MaxParticles) return;
+
+    uint index = localID + u_StartIndex;
+
     ParticleInstance p = particles[index];
 
     if (p.alive == 1)
@@ -101,12 +120,6 @@ void main()
         {
             onUpdate(p);
         }
+        particles[index] = p;
     }
-    else
-    {
-        if(index <= u_EmitCount)
-            onInit(p, index);
-    }
-
-    particles[index] = p;
 }

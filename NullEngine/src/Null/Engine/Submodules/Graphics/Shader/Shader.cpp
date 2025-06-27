@@ -223,6 +223,18 @@ namespace NULLENGINE
 			NLE_CORE_ERROR("Uniform {0} not found!", name);
 		}
 	}
+
+	void Shader::setUInt(const std::string& name, unsigned int value) const
+	{
+		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+		if (location != -1) {
+			glUniform1ui(location, value);
+		}
+		else {
+			NLE_CORE_ERROR("Uniform {0} not found!", name);
+		}
+	}
+
 	void Shader::setFloat(const std::string& name, float value) const
 	{
 		glUniform1f(glGetUniformLocation(m_RendererID, name.c_str()), value);

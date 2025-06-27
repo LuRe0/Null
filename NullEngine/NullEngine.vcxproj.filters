@@ -369,6 +369,15 @@
     <ClInclude Include="src\Null\Engine\Modules\NComputeShaderManager.h">
       <Filter>Null\Engine\Modules</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Tools\EasingCurve.h">
+      <Filter>Null\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\UBO.h">
+      <Filter>Null\Engine\Submodules\Graphics\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Texture1D.h">
+      <Filter>Null\Engine\Submodules\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Null\Application.cpp">
@@ -596,6 +605,15 @@
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Modules\NComputeShaderManager.cpp">
       <Filter>Null\Engine\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Tools\EasingCurve.cpp">
+      <Filter>Null\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Buffers\UBO.cpp">
+      <Filter>Null\Engine\Submodules\Graphics\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Texture1D.cpp">
+      <Filter>Null\Engine\Submodules\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

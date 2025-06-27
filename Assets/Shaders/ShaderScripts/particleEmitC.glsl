@@ -13,7 +13,8 @@ struct ParticleInstance {
     float _pad3;
 
     vec2 scale;
-    float _pad6[2]; 
+    float rotation;
+    float _pad6;
 
     vec4 color;
 
@@ -26,6 +27,7 @@ struct ParticleInstance {
     float _pad5[3];
 };
 
+
 layout(std430, binding = 0) buffer ParticleBuffer
 {
     ParticleInstance particles[];
@@ -35,6 +37,7 @@ uniform float u_DeltaTime;
 uniform int   u_StartIndex;
 uniform int   u_MaxParticles;
 uniform int   u_EmitCount;
+uniform int   u_EmitterTextureIndex;
 
 
 #include "ParticleModifierScripts/ParticleFlags.glsl"
@@ -47,6 +50,7 @@ uniform int   u_EmitCount;
 #include "ParticleModifierScripts/VortexModifier.glsl"
 #include "ParticleModifierScripts/AttractionModifier.glsl"
 #include "ParticleModifierScripts/WindModifier.glsl"
+#include "ParticleModifierScripts/RotationModifier.glsl"
 #include "ParticleModifierScripts/GravityModifier.glsl"
 
 
@@ -54,59 +58,36 @@ uniform int   u_EmitCount;
 
 void onInit(inout ParticleInstance p, uint index)
 {
-    float seed = float(index) + float(u_StartIndex) * 1000.0;
+    uint seed = wangHash(gl_GlobalInvocationID.x + uint(u_Time * 123.456));
 
     p.alive = 1;
+    p.textureIndex = u_EmitterTextureIndex;
     vec3 dir;
     
     Init_Shape(p, seed, dir);
     Init_Color(p, seed);
     Init_Age(p, seed);
+    Init_Rotation(p, seed);
     Init_Size(p, seed);
     Init_Physics(p, dir);
 }
 
 
-void onUpdate(inout ParticleInstance p)
-{
-    Update_Age(p);
-    Update_Size(p);
-    Update_Color(p);
-    // Update_Attraction(p);
-    // Update_Vortex(p);
-    Update_Wind(p);
-    // Update_Gravity(p);
-    Update_Physics(p);
-}
-
-
-
-void onExit(inout ParticleInstance p)
-{
-    p.alive = 0;
-}
-
 void main()
 {
-    uint index = gl_GlobalInvocationID.x + uint(u_StartIndex);
-    ParticleInstance p = particles[index];
+    uint id = gl_GlobalInvocationID.x;
+    if (id >= u_EmitCount) return;
 
-    if (p.alive == 1)
+    for (uint i = 0; i < uint(u_MaxParticles); ++i)
     {
-        if (p.age >= p.lifetime)
+        uint index = u_StartIndex + ((id + i) % uint(u_MaxParticles));
+        ParticleInstance p = particles[index];
+
+        if (p.alive == 0)
         {
-            onExit(p);
-        }
-        else
-        {
-            onUpdate(p);
-        }
-    }
-    else
-    {
-        if(index <= u_EmitCount)
             onInit(p, index);
+            particles[index] = p;
+            break;
+        }
     }
-
-    particles[index] = p;
 }

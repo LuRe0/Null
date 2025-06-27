@@ -82,6 +82,27 @@ namespace NULLENGINE
         }
     };
 
+    struct ParticleData : public RenderData
+    {
+        const SpriteSource* spriteSrc = nullptr;
+        float depth = 0.0f;
+
+        ParticleData() = default;
+
+        ParticleData(const SpriteSource* inSrc, float z = 0.0f)
+            : spriteSrc(inSrc), depth(z)
+        {
+            m_Type = RenderType::ELEMENT;
+        }
+    };
+
+    struct ParticleDepthCompare {
+        bool operator()(const std::unique_ptr<ParticleData>& a,
+            const std::unique_ptr<ParticleData>& b) const
+        {
+            return a->depth < b->depth; // larger depth comes first
+        }
+    };
 
     struct InstanceData : public RenderData
     {

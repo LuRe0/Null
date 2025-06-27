@@ -23,6 +23,18 @@
         },
         {
             "path": "particle",
+            "isCompute": false
+        },
+        {
+            "path": "particleEmit",
+            "isCompute": true
+        },
+        {
+            "path": "particleUpdate",
+            "isCompute": true
+        },
+        {
+            "path": "particleInit",
             "isCompute": true
         }
     ]

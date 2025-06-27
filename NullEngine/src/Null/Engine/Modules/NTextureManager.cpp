@@ -47,6 +47,7 @@ namespace NULLENGINE
 
 				auto tex = Create(name);
 				tex->Init();
+				GetTextureIndex(name);
 			}
 		}
 	}
@@ -59,16 +60,24 @@ namespace NULLENGINE
 			tex.second->Shutdown();
 	}
 
-	void NTextureManager::AddTextureIndex(const std::string& texture)
+	void NTextureManager::AddTextureIndex(const std::string& textureName)
 	{
-		m_TextureSlots.emplace(texture, CreateIndex());
+		// If textureName not in map, assign next available index
+		if (m_TextureSlots.find(textureName) == m_TextureSlots.end())
+		{
+			m_TextureSlots[textureName] = CreateIndex();
+		}
 	}
 
-	uint32_t NTextureManager::GetTextureIndex(const std::string& texture)
+	uint32_t NTextureManager::GetTextureIndex(const std::string& textureName)
 	{
-		NLE_CORE_ASSERT(m_TextureSlots.contains(texture), "resource {0} does not exist", texture);
+		auto it = m_TextureSlots.find(textureName);
+		if (it != m_TextureSlots.end())
+			return it->second;
 
-		return m_TextureSlots.at(texture);
+		// If not found, add it:
+		AddTextureIndex(textureName);
+		return m_TextureSlots[textureName];
 	}
 
 }

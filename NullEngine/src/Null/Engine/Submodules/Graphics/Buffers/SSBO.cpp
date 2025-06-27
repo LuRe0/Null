@@ -33,7 +33,7 @@ namespace NULLENGINE
 		glDeleteBuffers(1, &m_ID);
 	}
 
-	void SSBO::Bind(GLuint bindingPoint) const
+	void SSBO::Bind(unsigned int bindingPoint = 0) const
 	{
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, bindingPoint, m_ID);
 	}
@@ -47,6 +47,7 @@ namespace NULLENGINE
 	{
 		m_Capacity = count;
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_ID);
+		//std::vector<ParticleInstance> zeroInit(count); // all members = 0
 		glBufferData(GL_SHADER_STORAGE_BUFFER, count * sizeof(ParticleInstance), nullptr, GL_DYNAMIC_DRAW);
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 	}

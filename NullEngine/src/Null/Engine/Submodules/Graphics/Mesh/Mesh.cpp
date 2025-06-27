@@ -268,12 +268,14 @@ namespace NULLENGINE
 
 		m_Buffer.m_SSBO.Bind(0);
 
+		m_Buffer.m_UBO.Bind(1);
+
 		// Draw instanced mesh
-		glDrawElementsInstanced(m_Buffer.m_VAO.DrawType(), m_Buffer.m_VAO.ElementCount(), GL_UNSIGNED_INT, 0, m_Buffer.m_SSBO.Capacity()*6);
+		glDrawElementsInstanced(m_Buffer.m_VAO.DrawType(), m_Buffer.m_VAO.ElementCount(), GL_UNSIGNED_INT, 0, m_Buffer.m_SSBO.Capacity());
 
 		m_Buffer.m_VAO.Unbind();
 
-		m_Buffer.m_SSBO.Unbind();
+		//m_Buffer.m_SSBO.Unbind();
 
 		// Unbind SSBO to avoid side effects (optional)
 		//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, ssboBindingPoint, 0);

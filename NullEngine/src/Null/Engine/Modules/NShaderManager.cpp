@@ -52,8 +52,8 @@ namespace NULLENGINE
 		for (const auto& paths : resourceData["shaders"])
 		{
 			const std::string path = paths["path"];
-
-			Create(path);
+			if (!paths.contains("isCompute") || (paths.contains("isCompute") && !paths["isCompute"]))
+				Create(path);
 		}
 	}
 

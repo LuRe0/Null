@@ -40,6 +40,7 @@ namespace NULLENGINE
 
 		// Get the delta time
 		static float DeltaTime() {return m_DeltaTime;}
+		static float LastTime() {return m_PreviousTime;}
 		static int FPS() { return m_FPS;}
 
 		//! Initialize class

@@ -4,20 +4,15 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	Shader.h
+// File Name:	UBO.h
 // Author(s):	name
 // 
 //------------------------------------------------------------------------------
-/*
-Code adapted from https://learnopengl.com
-Made by Joey de Vries https://twitter.com/JoeyDeVriez\
-LearnOpenGl license: https://creativecommons.org/licenses/by/4.0/legalcode
-*/
+
 //******************************************************************************//
 // Includes																        //
 //******************************************************************************//
 #include "Null/Core.h"
-#include "Shader.h"
 
 
 //******************************************************************************//
@@ -37,13 +32,28 @@ LearnOpenGl license: https://creativecommons.org/licenses/by/4.0/legalcode
 
 namespace NULLENGINE
 {
-	class ComputeShader : public Shader
+	class NLE_API UBO
 	{
 	public:
-		ComputeShader(const std::string& name);
+		UBO() { GenerateBuffer(); }
+		~UBO() { DeleteBuffer(); }
 
-		void Dispatch(uint32_t groupsX, uint32_t groupsY = 1, uint32_t groupsZ = 1) const;
+		void GenerateBuffer();
+		void DeleteBuffer();
 
-		std::string PreprocessShader(const std::string& filePath, std::unordered_set<std::string>& includedFiles);
+		void Bind(unsigned int bindingPoint) const;
+		void Unbind() const;
+
+		void Allocate(size_t size, unsigned int drawType);
+		void UpdateData(const void* data, size_t size, size_t offset = 0) const;
+
+		unsigned int GetID() const { return m_ID; }
+		size_t Capacity() const { return m_Capacity; }
+
+	private:
+		unsigned int m_ID = 0;
+		size_t m_Capacity = 0;
+
 	};
+
 }

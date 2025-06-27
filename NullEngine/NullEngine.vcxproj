@@ -198,6 +198,7 @@
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\EBO.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\Framebuffer.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\RenderData.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\UBO.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\VAO.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\VBO.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\Camera.h" />
@@ -217,12 +218,14 @@
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Shader\Shader.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\SpriteSource.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Texture.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Texture1D.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Layers\ImGuiLayer.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Layers\Layer.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Scene.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Tilemap.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Tileset.h" />
     <ClInclude Include="src\Null\EntryPoint.h" />
+    <ClInclude Include="src\Null\Tools\EasingCurve.h" />
     <ClInclude Include="src\Null\Tools\FileDialog.h" />
     <ClInclude Include="src\Null\Tools\ImguiSink.h" />
     <ClInclude Include="src\Null\Tools\JsonWrapper.h" />
@@ -278,6 +281,7 @@
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Buffers\EBO.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Buffers\Framebuffer.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Buffers\SSBO.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Buffers\UBO.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Buffers\VAO.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Buffers\VBO.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\Camera.cpp" />
@@ -297,11 +301,13 @@
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Shader\Shader.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\SpriteSource.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Texture.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Texture1D.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Layers\ImGuiLayer.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Layers\Layer.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Scene.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Tilemap.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Tileset.cpp" />
+    <ClCompile Include="src\Null\Tools\EasingCurve.cpp" />
     <ClCompile Include="src\Null\Tools\FileDialog.cpp" />
     <ClCompile Include="src\Null\Tools\ImguiSink.cpp" />
     <ClCompile Include="src\Null\Tools\JsonWrapper.cpp" />

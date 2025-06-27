@@ -38,6 +38,7 @@
 namespace NULLENGINE
 {
 	struct ParticleSystemComponent;
+	struct ParticleEmitter;
 	class NLE_API ParticleSystem : public ISystem
 	{
 	public:
@@ -46,8 +47,10 @@ namespace NULLENGINE
 		void Load() override;
 		//! Virtual Init function
 		void Init() override;
+		void SetEmitterUniforms(ComputeShader& shader, const ParticleEmitter& emitter, const TransformComponent& transform);
 		//! Virtual Update function
 		void Update(float dt) override;
+		void RenderImGui() override;
 
 		void Render() override;
 
@@ -65,17 +68,39 @@ namespace NULLENGINE
 		static void CreateParticleSystemComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
 		static JSON WriteParticleSystemComponent(BaseComponent* component);
 
+		void DrawCoreSettings(ParticleEmitter& emitter, size_t i);
+
+		void DrawColorConfig(ParticleEmitter& emitter, size_t i);
+
+		void DrawLifetimeSettings(ParticleEmitter& emitter, size_t i);
+
+		void DrawPhysicsConfig(ParticleEmitter& emitter, size_t i);
+
+		void DrawInitConfig(ParticleEmitter& emitter, size_t i);
+
+		void DrawForcesConfig(ParticleEmitter& emitter, size_t i);
+
+		void DrawSizeConfig(ParticleEmitter& emitter, size_t i);
+
+		void DrawRotationConfig(ParticleEmitter& emitter, size_t i);
+
+		void DrawFadeConfig(ParticleEmitter& emitter, size_t i);
+
+		void DrawShapeConfig(ParticleEmitter& emitter, size_t i);
+
 		void ViewParticleSystemComponent(Entity& entityID);
 
 		bool OnEntityCreated(const EntityCreatedEvent& e);
 
 		void InitParticleBuffer(const std::vector<EntityID>& entityList, NRegistry* registry);
 
-		ComputeShader* m_ComputeShader;
+		ComputeShader* m_UpdateComputeShader;
+		ComputeShader* m_EmitComputeShader;
+		ComputeShader* m_InitComputeShader;
 
 		SSBO m_ParticleSSBO;
 		size_t m_TotalMaxParticles = 0;  // total particle count for all emitters combined
-
+		unsigned int atomicCounterBufferID;
 		BatchRenderer* m_Batcher;
 	};
 

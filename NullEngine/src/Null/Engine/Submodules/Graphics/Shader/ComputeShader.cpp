@@ -51,9 +51,8 @@ namespace NULLENGINE
 			return;
 		}
 
-		std::stringstream cShaderStream;
-		cShaderStream << cShaderFile.rdbuf();
-		std::string computeCode = cShaderStream.str();
+		std::unordered_set<std::string> includedFiles;
+		std::string computeCode = PreprocessShader(computePath, includedFiles);
 
 		GLuint computeShader = glCreateShader(GL_COMPUTE_SHADER);
 		const char* source = computeCode.c_str();
@@ -104,5 +103,46 @@ namespace NULLENGINE
 		GL(glDispatchCompute(groupsX, groupsY, groupsZ));
 		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT);
 	}
+
+	std::string ComputeShader::PreprocessShader(const std::string& filePath, std::unordered_set<std::string>& includedFiles)
+	{
+		std::ifstream file(filePath);
+		if (!file.is_open())
+		{
+			NLE_CORE_ERROR("Failed to open shader: {0}", filePath);
+			return "";
+		}
+
+		std::string result;
+		std::string line;
+		std::filesystem::path baseDir = std::filesystem::path(filePath).parent_path();
+
+		while (std::getline(file, line))
+		{
+			if (line.find("#include") != std::string::npos)
+			{
+				size_t start = line.find('"') + 1;
+				size_t end = line.find_last_of('"');
+				std::string includeFile = line.substr(start, end - start);
+				std::string includePath = (baseDir / includeFile).generic_string();
+
+				if (includedFiles.find(includePath) == includedFiles.end())
+				{
+					includedFiles.insert(includePath);
+					result += PreprocessShader(includePath, includedFiles);
+				}
+			}
+			else
+			{
+				result += line + "\n";
+			}
+		}
+
+		return result;
+	}
+
+
+
+
 
 }

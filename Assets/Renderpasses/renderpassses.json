@@ -1,0 +1,81 @@
+[
+  {
+    "name": "Scene",
+    "stage": "Main",
+    "shader": "instanceDefault",
+    "framebuffer": "Scene",
+    "clear": true,
+    "depthTest": false,
+    "depthWrite": true,
+    "depthFunc": "LESS",
+    "blendMode": "Alpha",
+    "cullMode": "None",
+    "batchersToFlush": ["Quad", "Cube","Line", "Tilemap", "Triangle", "Circle"],
+    "clearColor": [0.1, 0.1, 0.1, 1]
+  },
+  {
+    "name": "Emissive",
+    "stage": "Emissive",
+    "shader": "emissiveDefault", 
+    "framebuffer": "Emissive",   
+    "clear": true,
+    "depthTest": false,
+    "depthWrite": false,
+    "depthFunc": "LESS",
+    "blendMode": "Additive",  
+    "cullMode": "None",
+    "batchersToFlush": ["Quad", "Cube", "Tilemap", "Triangle", "Circle"],
+    "clearColor": [0.1, 0.1, 0.1, 1]
+  },
+    {
+    "name": "BrightPass",
+    "stage": "PostProcess",
+    "shader": "brightPass",
+    "framebuffer": "BrightPass",
+    "inputs": ["Emissive"],
+    "clear": true,
+    "depthTest": false,
+    "depthWrite": false,
+    "blendMode": "None",
+    "cullMode": "None"
+  },
+  {
+    "name": "BlurH",
+    "stage": "PostProcess",
+    "shader": "horizontalBlur",
+    "framebuffer": "BlurTemp",
+    "inputs": ["BrightPass"],
+    "clear": true,
+    "depthTest": false,
+    "depthWrite": false,
+    "blendMode": "None",
+    "cullMode": "None"
+  },
+  {
+    "name": "BlurV",
+    "stage": "PostProcess",
+    "shader": "verticalBlur",
+    "framebuffer": "BlurredEmissive",
+    "inputs": ["BlurTemp"],
+    "clear": true,
+    "depthTest": false,
+    "depthWrite": false,
+    "blendMode": "None",
+    "cullMode": "None"
+  },
+  {
+  "name": "Composite",
+  "stage": "Final",
+  "shader": "compositeDefault",     
+  "framebuffer": "CompositeOut",   
+  "inputs": ["Scene", "BlurredEmissive"],  
+  "clear": true,
+  "depthTest": false,              
+  "depthWrite": true,
+  "depthFunc": "LESS",
+  "blendMode": "None",             
+  "cullMode": "None",
+  "clearColor": [0.1, 0.1, 0.1, 1],
+  "batchersToFlush": []
+  }
+]

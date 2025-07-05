@@ -10,8 +10,38 @@ uniform float u_DonutRadius1;
 uniform float u_DonutRadius2;
 uniform vec3 u_LinePoint1;
 uniform vec3 u_LinePoint2;
-uniform vec4 u_Rect;
-uniform bool u_FollowParent;
+uniform vec2 u_RectCenter;
+uniform vec2 u_RectExtent;
+
+uniform sampler2D u_SpawnMask;
+uniform vec2 u_MaskWorldSize;      // size in world units of mask rectangle
+uniform float u_MaskAlphaThreshold;
+uniform float u_InvertMask;
+
+
+vec3 GenerateSpawnPosFromMask(uint seed)
+{
+    const int maxTries = 5;
+    for (int i = 0; i < maxTries; ++i)
+    {
+        float rx = GetRandomFloatRange(seed, -u_MaskWorldSize.x * 0.5, u_MaskWorldSize.x * 0.5);
+        float ry = GetRandomFloatRange(seed, -u_MaskWorldSize.y * 0.5, u_MaskWorldSize.y * 0.5);
+        vec2 pos2D = vec2(rx, ry);
+
+        vec2 uv = (pos2D / u_MaskWorldSize) + 0.5;
+        uv.y = 1.0 - uv.y;
+
+        float rawAlpha = texture(u_SpawnMask, uv).a;
+        float alpha = mix(rawAlpha, 1.0 - rawAlpha, u_InvertMask);
+
+        if (alpha > u_MaskAlphaThreshold)
+        {
+            return vec3(pos2D, 0.0);
+        }
+    }
+
+    return vec3(0.0, 0.0, 0.0);
+}
 
 void Init_Shape(inout ParticleInstance p, uint seed, inout vec3 dir)
 {
@@ -20,13 +50,11 @@ void Init_Shape(inout ParticleInstance p, uint seed, inout vec3 dir)
     vec3 parentOffset = u_ParentPosition;
     vec3 pos;
 
-    if (u_EmitterShape == 0) // POINT
+    if (u_EmitterShape == 0) // LINE
     {
-        pos = u_Point + u_EmitterOffset + parentOffset;
-        float angle = GetRandomFloatRange(seed, 0.0, 6.2831853);
-        float z = GetRandomFloatRange(seed, -1.0, 1.0);
-        float r = sqrt(1.0 - z * z);
-        dir = vec3(r * cos(angle), r * sin(angle), z);
+        vec3 pointOnLine = mix(u_LinePoint1, u_LinePoint2, GetRandomFloatRange(seed, 0.0, 1.0));
+        pos = pointOnLine + u_EmitterOffset + parentOffset;
+        dir = normalize(u_LinePoint2 - u_LinePoint1);
     }
     else if (u_EmitterShape == 1) // CIRCLE
     {
@@ -53,20 +81,33 @@ void Init_Shape(inout ParticleInstance p, uint seed, inout vec3 dir)
         pos = vec3(result2D, 0.0) + u_EmitterOffset + parentOffset;
         dir = vec3(result2D, 0.0);
     }
-    else if (u_EmitterShape == 3) // LINE
+    else if (u_EmitterShape == 3) // RECT
     {
-        vec3 lineVec = u_LinePoint2 - u_LinePoint1;
-        float t = GetRandomFloatRange(seed, 0.0, 1.0);
-        vec3 pointOnLine = u_LinePoint1 + lineVec * t;
-        pos = pointOnLine + u_EmitterOffset + parentOffset;
-        dir = normalize(lineVec);
-    }
-    else if (u_EmitterShape == 4) // RECT
-    {
-        float x = GetRandomFloatRange(seed, u_Rect.x, u_Rect.z);
-        float y = GetRandomFloatRange(seed, u_Rect.y, u_Rect.w);
-        pos = vec3(x, y, 0.0) + u_EmitterOffset + parentOffset;
+        float rx = GetRandomFloatRange(seed, -1.0, 1.0);
+        float ry = GetRandomFloatRange(seed, -1.0, 1.0);
 
+        vec2 localPos = vec2(rx * u_RectExtent.x, ry * u_RectExtent.y);
+        pos = vec3(u_RectCenter + localPos, 0.0) + u_EmitterOffset + parentOffset;
+
+
+        float angle = GetRandomFloatRange(seed, 0.0, 6.2831853); // 0 to 2π
+        float z = GetRandomFloatRange(seed, -1.0, 1.0);          // vertical component [-1,1]
+        float r = sqrt(1.0 - z * z);
+        dir = vec3(r * cos(angle), r * sin(angle), z);
+    }
+    else if (u_EmitterShape == 4) // POINT
+    {
+        pos = u_Point + u_EmitterOffset + parentOffset;
+        float angle = GetRandomFloatRange(seed, 0.0, 6.2831853);
+        float z = GetRandomFloatRange(seed, -1.0, 1.0);
+        float r = sqrt(1.0 - z * z);
+        dir = vec3(r * cos(angle), r * sin(angle), z);
+    }
+    else if (u_EmitterShape == 5) // POINT
+    {
+        pos = GenerateSpawnPosFromMask(seed) + u_EmitterOffset + u_ParentPosition;
+
+        // Generate direction as usual or something else
         float angle = GetRandomFloatRange(seed, 0.0, 6.2831853);
         float z = GetRandomFloatRange(seed, -1.0, 1.0);
         float r = sqrt(1.0 - z * z);
@@ -94,3 +135,5 @@ void Exit_Shape(inout ParticleInstance p)
 {
     // Empty or emit children if needed
 }
+
+

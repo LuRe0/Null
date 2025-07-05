@@ -43,7 +43,5 @@ namespace NULLENGINE
 		ComputeShader(const std::string& name);
 
 		void Dispatch(uint32_t groupsX, uint32_t groupsY = 1, uint32_t groupsZ = 1) const;
-
-		std::string PreprocessShader(const std::string& filePath, std::unordered_set<std::string>& includedFiles);
 	};
 }

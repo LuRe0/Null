@@ -61,9 +61,13 @@ namespace NULLENGINE
 		void setVec2(const std::string& name, const glm::vec2& value) const;
 
 		void setFullTransform(glm::mat4 model, glm::mat4 view, glm::mat4 projection) const;
+		void setTexture(const std::string& uniformName, unsigned int textureID, int slot);
+		std::string PreprocessShader(const std::string& filePath, std::unordered_set<std::string>& includedFiles);
 		void setTextureOffset(float uSize, float vSize)const;
 
 		auto GetUniformLocation(const std::string& name);
+
+
 	protected:
 		uint32_t m_RendererID;
 		std::string m_Name;

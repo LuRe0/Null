@@ -294,7 +294,7 @@ namespace NULLENGINE
 		//ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(2.0f, 1.0f));   // Reduce spacing between items
 
 		for (auto& pannel : m_Pannels)
-			pannel.get()->OnImGUIRender();
+ 			pannel.get()->OnImGUIRender();
 
 
 
@@ -438,7 +438,7 @@ namespace NULLENGINE
 		if (m_GuizmoType == -1)
 			return;
 
-		if (m_PannelData.m_SelectedEntity)
+		if (m_PannelData.m_SelectedEntity && m_PannelData.m_Context->HasEntity(m_PannelData.m_SelectedEntity))
 		{
 			Entity& entity = m_PannelData.m_Context->GetEntity(m_PannelData.m_SelectedEntity);
 			NCameraManager* camManager = NEngine::Instance().Get<NCameraManager>();
@@ -646,14 +646,16 @@ namespace NULLENGINE
 	{
 		NRenderer* renderer = NEngine::Instance().Get<NRenderer>();
 		NWindow* window = NEngine::Instance().Get<NWindow>();
+		NFramebufferManager* fbMan = NEngine::Instance().Get<NFramebufferManager>();
 
 		//ImGui::PopStyleVar(2);
 		bool pOpen = true;
 		ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoNav);
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 
-		Framebuffer& buffer = renderer->GetFramebuffer("Scene");
-		uint32_t texture = buffer.GetColorAttachment(0);
+		Framebuffer* buffer = fbMan->Get("CompositeOut");
+		Framebuffer* dataBuffer = fbMan->Get("Scene");
+		uint32_t texture = buffer->GetColorAttachment(0);
 
 		window->SetBlockEvents(!ImGui::IsWindowHovered() && !ImGui::IsWindowFocused());
 
@@ -661,9 +663,9 @@ namespace NULLENGINE
 
 		auto viewportOffet = ImGui::GetCursorPos();
 
-		if (m_ViewportSize != *((glm::vec2*)&viewportPanelSize))
+ 		if (m_ViewportSize != *((glm::vec2*)&viewportPanelSize))
 		{
-			buffer.Resize(static_cast<unsigned int>(viewportPanelSize.x), static_cast<unsigned int>(viewportPanelSize.y));
+			buffer->Resize(static_cast<unsigned int>(viewportPanelSize.x), static_cast<unsigned int>(viewportPanelSize.y));
 			m_CameraController->OnResize(static_cast<unsigned int>(viewportPanelSize.x), static_cast<unsigned int>(viewportPanelSize.y));
 			m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
 		}
@@ -704,15 +706,15 @@ namespace NULLENGINE
 			// Convert mouse coordinates to match OpenGL's bottom-left origin
 			mouseY = static_cast<int>(viewportSize.y - mouseY);
 
-			buffer.Bind();
+			dataBuffer->Bind();
 
-			auto pixel = buffer.ReadPixels(1, mouseX, mouseY);
+			auto pixel = dataBuffer->ReadPixels(1, mouseX, mouseY);
 
 			//NLE_CORE_WARN("PixelData = {0}", pixel);
 
 			//NLE_CORE_WARN("Mouse = {0},{1}", mouseX, mouseY); 
 
-			buffer.Unbind();
+			dataBuffer->Unbind();
 			if (ImGui::IsItemClicked() && !ImGuizmo::IsOver() && pixel > 0)
 			{
 				m_PannelData.m_SelectedEntity = pixel;
@@ -810,14 +812,15 @@ namespace NULLENGINE
 		NWindow* window = NEngine::Instance().Get<NWindow>();
 		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
 		NCameraManager* camManager = NEngine::Instance().Get<NCameraManager>();
+		NFramebufferManager* fbMan = NEngine::Instance().Get<NFramebufferManager>();
 
 		//ImGui::PopStyleVar(2);
 		bool pOpen = true;
 		ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoNav);
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 
-		Framebuffer& buffer = renderer->GetFramebuffer("Scene");
-		uint32_t texture = buffer.GetColorAttachment(0);
+		Framebuffer* buffer = fbMan->Get("Scene");
+		uint32_t texture = buffer->GetColorAttachment(0);
 
 		window->SetBlockEvents(!ImGui::IsWindowHovered() && !ImGui::IsWindowFocused());
 
@@ -829,7 +832,7 @@ namespace NULLENGINE
 
 		if (m_ViewportSize != *((glm::vec2*)&viewportPanelSize))
 		{
-			buffer.Resize(static_cast<unsigned int>(viewportPanelSize.x), static_cast<unsigned int>(viewportPanelSize.y));
+			buffer->Resize(static_cast<unsigned int>(viewportPanelSize.x), static_cast<unsigned int>(viewportPanelSize.y));
 			m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
 			ResizeCamera();
 		}
@@ -870,6 +873,8 @@ namespace NULLENGINE
 	}
 	void ImGuiLayer::MaximizedSceneLayer()
 	{
+		NFramebufferManager* fbMan = NEngine::Instance().Get<NFramebufferManager>();
+
 		NRenderer* renderer = NEngine::Instance().Get<NRenderer>();
 		NWindow* window = NEngine::Instance().Get<NWindow>();
 		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
@@ -901,8 +906,8 @@ namespace NULLENGINE
 		ImGui::Begin("##Fullscreen Scene", nullptr, ImGuiWindowFlags_NoNavInputs);
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 
-		Framebuffer& buffer = renderer->GetFramebuffer("Scene");
-		uint32_t texture = buffer.GetColorAttachment(0);
+		Framebuffer* buffer = fbMan->Get("Scene");
+		uint32_t texture = buffer->GetColorAttachment(0);
 
 		window->SetBlockEvents(!ImGui::IsWindowHovered() && !ImGui::IsWindowFocused());
 
@@ -912,7 +917,7 @@ namespace NULLENGINE
 
 		if (m_ViewportSize != *((glm::vec2*)&viewportPanelSize))
 		{
-			buffer.Resize(static_cast<unsigned int>(viewportPanelSize.x), static_cast<unsigned int>(viewportPanelSize.y));
+			buffer->Resize(static_cast<unsigned int>(viewportPanelSize.x), static_cast<unsigned int>(viewportPanelSize.y));
 			m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
 			ResizeCamera();
 		}
@@ -1083,9 +1088,16 @@ namespace NULLENGINE
 			return;
 		}
 
-		m_PannelData.m_Context->Serialize();
+		if (m_PannelData.m_Context->m_Name == "New Scene")
+		{
+			NLE_CORE_ERROR("Cannot save scene if name is: {0}", m_PannelData.m_Context->m_Name);
+		}
+		else
+		{
+			m_PannelData.m_Context->Serialize();
 
-		NLE_CORE_INFO("Scene: {0} successfully saved", m_PannelData.m_Context->m_Name);
+			NLE_CORE_INFO("Scene: {0} successfully saved", m_PannelData.m_Context->m_Name);
+		}
 	}
 	void ImGuiLayer::SaveSceneAsImpl()
 	{

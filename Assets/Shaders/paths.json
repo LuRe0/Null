@@ -10,6 +10,12 @@
             "path": "quadInstance"
         },
         {
+            "path": "instanceDefault"
+        },
+        {
+            "path": "emissiveDefault"
+        },
+        {
             "path": "triInstance"
         },
         {
@@ -19,7 +25,16 @@
             "path": "circleInstance"
         },
         {
-            "path": "lineInstance"
+            "path": "compositeDefault"
+        },
+        {
+            "path": "brightPass"
+        },
+        {
+            "path": "horizontalBlur"
+        },
+        {
+            "path": "verticalBlur"
         },
         {
             "path": "particle",

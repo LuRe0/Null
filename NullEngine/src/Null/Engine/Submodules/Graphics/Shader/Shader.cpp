@@ -40,38 +40,14 @@ namespace NULLENGINE
 
 	Shader::Shader(const std::string& name) : m_RendererID(0), m_Name(name)
 	{
+		std::unordered_set<std::string> includedFiles;
+
 		std::string vertexPath = std::string("../Assets/Shaders/ShaderScripts/") + std::string(name) + "V" + std::string(".glsl");
 		std::string fragmentPath = std::string("../Assets/Shaders/ShaderScripts/") + std::string(name) + "F" + std::string(".glsl");
-		// 1. retrieve the vertex/fragment source code from filePath
-		std::string vertexCode;
-		std::string fragmentCode;
-		std::ifstream vShaderFile;
-		std::ifstream fShaderFile;
-		// ensure ifstream objects can throw exceptions:
-		vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-		fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-		try
-		{
-			// open files
-			vShaderFile.open(vertexPath);
-			fShaderFile.open(fragmentPath);
-			std::stringstream vShaderStream, fShaderStream;
-			// read file's buffer contents into streams
-			vShaderStream << vShaderFile.rdbuf();
-			fShaderStream << fShaderFile.rdbuf();
-			// close file handlers
-			vShaderFile.close();
-			fShaderFile.close();
-			// convert stream into string
-			vertexCode = vShaderStream.str();
-			fragmentCode = fShaderStream.str();
-		}
-		catch (std::ifstream::failure e)
-		{
-			std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
-		}
 
-		// Read our shaders into the appropriate buffers
+		std::string vertexCode = PreprocessShader(vertexPath, includedFiles);
+		includedFiles.clear(); // Clear before processing fragment shader separately
+		std::string fragmentCode = PreprocessShader(fragmentPath, includedFiles);
 
 			// Create an empty vertex shader handle
 		GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -294,5 +270,55 @@ namespace NULLENGINE
 		setMat4("view", view);
 		setMat4("projection", projection);
 	}
+
+	void Shader::setTexture(const std::string& uniformName, unsigned int textureID, int slot)
+	{
+		glActiveTexture(GL_TEXTURE0 + slot);
+		glBindTexture(GL_TEXTURE_2D, textureID);
+		glUniform1i(glGetUniformLocation(m_RendererID, uniformName.c_str()), slot);
+	}
+
+
+
+	std::string Shader::PreprocessShader(const std::string& filePath, std::unordered_set<std::string>& includedFiles)
+	{
+		std::ifstream file(filePath);
+		if (!file.is_open())
+		{
+			NLE_CORE_ERROR("Failed to open shader: {0}", filePath);
+			return "";
+		}
+
+		std::string result;
+		std::string line;
+		std::filesystem::path baseDir = std::filesystem::path(filePath).parent_path();
+
+		while (std::getline(file, line))
+		{
+			if (line.find("#include") != std::string::npos)
+			{
+				size_t start = line.find('"') + 1;
+				size_t end = line.find_last_of('"');
+				std::string includeFile = line.substr(start, end - start);
+				std::string includePath = (baseDir / includeFile).generic_string();
+
+				if (includedFiles.find(includePath) == includedFiles.end())
+				{
+					includedFiles.insert(includePath);
+					result += PreprocessShader(includePath, includedFiles);
+				}
+			}
+			else
+			{
+				result += line + "\n";
+			}
+		}
+
+		return result;
+	}
+
+
+
+
 
 }

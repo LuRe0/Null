@@ -13,7 +13,7 @@
 // Includes																        //
 //******************************************************************************//
 #include "Null/Core.h"
-
+#include "PostProcess/PostProcess.h"
 
 //******************************************************************************//
 // Definitions  														        //
@@ -66,7 +66,7 @@ namespace NULLENGINE
 
         virtual void Shudown() = 0;
 
-        virtual void View() = 0;
+        virtual void View();
 
         virtual void Write(JSON& json) = 0;
 
@@ -85,6 +85,8 @@ namespace NULLENGINE
         CameraType m_CameraType = CameraType::INVALID;
         std::string m_Name = "";
         bool m_IsDirty = true;
+
+        PostProcess m_PPSettings;
     };
 
 	template <typename T>

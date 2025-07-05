@@ -47,7 +47,7 @@ namespace NULLENGINE
 
 			ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Warning: No Object Selected");
 		}
-		else
+		else if (m_PannelData->m_Context->HasEntity(m_PannelData->m_SelectedEntity))
 		{
 			// display name and update if changed
 			Entity& selectedEntity = m_PannelData->m_Context->GetEntity(m_PannelData->m_SelectedEntity);

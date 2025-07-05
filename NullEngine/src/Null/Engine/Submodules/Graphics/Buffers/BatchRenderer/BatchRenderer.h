@@ -36,6 +36,8 @@ LearnOpenGl license: https://creativecommons.org/licenses/by/4.0/legalcode
 
 namespace NULLENGINE
 {
+	class Shader;
+
 	class BatchRenderer
 	{
 	public:
@@ -54,11 +56,11 @@ namespace NULLENGINE
 		virtual ~BatchRenderer() {};
 
 		virtual void BeginBatch() = 0;
-		virtual void NextBatch() = 0;
-		virtual void Flush() = 0;
+		virtual void NextBatch(Shader* shader) = 0;
+		virtual void Flush(Shader* shader) = 0;
 		virtual void ImguiView() = 0;
-		virtual void BindTextureBuffer() = 0;
-		virtual void AddInstance(const ElementData& render) = 0;
+		virtual void BindTextureBuffer(Shader* shader = nullptr) = 0;
+		virtual void AddInstance(const ElementData& render, Shader* shader) = 0;
 
 		virtual void ResetStats() = 0;
 	protected:

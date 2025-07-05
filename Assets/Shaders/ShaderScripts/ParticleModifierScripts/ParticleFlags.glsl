@@ -13,6 +13,7 @@ const uint PARTICLE_FLAG_FORCES                 = 1u << 5u;
 const uint PARTICLE_FLAG_CUSTOM_LOGIC           = 1u << 6u;
 const uint PARTICLE_FLAG_COLLISION_ENABLED      = 1u << 7u;
 const uint PARTICLE_FLAG_ALPHA_OVER_LIFETIME    = 1u << 8u;
+const uint PARTICLE_FLAG_ANIMATION              = 1u << 9u;
 
 
 uniform uint u_EmitterFlags;

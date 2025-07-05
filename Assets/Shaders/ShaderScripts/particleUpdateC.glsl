@@ -4,29 +4,28 @@ layout(local_size_x = 256) in;
 
 struct ParticleInstance {
     vec3 position;
-    float _pad1;
+    float rotation;
 
     vec3 velocity;
-    float _pad2;
+    float lifetime;
 
     vec3 acceleration;
-    float _pad3;
+    float age;
 
     vec2 scale;
-    float rotation;
-    float _pad6;
+    vec2 dimensions;
 
     vec4 color;
 
-    float lifetime;
-    float age;
     int alive;
-    float _pad4;
-
     int textureIndex;
-    float _pad5[3];
-};
+    uint frameIndex;
+    int animDirection;
 
+    float animationTimer;
+    float startDelayTimer;
+    vec2 _pad0;
+};
 
 layout(std430, binding = 0) buffer ParticleBuffer
 {
@@ -42,6 +41,7 @@ uniform int   u_EmitCount;
 #include "ParticleModifierScripts/ParticleFlags.glsl"
 #include "ParticleModifierScripts/Utilities.glsl"
 #include "ParticleModifierScripts/ShapeModifier.glsl"
+#include "ParticleModifierScripts/AnimationModifier.glsl"
 #include "ParticleModifierScripts/AgeModifier.glsl"
 #include "ParticleModifierScripts/SizeModifier.glsl"
 #include "ParticleModifierScripts/PhysicsModifier.glsl"
@@ -78,6 +78,7 @@ void onUpdate(inout ParticleInstance p)
     Update_Size(p);
     Update_Color(p);
     Update_Fade(p);
+    Update_Animation(p);
     Update_Rotation(p);
     Update_Attraction(p);
     Update_Wind(p);
@@ -108,18 +109,17 @@ void main()
 
     uint index = localID + u_StartIndex;
 
-    ParticleInstance p = particles[index];
+    // ParticleInstance p = particles[index];
 
-    if (p.alive == 1)
+    if (particles[index].alive == 1)
     {
-        if (p.age >= p.lifetime)
+        if (particles[index].age >= particles[index].lifetime)
         {
-            onExit(p);
+            onExit(particles[index]);
         }
         else
         {
-            onUpdate(p);
+            onUpdate(particles[index]);
         }
-        particles[index] = p;
     }
 }

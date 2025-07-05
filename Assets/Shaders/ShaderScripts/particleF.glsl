@@ -13,20 +13,13 @@ void main()
 {
     if (v_TextureIndex < 0) {
         FragColor = v_Color;
-        
-        if (FragColor.a < 0.1) discard;
-    
         return;
     }
 
-    // texelFetch returns vec4, take .r channel and cast to int explicitly
-    int slotIndex = texelFetch(u_TextureIDToSlot, v_TextureIndex, 0).r; // returns correct int
-
-
-    // Use slotIndex, not 'slot'
+    int slotIndex = texelFetch(u_TextureIDToSlot, v_TextureIndex, 0).r;
     vec4 texColor = texture(u_Textures[slotIndex], v_TexCoord);
     FragColor = texColor * v_Color;
 
+    if(FragColor.a < 0.1) discard;
 
-    if (FragColor.a < 0.1) discard;
 }

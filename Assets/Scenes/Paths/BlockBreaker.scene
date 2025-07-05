@@ -33,6 +33,14 @@
                         1,
                         1
                     ],
+                    "emissiveColor": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "emissiveStrength": 0.0,
+                    "emissiveTexture": "",
                     "fade": 0.004999999888241291,
                     "frameindex": 0,
                     "meshname": "Quad",
@@ -99,6 +107,14 @@
                         1,
                         1
                     ],
+                    "emissiveColor": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "emissiveStrength": 0.0,
+                    "emissiveTexture": "",
                     "fade": 0.004999999888241291,
                     "frameindex": 0,
                     "meshname": "Quad",
@@ -165,6 +181,14 @@
                         1,
                         1
                     ],
+                    "emissiveColor": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "emissiveStrength": 0.0,
+                    "emissiveTexture": "",
                     "fade": 0.004999999888241291,
                     "frameindex": 0,
                     "meshname": "Quad",
@@ -350,6 +374,14 @@
                         1,
                         1
                     ],
+                    "emissiveColor": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "emissiveStrength": 0.0,
+                    "emissiveTexture": "",
                     "fade": 0.4359999895095825,
                     "frameindex": 0,
                     "meshname": "Quad",
@@ -422,6 +454,14 @@
                         1,
                         1
                     ],
+                    "emissiveColor": [
+                        1.0,
+                        0.8759123682975769,
+                        0.0,
+                        1.0
+                    ],
+                    "emissiveStrength": 1.5470000505447388,
+                    "emissiveTexture": "",
                     "fade": 0.5960000157356262,
                     "frameindex": 0,
                     "meshname": "Circle",
@@ -498,6 +538,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -572,6 +620,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -646,6 +702,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -720,6 +784,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -794,6 +866,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -868,6 +948,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -942,6 +1030,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -1016,6 +1112,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -1090,6 +1194,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -1188,6 +1300,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -1262,6 +1382,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -1336,6 +1464,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -1410,6 +1546,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -1484,6 +1628,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -1558,6 +1710,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -1632,6 +1792,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -1706,6 +1874,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -1780,6 +1956,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -1878,6 +2062,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -1952,6 +2144,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -2026,6 +2226,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -2100,6 +2308,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -2174,6 +2390,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -2248,6 +2472,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -2322,6 +2554,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -2396,6 +2636,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -2470,6 +2718,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -2568,6 +2824,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -2642,6 +2906,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -2716,6 +2988,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -2790,6 +3070,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -2864,6 +3152,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -2938,6 +3234,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -3012,6 +3316,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -3086,6 +3398,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -3160,6 +3480,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -3258,6 +3586,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -3332,6 +3668,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -3406,6 +3750,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -3480,6 +3832,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -3554,6 +3914,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -3628,6 +3996,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -3702,6 +4078,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -3776,6 +4160,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -3850,6 +4242,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -3948,6 +4348,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -4022,6 +4430,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -4096,6 +4512,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -4170,6 +4594,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -4244,6 +4676,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -4318,6 +4758,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -4392,6 +4840,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -4466,6 +4922,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -4540,6 +5004,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -4638,6 +5110,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -4712,6 +5192,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -4786,6 +5274,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -4860,6 +5356,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -4934,6 +5438,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -5008,6 +5520,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -5082,6 +5602,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -5156,6 +5684,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -5230,6 +5766,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -5328,6 +5872,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -5402,6 +5954,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -5476,6 +6036,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -5550,6 +6118,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -5624,6 +6200,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -5698,6 +6282,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -5772,6 +6364,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -5846,6 +6446,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -5920,6 +6528,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -6018,6 +6634,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -6092,6 +6716,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -6166,6 +6798,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -6240,6 +6880,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -6314,6 +6962,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -6388,6 +7044,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -6462,6 +7126,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -6536,6 +7208,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -6610,6 +7290,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -6708,6 +7396,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -6782,6 +7478,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -6856,6 +7560,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -6930,6 +7642,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -7004,6 +7724,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -7078,6 +7806,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -7152,6 +7888,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -7226,6 +7970,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -7300,6 +8052,14 @@
                                 1,
                                 1
                             ],
+                            "emissiveColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "emissiveTexture": "",
                             "fade": 0.004999999888241291,
                             "frameindex": 0,
                             "meshname": "Quad",
@@ -7395,6 +8155,14 @@
                         1,
                         1
                     ],
+                    "emissiveColor": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "emissiveStrength": 0.0,
+                    "emissiveTexture": "",
                     "fade": 0.008999999612569809,
                     "frameindex": 0,
                     "meshname": "Quad",
@@ -7435,6 +8203,14 @@
                         1,
                         1
                     ],
+                    "emissiveColor": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "emissiveStrength": 0.0,
+                    "emissiveTexture": "",
                     "fade": 0.004999999888241291,
                     "frameindex": 0,
                     "meshname": "Quad",

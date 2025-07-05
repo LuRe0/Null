@@ -1,4 +1,4 @@
-
+﻿
 //------------------------------------------------------------------------------
 //
 // File Name:	ParticleSystem.cpp
@@ -33,6 +33,7 @@ constexpr GLuint COLOR_EASE_TEXTURE_UNIT = 5;
 constexpr GLuint SIZE_EASE_TEXTURE_UNIT = 6;
 constexpr GLuint ROTATION_EASE_TEXTURE_UNIT = 7;
 constexpr GLuint Fade_EASE_TEXTURE_UNIT = 8;
+constexpr GLuint SHAPE_TEXTURE_UNIT = 9;
 
 //******************************************************************************//
 // Function Declarations												        //
@@ -46,7 +47,7 @@ namespace NULLENGINE
 		switch (emitter.shape)
 		{
 		case SpawnShape::POINT:
-			shader.setVec2("u_Point", emitter.point.point);
+			shader.setVec3("u_Point", emitter.point.point);
 			break;
 
 		case SpawnShape::CIRCLE:
@@ -64,8 +65,19 @@ namespace NULLENGINE
 			break;
 
 		case SpawnShape::RECT:
-			shader.setVec4("u_Rect", glm::vec4(emitter.rect.x1, emitter.rect.y1, emitter.rect.x2, emitter.rect.y2));
+			shader.setVec2("u_RectCenter", emitter.rect.center);
+			shader.setVec2("u_RectExtent", emitter.rect.extent);
 			break;
+		case SpawnShape::TEXTURE:
+		{
+			if (emitter.texture.spriteSource)
+			{
+				shader.setTexture("u_SpawnMask", emitter.texture.spriteSource->GetTexture()->GetID(), SHAPE_TEXTURE_UNIT);
+				shader.setVec2("u_MaskWorldSize", emitter.texture.worldSize);
+				shader.setFloat("u_MaskAlphaThreshold", emitter.texture.alphaThreshold);
+				shader.setFloat("u_InvertMask", emitter.texture.invertMask);
+			}
+		}
 		}
 
 		shader.setBool("u_FollowParent", emitter.followParent);
@@ -111,6 +123,10 @@ namespace NULLENGINE
 		NRenderer* renderer = NEngine::Instance().Get<NRenderer>();
 
 		SUBSCRIBE_EVENT(EntityCreatedEvent, &ParticleSystem::OnEntityCreated, eventManager, EventPriority::Low);
+		SUBSCRIBE_EVENT(SceneSwitchEvent, &ParticleSystem::OnSceneSwitched, eventManager, EventPriority::Low);
+		SUBSCRIBE_EVENT(EntityAddComponentEvent, &ParticleSystem::OnEntityComponentAdded, eventManager, EventPriority::High);
+		SUBSCRIBE_EVENT(EntityRemoveComponentEvent, &ParticleSystem::OnEntityComponentRemoved, eventManager, EventPriority::High);
+		SUBSCRIBE_EVENT(EntityDestroyedEvent, &ParticleSystem::OnEntityDestroyed, eventManager, EventPriority::High);
 
 		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
 
@@ -157,6 +173,16 @@ namespace NULLENGINE
 		shader.setVec4("u_EmitterStartColor", emitter.startColor);
 		shader.setVec4("u_EmitterEndColor", emitter.endColor);
 
+		//animation
+		shader.setFloat("u_AnimDuration", emitter.animDuration);
+		shader.setInt("u_AnimFrameCount", emitter.animFrameCount);
+		shader.setFloat("u_StartOffset", emitter.startOffset);
+
+		shader.setBool("u_Looping", emitter.loop);
+		shader.setBool("u_PlayOnce", emitter.playOnce);
+		shader.setBool("u_Reverse", emitter.reverse);
+		shader.setBool("u_PingPong", emitter.pingPong);
+
 		// lifetime
 		shader.setFloat("u_EmitterMinLifetime", emitter.minLifetime);
 		shader.setFloat("u_EmitterMaxLifetime", emitter.maxLifetime);
@@ -164,6 +190,7 @@ namespace NULLENGINE
 
 		// buffer offset
 		shader.setInt("u_StartIndex", static_cast<int>(emitter.startIndex));
+
 
 		// shape
 		shader.setInt("u_EmitterShape", static_cast<int>(emitter.shape));
@@ -239,6 +266,7 @@ namespace NULLENGINE
 					m_EmitComputeShader->setVec2("u_EmitterInitialSize", emitter.initialSize);
 					m_EmitComputeShader->setVec4("u_EmitterInitialColor", emitter.initialColor);
 					m_EmitComputeShader->setFloat("u_EmitterInitialRotation", emitter.initialRotation);
+					m_EmitComputeShader->setInt("u_EmitterInitialFrame", emitter.initialFrame);
 
 					if (emitter.spriteSource)
 					{
@@ -247,6 +275,10 @@ namespace NULLENGINE
 							.Get<NTextureManager>()->GetTextureIndex(emitter.spriteSource->GetName());
 
 						m_EmitComputeShader->setInt("u_EmitterTextureIndex",compactID);
+
+
+						m_EmitComputeShader->setVec2("u_Dimensions", emitter.spriteSource->GetSize());
+
 					}
 					else
 					{
@@ -306,7 +338,7 @@ namespace NULLENGINE
 
 
 				//model, mesh, spritesrc, tint, shadername, frameindex, entity
-				renderer->AddParticleRenderCall(std::make_unique<ParticleData>(emitter.spriteSource, depth));
+				renderer->AddRenderCall(RenderCommandTypes::Particles, std::make_unique<ParticleData>(emitter.spriteSource, depth));
 			}
 		}
 	}
@@ -366,6 +398,11 @@ namespace NULLENGINE
 					emitter.initialVelocity = emitterJsonWrapper.GetFloat("initialVelocity", 0.0f);
 					emitter.initialAngularVelocity = emitterJsonWrapper.GetFloat("initialAngularVelocity", 0.0f);
 					emitter.initialAcceleration = emitterJsonWrapper.GetFloat("initialAcceleration", 0.0f);
+					emitter.initialSize = emitterJsonWrapper.GetVec2("initialSize", emitter.initialSize);
+					emitter.initialColor = emitterJsonWrapper.GetVec4("initialColor", emitter.initialColor);
+					emitter.initialFrame = emitterJsonWrapper.GetInt("initialFrame", emitter.initialFrame);
+					emitter.initialLifetime = emitterJsonWrapper.GetFloat("initialLifetime", emitter.initialLifetime);
+					emitter.initialRotation = emitterJsonWrapper.GetFloat("initialRotation", emitter.initialRotation);
 
 					glm::vec2 dimension = emitterJsonWrapper.GetVec2("dimension", { 1.0f, 1.0f });
 					auto src = emitterJsonWrapper.GetString("texture", "");
@@ -411,6 +448,16 @@ namespace NULLENGINE
 					//fade
 					emitter.startFade = emitterJsonWrapper.GetFloat("startFade", 0.0f);
 					emitter.endFade = emitterJsonWrapper.GetFloat("endFade", 0.0f);
+
+					//animation
+					emitter.animDuration = emitterJsonWrapper.GetFloat("animDuration", 1.0f);
+					emitter.animFrameCount = emitterJsonWrapper.GetInt("animFrameCount", 1.0f);
+					emitter.loop = emitterJsonWrapper.GetBool("loop", true);
+					emitter.playOnce = emitterJsonWrapper.GetBool("playOnce", false);
+					emitter.reverse = emitterJsonWrapper.GetBool("reverse", false);
+					emitter.pingPong = emitterJsonWrapper.GetBool("pingPong", false);
+					emitter.startOffset = emitterJsonWrapper.GetFloat("startOffset", 0.0f);
+
 
 					auto fadeCurve = emitterJsonWrapper.GetJSONObject("fadeCurve");
 					emitter.fadeEaseCurve.type = static_cast<NULLENGINE::EasingCurve::CurveType>(colorCurve.GetInt("type", 0));
@@ -484,10 +531,23 @@ namespace NULLENGINE
 						if (emitterJsonWrapper.HasData("rect"))
 						{
 							auto rectObj = emitterJsonWrapper.GetJSONObject("rect");
-							emitter.rect.x1 = rectObj.GetFloat("x1", 0.0f);
-							emitter.rect.x2 = rectObj.GetFloat("x2", 1.0f);
-							emitter.rect.y1 = rectObj.GetFloat("y1", 0.0f);
-							emitter.rect.y2 = rectObj.GetFloat("y2", 1.0f);
+
+							emitter.rect.center = rectObj.GetVec2("rectCenter", emitter.rect.center);
+							emitter.rect.extent = rectObj.GetVec2("rectExtent", emitter.rect.extent);
+						}
+						break;
+					case SpawnShape::TEXTURE:
+						if (emitterJsonWrapper.HasData("textureShape"))
+						{
+							auto texureObj = emitterJsonWrapper.GetJSONObject("textureShape");
+							emitter.texture.worldSize = texureObj.GetVec2("worldSize", emitter.texture.worldSize);
+							emitter.texture.alphaThreshold = texureObj.GetFloat("alphaThreshold", 0.1f);
+							emitter.texture.invertMask = texureObj.GetFloat("invertMask", 0.0f);
+							auto src = texureObj.GetString("shapeTexture", "");
+							if (!src.empty())
+								emitter.texture.spriteSource = spritesrcManager->Create(src, static_cast<int>(dimension.x), static_cast<int>(dimension.y));
+							else
+								emitter.texture.spriteSource = nullptr;
 						}
 						break;
 					default:
@@ -553,6 +613,11 @@ namespace NULLENGINE
 			e["initialVelocity"] = emitter.initialVelocity;
 			e["initialAngularVelocity"] = emitter.initialAngularVelocity;
 			e["initialAcceleration"] = emitter.initialAcceleration;
+			e["initialLifetime"] = emitter.initialLifetime;
+			e["initialSize"] = { emitter.initialSize.x, emitter.initialSize.y };
+			e["initialRotation"] = emitter.initialRotation;
+			e["initialFrame"] = emitter.initialFrame;
+			e["initialColor"] = { emitter.initialColor.r, emitter.initialColor.g,emitter.initialColor.b, emitter.initialColor.a };
 
 			e["startSize"] = { emitter.startSize.x, emitter.startSize.y };
 			e["endSize"] = { emitter.endSize.x, emitter.endSize.y };
@@ -583,6 +648,16 @@ namespace NULLENGINE
 
 			e["attractorPosition"] = { emitter.AttractorPosition.x, emitter.AttractorPosition.y, emitter.AttractorPosition.z };
 			e["attractionStrength"] = emitter.AttractionStrength;
+
+
+			e["animDuration"] = emitter.animDuration;
+			e["animFrameCount"] = emitter.animFrameCount;
+			e["loop"] = emitter.loop;
+			e["playOnce"] = emitter.playOnce;
+			e["reverse"] = emitter.reverse;
+			e["pingPong"] = emitter.pingPong;
+			e["startOffset"] = emitter.startOffset;
+
 
 
 			e["gravity"] = { emitter.gravity.x, emitter.gravity.y, emitter.gravity.z };
@@ -622,12 +697,15 @@ namespace NULLENGINE
 				break;
 
 			case SpawnShape::RECT:
-				e["rect"]["x1"] = emitter.rect.x1;
-				e["rect"]["x2"] = emitter.rect.x2;
-				e["rect"]["y1"] = emitter.rect.y1;
-				e["rect"]["y2"] = emitter.rect.y2;
+				e["rect"]["rectCenter"] = { emitter.rect.center.x, emitter.rect.center.y };
+				e["rect"]["rectExtent"] = { emitter.rect.extent.x, emitter.rect.extent.y };
 				break;
-
+			case SpawnShape::TEXTURE:
+				e["textureShape"]["worldSize"] = { emitter.texture.worldSize.x, emitter.texture.worldSize.y };
+				e["textureShape"]["alphaThreshold"] = emitter.texture.alphaThreshold;
+				e["textureShape"]["invertMask"] = emitter.texture.invertMask;
+				e["textureShape"]["shapeTexture"] = emitter.texture.spriteSource != nullptr ? emitter.texture.spriteSource->GetName() : "";
+				break;
 			default:
 				break;
 			}
@@ -723,7 +801,6 @@ namespace NULLENGINE
 		ImGui::ColorEdit4("Initial Color", glm::value_ptr(emitter.initialColor));
 
 		ImGui::DragFloat("Initial Rotation", &emitter.initialRotation, 1.0f, -360.0f, 360.0f);
-		ImGui::DragInt("Initial Frame", &emitter.initialFrame, 1, 0, 100);
 
 		ImGui::DragFloat("Burst Count", &emitter.burstCount, 1.0f, 0.0f, 1000.0f);
 
@@ -774,6 +851,15 @@ namespace NULLENGINE
 			ImGui::SetNextWindowSize(ImVec2(125, 100), ImGuiCond_FirstUseEver);
 			// Begin a child window to make it scrollable
 			ImGui::BeginChild("TextureList", ImVec2(125, 200), true, ImGuiWindowFlags_AlwaysUseWindowPadding);
+
+
+			if (ImGui::Selectable("⨯ None"))
+			{
+				emitter.spriteSource = nullptr;
+				ImGui::CloseCurrentPopup();
+			}
+
+			ImGui::Separator();
 
 			const auto& componentsNames = texureManager->GetResourceNames();
 
@@ -868,6 +954,33 @@ namespace NULLENGINE
 	}
 
 
+	void ParticleSystem::DrawAnimationConfig(ParticleEmitter& emitter, size_t i)
+	{
+		ImGui::PushID(static_cast<int>(i));
+
+		if (ImGui::DragFloat("Anim Duration", &emitter.animDuration, 0.01f, 0.0001f, 10.0f))
+			emitter.animDuration = std::max(0.0001f, emitter.animDuration);
+
+		if (ImGui::DragInt("Frame Count", &emitter.animFrameCount, 1, 1, 100))
+			emitter.animFrameCount = std::max(1, emitter.animFrameCount);
+
+		bool loopChanged = ImGui::Checkbox("Loop", &emitter.loop);
+		bool playOnceChanged = ImGui::Checkbox("Play Once", &emitter.playOnce);
+
+		if (loopChanged && emitter.loop)
+			emitter.playOnce = false;
+		else if (playOnceChanged && emitter.playOnce)
+			emitter.loop = false;
+
+		ImGui::Checkbox("Reverse", &emitter.reverse);
+		ImGui::Checkbox("Ping Pong", &emitter.pingPong);
+
+		ImGui::DragFloat("Start Offset", &emitter.startOffset, 0.01f, 0.0f, 5.0f);
+
+		ImGui::PopID();
+	}
+
+
 	void ParticleSystem::DrawShapeConfig(ParticleEmitter& emitter, size_t i)
 	{
 		ImGui::PushID(static_cast<int>(i));
@@ -898,14 +1011,97 @@ namespace NULLENGINE
 			ImGui::DragFloat("Outer Radius", &emitter.donut.radius2, 0.1f);
 			break;
 		case SpawnShape::RECT:
-			ImGui::DragFloat("X Min", &emitter.rect.x1, 0.1f);
-			ImGui::DragFloat("X Max", &emitter.rect.x2, 0.1f);
-			ImGui::DragFloat("Y Min", &emitter.rect.y1, 0.1f);
-			ImGui::DragFloat("Y Max", &emitter.rect.y2, 0.1f);
-			break;
+		{
+			ImGui::DragFloat2("Center", glm::value_ptr(emitter.rect.center), 0.1f);
+			ImGui::DragFloat2("Extent", glm::value_ptr(emitter.rect.extent), 0.1f);
+
+			emitter.rect.extent = glm::max(emitter.rect.extent, glm::vec2(0.01f));
+		}
+		break;
 		case SpawnShape::POINT:
 			ImGui::DragFloat3("Point Position", glm::value_ptr(emitter.point.point), 0.1f);
 			break;
+		case SpawnShape::TEXTURE:
+		{
+			NSpriteSourceManager* spritesrcManager = NEngine::Instance().Get<NSpriteSourceManager>();
+			NTextureManager* textureManager = NEngine::Instance().Get<NTextureManager>();
+
+			std::string popupName = "TexturePopup##" + std::to_string(emitter.emitterID);
+
+			ImGui::Text("Spawn Texture:");
+
+			if (emitter.texture.spriteSource && emitter.texture.spriteSource->GetTexture())
+			{
+				ImGui::Image(
+					(void*)(intptr_t)emitter.texture.spriteSource->GetTexture()->GetID(),
+					ImVec2(125, 100),
+					ImVec2(0, -1), ImVec2(1, 0)); // flipped UVs for ImGui
+
+				ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 100);
+
+				if (ImGui::InvisibleButton("TextureButton", ImVec2(125, 100)))
+					ImGui::OpenPopup(popupName.c_str());
+			}
+			else
+			{
+				if (ImGui::Button("Select Texture", ImVec2(125, 100)))
+					ImGui::OpenPopup(popupName.c_str());
+			}
+
+			ImGui::DragFloat2("World Size", glm::value_ptr(emitter.texture.worldSize), 0.1f);
+			ImGui::SliderFloat("Invert Mask", &emitter.texture.invertMask, 0.0f, 1.0f);
+			ImGui::DragFloat("Alpha Threshold", &emitter.texture.alphaThreshold, 0.01f, 0.0f, 1.0f);
+			//ImGui::SameLine();
+		/*	if (ImGui::IsItemHovered())
+				ImGui::SetTooltip("Minimum alpha value for spawn mask pixels");*/
+
+			if (ImGui::BeginDragDropTarget())
+			{
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("TEXTURE_FILE"))
+				{
+					std::string filename((const char*)payload->Data);
+					if (!filename.empty())
+					{
+						emitter.texture.spriteSource = spritesrcManager->Has(filename) ? spritesrcManager->Get(filename) : spritesrcManager->Create(filename, 1, 1);
+					}
+				}
+				ImGui::EndDragDropTarget();
+			}
+
+			if (ImGui::BeginPopup(popupName.c_str()))
+			{
+				ImGui::SetNextWindowSize(ImVec2(150, 200), ImGuiCond_FirstUseEver);
+				ImGui::BeginChild("TextureList", ImVec2(150, 200), true, ImGuiWindowFlags_AlwaysUseWindowPadding);
+
+				if (ImGui::Selectable("⨯ None"))
+				{
+					emitter.texture.spriteSource = nullptr;
+					ImGui::CloseCurrentPopup();
+				}
+				ImGui::Separator();
+
+				const auto& textureNames = textureManager->GetResourceNames();
+				for (const auto& name : textureNames)
+				{
+					auto texture = textureManager->Get(name);
+					if (texture)
+					{
+						ImGui::Text("%s", name.c_str());
+						if (ImGui::ImageButton((void*)(intptr_t)texture->GetID(), ImVec2(75, 50), ImVec2(0, -1), ImVec2(1, 0))) // flip Y correctly
+						{
+							emitter.texture.spriteSource = spritesrcManager->Has(name) ? spritesrcManager->Get(name) : spritesrcManager->Create(name, 1, 1);
+							ImGui::CloseCurrentPopup();
+						}
+					}
+				}
+
+				ImGui::EndChild();
+				ImGui::EndPopup();
+			}
+
+			break;
+		}
+
 		default:
 			break;
 		}
@@ -936,21 +1132,29 @@ namespace NULLENGINE
 		float lineHeight = ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2.0f;
 		ImVec2 contentRegion = ImGui::GetContentRegionAvail();
 
-		bool enabled = (flags & flagBit) != 0;
+		bool wasEnabled = (flags & flagBit) != 0;
+		bool enabled = wasEnabled;
 
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(7, 3));
 
 		std::string checkboxLabel = "##Enable_" + std::string(label) + std::to_string(id);
 
-		// Push a darker color if disabled
-		ImVec4 textColor = (enabled)
+		// Push text color
+		ImVec4 textColor = (wasEnabled)
 			? ImGui::GetStyleColorVec4(ImGuiCol_Text)
 			: ImVec4(0.25f, 0.25f, 0.25f, 1.0f);
-
 		ImGui::PushStyleColor(ImGuiCol_Text, textColor);
-		ImGui::Checkbox(checkboxLabel.c_str(), &enabled);
-		ImGui::PopStyleColor();
 
+		// Push dimmed styles if disabled
+		if (!wasEnabled)
+		{
+			ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.3f, 0.3f, 0.3f, 0.3f));
+			ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.2f, 0.2f, 0.2f, 0.4f));
+			ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.3f, 0.3f, 0.3f, 0.3f));
+			ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0.4f, 0.4f, 0.4f, 0.3f));
+		}
+
+		ImGui::Checkbox(checkboxLabel.c_str(), &enabled);
 		ImGui::SameLine();
 
 		bool opened = ImGui::TreeNodeEx(label,
@@ -958,6 +1162,10 @@ namespace NULLENGINE
 			ImGuiTreeNodeFlags_Framed |
 			ImGuiTreeNodeFlags_SpanAvailWidth);
 
+		// Pop in reverse order
+		if (!wasEnabled)
+			ImGui::PopStyleColor(4);
+		ImGui::PopStyleColor(); // text
 		ImGui::PopStyleVar();
 
 		// Set flag
@@ -966,6 +1174,7 @@ namespace NULLENGINE
 
 		return { opened, enabled };
 	}
+
 
 
 	// Returns tuple: <isOpen, isEnabled, isRemoveClicked>
@@ -1050,6 +1259,12 @@ namespace NULLENGINE
 
 				auto [opened, enabled, remove] = CollapsingHeaderWithCheckboxAndRemove(label, &emitter.enabled);
 
+
+				ImGui::SameLine();
+				std::string popOut = "Pop Out##" + std::to_string(i);
+				if (ImGui::SmallButton(popOut.c_str()))
+					emitter.openInWindow = true;
+
 				if (opened)
 				{
 					ImGui::TreePop();
@@ -1063,20 +1278,62 @@ namespace NULLENGINE
 
 					DrawInitConfig(emitter, i);
 
+					ImGui::Dummy(ImVec2(0.0f, 20.0f));
+
+					ImGui::Separator();
+
+					ImGui::Dummy(ImVec2(0.0f, 20.0f));
+
+
 					if (ImGui::CollapsingHeader("Emission", ImGuiTreeNodeFlags_DefaultOpen)) DrawCoreSettings(emitter, i);
-					if (ImGui::CollapsingHeader("Shape")) DrawShapeConfig(emitter, i);
+
+					ImGui::Dummy(ImVec2(0.0f, 20.0f));
+
+					ImGui::Separator();
+
+					ImGui::Dummy(ImVec2(0.0f, 20.0f));
+
+					if (ImGui::CollapsingHeader("Shape", ImGuiTreeNodeFlags_DefaultOpen)) 
+						DrawShapeConfig(emitter, i);
+
+					ImGui::Dummy(ImVec2(0.0f, 20.0f));
+
+					ImGui::Separator();
+
+					ImGui::Dummy(ImVec2(0.0f, 20.0f));
 
 					{
-
 						auto [opened, enabled] = DrawModifierHeader("Lifetime", emitter.flags, PARTICLE_FLAG_RANDOMIZE_LIFETIME, i);
 						if (opened)
 						{
 							if (enabled)
 								DrawLifetimeSettings(emitter, i);
-
 							ImGui::TreePop();
 						}
 					}
+
+					ImGui::Dummy(ImVec2(0.0f, 20.0f));
+
+					ImGui::Separator();
+
+					ImGui::Dummy(ImVec2(0.0f, 20.0f));
+
+
+					{
+						auto [opened, enabled] = DrawModifierHeader("Animation", emitter.flags, PARTICLE_FLAG_ANIMATION, i);
+						if (opened)
+						{
+							if (enabled)
+								DrawAnimationConfig(emitter, i);
+							ImGui::TreePop();
+						}
+					}
+
+					ImGui::Dummy(ImVec2(0.0f, 20.0f));
+
+					ImGui::Separator();
+
+					ImGui::Dummy(ImVec2(0.0f, 20.0f));
 
 					{
 						auto [opened, enabled] = DrawModifierHeader("Size Over Lifetime", emitter.flags, PARTICLE_FLAG_SCALE_OVER_LIFETIME, i);
@@ -1084,10 +1341,16 @@ namespace NULLENGINE
 						{
 							if (enabled)
 								DrawSizeConfig(emitter, i);
-
 							ImGui::TreePop();
 						}
 					}
+
+					ImGui::Dummy(ImVec2(0.0f, 20.0f));
+
+					ImGui::Separator();
+
+					ImGui::Dummy(ImVec2(0.0f, 20.0f));
+
 
 					{
 						auto [opened, enabled] = DrawModifierHeader("Rotation Over Lifetime", emitter.flags, PARTICLE_FLAG_ROTATION_OVER_LIFETIME, i);
@@ -1095,10 +1358,15 @@ namespace NULLENGINE
 						{
 							if (enabled)
 								DrawRotationConfig(emitter, i);
-
 							ImGui::TreePop();
 						}
 					}
+
+					ImGui::Dummy(ImVec2(0.0f, 20.0f));
+
+					ImGui::Separator();
+
+					ImGui::Dummy(ImVec2(0.0f, 20.0f));
 
 					{
 						auto [opened, enabled] = DrawModifierHeader("Color Over Lifetime", emitter.flags, PARTICLE_FLAG_COLOR_OVER_LIFETIME, i);
@@ -1106,31 +1374,41 @@ namespace NULLENGINE
 						{
 							if (enabled)
 								DrawColorConfig(emitter, i);
-
 							ImGui::TreePop();
 						}
 					}
+					ImGui::Dummy(ImVec2(0.0f, 20.0f));
+
+					ImGui::Separator();
+
+					ImGui::Dummy(ImVec2(0.0f, 20.0f));
+
 					{
 						auto [opened, enabled] = DrawModifierHeader("Fade Over Lifetime", emitter.flags, PARTICLE_FLAG_ALPHA_OVER_LIFETIME, i);
 						if (opened)
 						{
 							if (enabled)
 								DrawFadeConfig(emitter, i);
-
 							ImGui::TreePop();
 						}
 					}
-					{
 
+					ImGui::Dummy(ImVec2(0.0f, 20.0f));
+
+					ImGui::Separator();
+
+					ImGui::Dummy(ImVec2(0.0f, 20.0f));
+
+					{
 						auto [opened, enabled] = DrawModifierHeader("Forces", emitter.flags, PARTICLE_FLAG_FORCES, i);
 						if (opened)
 						{
 							if (enabled)
 								DrawForcesConfig(emitter, i);
-
 							ImGui::TreePop();
 						}
 					}
+
 				}
 
 				ImGui::PopID();
@@ -1165,6 +1443,57 @@ namespace NULLENGINE
 		InitParticleBuffer(entityList, registry);
 
 		return true;
+	}
+
+	bool ParticleSystem::OnSceneSwitched(const SceneSwitchEvent& e)
+	{
+		m_TotalMaxParticles = 0;
+		m_ParticleSSBO.AllocateParticleBuffer(m_TotalMaxParticles);
+		return true;
+	}
+
+	bool ParticleSystem::OnEntityDestroyed(const EntityDestroyedEvent& e)
+	{
+		const auto& entityList = GetSystemEntities();
+
+		if (std::find(entityList.begin(), entityList.end(), e.GetID()) != entityList.end())
+		{
+			NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+
+			RemoveFromParticleBuffer(e.GetID(), registry);
+
+		}
+
+		return true;
+	}
+
+	bool ParticleSystem::OnEntityComponentRemoved(const EntityRemoveComponentEvent& e)
+	{
+		const auto& entityList = GetSystemEntities();
+
+		if (std::find(entityList.begin(), entityList.end(), e.GetID()) != entityList.end())
+			if (e.GetComponentID() == Component<ParticleSystemComponent>::GetID())
+			{
+				NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+
+				InitParticleBuffer(entityList, registry);
+			}
+		return true;
+	}
+
+	bool ParticleSystem::OnEntityComponentAdded(const EntityAddComponentEvent& e)
+	{
+		const auto& entityList = GetSystemEntities();
+
+		if (std::find(entityList.begin(), entityList.end(), e.GetID()) != entityList.end())
+			if (e.GetComponentID() == Component<ParticleSystemComponent>::GetID())
+			{
+				NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+
+				InitParticleBuffer(entityList, registry);
+			}
+
+		return false;
 	}
 
 	void ParticleSystem::InitParticleBuffer(const std::vector<EntityID>& entityList, NRegistry* registry)
@@ -1202,5 +1531,42 @@ namespace NULLENGINE
 			uint32_t groups = (m_TotalMaxParticles + workGroupSize - 1) / workGroupSize;
 			m_InitComputeShader->Dispatch(groups, 1, 1); // this should call glDispatchCompute internally
 		}
+	}
+	void ParticleSystem::RemoveFromParticleBuffer(EntityID entityId, NRegistry* registry)
+	{
+		size_t totalNeeded = 0;
+
+		ParticleSystemComponent& psComp = registry->GetComponent<ParticleSystemComponent>(entityId);
+		for (ParticleEmitter& emitter : psComp.m_Emitters)
+		{
+			emitter.startIndex = totalNeeded;
+			totalNeeded += emitter.maxParticles;
+		}
+
+			m_TotalMaxParticles -= totalNeeded;
+
+			if (m_TotalMaxParticles < 0)
+				m_TotalMaxParticles = 0;
+
+
+			if (!m_ParticleSSBO.GetID())
+				m_ParticleSSBO.GenerateBuffer();
+
+
+			m_ParticleSSBO.AllocateParticleBuffer(m_TotalMaxParticles);
+
+			dynamic_cast<ParticleBatchRenderer<Mesh>*>(m_Batcher)->SetSSBO(m_ParticleSSBO);
+
+
+			// --- Dispatch clear shader here ---
+			m_InitComputeShader->Bind();
+			m_InitComputeShader->setInt("u_ParticleCount", static_cast<int>(m_TotalMaxParticles));
+			m_ParticleSSBO.Bind(0); // bind SSBO to binding point 0
+
+			const uint32_t workGroupSize = 256;
+			uint32_t groups = (m_TotalMaxParticles + workGroupSize - 1) / workGroupSize;
+			m_InitComputeShader->Dispatch(groups, 1, 1);
+
+		
 	}
 }

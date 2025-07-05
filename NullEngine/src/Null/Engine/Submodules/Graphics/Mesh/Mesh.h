@@ -69,6 +69,7 @@ namespace NULLENGINE
 		void SetupIndexBuffer(const std::vector<unsigned int>& indexData);
 		void SetupVertexAttributes();
 		void Render(const SpriteSource* spriteSource) const;
+		void Render() const;
 		void RenderTexture(unsigned int texture) const;
 		void RenderInstanced() const;
 
@@ -77,21 +78,21 @@ namespace NULLENGINE
 			m_Buffer.m_SSBO = ssbo;
 		}
 
-		template <typename T>
-		void UpdateUBO(const T* vertexData, size_t size)
-		{
-			if (m_Buffer.m_UBO.GetID() == 0)
-			{
-				m_Buffer.m_UBO.GenerateBuffer();
-			}
+		//template <typename T>
+		//void UpdateUBO(const T* vertexData, size_t size)
+		//{
+		//	if (m_Buffer.m_UBO.GetID() == 0)
+		//	{
+		//		m_Buffer.m_UBO.GenerateBuffer();
+		//	}
 
-			if (m_Buffer.m_UBO.Capacity() < size)
-			{
-				m_Buffer.m_UBO.Allocate(size);
-			}
+		//	if (m_Buffer.m_UBO.Capacity() < size)
+		//	{
+		//		m_Buffer.m_UBO.Allocate(size);
+		//	}
 
-			m_Buffer.m_UBO.UpdateData(vertexData.data(), size);
-		}
+		//	m_Buffer.m_UBO.UpdateData(vertexData.data(), size);
+		//}
 
 		void Read(const std::string& filename);
 
@@ -107,7 +108,7 @@ namespace NULLENGINE
 			VBO m_VBO;
 			EBO m_EBO;
 			SSBO m_SSBO;
-			UBO m_UBO;
+			//UBO m_UBO;
 		};
 	protected:
 		Buffer m_Buffer;

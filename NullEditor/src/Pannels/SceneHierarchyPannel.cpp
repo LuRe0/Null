@@ -44,6 +44,10 @@ namespace NULLENGINE
 				m_PannelData->m_Context->m_Name = "New Scene";
 			}
 		}
+
+		if (m_PannelData->m_Context->m_Name == "New Scene")
+			ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Warning: Must Change Scene Name to Save");
+
 		ImGui::PopItemWidth();
 
 

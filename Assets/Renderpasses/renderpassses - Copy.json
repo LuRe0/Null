@@ -1,0 +1,44 @@
+[
+  {
+    "name": "Scene",
+    "stage": "Main",
+    "shader": "instanceDefault",
+    "framebuffer": "Scene",
+    "clear": true,
+    "blendMode": "Alpha",
+    "cullMode": "Back",
+    "clearColor": [0, 0, 0, 1]
+  },
+  {
+    "name": "BlurH",
+    "stage": "BlurH",
+    "shader": "blurH",
+    "framebuffer": "BlurPing",
+    "clear": true,
+    "blendMode": "None"
+  },
+  {
+    "name": "BlurV",
+    "stage": "BlurV",
+    "shader": "blurV",
+    "framebuffer": "BlurPong",
+    "clear": true,
+    "blendMode": "None"
+  },
+  {
+    "name": "Composite",
+    "stage": "Final",
+    "shader": "composite",
+    "framebuffer": "CompositeOut",
+    "input": ["Scene", "BlurPong"],
+    "clear": true
+  },
+  {
+    "name": "Present",
+    "stage": "Present",
+    "shader": "framebuffer",
+    "framebuffer": null,
+    "input": ["CompositeOut"],
+    "clear": false
+  }
+]

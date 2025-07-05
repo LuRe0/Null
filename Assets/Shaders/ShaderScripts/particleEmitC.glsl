@@ -4,27 +4,27 @@ layout(local_size_x = 256) in;
 
 struct ParticleInstance {
     vec3 position;
-    float _pad1;
+    float rotation;
 
     vec3 velocity;
-    float _pad2;
+    float lifetime;
 
     vec3 acceleration;
-    float _pad3;
+    float age;
 
     vec2 scale;
-    float rotation;
-    float _pad6;
+    vec2 dimensions;
 
     vec4 color;
 
-    float lifetime;
-    float age;
     int alive;
-    float _pad4;
-
     int textureIndex;
-    float _pad5[3];
+    uint frameIndex;
+    int animDirection;
+
+    float animationTimer;
+    float startDelayTimer;
+    vec2 _pad0;
 };
 
 
@@ -38,11 +38,13 @@ uniform int   u_StartIndex;
 uniform int   u_MaxParticles;
 uniform int   u_EmitCount;
 uniform int   u_EmitterTextureIndex;
-
+uniform vec2  u_Dimensions;
+uniform int   u_EmitterInitialFrame;
 
 #include "ParticleModifierScripts/ParticleFlags.glsl"
 #include "ParticleModifierScripts/Utilities.glsl"
 #include "ParticleModifierScripts/ShapeModifier.glsl"
+#include "ParticleModifierScripts/AnimationModifier.glsl"
 #include "ParticleModifierScripts/AgeModifier.glsl"
 #include "ParticleModifierScripts/SizeModifier.glsl"
 #include "ParticleModifierScripts/PhysicsModifier.glsl"
@@ -62,9 +64,12 @@ void onInit(inout ParticleInstance p, uint index)
 
     p.alive = 1;
     p.textureIndex = u_EmitterTextureIndex;
+    p.dimensions = u_Dimensions;
+    p.frameIndex = u_EmitterInitialFrame;
     vec3 dir;
     
     Init_Shape(p, seed, dir);
+    Init_Animation(p, seed);
     Init_Color(p, seed);
     Init_Age(p, seed);
     Init_Rotation(p, seed);

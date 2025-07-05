@@ -180,7 +180,7 @@ namespace NULLENGINE
                 ElementData renderdata(transform, mesh, spriteSrc, glm::vec4(1.0f,1.0f,1.0f,1.0f) , "",
                     tileFrameIndex, id, 1.0f, 1.0f, RenderData::INSTANCED, -layer.id);
       
-                batcher->AddInstance(renderdata);
+                batcher->AddInstance(renderdata, nullptr);
             }
         }
     }

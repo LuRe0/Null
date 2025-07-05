@@ -6,38 +6,39 @@ namespace NULLENGINE
 {
     struct ParticleInstance
     {
-        glm::vec3 position = glm::vec3(0.0f);
-        float pad1;
+        glm::vec3 position = glm::vec3(0.0f);      // 12
+        float rotation = 0.0f;                     // 4  → now packed into the same vec4 block
 
-        glm::vec3 velocity = glm::vec3(0.0f);
-        float pad2;
+        glm::vec3 velocity = glm::vec3(0.0f);      // 12
+        float lifetime = 0.0f;                     // 4
 
-        glm::vec3 acceleration = glm::vec3(0.0f);
-        float pad3;
+        glm::vec3 acceleration = glm::vec3(0.0f);  // 12
+        float age = 0.0f;                          // 4
 
-        glm::vec2 scale = glm::vec2(0.0f);
-        float rotation = 0.0f;         
-        float pad6;                    
+        glm::vec2 scale = glm::vec2(1.0f);         // 8
+        glm::vec2 dimensions = glm::vec2(1.0f);    // 8
 
-        glm::vec4 color = glm::vec4(0.0f);
+        glm::vec4 color = glm::vec4(1.0f);         // 16
 
-        float lifetime = 0.0f;
-        float age = 0.0f;
-        int alive = 0;
-        float pad4;
+        int alive = 0;                             // 4
+        int textureIndex = -1;                     // 4
+        uint32_t frameIndex = 0;                   // 4
+        int animDirection;
 
-        int textureIndex = -1;
-        float pad5[3];
+        float animationTimer;
+        float startDelayTimer;
+        glm::vec2 _pad0;
     };
 
 
 
-    enum class SpawnShape { LINE, CIRCLE, DONUT, RECT, POINT, SHAPES };
+
+    enum class SpawnShape { LINE, CIRCLE, DONUT, RECT, POINT, TEXTURE, SHAPES };
 
     struct lineEmit
     {
-        glm::vec3 point1;
-        glm::vec3 point2;
+        glm::vec3 point1 = glm::vec3(0.0f);
+        glm::vec3 point2 = glm::vec3(0.0f);
     };
 
     struct circleEmit
@@ -58,11 +59,16 @@ namespace NULLENGINE
 
     struct rectEmit
     {
-        float x1 = -50.0f;
-        float x2 = 50.0f;
+        glm::vec2 center = glm::vec2(0.0f);
+        glm::vec2 extent = glm::vec2(50.0f, 50.0f); // half width/height
+    };
 
-        float y1 = -50.0f;
-        float y2 = 50.0f;
+    struct textureEmit
+    {
+        SpriteSource* spriteSource = nullptr;
+        glm::vec2 worldSize = glm::vec2(100.0f);
+        float alphaThreshold = 0.5f;
+        float invertMask = 0.0f;
     };
 
     //Particle flags need to match glsl ones
@@ -82,7 +88,8 @@ namespace NULLENGINE
 
         PARTICLE_FLAG_CUSTOM_LOGIC = 1 << 6,
         PARTICLE_FLAG_COLLISION_ENABLED = 1 << 7,
-        PARTICLE_FLAG_ALPHA_OVER_LIFETIME = 1 << 8
+        PARTICLE_FLAG_ALPHA_OVER_LIFETIME = 1 << 8,
+        PARTICLE_FLAG_ANIMATION = 1 << 9
     };
 
     struct ParticleEmitter
@@ -94,7 +101,7 @@ namespace NULLENGINE
         std::string name;
         uint32_t emitterID = 0;
 
-        SpriteSource* spriteSource;
+        SpriteSource* spriteSource = nullptr;
 
         // Particle Pool
         unsigned int maxParticles = 1000;   
@@ -174,6 +181,15 @@ namespace NULLENGINE
         float endFade = 1.0f;
         EasingCurve fadeEaseCurve;
 
+        //Animation
+        float animDuration = 1.0f;
+        float startOffset = 0.0f; 
+        int animFrameCount = 9;
+        bool loop = true;
+        bool playOnce = false;
+        bool reverse = false;
+        bool pingPong = false;
+
         // Spawn Shape
         SpawnShape shape = SpawnShape::POINT;
         //emitter shape
@@ -182,9 +198,10 @@ namespace NULLENGINE
         donutEmit donut;
         pointEmit point;
         rectEmit rect;
+        textureEmit texture;
 
         bool followParent;
-
+        bool openInWindow;
         // Burst
         float burstCount = 0.0f;
 
@@ -194,7 +211,7 @@ namespace NULLENGINE
 
 
         ParticleEmitter(const std::string& n, size_t start, size_t count, uint32_t id = 0)
-            : name(n), startIndex(start), maxParticles(count), emitterID(id)
+            : name(n), startIndex(start), maxParticles(count), emitterID(id), spriteSource(nullptr)
         {
         }
     };

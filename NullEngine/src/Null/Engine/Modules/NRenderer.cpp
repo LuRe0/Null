@@ -52,17 +52,43 @@ namespace NULLENGINE
 	}
 	void NRenderer::Load()
 	{
+		std::string filePath = std::string("../Assets/Renderpasses/") + std::string("renderpassses") + std::string(".json");
 
+		std::ifstream file(filePath);
+		if (!file.is_open())
+		{
+			NLE_CORE_ERROR("Failed to load renderpasses.json");
+			return;
+		}
+
+		nlohmann::json jsonPasses;
+		file >> jsonPasses;
+
+		for (const auto& j : jsonPasses)
+		{
+			RenderPass pass;
+
+			JsonReader reader(j);
+			pass.Load(reader);
+
+
+			m_RenderPasses.push_back(pass);
+		}
+
+
+		NLE_CORE_INFO("Loaded {} render passes", m_RenderPasses.size());
 	}
 
 	void NRenderer::BeginRender()
 	{
-		m_Framebuffers.at("Scene").Bind();
+		NFramebufferManager* fbMan = NEngine::Instance().Get<NFramebufferManager>();
+		Framebuffer* fb = fbMan->Get("Scene");
+		fb->Bind();
 
 		ClearRender();
 
 		int nean = -1;
-		m_Framebuffers.at("Scene").ClearColorAttachment(1, &nean);
+		fb->ClearColorAttachment(1, &nean);
 
 		for (auto& batch : m_Batchers)
 			batch.second.get()->BeginBatch();
@@ -71,10 +97,10 @@ namespace NULLENGINE
 
 	void NRenderer::RenderScene(const ElementData* renderData)
 	{
-		//SetBlendMode(BlendMode::DEFAULT);
-		renderData->m_Type == RenderData::ELEMENT ?
-			RenderElement(*(renderData)) :
-			RenderInstances(*(renderData));
+		////SetBlendMode(BlendMode::DEFAULT);
+		//renderData->m_Type == RenderData::ELEMENT ?
+		//	RenderElement(*(renderData)) :
+		//	RenderInstances(*(renderData));
 	}
 
 	void NRenderer::RenderElement(const ElementData& render)
@@ -125,70 +151,196 @@ namespace NULLENGINE
 		shader->Unbind();
 	}
 
-	void NRenderer::RenderInstances(const ElementData& render)
+	void NRenderer::RenderInstances(const ElementData* render, Shader* shader)
 	{
-		if (!render.mesh)
+		if (!render->mesh)
 			return;
 
-		m_Batchers[render.mesh->GetName()].get()->AddInstance(render);
+		NShaderManager* shaderMan = NEngine::Instance().Get<NShaderManager>();
+
+
+		m_Batchers[render->mesh->GetName()].get()->AddInstance(*render, shader);
 	}
 
 	void NRenderer::RenderParticles(const ParticleData* renderData)
 	{
-		static_cast<ParticleBatchRenderer<Mesh>*>(m_Batchers["Particle"].get())->AddInstance(*renderData);
+		static_cast<ParticleBatchRenderer<Mesh>*>(m_Batchers["Particle"].get())->AddInstance(*renderData, nullptr);
 	}
 
 	void NRenderer::EndRender()
 	{
 		//m_RenderQueue.clear();
 
-		Flush();
+		//Flush(nullptr);
 
-		m_Framebuffers.at("Scene").Unbind();
+		NFramebufferManager* fbMan = NEngine::Instance().Get<NFramebufferManager>();
+		Framebuffer* fb = fbMan->Get("Scene");
+		
+		fb->Unbind();
 
 
 		RenderToScreen();
 	}
 
 
-	void NRenderer::Flush()
+	void NRenderer::Flush(const RenderPass& pass)
 	{
-		for (auto& batch : m_Batchers)
-			batch.second.get()->Flush();
+		for (const auto& batchName : pass.batchersToFlush)
+		{
+			auto it = m_Batchers.find(batchName);
+			if (it != m_Batchers.end())
+			{
+				it->second->BindTextureBuffer(pass.shader);
+				it->second->Flush(pass.shader);
+			}
+		}
+	}
+
+	void NRenderer::SetRenderState(const RenderPass& pass)
+	{
+		if (pass.depthTest)
+			glEnable(GL_DEPTH_TEST);
+		else
+			glDisable(GL_DEPTH_TEST);
+
+		// Depth write mask
+		glDepthMask(pass.depthWrite ? GL_TRUE : GL_FALSE);
+
+		// Depth function
+		glDepthFunc(pass.depthFunc);
+
+		// Blend mode
+		switch (pass.blendMode)
+		{
+		case BlendMode::None:
+			glDisable(GL_BLEND);
+			break;
+
+		case BlendMode::Alpha:
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			break;
+
+		case BlendMode::Additive:
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+			break;
+		}
+
+		// Cull mode
+		switch (pass.cullMode)
+		{
+		case CullMode::None:
+			glDisable(GL_CULL_FACE);
+			break;
+
+		case CullMode::Back:
+			glEnable(GL_CULL_FACE);
+			glCullFace(GL_BACK);
+			break;
+
+		case CullMode::Front:
+			glEnable(GL_CULL_FACE);
+			glCullFace(GL_FRONT);
+			break;
+		}
+	}
+
+	void NRenderer::RenderCompositePass(const RenderPass& pass)
+	{
+		NShaderManager* shaderMan = NEngine::Instance().Get<NShaderManager>();
+		NMeshManager* meshManager = NEngine::Instance().Get<NMeshManager>();
+		NFramebufferManager* fbMan = NEngine::Instance().Get<NFramebufferManager>();
+
+		Shader* shader = pass.shader;
+		Mesh* mesh = meshManager->Get("Quad");
+
+		shader->Bind();
+
+		Camera* camera = NEngine::Instance().Get<NCameraManager>()->GetCamera<Camera2D>("Default2D");
+		glm::mat4 projection = camera->GetProjectionMatrix();
+		glm::vec2 dims = pass.framebuffer->GetSize();
+
+		glm::mat4 translate = glm::mat4(1.0f);
+		glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(dims.x, -dims.y, 0.0f));
+		shader->setFullTransform(translate * scale, glm::mat4(1.0f), projection);
+
+		// Bind input textures
+		for (int i = 0; i < pass.inputs.size(); ++i)
+		{
+			Framebuffer* fb = fbMan->Get(pass.inputs[i]);
+			if (!fb) {
+				NLE_CORE_ERROR("Missing framebuffer input: {}", pass.inputs[i]);
+				continue;
+			}
+			uint32_t tex = fb->GetColorAttachment(0);
+			if (tex == 0) {
+				NLE_CORE_ERROR("Framebuffer has no color attachment: {}", pass.inputs[i]);
+				continue;
+			}
+			glActiveTexture(GL_TEXTURE0 + i);
+			glBindTexture(GL_TEXTURE_2D, tex);
+			pass.shader->setInt("inputs[" + std::to_string(i) + "]", i);
+		}
+
+		// Set blur uniforms if needed
+		if (pass.name == "BlurH") {
+			float texelWidth = 1.0f / dims.x;
+			shader->setFloat("texelWidth", texelWidth);
+		}
+		else if (pass.name == "BlurV") {
+			float texelHeight = 1.0f / dims.y;
+			shader->setFloat("texelHeight", texelHeight);
+		}
+		else if (pass.name == "BrightPass") {
+			float threshold = 0.1f; // tweak or pass from your postprocess config
+			shader->setFloat("threshold", threshold);
+		}
+
+		mesh->Render();
+
+		// Unbind textures
+		for (size_t i = 0; i < pass.inputs.size(); ++i)
+		{
+			glActiveTexture(GL_TEXTURE0 + static_cast<GLuint>(i));
+			glBindTexture(GL_TEXTURE_2D, 0);
+		}
+
+		shader->Unbind();
 	}
 
 	void NRenderer::RenderToScreen()
 	{
-		if (!m_Parent->GetIsEditorEnabled())
-		{
-			ClearRender();
+		//if (!m_Parent->GetIsEditorEnabled())
+		//{
+		//	ClearRender();
 
-			NShaderManager* shaderMan = NEngine::Instance().Get<NShaderManager>();
-			NMeshManager* meshManager = NEngine::Instance().Get<NMeshManager>();
-			NCameraManager* cameraManager = NEngine::Instance().Get<NCameraManager>();
+		//	NShaderManager* shaderMan = NEngine::Instance().Get<NShaderManager>();
+		//	NMeshManager* meshManager = NEngine::Instance().Get<NMeshManager>();
+		//	NCameraManager* cameraManager = NEngine::Instance().Get<NCameraManager>();
 
-			Shader* shader = shaderMan->Get("framebuffer");
-			Mesh* mesh = meshManager->Get("Quad");
+		//	Shader* shader = shaderMan->Get("framebuffer");
+		//	Mesh* mesh = meshManager->Get("Quad");
 
-			shader->Bind();
+		//	shader->Bind();
 
-			Camera* camera = cameraManager->GetCamera<Camera2D>("Default2D");
+		//	Camera* camera = cameraManager->GetCamera<Camera2D>("Default2D");
 
 
-			glm::mat4 projection = camera->GetProjectionMatrix();
+		//	glm::mat4 projection = camera->GetProjectionMatrix();
 
-			const auto translate = glm::mat4(1.0f);
-			glm::mat4 scale = glm::scale(glm::mat4(1), glm::vec3(m_WinWidth, -m_WinHeight, 1));;
+		//	const auto translate = glm::mat4(1.0f);
+		//	glm::mat4 scale = glm::scale(glm::mat4(1), glm::vec3(m_WinWidth, -m_WinHeight, 1));;
 
-			shader->setFullTransform(translate * scale, glm::mat4(1.0f), projection);
+		//	shader->setFullTransform(translate * scale, glm::mat4(1.0f), projection);
 
-			shader->setInt("screenTexture", 0);
+		//	shader->setInt("screenTexture", 0);
 
-			uint32_t texture = m_Framebuffers.at("Scene").GetColorAttachment();
-			mesh->RenderTexture(texture);
+		//	uint32_t texture = m_Framebuffers.at("Scene").GetColorAttachment();
+		//	mesh->RenderTexture(texture);
 
-			shader->Unbind();
-		}
+		//	shader->Unbind();
+		//}
 	}
 
 	void NRenderer::Init()
@@ -201,11 +353,11 @@ namespace NULLENGINE
 		m_WinHeight = static_cast<float>(window->Height());
 
 
-		glEnable(GL_BLEND);
-		glBlendEquation(GL_FUNC_ADD);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glEnable(GL_DEPTH_TEST);
-		glDepthFunc(GL_LESS);
+		//glEnable(GL_BLEND);
+		//glBlendEquation(GL_FUNC_ADD);
+		//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		//glEnable(GL_DEPTH_TEST);
+		//glDepthFunc(GL_LESS);
 		//glEnable(GL_CULL_FACE);
 		//glCullFace(GL_FRONT); // Or GL_FRONT, depending on your winding order
 
@@ -215,16 +367,28 @@ namespace NULLENGINE
 		m_Batchers.emplace("Circle", std::make_unique<CircleBatchRenderer<Instance, CircleInstanceMesh>>(10000));
 		m_Batchers.emplace("Quad", std::make_unique<QuadBatchRenderer<Instance, QuadInstanceMesh>>(10000));
 
-		m_Framebuffers.insert(std::make_pair("Scene", Framebuffer(static_cast<unsigned int>(m_WinWidth), static_cast<unsigned int>(m_WinHeight))));
 
-		Framebuffer& buffer = m_Framebuffers.at("Scene");
+		m_RenderCommands.resize(static_cast<int>(RenderCommandTypes::QUEUES));
 
-		buffer.Init();
+		m_RenderCommands[static_cast<int>(RenderCommandTypes::Opaque)] = std::make_unique<RenderQueue<ElementData, ElementDepthCompare>>();
+		m_RenderCommands[static_cast<int>(RenderCommandTypes::Transparent)] = std::make_unique<RenderQueue<ElementData, ElementDepthCompare>>();
+		m_RenderCommands[static_cast<int>(RenderCommandTypes::Emissive)] = std::make_unique<RenderQueue<ElementData, ElementDepthCompare>>();
+		m_RenderCommands[static_cast<int>(RenderCommandTypes::Particles)] = std::make_unique<RenderQueue<ParticleData, ParticleDepthCompare>>();
+		m_RenderCommands[static_cast<int>(RenderCommandTypes::UI)] = std::make_unique<RenderQueue<ElementData, ElementDepthCompare>>();
+		m_RenderCommands[static_cast<int>(RenderCommandTypes::Debug)] = std::make_unique<RenderQueue<ElementData, ElementDepthCompare>>();
 
-		buffer.AddColorAttachment({ Framebuffer::Format(GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE), Framebuffer::Format(GL_R32I, GL_RED_INTEGER, GL_INT) });
 
-		for (auto& batch : m_Batchers)
-			batch.second.get()->BindTextureBuffer();
+		//m_Framebuffers.insert(std::make_pair("Scene", Framebuffer(static_cast<unsigned int>(m_WinWidth), static_cast<unsigned int>(m_WinHeight))));
+
+		//Framebuffer& buffer = m_Framebuffers.at("Scene");
+
+		//buffer.Init();
+
+		//buffer.AddColorAttachment({ Framebuffer::Format(GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE), Framebuffer::Format(GL_R32I, GL_RED_INTEGER, GL_INT) });
+
+
+		//for (auto& batch : m_Batchers)
+		//	batch.second.get()->BindTextureBuffer();
 	}
 
 	void NRenderer::Update(float dt)
@@ -240,54 +404,106 @@ namespace NULLENGINE
 
 	void NRenderer::Render()
 	{
-		BeginRender();
-
-		while (!m_RenderQueue.empty()) 
+		for (const auto& pass : m_RenderPasses)
 		{
-			// Access the element with the highest priority (greatest depth)
-			auto& renderData = m_RenderQueue.top();
+			// Bind framebuffer, clear etc
+			if (pass.framebuffer)
+			{
+				pass.framebuffer->Bind();
 
-			// Process/render the object
-			RenderScene(renderData.get());
+				//int nean = -1;
+				//pass.framebuffer->ClearColorAttachment(1, &nean);
 
-			// Remove the element from the queue
-			m_RenderQueue.pop();
+				if (pass.clear) 				
+					ClearRender_Params(pass.clearColor.r, pass.clearColor.g, pass.clearColor.b, pass.clearColor.a);
+
+			}
+			else
+			{
+				glBindFramebuffer(GL_FRAMEBUFFER, 0);
+				ClearRender();
+			}
+
+
+			SetRenderState(pass);
+			if (pass.stage != RenderStage::Final)
+			{
+				for (auto& batch : m_Batchers)
+					batch.second->BeginBatch();
+			}
+
+			switch (pass.stage)
+			{
+			case RenderStage::Opaque:
+				DrawQueue(RenderCommandTypes::Opaque, pass);
+				Flush(pass);
+				//return;
+				break;
+
+			case RenderStage::Transparent:
+				DrawQueue(RenderCommandTypes::Transparent, pass);
+				Flush(pass);
+
+				break;
+
+			case RenderStage::Emissive:
+				DrawQueue(RenderCommandTypes::Emissive, pass);
+				Flush(pass);
+
+
+				break;
+
+			case RenderStage::UI:
+				DrawQueue(RenderCommandTypes::UI, pass);
+				Flush(pass);
+
+				break;
+
+			case RenderStage::Debug:
+				DrawQueue(RenderCommandTypes::Debug, pass);
+				Flush(pass);
+
+				break;
+			case RenderStage::PostProcess:
+			case RenderStage::Final: 
+				RenderCompositePass(pass);
+				break;
+
+			default:
+				break;
+			}
+
+
+			if (pass.framebuffer)
+				pass.framebuffer->Unbind();
+			else
+				glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		}
-
-
-		while (!m_DebugRenderQueue.empty())
-		{
-			// Access the element with the highest priority (greatest depth)
-			auto& renderData = m_DebugRenderQueue.top();
-
-			// Process/render the object
-			RenderScene(renderData.get());
-
-			// Remove the element from the queue
-			m_DebugRenderQueue.pop();
-		}
-
-
-
-		while (!m_ParticleRenderQueue.empty())
-		{
-			// Access the element with the highest priority (greatest depth)
-			auto& renderData = m_ParticleRenderQueue.top();
-
-			// Process/render the object
-			RenderParticles(renderData.get());
-
-			// Remove the element from the queue
-			m_ParticleRenderQueue.pop();
-		}
-
-		//for (auto& renderData : m_RenderQueue)
-		//{
-		//	RenderScene(renderData.get());
-		//}
-
-		EndRender();
 	}
+
+
+	void NRenderer::DrawQueue(RenderCommandTypes type, const RenderPass& pass)
+	{
+		auto& queue = m_RenderCommands[static_cast<int>(type)];
+		if (!queue || queue->Empty())
+			return;
+
+		while (!queue->Empty())
+		{
+			auto renderData = queue->Pop();
+
+			// Render depending on type
+			if (type == RenderCommandTypes::Particles)
+			{
+				RenderParticles(static_cast<ParticleData*>(renderData.get()));
+			}
+			else
+			{
+				RenderInstances(static_cast<ElementData*>(renderData.get()), pass.shader);
+			}
+		}
+	}
+
 
 	void NRenderer::RenderImGui()
 	{
@@ -344,6 +560,33 @@ namespace NULLENGINE
 		m_ParticleRenderQueue.push(std::move(render));
 	}
 
+	void NRenderer::AddEmissiveRenderCall(std::unique_ptr<ElementData>&& render)
+	{
+		m_EmissiveRenderQueue.push(std::move(render));
+	}
+
+
+	void NRenderer::AddRenderCall(RenderCommandTypes type, std::unique_ptr<RenderData>&& data)
+	{
+		auto& queue = m_RenderCommands[static_cast<int>(type)];
+		if (queue)
+		{
+			// We need to cast to the concrete RenderQueue type for Push
+			if (type == RenderCommandTypes::Particles)
+			{
+				auto particleQueue = dynamic_cast<RenderQueue<ParticleData, ParticleDepthCompare>*>(queue.get());
+				if (particleQueue)
+					particleQueue->Push(std::unique_ptr<ParticleData>(static_cast<ParticleData*>(data.release())));
+			}
+			else
+			{
+				auto elementQueue = dynamic_cast<RenderQueue<ElementData, ElementDepthCompare>*>(queue.get());
+				if (elementQueue)
+					elementQueue->Push(std::unique_ptr<ElementData>(static_cast<ElementData*>(data.release())));
+			}
+		}
+	}
+
 	//void NRenderer::AddElementRenderCall(const ElementData& render)
 	//{
 	//	m_RenderQueue.push_back(render);
@@ -371,6 +614,13 @@ namespace NULLENGINE
 	void NRenderer::ClearRender()
 	{
 		glClearColor(m_ClearColor[0], m_ClearColor[1], m_ClearColor[2], m_ClearColor[3]);
+
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
+
+	void NRenderer::ClearRender_Params(float r, float g, float b, float a)
+	{
+		glClearColor(r, g, b, a);
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}

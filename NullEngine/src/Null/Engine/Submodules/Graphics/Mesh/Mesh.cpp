@@ -238,6 +238,19 @@ namespace NULLENGINE
 
 	}
 
+	void Mesh::Render() const
+	{
+		m_Buffer.m_VAO.Bind();
+		m_Buffer.m_VBO.Bind();
+		m_Buffer.m_EBO.Bind();
+
+		glDrawElements(GL_TRIANGLES, m_Buffer.m_VAO.ElementCount(), GL_UNSIGNED_INT, 0);
+
+		m_Buffer.m_EBO.Unbind();
+		m_Buffer.m_VBO.Unbind();
+		m_Buffer.m_VAO.Unbind();
+	}
+
 	void Mesh::RenderTexture(unsigned int texture) const
 	{
 
@@ -268,7 +281,7 @@ namespace NULLENGINE
 
 		m_Buffer.m_SSBO.Bind(0);
 
-		m_Buffer.m_UBO.Bind(1);
+		//m_Buffer.m_UBO.Bind(1);
 
 		// Draw instanced mesh
 		glDrawElementsInstanced(m_Buffer.m_VAO.DrawType(), m_Buffer.m_VAO.ElementCount(), GL_UNSIGNED_INT, 0, m_Buffer.m_SSBO.Capacity());

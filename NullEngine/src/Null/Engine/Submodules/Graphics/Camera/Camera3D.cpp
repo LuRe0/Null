@@ -192,6 +192,9 @@ namespace NULLENGINE
 		ImGui::SliderFloat("Field of View (FOV)", &m_FOV, 1.0f, 179.0f);
 		ImGui::SliderFloat("Near Clip", &m_NearClip, 0.0f, 10.0f);
 		ImGui::SliderFloat("Far Clip", &m_FarClip, 10.0f, 10000.0f);
+
+
+		Camera::View();
 	}
 
 	void Camera3D::Write(JSON& json)

@@ -18,7 +18,9 @@
         {
             "type": "NShaderManager"
         },
-
+        {
+            "type": "NFramebufferManager"
+        },
         {
             "type": "NComputeShaderManager"
         },

@@ -62,6 +62,7 @@ namespace NULLENGINE
 		static JSON WriteSpriteComponent(BaseComponent* component);
 
 		void ViewSpriteComponent(Entity& entityID);
+		void DrawDragDrop(const char* label, SpriteComponent& sprite, SpriteSource*& source, NTextureManager* texMgr, NSpriteSourceManager* srcMgr);
 	};
 
 }

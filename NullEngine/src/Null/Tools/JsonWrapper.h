@@ -56,6 +56,16 @@ namespace NULLENGINE
             return JsonReader(emptyObject);
         }
 
+        nlohmann::json GetArray(const std::string& key) const
+        {
+            if (HasData(key) && data[key].is_array())
+            {
+                return data[key];
+            }
+            return nlohmann::json::array(); // empty array fallback
+        }
+
+
         bool HasData(const std::string& key) const;
 
         bool Empty() const;

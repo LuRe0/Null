@@ -52,14 +52,14 @@ namespace NULLENGINE
 		}
 
 		void BeginBatch();
-		void NextBatch();
-		void Flush();
-		void AddInstance(const ElementData& render);
-		void AddInstance(const ParticleData& render);
+		void NextBatch(Shader* shader);
+		void Flush(Shader* shader);
+		void AddInstance(const ElementData& render, Shader* shader);
+		void AddInstance(const ParticleData& render, Shader* shader);
 		void UploadTextureIndexBuffer();
 		void ImguiView();
 		void ResetStats();
-		void BindTextureBuffer();
+		void BindTextureBuffer(Shader* shader = nullptr);
 
 		void SetSSBO(SSBO& inSSBO);
 		void SetParticleCount(size_t count);
@@ -83,9 +83,9 @@ namespace NULLENGINE
 	}
 
 	template <typename TMesh>
-	inline void ParticleBatchRenderer<TMesh>::NextBatch()
+	inline void ParticleBatchRenderer<TMesh>::NextBatch(Shader* shader)
 	{
-		Flush();
+		Flush(shader);
 		BeginBatch();
 	}
 
@@ -96,7 +96,7 @@ namespace NULLENGINE
 	}
 
 	template <typename TMesh>
-	void ParticleBatchRenderer<TMesh>::Flush()
+	void ParticleBatchRenderer<TMesh>::Flush(Shader* inShader)
 	{
 		auto* shaderMan = NEngine::Instance().Get<NShaderManager>();
 		auto* cameraManager = NEngine::Instance().Get<NCameraManager>();
@@ -140,20 +140,20 @@ namespace NULLENGINE
 	}
 
 	template <typename TMesh>
-	inline void ParticleBatchRenderer<TMesh>::AddInstance(const ElementData& render)
+	inline void ParticleBatchRenderer<TMesh>::AddInstance(const ElementData& render, Shader* shader)
 	{
 
 	}
 
 	template<typename TMesh>
-	inline void ParticleBatchRenderer<TMesh>::AddInstance(const ParticleData& render)
+	inline void ParticleBatchRenderer<TMesh>::AddInstance(const ParticleData& render, Shader* shader)
 	{
 		int textureIndex = -1;
 		if (render.spriteSrc)
 		{
 
 			if (m_TextureSlotIndex >= m_MaxTextureSlots-1)
-				NextBatch();
+				NextBatch(shader);
 
 			auto* tex = render.spriteSrc->GetTexture();
 			uint32_t compactID = NEngine::Instance()
@@ -222,7 +222,7 @@ namespace NULLENGINE
 	}
 
 	template <typename TMesh>
-	inline void ParticleBatchRenderer<TMesh>::BindTextureBuffer()
+	inline void ParticleBatchRenderer<TMesh>::BindTextureBuffer(Shader* inShader)
 	{
 		std::vector<int32_t> samplers(BatchRenderer::m_MaxTextureSlots-1);
 

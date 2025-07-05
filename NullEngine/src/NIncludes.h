@@ -20,6 +20,7 @@
 #include "Null/Engine/Modules/NShaderManager.h"
 #include "Null/Engine/Modules/NComputeShaderManager.h"
 #include "Null/Engine/Modules/NSpriteSourceManager.h"
+#include "Null/Engine/Modules/NFramebufferManager.h"
 #include "Null/Engine/Modules/NMeshManager.h"
 #include "Null/Engine/Modules/NRenderer.h"
 #include "Null/Engine/Modules/NCameraManager.h"

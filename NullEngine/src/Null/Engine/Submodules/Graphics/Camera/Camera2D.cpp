@@ -93,7 +93,8 @@ namespace NULLENGINE
 			ImGui::SliderFloat("Rotation", &m_Rotation, -180.0f, 180.0f) ||
 			ImGui::SliderFloat("Zoom", &m_Zoom, 0.25f, 5.0f))
 			m_IsDirty = true;
-	
+		
+		Camera::View();
 	}
 
 	void Camera2D::Write(JSON& json)

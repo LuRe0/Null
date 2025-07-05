@@ -49,6 +49,14 @@ namespace NULLENGINE
 
 	}
 
+	Framebuffer::Framebuffer(const std::string& inName, unsigned int width, unsigned int height)
+		: m_Name(inName)
+		, m_WinWidth(width)
+		, m_WinHeight(height)
+	{
+
+	}
+
 	// Destructor
 	Framebuffer::~Framebuffer()
 	{
@@ -138,11 +146,15 @@ namespace NULLENGINE
 		}
 		else
 		{
-			glDrawBuffer(GL_NONE);
+			glDrawBuffer(GL_COLOR_ATTACHMENT0);
 		}
 	
 
-
+		GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+		if (status != GL_FRAMEBUFFER_COMPLETE)
+		{
+			NLE_CORE_WARN("Framebuffer not complete! Status: 0x{:X}", status);
+		}
 
 		Unbind();
 	}
@@ -208,6 +220,11 @@ namespace NULLENGINE
 		const Format& format = m_Formats[index];
 
 		glClearTexImage(m_ColorAttachments[index], 0, format.m_Format, format.m_Type, value);
+	}
+
+	const glm::vec2 Framebuffer::GetSize()
+	{
+		return glm::vec2(m_WinWidth, m_WinHeight);
 	}
 
 	void Framebuffer::CreateFramebuffer(unsigned int width, unsigned int height)

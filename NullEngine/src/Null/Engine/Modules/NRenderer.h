@@ -18,6 +18,7 @@
 #include "Null/Engine/Submodules/Graphics/Buffers/Framebuffer.h"
 #include <Null/Engine/Submodules/Graphics/Buffers/RenderData.h>
 #include <Null/Engine/Submodules/Graphics/Buffers/BatchRenderer/BatchRenderer.h>
+#include <Null/Engine/Submodules/Graphics/Buffers/RenderPass.h>
 #include <setjmp.h>
 
 
@@ -35,9 +36,9 @@
 // Private structures													        //
 //******************************************************************************//
 
-
 namespace NULLENGINE
 {
+	class Shader;
 
 	//class NLE_API Scene;
 
@@ -63,6 +64,8 @@ namespace NULLENGINE
 		//! render function
 		void Render() override;
 
+		void DrawQueue(RenderCommandTypes type, const RenderPass& pass);
+
 		void RenderImGui() override;
 
 
@@ -79,6 +82,10 @@ namespace NULLENGINE
 		void AddDebugRenderCall(std::unique_ptr<ElementData>&& render);
 		void AddParticleRenderCall(std::unique_ptr<ParticleData>&& render);
 
+		void AddEmissiveRenderCall(std::unique_ptr<ElementData>&& render);
+
+		void AddRenderCall(RenderCommandTypes type, std::unique_ptr<RenderData>&& data);
+
 		bool HasRenderImGui() const override { return true; }
 
 
@@ -93,6 +100,7 @@ namespace NULLENGINE
 		TBatcher* AddBatcher(const std::string& name);
 
 		void ClearRender();
+		void ClearRender_Params(float r = 0.10f, float g = 0.10f, float b = 0.10f, float a = 1.0f);
 		static void ClearRenderS();
 	private:
 
@@ -114,6 +122,12 @@ namespace NULLENGINE
 			std::unique_ptr<ElementData>,
 			std::vector<std::unique_ptr<ElementData>>,
 			RenderDataComparator
+		> m_EmissiveRenderQueue;
+
+		std::priority_queue<
+			std::unique_ptr<ElementData>,
+			std::vector<std::unique_ptr<ElementData>>,
+			RenderDataComparator
 		> m_DebugRenderQueue;
 
 		std::priority_queue<
@@ -121,6 +135,11 @@ namespace NULLENGINE
 			std::vector<std::unique_ptr<ParticleData>>,
 			ParticleDepthCompare
 		> m_ParticleRenderQueue;
+
+		std::vector<std::unique_ptr<IRenderQueue>> m_RenderCommands;
+
+		std::vector<RenderPass> m_RenderPasses;
+
 
 
 		//std::vector<std::unique_ptr<ElementData>> m_RenderQueue;
@@ -135,11 +154,15 @@ namespace NULLENGINE
 		void BeginRender();
 		void RenderScene(const ElementData* renderData);
 		void RenderElement(const ElementData& renderData);
-		void RenderInstances(const ElementData& renderData);
+		void RenderInstances(const ElementData* renderData, Shader* shader);
 		void RenderParticles(const ParticleData* renderData);
 
 		void EndRender();
-		void Flush();
+		void Flush(const RenderPass& pass);
+		void SetRenderState(const RenderPass& pass);
+		void SetBlendMode(const RenderPass& pass);
+
+		void RenderCompositePass(const RenderPass& pass);
 
 		void RenderToScreen();
 

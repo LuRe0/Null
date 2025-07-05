@@ -53,6 +53,7 @@ namespace NULLENGINE
 			 * @param height Height of the framebuffer.
 			 */
 		Framebuffer(unsigned int width, unsigned int height);
+		Framebuffer(const std::string& inName, unsigned int width, unsigned int height);
 		Framebuffer() = default;
 
 		/**
@@ -152,6 +153,11 @@ namespace NULLENGINE
 		 */
 		void ClearColorAttachment(unsigned int index, const void* value) const;
 
+
+		const glm::vec2 GetSize();
+
+		const std::string GetName() { return m_Name; }
+
 	private:
 		void CreateFramebuffer(unsigned int width, unsigned int height);
 		void DeleteFramebuffer();
@@ -167,6 +173,8 @@ namespace NULLENGINE
 
 		float m_WinWidth;
 		float m_WinHeight;
+
+		std::string m_Name;
 	};
 
 

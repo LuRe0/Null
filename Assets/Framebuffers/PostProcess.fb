@@ -1,0 +1,9 @@
+{
+  "attachments": [
+    {
+      "internalFormat": "GL_RGBA8",
+      "format": "GL_RGBA",
+      "type": "GL_UNSIGNED_BYTE"
+    }
+  ]
+}

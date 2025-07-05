@@ -378,6 +378,16 @@
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Texture1D.h">
       <Filter>Null\Engine\Submodules\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Engine\Modules\NFramebufferManager.h">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Tools\GLHelper.h">
+      <Filter>Null\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\RenderPass.h">
+      <Filter>Null\Engine\Submodules\Graphics\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\PostProcess\PostProcess.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Null\Application.cpp">
@@ -615,5 +625,15 @@
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Texture1D.cpp">
       <Filter>Null\Engine\Submodules\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="src\Null\Engine\Modules\NFramebufferManager.cpp">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Tools\GLHelper.cpp">
+      <Filter>Null\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Buffers\RenderPass.cpp">
+      <Filter>Null\Engine\Submodules\Graphics\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\PostProcess\PostProcess.cpp" />
   </ItemGroup>
 </Project>

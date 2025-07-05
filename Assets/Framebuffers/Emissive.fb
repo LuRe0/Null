@@ -1,0 +1,14 @@
+{
+  "attachments": [
+    {
+      "internalFormat": "GL_RGBA16F",
+      "format": "GL_RGBA",
+      "type": "GL_FLOAT"
+    },
+    {
+      "internalFormat": "GL_R32I",
+      "format": "GL_RED_INTEGER",
+      "type": "GL_INT"
+    }
+  ]
+}

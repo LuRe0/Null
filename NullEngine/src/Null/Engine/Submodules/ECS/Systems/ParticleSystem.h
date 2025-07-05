@@ -86,13 +86,20 @@ namespace NULLENGINE
 
 		void DrawFadeConfig(ParticleEmitter& emitter, size_t i);
 
+		void DrawAnimationConfig(ParticleEmitter& emitter, size_t i);
+
 		void DrawShapeConfig(ParticleEmitter& emitter, size_t i);
 
 		void ViewParticleSystemComponent(Entity& entityID);
 
 		bool OnEntityCreated(const EntityCreatedEvent& e);
+		bool OnSceneSwitched(const SceneSwitchEvent& e);
+		bool OnEntityDestroyed(const EntityDestroyedEvent& e);
+		bool OnEntityComponentRemoved(const EntityRemoveComponentEvent& e);
+		bool OnEntityComponentAdded(const EntityAddComponentEvent& e);
 
 		void InitParticleBuffer(const std::vector<EntityID>& entityList, NRegistry* registry);
+		void RemoveFromParticleBuffer(EntityID entity, NRegistry* registry);
 
 		ComputeShader* m_UpdateComputeShader;
 		ComputeShader* m_EmitComputeShader;

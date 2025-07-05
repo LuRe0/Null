@@ -4,27 +4,27 @@ layout(local_size_x = 256) in;
 
 struct ParticleInstance {
     vec3 position;
-    float _pad1;
+    float rotation;
 
     vec3 velocity;
-    float _pad2;
+    float lifetime;
 
     vec3 acceleration;
-    float _pad3;
+    float age;
 
     vec2 scale;
-    float rotation;
-    float _pad6;
+    vec2 dimensions;
 
     vec4 color;
 
-    float lifetime;
-    float age;
     int alive;
-    float _pad4;
-
     int textureIndex;
-    float _pad5[3];
+    uint frameIndex;
+    int animDirection;
+
+    float animationTimer;
+    float startDelayTimer;
+    vec2 _pad0; // align to 16-byte boundary
 };
 
 
@@ -47,4 +47,5 @@ void main() {
     particles[id].acceleration = vec3(0.0);
     particles[id].color = vec4(0.0, 0.0, 0.0, 0.0);
     particles[id].textureIndex = -1;
+    particles[id].dimensions = vec2(1.0f);
 }

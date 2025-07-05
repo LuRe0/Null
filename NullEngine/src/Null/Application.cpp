@@ -68,6 +68,7 @@ namespace NULLENGINE
 		AddCreateFunction<NScriptingInterface>([&engine]() { engine.Add<NULLENGINE::NScriptingInterface>(); });
 		AddCreateFunction<CameraSystem>([&engine]() { engine.Add<NULLENGINE::CameraSystem>(); });
 		AddCreateFunction<ParticleSystem>([&engine]() { engine.Add<NULLENGINE::ParticleSystem>(); });
+		AddCreateFunction<NFramebufferManager>([&engine]() { engine.Add<NULLENGINE::NFramebufferManager>(); });
 
 		m_NullEngine = &engine;
 

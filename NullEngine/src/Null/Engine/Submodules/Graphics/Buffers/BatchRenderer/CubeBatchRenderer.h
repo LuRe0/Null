@@ -57,12 +57,12 @@ namespace NULLENGINE
 		}
 
 		void BeginBatch();
-		void NextBatch();
-		void Flush();
-		void AddInstance(const ElementData& render);
+		void NextBatch(Shader* shader);
+		void Flush(Shader* shader);
+		void AddInstance(const ElementData& render, Shader* shader);
 		void ImguiView();
 		void ResetStats();
-		void BindTextureBuffer();
+		void BindTextureBuffer(Shader* shader = nullptr);
 
 	private:
 		std::vector<TInstance> m_InstanceBuffer;
@@ -81,14 +81,14 @@ namespace NULLENGINE
 	}
 
 	template <typename TInstance, typename TMesh>
-	inline void CubeBatchRenderer<TInstance, TMesh>::NextBatch()
+	inline void CubeBatchRenderer<TInstance, TMesh>::NextBatch(Shader* shader)
 	{
-		Flush();
+		Flush(shader);
 		BeginBatch();
 	}
 
 	template <typename TInstance, typename TMesh>
-	inline void CubeBatchRenderer<TInstance, TMesh>::Flush()
+	inline void CubeBatchRenderer<TInstance, TMesh>::Flush(Shader* shader)
 	{
 		if (m_InstanceBuffer.empty()) return;
 
@@ -104,9 +104,9 @@ namespace NULLENGINE
 		NCameraManager* cameraManager = NEngine::Instance().Get<NCameraManager>();
 		NTextureManager* textureMan = NEngine::Instance().Get<NTextureManager>();
 
-		std::string shaderName = "cubeInstance";
+		//std::string shaderName = "cubeInstance";
 
-		Shader* shader = shaderMan->Get(shaderName);
+		//Shader* shader = shaderMan->Get(shaderName);
 
 		Camera* camera = cameraManager->GetCurrentCamera();
 
@@ -140,7 +140,7 @@ namespace NULLENGINE
 	}
 
 	template <typename TInstance, typename TMesh>
-	inline void CubeBatchRenderer<TInstance, TMesh>::AddInstance(const ElementData& render)
+	inline void CubeBatchRenderer<TInstance, TMesh>::AddInstance(const ElementData& render, Shader* shader)
 	{
 
 		if (!render.mesh)
@@ -150,10 +150,10 @@ namespace NULLENGINE
 		NTextureManager* texMan = NEngine::Instance().Get<NTextureManager>();
 
 		if (m_InstanceIndexCount >= m_MaxIndices)
-			NextBatch();
+			NextBatch(shader);
 
 		if (m_TextureSlotIndex >= m_MaxTextureSlots)
-			NextBatch();
+			NextBatch(shader);
 
 		int textureIndex = -1;
 		if (render.spriteSrc)
@@ -221,7 +221,7 @@ namespace NULLENGINE
 	}
 
 	template <typename TInstance, typename TMesh>
-	inline void CubeBatchRenderer<TInstance, TMesh>::BindTextureBuffer()
+	inline void CubeBatchRenderer<TInstance, TMesh>::BindTextureBuffer(Shader* shader)
 	{
 		std::vector<int32_t> samplers(BatchRenderer::m_MaxTextureSlots);
 
@@ -233,7 +233,7 @@ namespace NULLENGINE
 
 		NShaderManager* shaderMan = NEngine::Instance().Get<NShaderManager>();
 
-		Shader* shader = shaderMan->Get("cubeInstance");
+		//Shader* shader = shaderMan->Get("instanceDefault");
 
 		shader->Bind();
 

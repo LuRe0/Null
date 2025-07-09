@@ -82,7 +82,7 @@ namespace NULLENGINE
                 std::string tilesetName = tilesetPath.stem().string();
 
                 // Get the shared Tileset object 
-                NTilesetManager* tilesetManager = NEngine::Instance().Get<NTilesetManager>();
+                NTilesetManager* tilesetManager = NTilesetManager::Instance();
 
                 const Tileset* tileset = tilesetManager->Get(tilesetName);
                 if (!tileset)
@@ -121,14 +121,14 @@ namespace NULLENGINE
 
     void Tilemap::CreateTilemap(float tileScale, EntityID id)
     {
-        NSceneManager* sceneMan = NEngine::Instance().Get<NSceneManager>();
-        NRenderer* renderer = NEngine::Instance().Get<NRenderer>();
-        NMeshManager* meshMan = NEngine::Instance().Get<NMeshManager>();
-        Mesh* mesh = meshMan->Get("Quad");
+        NSceneManager* sceneMan = NSceneManager::Instance();
+        NRenderer* renderer = NRenderer::Instance();
+        NMeshManager* meshMan = NMeshManager::Instance();
+        Mesh* mesh = NMeshManager::Instance()->Get("Quad");
 
         const std::size_t max_tiles = m_MapWidth * m_MapHeight * m_Layers.size();
 
-        TilemapBatchRenderer<Instance, QuadInstanceMesh>* batcher = renderer->AddBatcher<TilemapBatchRenderer<Instance, QuadInstanceMesh>>("Tilemap", max_tiles);
+        TilemapBatchRenderer<DrawInstance, QuadInstanceMesh>* batcher = renderer->AddBatcher<TilemapBatchRenderer<DrawInstance, QuadInstanceMesh>>("Tilemap", max_tiles);
 
         for (const auto& layer : m_Layers)
         {

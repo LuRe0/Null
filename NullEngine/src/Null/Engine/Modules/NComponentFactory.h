@@ -15,7 +15,7 @@
 #include "Null/Core.h"
 #include "Null/Engine/Modules/Base/IModule.h"
 #include "Null/Engine/Submodules/ECS/Components/IComponent.h"
-
+#include "../Submodules/ECS/Entities/Entity.h"
 //******************************************************************************//
 // Definitions  														        //
 //******************************************************************************//
@@ -33,7 +33,8 @@
 
 namespace NULLENGINE
 {
-    class NLE_API NComponentFactory : public IModule
+    class Entity;
+    class NLE_API NComponentFactory : public ModuleBase<NComponentFactory>
     {
     public:
         void Load() override;

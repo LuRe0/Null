@@ -5,10 +5,10 @@ namespace NULLENGINE
 {
 	struct TagComponent : public BaseComponent
 	{
-		std::string m_Tag;
+		std::set<std::string> m_Tags;
 
-		TagComponent(std::string tag = "")
-			: m_Tag(tag)
+		TagComponent(std::set<std::string> tags = std::set<std::string>())
+			: m_Tags(tags)
 		{}
 
 		const std::string Name() const { return Component<TagComponent>::TypeName(); };

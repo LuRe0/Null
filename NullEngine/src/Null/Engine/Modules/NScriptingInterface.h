@@ -39,7 +39,7 @@ namespace NULLENGINE
 
 	//class NLE_API Scene;
 
-	class NLE_API NScriptingInterface : public IModule
+	class NLE_API NScriptingInterface : public ModuleBase<NScriptingInterface>
 	{
 	public:
 		NScriptingInterface() = default;

@@ -23,7 +23,9 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/euler_angles.hpp>
 
-
+#include "../Entities/Entity.h"
+#include "../../../Modules/NSceneManager.h"
+#include "../../Scene.h"
 //******************************************************************************//
 // Public Variables															    //
 //******************************************************************************//
@@ -40,7 +42,7 @@ namespace NULLENGINE
 	{
 		Require<TransformComponent>();
 
-		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
+		NComponentFactory* componentFactory = NComponentFactory::Instance();
 
 		componentFactory->Register<TransformComponent>(CreateTransformComponent,
 			[this](Entity& id) { this->ViewTransformComponent(id); }, WriteTransformComponent);
@@ -56,7 +58,7 @@ namespace NULLENGINE
 	{
 		ISystem::Init();
 
-		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+		NEventManager* eventManager =   NEventManager::Instance();
 
 
 		//SUBSCRIBE_EVENT(WindowResizeEvent, &TransformSystem::OnWindowResize, eventManager);
@@ -67,7 +69,7 @@ namespace NULLENGINE
 
 	void TransformSystem::Update(float dt)
 	{
-		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+		NRegistry* registry = NRegistry::Instance();
 
 		for (const auto entityId : GetSystemEntities())
 		{
@@ -119,7 +121,7 @@ namespace NULLENGINE
 
 				//	if (rb2d.m_RuntimeBody)
 				//	{
-				//		PhysicsSystem* physicsSys = NEngine::Instance().Get<PhysicsSystem>();
+				//		PhysicsSystem* physicsSys =PhysicsSystem::Instance();
 				//		auto pos = physicsSys->PixelsToMeters(transform.m_Translation.x, transform.m_Translation.y);
 				//		rb2d.m_RuntimeBody->SetTransform({ pos.x, pos.y }, transform.m_Rotation.z);
 				//	}
@@ -264,7 +266,7 @@ namespace NULLENGINE
 
 	void TransformSystem::CreateTransformComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id)
 	{
-		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
+		NComponentFactory* componentFactory = NComponentFactory::Instance();
 
 		auto* comp = static_cast<TransformComponent*>(component);
 		JsonReader jsonWrapper(json);
@@ -315,7 +317,7 @@ namespace NULLENGINE
 	}
 	bool TransformSystem::OnEntityParented(const EntityParentedEvent& e)
 	{
-		auto* sceneManager = NEngine::Instance().Get<NSceneManager>();
+		auto* sceneManager = NSceneManager::Instance();
 
 		auto& parent = sceneManager->GetCurrentScene()->GetEntity(e.GetParentID());
 		auto& child = sceneManager->GetCurrentScene()->GetEntity(e.GetChildID());
@@ -357,7 +359,7 @@ namespace NULLENGINE
 	}
 	bool TransformSystem::OnEntitySeparated(const EntitySeparatedEvent& e)
 	{
-		auto* sceneManager = NEngine::Instance().Get<NSceneManager>();
+		auto* sceneManager = NSceneManager::Instance();
 
 		auto& parent = sceneManager->GetCurrentScene()->GetEntity(e.GetParentID());
 		auto& child = sceneManager->GetCurrentScene()->GetEntity(e.GetChildID());

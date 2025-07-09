@@ -38,7 +38,7 @@ namespace NULLENGINE
 	class NLE_API NEventManager;
 	//struct GLFWwindow;
 
-	class NLE_API NWindow : public IModule
+	class NLE_API NWindow : public ModuleBase<NWindow>
 	{
 	public:
 		using EnventCallbackFn = std::function<void(const Event&)>;

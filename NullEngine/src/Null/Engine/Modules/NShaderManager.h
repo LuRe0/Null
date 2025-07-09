@@ -37,7 +37,7 @@ namespace NULLENGINE
 {
 
 	// Specialize for resource
-	class NLE_API NShaderManager : public NResourceManager<Shader>
+	class NLE_API NShaderManager : public NResourceManager<Shader, NShaderManager>
 	{
 	public:
 

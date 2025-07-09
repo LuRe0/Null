@@ -67,7 +67,7 @@ namespace NULLENGINE
 
 	void NRegistry::Init()
 	{
-		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+		NEventManager* eventManager =   NEventManager::Instance();
 
 		SUBSCRIBE_EVENT(EntityDestroyedEvent, &NRegistry::OnEntityDestroyed, eventManager, EventPriority::Low);
 		SUBSCRIBE_EVENT(EntityRemoveComponentEvent, &NRegistry::OnEntityRemoveComponent, eventManager, EventPriority::Low);

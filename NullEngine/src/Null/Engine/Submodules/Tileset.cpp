@@ -72,7 +72,7 @@ namespace NULLENGINE
 
 	void Tileset::LoadFromJson(const JSON& json)
 	{
-		NSpriteSourceManager* spritesrcManager = NEngine::Instance().Get<NSpriteSourceManager>();
+		NSpriteSourceManager* spritesrcManager = NSpriteSourceManager::Instance();
 
 		m_Name = json["name"];
 		m_Columns = json["columns"];

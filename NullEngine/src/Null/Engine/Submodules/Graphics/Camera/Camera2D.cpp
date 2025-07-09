@@ -64,7 +64,7 @@ namespace NULLENGINE
 	}
 	void Camera2D::Init()
 	{
-		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+		NEventManager* eventManager =   NEventManager::Instance();
 
 
 		SUBSCRIBE_EVENT(WindowResizeEvent, &Camera2D::OnWindowResize, eventManager, EventPriority::Low);
@@ -74,7 +74,8 @@ namespace NULLENGINE
 	{
 		if (m_IsDirty)
 		{
-			glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(m_Position, 0.0f));
+			glm::vec3 shakenPosition = glm::vec3(m_Position, 0.0f) + m_ShakeOffset;
+			glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), shakenPosition);
 			glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), m_Rotation, glm::vec3(0.0f, 0.0f, 1.0f));
 			glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(m_Zoom * m_AspectRatio, m_Zoom * m_AspectRatio, 1.0f));
 
@@ -104,6 +105,8 @@ namespace NULLENGINE
 		json["rotation"] = m_Rotation;
 		json["type"] = "Camera2D";
 		json["name"] = m_Name;
+
+		Camera::Write(json);
 	}
 
 	const glm::mat4 Camera2D::GetViewMatrix() const

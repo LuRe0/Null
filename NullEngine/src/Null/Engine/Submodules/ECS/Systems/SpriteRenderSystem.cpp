@@ -16,7 +16,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "imgui.h"
 #include <misc/cpp/imgui_stdlib.h>
-
+#include "../Entities/Entity.h"	
 
 //******************************************************************************//
 // Public Variables															    //
@@ -35,7 +35,7 @@ namespace NULLENGINE
 		Require<TransformComponent>();
 		Require<SpriteComponent>();
 
-		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
+		NComponentFactory* componentFactory = NComponentFactory::Instance();
 
 		componentFactory->Register<SpriteComponent>(CreateSpriteComponent,
 			[this](Entity& id) { this->ViewSpriteComponent(id); }, WriteSpriteComponent);
@@ -58,9 +58,9 @@ namespace NULLENGINE
 
 	void SpriteRenderSystem::Render()
 	{
-		NRenderer* renderer = NEngine::Instance().Get<NRenderer>();
-		NRegistry* m_Parent = NEngine::Instance().Get<NRegistry>();
-		NCameraManager* camManager = NEngine::Instance().Get<NCameraManager>();
+		NRenderer* renderer = NRenderer::Instance();
+		NRegistry* m_Parent = NRegistry::Instance();
+		NCameraManager* camManager = NCameraManager::Instance();
 
 		glm::mat4 viewMatrix = camManager->GetCurrentCamera()->GetViewMatrix();
 
@@ -138,8 +138,10 @@ namespace NULLENGINE
 				"type_id", &Component<SpriteComponent>::GetID,
 				"frame_index", sol::readonly(&SpriteComponent::m_FrameIndex),
 				"tint", sol::readonly(&SpriteComponent::m_Color),
+				"emissive_color", sol::readonly(&SpriteComponent::m_EmissiveColor),
+				"emissive_strength", sol::readonly(&SpriteComponent::m_EmissiveStrength),
 				"get_alpha", sol::overload(
-					[](SpriteComponent& sprite, float a)
+					[](SpriteComponent& sprite)
 					{
 						return sprite.m_Color.a;
 					}
@@ -160,6 +162,22 @@ namespace NULLENGINE
 						sprite.m_Color = newColor;
 					}
 				),
+				"set_emissive_color", sol::overload(
+					[](SpriteComponent& sprite, float r, float g, float b, float a)
+					{
+						sprite.m_EmissiveColor = glm::vec4(r, g, b, a);
+					},
+					[](SpriteComponent& sprite, const glm::vec4& newColor)
+					{
+						sprite.m_EmissiveColor = newColor;
+					}
+				),
+				"set_emissive_strength", sol::overload(
+					[](SpriteComponent& sprite, float s)
+					{
+						sprite.m_EmissiveStrength = s;
+					}
+				),
 				"set_frame_index", [](SpriteComponent& sprite, int i)
 				{
 					sprite.m_FrameIndex = i;
@@ -170,9 +188,9 @@ namespace NULLENGINE
 
 	void SpriteRenderSystem::CreateSpriteComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id)
 	{
-		NSpriteSourceManager* spritesrcManager = NEngine::Instance().Get<NSpriteSourceManager>();
-		NMeshManager* meshManager = NEngine::Instance().Get<NMeshManager>();
-		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
+		NSpriteSourceManager* spritesrcManager = NSpriteSourceManager::Instance();
+		NMeshManager* meshManager = NMeshManager::Instance();
+		NComponentFactory* componentFactory = NComponentFactory::Instance();
 
 		auto* comp = static_cast<SpriteComponent*>(component);
 		JsonReader jsonWrapper(json);
@@ -241,10 +259,10 @@ namespace NULLENGINE
 	void SpriteRenderSystem::ViewSpriteComponent(Entity& entity)
 	{
 		SpriteComponent& sprite = entity.Get<SpriteComponent>();
-		NSpriteSourceManager* spritesrcManager = NEngine::Instance().Get<NSpriteSourceManager>();
-		NTextureManager* texureManager = NEngine::Instance().Get<NTextureManager>();
-		NMeshManager* meshManager = NEngine::Instance().Get<NMeshManager>();
-		NShaderManager* shaderManager = NEngine::Instance().Get<NShaderManager>();
+		NSpriteSourceManager* spritesrcManager = NSpriteSourceManager::Instance();
+		NTextureManager* texureManager = NTextureManager::Instance();
+		NMeshManager* meshManager = NMeshManager::Instance();
+		NShaderManager* shaderManager = NShaderManager::Instance();
 
 
 

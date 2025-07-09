@@ -60,10 +60,10 @@ namespace NULLENGINE
 
 		void AttachBuffer(const std::vector<Vertex>& vertices, std::vector<Layout>& layouts, bool dynamic = false, size_t size = 0);
 
-		void AttachBuffer(const std::vector<Instance>& vertices, std::vector<Layout>& layouts, bool dynamic = false, size_t size = 0);
+		void AttachBuffer(const std::vector<DrawInstance>& vertices, std::vector<Layout>& layouts, bool dynamic = false, size_t size = 0);
 		void AttachBuffer(const std::vector<CircleInstance>& vertices, std::vector<Layout>& layouts, bool dynamic = false, size_t size = 0);
 
-		void UpdateBuffer(const std::vector<Instance>& vertices);
+		void UpdateBuffer(const std::vector<DrawInstance>& vertices);
 
 		void UpdateBuffer(const std::vector<CircleInstance>& vertices);
 

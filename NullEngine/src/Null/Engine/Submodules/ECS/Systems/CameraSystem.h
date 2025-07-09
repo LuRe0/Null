@@ -14,6 +14,7 @@
 //******************************************************************************//
 #include "Null/Core.h"
 #include "Null/Engine/Submodules/ECS/Systems/System.h"
+#include "Null/Engine/Submodules/Graphics/Camera/Shake/CameraShake.h"
 
 
 //******************************************************************************//
@@ -35,7 +36,7 @@ namespace NULLENGINE
 {
 	//class CameraComponent;
 
-	class NLE_API CameraSystem : public ISystem
+	class NLE_API CameraSystem : public ISystem<CameraSystem>
 	{
 	public:
 
@@ -65,6 +66,10 @@ namespace NULLENGINE
 
 		static JSON WriteCameraComponent(BaseComponent* component);
 
+		void AddShake(const CameraShake& shake);
+
+		void UpdateCameraShake(float dt);
+
 		void ViewCameraComponent(Entity& entity);
 
 		bool m_ShowCreationMenu = false;
@@ -72,6 +77,10 @@ namespace NULLENGINE
 		std::string m_CameraName = "New Camera";
 		Camera::CameraType m_CameraType = Camera::ORTHOGRAPHIC;
 		size_t m_MainCameraCount = 0;
+
+
+
+		std::vector<CameraShake> m_ActiveShakes;
 	};
 
 }

@@ -36,7 +36,7 @@
 
 namespace NULLENGINE
 {
-	class NLE_API NCameraManager : public IModule
+	class NLE_API NCameraManager : public ModuleBase<NCameraManager>
 	{
 	public:
         NCameraManager() = default;

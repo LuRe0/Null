@@ -35,7 +35,7 @@ namespace NULLENGINE
 {
 	struct AnimationComponent;
 
-	class NLE_API AnimationSystem : public ISystem
+	class NLE_API AnimationSystem : public ISystem<AnimationSystem>
 	{
 	public:
 

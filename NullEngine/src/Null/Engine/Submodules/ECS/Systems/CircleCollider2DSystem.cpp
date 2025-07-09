@@ -23,7 +23,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
-
+#include "../Entities/Entity.h"
+#include "../../../Modules/NSceneManager.h"
+#include "../../Scene.h"
 //******************************************************************************//
 // Public Variables															    //
 //******************************************************************************//
@@ -42,7 +44,7 @@ namespace NULLENGINE
 		Require<CircleCollider2DComponent>();
 		//Require<CircleCollider2DComponent>();
 
-		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
+		NComponentFactory* componentFactory = NComponentFactory::Instance();
 
 		componentFactory->Register<CircleCollider2DComponent>(CreateCircleCollider2DComponent,
 			[this](Entity& id) { this->ViewCircleCollider2DComponent(id); }, WriteCircleCollider2DComponent);
@@ -73,13 +75,13 @@ namespace NULLENGINE
 
 	void CircleCollider2DSystem::Render()
 	{
-		if (!NEngine::Instance().Get<NDebugManager>()->m_ShowDebug)
+		if (!NDebugManager::Instance()->m_ShowDebug)
 			return;
 
-		NRenderer* renderer = NEngine::Instance().Get<NRenderer>();
-		NRegistry* m_Parent = NEngine::Instance().Get<NRegistry>();
-		NMeshManager* meshManager = NEngine::Instance().Get<NMeshManager>();
-		NCameraManager* camManager = NEngine::Instance().Get<NCameraManager>();
+		NRenderer* renderer = NRenderer::Instance();
+		NRegistry* m_Parent = NRegistry::Instance();
+		NMeshManager* meshManager = NMeshManager::Instance();
+		NCameraManager* camManager = NCameraManager::Instance();
 
 		for (const auto entityId : GetSystemEntities())
 		{
@@ -151,7 +153,7 @@ namespace NULLENGINE
 				"set_offset", sol::overload(
 					[this](CircleCollider2DComponent& cc2d, float x, float y)
 					{
-						PhysicsSystem* physicsSys = NEngine::Instance().Get<PhysicsSystem>();
+						PhysicsSystem* physicsSys =PhysicsSystem::Instance();
 
 						cc2d.m_Offset = glm::vec2(x, y);
 
@@ -163,7 +165,7 @@ namespace NULLENGINE
 					},
 					[this](CircleCollider2DComponent& cc2d, glm::vec2 newOffset)
 					{
-						PhysicsSystem* physicsSys = NEngine::Instance().Get<PhysicsSystem>();
+						PhysicsSystem* physicsSys =PhysicsSystem::Instance();
 
 						cc2d.m_Offset = newOffset;
 
@@ -176,7 +178,7 @@ namespace NULLENGINE
 				),
 				"set_radius", [this](CircleCollider2DComponent& cc2d, float r)
 				{
-					PhysicsSystem* physicsSys = NEngine::Instance().Get<PhysicsSystem>();
+					PhysicsSystem* physicsSys =PhysicsSystem::Instance();
 
 					cc2d.m_Radius = r;
 
@@ -193,7 +195,7 @@ namespace NULLENGINE
 
 	void CircleCollider2DSystem::CreateCircleCollider2DComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id)
 	{
-		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
+		NComponentFactory* componentFactory = NComponentFactory::Instance();
 
 		auto* comp = static_cast<CircleCollider2DComponent*>(component);
 		JsonReader jsonWrapper(json);
@@ -231,7 +233,7 @@ namespace NULLENGINE
 	void CircleCollider2DSystem::ViewCircleCollider2DComponent(Entity& entity)
 	{
 		CircleCollider2DComponent& cc2d = entity.Get<CircleCollider2DComponent>();
-		PhysicsSystem* physicsSys = NEngine::Instance().Get<PhysicsSystem>();
+		PhysicsSystem* physicsSys =PhysicsSystem::Instance();
 
 		if (cc2d.m_RuntimeFixture)
 		{
@@ -282,7 +284,7 @@ namespace NULLENGINE
 
 	void CircleCollider2DSystem::CalculateOffset(glm::vec3& offset, Entity& entity)
 	{
-		auto* sceneManager = NEngine::Instance().Get<NSceneManager>();
+		auto* sceneManager = NSceneManager::Instance();
 
 		if (entity.Has<ParentComponent>())
 		{

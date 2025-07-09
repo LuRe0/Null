@@ -30,6 +30,7 @@
 #include <box2d/b2_body.h>
 #include <magic_enum/magic_enum.hpp>
 
+#include "../Scene.h"
 //******************************************************************************//
 // Public Variables															    //
 //******************************************************************************//
@@ -79,7 +80,7 @@ namespace NULLENGINE
 			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 		}
 
-		NWindow* window = NEngine::Instance().Get<NWindow>();
+		NWindow* window = NWindow::Instance();
 		ImGui_ImplGlfw_InitForOpenGL(window->GetWinddow(), true);
 		ImGui_ImplOpenGL3_Init("#version 410");
 
@@ -87,7 +88,7 @@ namespace NULLENGINE
 		SetPannelParent();
 
 
-		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+		NEventManager* eventManager =   NEventManager::Instance();
 
 
 		SUBSCRIBE_EVENT(KeyPressEvent, &ImGuiLayer::OnKeyPressed, eventManager, EventPriority::Low);
@@ -99,7 +100,7 @@ namespace NULLENGINE
 	{
 		m_FlyMode = Input::MouseHold(GLFW_MOUSE_BUTTON_2);
 
-		NSceneManager* scMan = NEngine::Instance().Get<NSceneManager>();
+		NSceneManager* scMan = NSceneManager::Instance();
 
 		m_PannelData.m_Context = scMan->GetCurrentScene();
 
@@ -274,7 +275,7 @@ namespace NULLENGINE
 			{
 				ImGui::CloseCurrentPopup();
 				m_CODA = false;
-				NWindow* window = NEngine::Instance().Get<NWindow>();
+				NWindow* window = NWindow::Instance();
 				window->CloseWindow();
 			}
 
@@ -330,7 +331,7 @@ namespace NULLENGINE
 
 	void ImGuiLayer::OnEvent(const Event& e)
 	{
-		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+		NEventManager* eventManager =   NEventManager::Instance();
 
 		eventManager->TriggerEvent(e);
 	}
@@ -357,7 +358,7 @@ namespace NULLENGINE
 		if (m_CameraController->GetCamera()->GetCameraType() == type)
 			return;
 
-		NCameraManager* cameraManager = NEngine::Instance().Get<NCameraManager>();
+		NCameraManager* cameraManager = NCameraManager::Instance();
 
 		if (type == Camera::ORTHOGRAPHIC)
 		{
@@ -408,7 +409,7 @@ namespace NULLENGINE
 
 	void ImGuiLayer::End()
 	{
-		NWindow* window = NEngine::Instance().Get<NWindow>();
+		NWindow* window = NWindow::Instance();
 
 		ImGuiIO& io = ImGui::GetIO();
 		io.DisplaySize = ImVec2(static_cast<float>(window->Width()), static_cast<float>(window->Height()));
@@ -441,8 +442,8 @@ namespace NULLENGINE
 		if (m_PannelData.m_SelectedEntity && m_PannelData.m_Context->HasEntity(m_PannelData.m_SelectedEntity))
 		{
 			Entity& entity = m_PannelData.m_Context->GetEntity(m_PannelData.m_SelectedEntity);
-			NCameraManager* camManager = NEngine::Instance().Get<NCameraManager>();
-			NWindow* window = NEngine::Instance().Get<NWindow>();
+			NCameraManager* camManager = NCameraManager::Instance();
+			NWindow* window = NWindow::Instance();
 			Camera* mainCam = camManager->GetCurrentCamera();
 
 			ImGuizmo::SetOrthographic(mainCam->GetCameraType() == Camera::ORTHOGRAPHIC);
@@ -595,7 +596,7 @@ namespace NULLENGINE
 
 	void ImGuiLayer::InitCameraControllers()
 	{
-		NCameraManager* cameraManager = NEngine::Instance().Get<NCameraManager>();
+		NCameraManager* cameraManager = NCameraManager::Instance();
 
 		m_CameraController2D = std::make_unique<OrthographicCameraController>();
 		m_CameraController3D = std::make_unique<PerspectiveCameraController>();
@@ -641,19 +642,23 @@ namespace NULLENGINE
 			break;
 		}
 	}
+	void ImGuiLayer::SetRenderTarget(const std::string& fbName)
+	{
+		m_DisplayedFB = fbName;
+	}
 
 	void ImGuiLayer::WindowedEditSceneLayer()
 	{
-		NRenderer* renderer = NEngine::Instance().Get<NRenderer>();
-		NWindow* window = NEngine::Instance().Get<NWindow>();
-		NFramebufferManager* fbMan = NEngine::Instance().Get<NFramebufferManager>();
+		NRenderer* renderer = NRenderer::Instance();
+		NWindow* window = NWindow::Instance();
+		NFramebufferManager* fbMan = NFramebufferManager::Instance();
 
 		//ImGui::PopStyleVar(2);
 		bool pOpen = true;
 		ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoNav);
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 
-		Framebuffer* buffer = fbMan->Get("CompositeOut");
+		Framebuffer* buffer = fbMan->Get(m_DisplayedFB);
 		Framebuffer* dataBuffer = fbMan->Get("Scene");
 		uint32_t texture = buffer->GetColorAttachment(0);
 
@@ -665,6 +670,7 @@ namespace NULLENGINE
 
  		if (m_ViewportSize != *((glm::vec2*)&viewportPanelSize))
 		{
+			dataBuffer->Resize(static_cast<unsigned int>(viewportPanelSize.x), static_cast<unsigned int>(viewportPanelSize.y));
 			buffer->Resize(static_cast<unsigned int>(viewportPanelSize.x), static_cast<unsigned int>(viewportPanelSize.y));
 			m_CameraController->OnResize(static_cast<unsigned int>(viewportPanelSize.x), static_cast<unsigned int>(viewportPanelSize.y));
 			m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
@@ -806,20 +812,23 @@ namespace NULLENGINE
 		ImGui::End();
 	}
 
+	void SetDisplayedFB(const std::string& fbName);
+
+
 	void ImGuiLayer::WindowedSceneLayer()
 	{
-		NRenderer* renderer = NEngine::Instance().Get<NRenderer>();
-		NWindow* window = NEngine::Instance().Get<NWindow>();
-		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
-		NCameraManager* camManager = NEngine::Instance().Get<NCameraManager>();
-		NFramebufferManager* fbMan = NEngine::Instance().Get<NFramebufferManager>();
+		NRenderer* renderer = NRenderer::Instance();
+		NWindow* window = NWindow::Instance();
+		NEventManager* eventManager =   NEventManager::Instance();
+		NCameraManager* camManager = NCameraManager::Instance();
+		NFramebufferManager* fbMan = NFramebufferManager::Instance();
 
 		//ImGui::PopStyleVar(2);
 		bool pOpen = true;
 		ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoNav);
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 
-		Framebuffer* buffer = fbMan->Get("Scene");
+		Framebuffer* buffer = fbMan->Get("FinalOutput");
 		uint32_t texture = buffer->GetColorAttachment(0);
 
 		window->SetBlockEvents(!ImGui::IsWindowHovered() && !ImGui::IsWindowFocused());
@@ -873,11 +882,11 @@ namespace NULLENGINE
 	}
 	void ImGuiLayer::MaximizedSceneLayer()
 	{
-		NFramebufferManager* fbMan = NEngine::Instance().Get<NFramebufferManager>();
+		NFramebufferManager* fbMan = NFramebufferManager::Instance();
 
-		NRenderer* renderer = NEngine::Instance().Get<NRenderer>();
-		NWindow* window = NEngine::Instance().Get<NWindow>();
-		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+		NRenderer* renderer = NRenderer::Instance();
+		NWindow* window = NWindow::Instance();
+		NEventManager* eventManager = NEventManager::Instance();
 
 
 		// Get the size of the main viewport
@@ -906,7 +915,7 @@ namespace NULLENGINE
 		ImGui::Begin("##Fullscreen Scene", nullptr, ImGuiWindowFlags_NoNavInputs);
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 
-		Framebuffer* buffer = fbMan->Get("Scene");
+		Framebuffer* buffer = fbMan->Get("FinalOutput");
 		uint32_t texture = buffer->GetColorAttachment(0);
 
 		window->SetBlockEvents(!ImGui::IsWindowHovered() && !ImGui::IsWindowFocused());
@@ -963,7 +972,7 @@ namespace NULLENGINE
 
 	void ImGuiLayer::ResizeCamera()
 	{
-		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+		NEventManager* eventManager =   NEventManager::Instance();
 		eventManager->QueueEvent(std::make_unique<WindowResizeEvent>(m_ViewportSize.x, m_ViewportSize.y));
 
 		m_CameraController->OnResize(static_cast<unsigned int>(m_ViewportSize.x), static_cast<unsigned int>(m_ViewportSize.y));
@@ -1072,7 +1081,7 @@ namespace NULLENGINE
 			return;
 		}
 
-		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+		NEventManager* eventManager =   NEventManager::Instance();
 
 		eventManager->QueueEvent(std::make_unique<SceneSwitchEvent>(m_PannelData.m_Context->m_Name, "New Scene"));
 
@@ -1125,7 +1134,7 @@ namespace NULLENGINE
 
 		if (!nextScene.empty())
 		{
-			NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+			NEventManager* eventManager =   NEventManager::Instance();
 
 			eventManager->QueueEvent(std::make_unique<SceneSwitchEvent>(m_PannelData.m_Context->m_Name, nextScene));
 

@@ -34,7 +34,7 @@
 namespace NULLENGINE
 {
 	struct TilemapComponent;
-	class NLE_API TilemapRenderSystem : public ISystem
+	class NLE_API TilemapRenderSystem : public ISystem<TilemapRenderSystem>	
 	{
 	public:
 

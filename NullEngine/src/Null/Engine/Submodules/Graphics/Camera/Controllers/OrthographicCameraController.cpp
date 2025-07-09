@@ -40,7 +40,7 @@ namespace NULLENGINE
 
 	void OrthographicCameraController::Init()
 	{
-		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+		NEventManager* eventManager =   NEventManager::Instance();
 
 		SUBSCRIBE_EVENT(MouseScrolledEvent, &OrthographicCameraController::OnMouseScrolled, eventManager, EventPriority::Low);
 		SUBSCRIBE_EVENT(MouseMoveEvent, &OrthographicCameraController::OnMouseMove, eventManager, EventPriority::Low);

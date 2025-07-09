@@ -28,8 +28,8 @@ namespace NULLENGINE
 {
     void RenderPass::Load(JsonReader& reader)
     {
-        NShaderManager* shaderManager = NEngine::Instance().Get<NShaderManager>();
-        NFramebufferManager* fbMan = NEngine::Instance().Get<NFramebufferManager>();
+        NShaderManager* shaderManager = NShaderManager::Instance();
+        NFramebufferManager* fbMan = NFramebufferManager::Instance();
 
         name = reader.GetString("name", "");
         clear = reader.GetBool("clear", true);
@@ -68,7 +68,7 @@ namespace NULLENGINE
         if (reader.HasData("inputs"))
         {
             inputs.clear();
-            auto inputArray = reader.GetArray("inputs");
+            auto inputArray = reader.GetJSONArray("inputs");
             for (const auto& val : inputArray)
             {
                 inputs.push_back(val.get<std::string>());
@@ -78,7 +78,7 @@ namespace NULLENGINE
         if (reader.HasData("batchersToFlush"))
         {
             batchersToFlush.clear();
-            auto inputArray = reader.GetArray("batchersToFlush");
+            auto inputArray = reader.GetJSONArray("batchersToFlush");
             for (const auto& val : inputArray)
             {
                 batchersToFlush.push_back(val.get<std::string>());

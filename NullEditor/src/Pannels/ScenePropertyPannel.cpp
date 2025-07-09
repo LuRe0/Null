@@ -72,6 +72,13 @@ namespace NULLENGINE
 		ImGui::SliderFloat("Scroll Sensitivity", &controller->m_ScrollSensitivity, 0.0f, MAXSENSITIVITY);
 		ImGui::SliderFloat("Speed Scale", &controller->m_SpeedScale, 0.0f, MAXSCALE);
 
+
+
+
+		ImGui::Separator();
+
+		m_Parent->GetCurrentCamera()->View();
+
 		ImGui::PopItemWidth();
 
 		ImGui::PopStyleColor(3);

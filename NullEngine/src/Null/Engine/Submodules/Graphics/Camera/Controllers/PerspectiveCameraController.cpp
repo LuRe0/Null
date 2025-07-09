@@ -40,7 +40,7 @@ namespace NULLENGINE
 
 	void PerspectiveCameraController::Init()
 	{
-		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+		NEventManager* eventManager =   NEventManager::Instance();
 
 		SUBSCRIBE_EVENT(MouseScrolledEvent, &PerspectiveCameraController::OnMouseScrolled, eventManager, EventPriority::Low);
 		SUBSCRIBE_EVENT(MouseMoveEvent, &PerspectiveCameraController::OnMouseMove, eventManager, EventPriority::Low);

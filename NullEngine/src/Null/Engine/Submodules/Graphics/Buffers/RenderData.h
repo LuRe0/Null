@@ -112,14 +112,14 @@ namespace NULLENGINE
 
     struct InstanceData : public RenderData
     {
-        const std::vector<Instance> instances;
+        const std::vector<DrawInstance> instances;
 
 
         // Default constructor
         InstanceData() = default;
 
         // Constructor that takes a vector of Instance
-        InstanceData(const std::vector<Instance>& instances) : instances(instances)
+        InstanceData(const std::vector<DrawInstance>& instances) : instances(instances)
         {
             m_Type = RenderType::ELEMENT;
         }

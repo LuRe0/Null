@@ -38,7 +38,7 @@ namespace NULLENGINE
 {
 	//class NLE_API NULLENGINE::Mesh;
 	// Specialize for resource
-	class NLE_API NMeshManager : public NResourceManager<Mesh>
+	class NLE_API NMeshManager : public NResourceManager<Mesh, NMeshManager>
 	{
 	public:
 

@@ -34,7 +34,7 @@
 namespace NULLENGINE
 {
 	struct SpriteComponent;
-	class NLE_API SpriteRenderSystem : public ISystem
+	class NLE_API SpriteRenderSystem : public ISystem<SpriteRenderSystem>
 	{
 	public:
 

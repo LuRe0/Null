@@ -98,8 +98,8 @@ namespace NULLENGINE
 	template <typename TMesh>
 	void ParticleBatchRenderer<TMesh>::Flush(Shader* inShader)
 	{
-		auto* shaderMan = NEngine::Instance().Get<NShaderManager>();
-		auto* cameraManager = NEngine::Instance().Get<NCameraManager>();
+		auto* shaderMan = NShaderManager::Instance();
+		auto* cameraManager = NCameraManager::Instance();
 
 		Camera* camera = cameraManager->GetCurrentCamera();
 		NLE_CORE_ASSERT(camera != nullptr, "No valid camera in use");
@@ -232,7 +232,7 @@ namespace NULLENGINE
 		}
 
 
-		NShaderManager* shaderMan = NEngine::Instance().Get<NShaderManager>();
+		NShaderManager* shaderMan = NShaderManager::Instance();
 
 		Shader* shader = shaderMan->Get("particle");
 

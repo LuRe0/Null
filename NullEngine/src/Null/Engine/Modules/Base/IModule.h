@@ -16,6 +16,7 @@
 #include "Null/Core.h"
 #include "Null/Engine/Base/IEngine.h"
 #include <sol/sol.hpp>  // Include Sol header where sol::state is defined
+#include "Null/Tools/Trace.h"
 
 
 //******************************************************************************//
@@ -98,4 +99,23 @@ namespace NULLENGINE
 		}
 	private:
 	};
+
+
+	template<typename T>
+	class ModuleBase : public IModule
+	{
+	public:
+		ModuleBase() { s_Instance = static_cast<T*>(this); }
+		virtual ~ModuleBase() = default;
+
+		static T* Instance()
+		{
+			NLE_CORE_ASSERT(s_Instance != nullptr, "Module instance not initialized!");
+			return s_Instance;
+		}
+
+	private:
+		inline static T* s_Instance = nullptr;
+	};
+
 }

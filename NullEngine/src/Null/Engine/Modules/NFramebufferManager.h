@@ -34,7 +34,7 @@
 
 namespace NULLENGINE
 {
-	class NLE_API NFramebufferManager : public NResourceManager<Framebuffer>
+	class NLE_API NFramebufferManager : public NResourceManager<Framebuffer, NFramebufferManager>
 	{
 	public:
 

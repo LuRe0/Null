@@ -40,7 +40,7 @@ namespace NULLENGINE
 	struct TransformComponent;
 	class NRegistry;
 
-	class NLE_API PhysicsSystem : public ISystem
+	class NLE_API PhysicsSystem : public ISystem<PhysicsSystem>
 	{
 	public:
 

@@ -35,8 +35,8 @@
 namespace NULLENGINE
 {
 
-	template <typename T>
-	class NLE_API NResourceManager : public IModule
+	template<typename T, typename Derived>
+	class NResourceManager : public ModuleBase<Derived>
 	{
 	public:
 		NResourceManager() = default;

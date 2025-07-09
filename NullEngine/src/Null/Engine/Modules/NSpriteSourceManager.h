@@ -37,7 +37,7 @@ namespace NULLENGINE
 {
 
 	// Specialize for resource
-	class NLE_API NSpriteSourceManager : public NResourceManager<SpriteSource>
+	class NLE_API NSpriteSourceManager : public NResourceManager<SpriteSource, NSpriteSourceManager>
 	{
 	public:
 

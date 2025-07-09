@@ -41,14 +41,14 @@ namespace NULLENGINE
 
 	 BaseComponent& Entity::GetComponent(const std::string& componentName)
 	{
-		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
+		NComponentFactory* componentFactory = NComponentFactory::Instance();
 		auto compID = componentFactory->GetComponentID(componentName);
 		return m_Parent->GetComponent(m_ID,compID);
 	}
 
 	bool Entity::HasComponent(const std::string& componentName) const
 	{
-		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
+		NComponentFactory* componentFactory = NComponentFactory::Instance();
 		auto compID = componentFactory->GetComponentID(componentName);
 		return m_Parent->HasComponent(m_ID, compID);
 	}

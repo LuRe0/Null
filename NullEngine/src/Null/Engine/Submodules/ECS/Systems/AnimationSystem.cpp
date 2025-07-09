@@ -12,7 +12,7 @@
 #include "stdafx.h"
 #include "AnimationSystem.h"
 #include "imgui.h"
-
+#include "../Entities/Entity.h"
 
 
 //******************************************************************************//
@@ -31,7 +31,7 @@ namespace NULLENGINE
         Require<AnimationComponent>();
         Require<SpriteComponent>();
 
-        NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
+        NComponentFactory* componentFactory = NComponentFactory::Instance();
 
         // Register the create and view functions
         componentFactory->Register<AnimationComponent>(
@@ -49,7 +49,7 @@ namespace NULLENGINE
 	{
         ISystem::Init();
 
-		//NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+		//NEventManager* eventManager =   NEventManager::Instance();
 
 
 		//SUBSCRIBE_EVENT(WindowResizeEvent, &AnimationSystem::OnWindowResize, eventManager);
@@ -62,7 +62,7 @@ namespace NULLENGINE
 
     void AnimationSystem::RuntimeUpdate(float dt)
     {
-        NRegistry* m_Parent = NEngine::Instance().Get<NRegistry>();
+        NRegistry* m_Parent = NRegistry::Instance();
 
         for (const auto entityId : GetSystemEntities())
         {
@@ -211,7 +211,7 @@ namespace NULLENGINE
 
     void AnimationSystem::CreateAnimationComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id)
     {
-        NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
+        NComponentFactory* componentFactory = NComponentFactory::Instance();
 
         auto* comp = static_cast<AnimationComponent*>(component);
         JsonReader jsonWrapper(json);

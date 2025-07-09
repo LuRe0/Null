@@ -15,6 +15,7 @@
 #include <nlohmann/json.hpp>
 #include "Null/Engine/Submodules/Scene.h"
 #include "Null/Engine/Submodules/Events/IEvents.h"
+//#include "Null/Engine/Submodules/Scene.h"
 
 using JSON = nlohmann::json;
 
@@ -71,7 +72,7 @@ namespace NULLENGINE
 
 	void NSceneManager::Init()
 	{
-		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+		NEventManager* eventManager =   NEventManager::Instance();
 
 		SUBSCRIBE_EVENT(SceneSwitchEvent, &NSceneManager::OnSceneSwitch, eventManager, EventPriority::Low);
 
@@ -88,13 +89,13 @@ namespace NULLENGINE
 	{
 		lua.new_usertype<NSceneManager>(
 			"NSceneManager",
-			"instantiate_archetype", [](NSceneManager* scMan, const std::string& name)
+			"instantiate", [](NSceneManager* scMan, const std::string& name)
 			{
 				scMan->GetCurrentScene()->LoadArchetype(name);
 			},
 			"restart", [](NSceneManager* scMan)
 			{
-				NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+				NEventManager* eventManager =   NEventManager::Instance();
 
 
 				auto engineState = NEngine::Instance().GetEngineState();
@@ -109,7 +110,7 @@ namespace NULLENGINE
 			"load", [](NSceneManager* scMan, const std::string& name)
 			{
 
-				NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+				NEventManager* eventManager =   NEventManager::Instance();
 
 				auto engineState = NEngine::Instance().GetEngineState();
 
@@ -124,11 +125,26 @@ namespace NULLENGINE
 
 		// Expose the existing instance to Lua under a different global variable
 		lua["Scene"] = this;
+
+		lua.set_function("Instantiate", sol::overload(
+			[this](const std::string& name, sol::this_state s) -> sol::object {
+				EntityID id = this->GetCurrentScene()->LoadArchetype(name);
+				Entity& entity = this->GetCurrentScene()->GetEntity(id);
+				return sol::make_reference(s, std::ref(entity));
+			},
+			[this](const std::string& name, float lifetime, sol::this_state s) -> sol::object {
+				EntityID id = this->GetCurrentScene()->LoadArchetype(name);
+				Entity& entity = this->GetCurrentScene()->GetEntity(id);
+				entity.Add<LifetimeComponent>(lifetime);
+				return sol::make_reference(s, std::ref(entity));
+			}
+		));
+
 	}
 
 	void NSceneManager::LoadScene(const std::string& scene)
 	{
-		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+		NEventManager* eventManager =   NEventManager::Instance();
 
 		eventManager->QueueEvent(std::make_unique<SceneSwitchEvent>(m_CurrentScene, scene));
 	}

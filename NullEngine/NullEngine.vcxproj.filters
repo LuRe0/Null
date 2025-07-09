@@ -73,6 +73,9 @@
     <Filter Include="Null\Tools">
       <UniqueIdentifier>{A071EE46-8C29-3094-F530-09F0E107CB84}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Null\Engine\Submodules\ECS\Helpers">
+      <UniqueIdentifier>{96ca6831-1e68-4c92-9c2e-1b403d13ae46}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\NIncludes.h" />
@@ -388,6 +391,21 @@
       <Filter>Null\Engine\Submodules\Graphics\Buffers</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\PostProcess\PostProcess.h" />
+    <ClInclude Include="src\Null\Tools\ImGuiH.h" />
+    <ClInclude Include="src\Null\Tools\Easing.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\Shake\CameraShake.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\TagSystem.h">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\LifetimeComponent.h">
+      <Filter>Null\Engine\Submodules\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\LifetimeSystem.h">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Helpers\ComponentSignature.h" />
+    <ClInclude Include="src\Null\Tools\EntitySerializer.h" />
+    <ClInclude Include="src\Null\Engine\Modules\NAsyncTaskManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Null\Application.cpp">
@@ -490,9 +508,6 @@
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\SpriteRenderSystem.cpp">
-      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\System.cpp">
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\TilemapRenderSystem.cpp">
@@ -635,5 +650,20 @@
       <Filter>Null\Engine\Submodules\Graphics\Buffers</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\PostProcess\PostProcess.cpp" />
+    <ClCompile Include="src\Null\Tools\ImGuiH.cpp" />
+    <ClCompile Include="src\Null\Tools\Easing.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\Shake\CameraShake.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\TagSystem.cpp">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\LifetimeSystem.cpp">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\System.cpp">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Helpers\ComponentSignature.cpp" />
+    <ClCompile Include="src\Null\Tools\EntitySerializer.cpp" />
+    <ClCompile Include="src\Null\Engine\Modules\NAsyncTaskManager.cpp" />
   </ItemGroup>
 </Project>

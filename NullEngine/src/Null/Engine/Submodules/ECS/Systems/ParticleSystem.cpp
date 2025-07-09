@@ -16,6 +16,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "imgui.h"
 #include "Null/Tools/EasingCurve.h"
+#include "Null/Tools/ImGuiH.h"
 #include <misc/cpp/imgui_stdlib.h>
 #include "Null/Engine/Submodules/Events/IEvents.h"
 #include "Null/Engine/Submodules/Graphics/Buffers/BatchRenderer/ParticleBatchRenderer.h"
@@ -23,6 +24,7 @@
 
 #include <glad/glad.h> 
 
+#include "../Entities/Entity.h"
 
 //******************************************************************************//
 // Public Variables															    //
@@ -89,7 +91,7 @@ namespace NULLENGINE
 		Require<TransformComponent>();
 		Require<ParticleSystemComponent>();
 
-		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
+		NComponentFactory* componentFactory = NComponentFactory::Instance();
 
 		componentFactory->Register<ParticleSystemComponent>(CreateParticleSystemComponent,
 			[this](Entity& id) { this->ViewParticleSystemComponent(id); }, WriteParticleSystemComponent);
@@ -104,7 +106,7 @@ namespace NULLENGINE
 	{
 		ISystem::Load();
 
-		NComputeShaderManager* shaderMan = NEngine::Instance().Get<NComputeShaderManager>();
+		NComputeShaderManager* shaderMan = NComputeShaderManager::Instance();
 		auto updateShader = shaderMan->Get("particleUpdate");
 		m_UpdateComputeShader = dynamic_cast<ComputeShader*>(updateShader);
 
@@ -119,8 +121,8 @@ namespace NULLENGINE
 	void ParticleSystem::Init()
 	{
 		ISystem::Init();
-		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
-		NRenderer* renderer = NEngine::Instance().Get<NRenderer>();
+		NEventManager* eventManager =   NEventManager::Instance();
+		NRenderer* renderer = NRenderer::Instance();
 
 		SUBSCRIBE_EVENT(EntityCreatedEvent, &ParticleSystem::OnEntityCreated, eventManager, EventPriority::Low);
 		SUBSCRIBE_EVENT(SceneSwitchEvent, &ParticleSystem::OnSceneSwitched, eventManager, EventPriority::Low);
@@ -128,7 +130,7 @@ namespace NULLENGINE
 		SUBSCRIBE_EVENT(EntityRemoveComponentEvent, &ParticleSystem::OnEntityComponentRemoved, eventManager, EventPriority::High);
 		SUBSCRIBE_EVENT(EntityDestroyedEvent, &ParticleSystem::OnEntityDestroyed, eventManager, EventPriority::High);
 
-		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+		NRegistry* registry = NRegistry::Instance();
 
 
 		ParticleBatchRenderer<Mesh>* batcher = renderer->AddBatcher<ParticleBatchRenderer<Mesh>>("Particle");
@@ -217,7 +219,7 @@ namespace NULLENGINE
 
 	void ParticleSystem::Update(float dt)
 	{
-		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+		NRegistry* registry = NRegistry::Instance();
 
 		const GLuint workGroupSize = 256;
 
@@ -248,9 +250,44 @@ namespace NULLENGINE
 				m_UpdateComputeShader->Dispatch(groups, 1, 1);
 
 				// --- Pass 2: Emit ---
-				emitter.emitAccumulator += dt * emitter.emitRate;
-				int emitCount = (int)floor(emitter.emitAccumulator);
-				emitter.emitAccumulator -= emitCount;
+
+				if (emitter.useBurst && !emitter.bursting && emitter.burstCount > 0)
+				{
+					emitter.bursting = true;
+					emitter.burstsRemaining = emitter.burstCount;
+					emitter.burstTimer = 0.0f; // fire immediately
+				}
+
+				int emitCount = 0;
+
+				if (emitter.useBurst)
+				{
+					if (emitter.bursting)
+					{
+						emitter.burstTimer -= dt;
+
+						if (emitter.burstTimer <= 0.0f && emitter.burstsRemaining > 0)
+						{
+							// Use accumulator to determine how many particles to emit
+							emitter.emitAccumulator += dt * emitter.emitRate;
+							emitCount = (int)floor(emitter.emitAccumulator);
+							emitter.emitAccumulator -= emitCount;
+
+							emitter.burstsRemaining--;
+							emitter.burstTimer = emitter.burstCooldown;
+
+							if (emitter.burstsRemaining == 0)
+								emitter.bursting = false;
+						}
+					}
+				}
+				else
+				{
+					// Normal continuous emission
+					emitter.emitAccumulator += dt * emitter.emitRate;
+					emitCount = (int)floor(emitter.emitAccumulator);
+					emitter.emitAccumulator -= emitCount;
+				}
 
 				emitCount = std::min(emitCount, (int)emitter.maxParticles);
 				emitter.emitCount = emitCount;
@@ -300,6 +337,11 @@ namespace NULLENGINE
 		}
 	}
 
+	void ParticleSystem::RuntimeUpdate(float dt)
+	{
+		Update(dt);
+	}
+
 	void ParticleSystem::RenderImGui()
 	{
 		ISystem::RenderImGui();
@@ -308,11 +350,11 @@ namespace NULLENGINE
 
 	void ParticleSystem::Render()
 	{
-		NRenderer* renderer = NEngine::Instance().Get<NRenderer>();
+		NRenderer* renderer = NRenderer::Instance();
 
-		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+		NRegistry* registry = NRegistry::Instance();
 
-		NCameraManager* camManager = NEngine::Instance().Get<NCameraManager>();
+		NCameraManager* camManager = NCameraManager::Instance();
 
 		glm::mat4 viewMatrix = camManager->GetCurrentCamera()->GetViewMatrix();
 
@@ -360,7 +402,7 @@ namespace NULLENGINE
 
 	void ParticleSystem::CreateParticleSystemComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id)
 	{
-		NSpriteSourceManager* spritesrcManager = NEngine::Instance().Get<NSpriteSourceManager>();
+		NSpriteSourceManager* spritesrcManager = NSpriteSourceManager::Instance();
 
 		auto* comp = static_cast<ParticleSystemComponent*>(component);
 		JsonReader jsonWrapper(json);
@@ -416,7 +458,7 @@ namespace NULLENGINE
 					emitter.endSize = emitterJsonWrapper.GetVec2("endSize", glm::vec2(1.0f, 0.0f));
 
 					auto sizeCurve = emitterJsonWrapper.GetJSONObject("sizeCurve");
-					emitter.sizeEaseCurve.type = static_cast<NULLENGINE::EasingCurve::CurveType>(sizeCurve.GetInt("type", 0));
+					emitter.sizeEaseCurve.type = static_cast<NULLENGINE::EasingType>(sizeCurve.GetInt("type", 0));
 
 					std::vector<float> svals = sizeCurve.GetFloatArray("values", std::vector<float>(std::begin(emitter.sizeEaseCurve.values), std::end(emitter.sizeEaseCurve.values)));
 					for (size_t i = 0; i < kCurveSamples && i < svals.size(); ++i)
@@ -427,7 +469,7 @@ namespace NULLENGINE
 					emitter.endColor = emitterJsonWrapper.GetVec4("endColor", glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
 
 					auto colorCurve = emitterJsonWrapper.GetJSONObject("colorCurve");
-					emitter.colorEaseCurve.type = static_cast<NULLENGINE::EasingCurve::CurveType>(colorCurve.GetInt("type", 0));
+					emitter.colorEaseCurve.type = static_cast<NULLENGINE::EasingType>(colorCurve.GetInt("type", 0));
 
 					std::vector<float> cvals = colorCurve.GetFloatArray("values", std::vector<float>(std::begin(emitter.colorEaseCurve.values), std::end(emitter.colorEaseCurve.values)));
 					for (size_t i = 0; i < kCurveSamples && i < cvals.size(); ++i)
@@ -438,7 +480,7 @@ namespace NULLENGINE
 					emitter.startRotation = emitterJsonWrapper.GetFloat("startRotation", 0.0f);
 					emitter.endRotation = emitterJsonWrapper.GetFloat("endRotation", 0.0f);
 					auto rotationCurve = emitterJsonWrapper.GetJSONObject("rotationCurve");
-					emitter.rotationEaseCurve.type = static_cast<NULLENGINE::EasingCurve::CurveType>(colorCurve.GetInt("type", 0));
+					emitter.rotationEaseCurve.type = static_cast<NULLENGINE::EasingType>(colorCurve.GetInt("type", 0));
 
 					std::vector<float> rvals = rotationCurve.GetFloatArray("values", std::vector<float>(std::begin(emitter.rotationEaseCurve.values), std::end(emitter.rotationEaseCurve.values)));
 					for (size_t i = 0; i < kCurveSamples && i < rvals.size(); ++i)
@@ -460,7 +502,7 @@ namespace NULLENGINE
 
 
 					auto fadeCurve = emitterJsonWrapper.GetJSONObject("fadeCurve");
-					emitter.fadeEaseCurve.type = static_cast<NULLENGINE::EasingCurve::CurveType>(colorCurve.GetInt("type", 0));
+					emitter.fadeEaseCurve.type = static_cast<NULLENGINE::EasingType>(colorCurve.GetInt("type", 0));
 
 					std::vector<float> fvals = fadeCurve.GetFloatArray("values", std::vector<float>(std::begin(emitter.fadeEaseCurve.values), std::end(emitter.fadeEaseCurve.values)));
 					for (size_t i = 0; i < kCurveSamples && i < fvals.size(); ++i)
@@ -481,6 +523,11 @@ namespace NULLENGINE
 
 					emitter.spinCenter = emitterJsonWrapper.GetVec3("spinCenter", glm::vec3(0.0f));
 					emitter.spinSpeed = emitterJsonWrapper.GetFloat("spinSpeed", 0.0f);
+
+					//burst
+					emitter.useBurst = emitterJsonWrapper.GetBool("useBurst", false);
+					emitter.burstCount = emitterJsonWrapper.GetInt("burstCount", 0);
+					emitter.burstCooldown = emitterJsonWrapper.GetFloat("burstCooldown", 0.0f);
 
 					emitter.shape = static_cast<SpawnShape>(emitterJsonWrapper.GetInt("shape", static_cast<int>(SpawnShape::POINT)));
 
@@ -554,9 +601,6 @@ namespace NULLENGINE
 						break;
 					}
 
-
-					emitter.burstCount = emitterJsonWrapper.GetFloat("burstCount", 0.0f);
-
 					comp->m_Emitters.push_back(emitter);
 				}
 			}
@@ -564,7 +608,7 @@ namespace NULLENGINE
 
 
 		// Add or update component in registry
-		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
+		NComponentFactory* componentFactory = NComponentFactory::Instance();
 		componentFactory->AddOrUpdate<ParticleSystemComponent>(id, comp, registry, comp->m_Name, comp->m_Emitters);
 	}
 
@@ -666,6 +710,10 @@ namespace NULLENGINE
 			e["spinCenter"] = { emitter.spinCenter.x, emitter.spinCenter.y, emitter.spinCenter.z };
 			e["spinSpeed"] = emitter.spinSpeed;
 
+			e["useBurst"] = emitter.useBurst;
+			e["burstCount"] = emitter.burstCount;
+			e["burstCooldown"] = emitter.burstCooldown;
+
 			e["shape"] = static_cast<int>(emitter.shape);
 
 			// Write each shape struct depending on current shape
@@ -710,7 +758,6 @@ namespace NULLENGINE
 				break;
 			}
 
-			e["burstCount"] = emitter.burstCount;
 
 			emittersJson.push_back(e);
 		}
@@ -726,7 +773,7 @@ namespace NULLENGINE
 		ImGui::PushID(static_cast<int>(i));
 		ImGui::DragFloat("Emission Rate", &emitter.emitRate, 0.1f);
 		if (ImGui::DragInt("Max Particles", reinterpret_cast<int*>(&emitter.maxParticles), 10, 1, 100000)) {
-			NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+			NRegistry* registry = NRegistry::Instance();
 			InitParticleBuffer(GetSystemEntities(), registry);
 		}
 		ImGui::PopID();
@@ -766,7 +813,7 @@ namespace NULLENGINE
 		ImGui::DragFloat("Initial Angular Velocity", &emitter.initialAngularVelocity, 0.1f);
 		ImGui::DragFloat("Initial Acceleration", &emitter.initialAcceleration, 0.1f);
 		ImGui::DragFloat("Drag", &emitter.drag, 0.01f);
-		ImGui::DragFloat("Burst Count", &emitter.burstCount, 1.0f);
+		//ImGui::DragFloat("Burst Count", &emitter.burstCount, 1.0f);
 
 		ImGui::PopID();
 
@@ -775,8 +822,8 @@ namespace NULLENGINE
 
 	void ParticleSystem::DrawInitConfig(ParticleEmitter& emitter, size_t i)
 	{
-		NSpriteSourceManager* spritesrcManager = NEngine::Instance().Get<NSpriteSourceManager>();
-		NTextureManager* texureManager = NEngine::Instance().Get<NTextureManager>();
+		NSpriteSourceManager* spritesrcManager = NSpriteSourceManager::Instance();
+		NTextureManager* texureManager = NTextureManager::Instance();
 
 		ImGui::PushID(static_cast<int>(i));
 
@@ -802,7 +849,7 @@ namespace NULLENGINE
 
 		ImGui::DragFloat("Initial Rotation", &emitter.initialRotation, 1.0f, -360.0f, 360.0f);
 
-		ImGui::DragFloat("Burst Count", &emitter.burstCount, 1.0f, 0.0f, 1000.0f);
+		//ImGui::DragFloat("Burst Count", &emitter.burstCount, 1.0f, 0.0f, 1000.0f);
 
 		
 		if (emitter.spriteSource)
@@ -1023,8 +1070,8 @@ namespace NULLENGINE
 			break;
 		case SpawnShape::TEXTURE:
 		{
-			NSpriteSourceManager* spritesrcManager = NEngine::Instance().Get<NSpriteSourceManager>();
-			NTextureManager* textureManager = NEngine::Instance().Get<NTextureManager>();
+			NSpriteSourceManager* spritesrcManager = NSpriteSourceManager::Instance();
+			NTextureManager* textureManager = NTextureManager::Instance();
 
 			std::string popupName = "TexturePopup##" + std::to_string(emitter.emitterID);
 
@@ -1234,7 +1281,7 @@ namespace NULLENGINE
 
 			psComp.AddEmitter("NewEmitter", startIndex, 100);
 
-			NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+			NRegistry* registry = NRegistry::Instance();
 			InitParticleBuffer(GetSystemEntities(), registry);
 		}
 
@@ -1292,6 +1339,16 @@ namespace NULLENGINE
 					ImGui::Separator();
 
 					ImGui::Dummy(ImVec2(0.0f, 20.0f));
+
+					if (auto [open, enabled] = ImGuiH::DrawModifierHeader("Burst", &emitter.useBurst, i); open)
+					{
+						if (enabled)
+						{
+							ImGui::InputInt("Burst Count", &emitter.burstCount);
+							ImGui::InputFloat("Burst Cooldown", &emitter.burstCooldown);
+						}
+						ImGui::TreePop();
+					}
 
 					if (ImGui::CollapsingHeader("Shape", ImGuiTreeNodeFlags_DefaultOpen)) 
 						DrawShapeConfig(emitter, i);
@@ -1417,7 +1474,7 @@ namespace NULLENGINE
 				if (remove)
 				{
 					psComp.m_Emitters.erase(psComp.m_Emitters.begin() + i);
-					NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+					NRegistry* registry = NRegistry::Instance();
 					InitParticleBuffer(GetSystemEntities(), registry);
 					--i;
 					if (i < 0)
@@ -1433,7 +1490,7 @@ namespace NULLENGINE
 
 	bool ParticleSystem::OnEntityCreated(const EntityCreatedEvent& e)
 	{
-		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+		NRegistry* registry = NRegistry::Instance();
 
 		const auto& entityList = GetSystemEntities();
 
@@ -1458,7 +1515,7 @@ namespace NULLENGINE
 
 		if (std::find(entityList.begin(), entityList.end(), e.GetID()) != entityList.end())
 		{
-			NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+			NRegistry* registry = NRegistry::Instance();
 
 			RemoveFromParticleBuffer(e.GetID(), registry);
 
@@ -1474,7 +1531,7 @@ namespace NULLENGINE
 		if (std::find(entityList.begin(), entityList.end(), e.GetID()) != entityList.end())
 			if (e.GetComponentID() == Component<ParticleSystemComponent>::GetID())
 			{
-				NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+				NRegistry* registry = NRegistry::Instance();
 
 				InitParticleBuffer(entityList, registry);
 			}
@@ -1488,7 +1545,7 @@ namespace NULLENGINE
 		if (std::find(entityList.begin(), entityList.end(), e.GetID()) != entityList.end())
 			if (e.GetComponentID() == Component<ParticleSystemComponent>::GetID())
 			{
-				NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+				NRegistry* registry = NRegistry::Instance();
 
 				InitParticleBuffer(entityList, registry);
 			}

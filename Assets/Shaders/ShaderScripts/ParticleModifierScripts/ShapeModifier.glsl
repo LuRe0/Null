@@ -105,7 +105,7 @@ void Init_Shape(inout ParticleInstance p, uint seed, inout vec3 dir)
     }
     else if (u_EmitterShape == 5) // POINT
     {
-        pos = GenerateSpawnPosFromMask(seed) + u_EmitterOffset + u_ParentPosition;
+        pos = GenerateSpawnPosFromMask(seed) + u_EmitterOffset + parentOffset;
 
         // Generate direction as usual or something else
         float angle = GetRandomFloatRange(seed, 0.0, 6.2831853);

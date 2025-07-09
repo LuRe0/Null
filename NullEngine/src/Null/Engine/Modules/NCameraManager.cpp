@@ -62,7 +62,7 @@ namespace NULLENGINE
 
     void NCameraManager::Init()
     {
-        NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+        NEventManager* eventManager =   NEventManager::Instance();
 
         SUBSCRIBE_EVENT(EngineEditStateEvent, &NCameraManager::OnRuntimeStop, eventManager, EventPriority::High);
         SUBSCRIBE_EVENT(EnginePauseStateEvent, &NCameraManager::OnRuntimePause, eventManager, EventPriority::High);
@@ -135,6 +135,38 @@ namespace NULLENGINE
         }
 
         camera->SetName(name);
+
+        if (cameraJson.contains("ppTemplateName"))
+        {
+            std::string ppTemplatePath = cameraJson["ppTemplateName"];
+
+            std::ifstream ppFile(ppTemplatePath);
+            if (ppFile.is_open())
+            {
+                std::stringstream buffer;
+                buffer << ppFile.rdbuf();
+                ppFile.close();
+
+                try
+                {
+                    JSON ppJson = JSON::parse(buffer.str());
+                    camera->PPSettings().Deserialize(ppJson);
+                }
+                catch (const std::exception& e)
+                {
+                    NLE_CORE_ERROR("Failed to parse post process template JSON: {}", e.what());
+                }
+            }
+            else
+            {
+                NLE_CORE_WARN("Post process template file not found: {}", ppTemplatePath);
+            }
+        }
+        else
+        {
+            camera->PPSettings().Deserialize(cameraJson);
+        }
+
 
         return camera;
     }

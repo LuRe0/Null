@@ -12,6 +12,7 @@
 #include "stdafx.h"
 #include "Scene.h"
 #include "Null/Tools/JsonWrapper.h"
+#include "../../Tools/EntitySerializer.h"
 
 
 
@@ -29,10 +30,10 @@ namespace NULLENGINE
 
 	void Scene::Load(const JSON& sceneData)
 	{
-		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
-		NEntityFactory* entityFactory = NEngine::Instance().Get<NEntityFactory>();
-		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
-		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+		NRegistry* registry = NRegistry::Instance();
+		NEntityFactory* entityFactory = NEntityFactory::Instance();
+		NComponentFactory* componentFactory = NComponentFactory::Instance();
+		NEventManager* eventManager =   NEventManager::Instance();
 
 		//for (const auto& transitionData : sceneData["transitions"]) {
 
@@ -43,82 +44,19 @@ namespace NULLENGINE
 
 		for (const auto& entityData : sceneData["entities"])
 		{
-			JsonReader jsonWrapper(entityData);
-
-			Entity entity = entityFactory->CreateEntity(entityData, registry);
-
-			const std::string& name = jsonWrapper.GetString("name", "Entity(" + std::to_string(entity.GetID()) + ")");
-
-			entity.SetName(name);
-
-			if (entityData.contains("components"))
-			{
-
-				for (const auto& [componentName, componentData] : entityData["components"].items())
-				{
-					componentFactory->CreateUniqueComponent(componentName + "Component", componentData, registry, entity.GetID());
-				}
-
-			}
-
-
-			if (entityData.contains("children"))
-			{
-				HandleChildren(entity, entityData["children"], registry, entityFactory, componentFactory, eventManager);
-			}
-
+			Entity entity = EntitySerializer::DeserializeEntityWithChildren(entityData, registry, entityFactory, componentFactory, eventManager, this);
 			m_Entities.push_back(entity);
 			eventManager->QueueAsync(std::make_unique<EntityCreatedEvent>(entity.GetID()));
-
 		}
 
 		//eventManager->QueueAsync(std::make_unique<SceneLoadedEvent>(entity.GetID()));
 
 	}
 
-
-	// Recursive function to handle nested children
-	void Scene::HandleChildren(Entity& parentEntity, const nlohmann::json& childrenData, NRegistry* registry,
-		NEntityFactory* entityFactory, NComponentFactory* componentFactory, NEventManager* eventManager)
-	{
-		for (const auto& childData : childrenData)
-		{
-			Entity childEntity = entityFactory->CreateEntity(childData, registry);
-
-			const std::string& childName = childData.contains("name") ? childData["name"].get<std::string>() : "ChildEntity(" + std::to_string(childEntity.GetID()) + ")";
-			childEntity.SetName(childName);
-
-
-			if (childData.contains("components"))
-			{
-				for (const auto& [componentName, componentData] : childData["components"].items())
-				{
-					componentFactory->CreateUniqueComponent(componentName + "Component", componentData, registry, childEntity.GetID());
-				}
-
-			}
-
-			registry->AddComponent<ParentComponent>(childEntity.GetID(), parentEntity.GetID());
-			auto& childrenComponent = registry->GetOrAddComponent<ChildrenComponent>(parentEntity.GetID());
-			childrenComponent.m_Children.push_back(childEntity.GetID());
-
-			if (childData.contains("children"))
-			{
-				HandleChildren(childEntity, childData["children"], registry, entityFactory, componentFactory, eventManager);
-			}
-
-			m_Entities.push_back(childEntity);
-			eventManager->QueueAsync(std::make_unique<EntityCreatedEvent>(childEntity.GetID()));
-
-			//eventManager->QueueAsync(std::make_unique<EntityParentedEvent>(parentEntity.m_ID, childEntity.m_ID));
-
-		}
-	}
-
 	void Scene::Init()
 	{
-		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
-		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+		NRegistry* registry = NRegistry::Instance();
+		NEventManager* eventManager =   NEventManager::Instance();
 
 
 		SUBSCRIBE_EVENT(EntityLoadedEvent, &Scene::OnEntityAdded, eventManager, EventPriority::High);
@@ -130,61 +68,12 @@ namespace NULLENGINE
 		}
 	}
 
-	JSON Scene::SerializeChildren(Entity& child, NRegistry* registry, NComponentFactory* componentFactory)
-	{
-
-
-		JSON childEntityJson;
-		childEntityJson["name"] = child.GetName();
-
-		if (!child.m_Archetype.empty())
-			childEntityJson["archetype"] = child.m_Archetype;
-
-		JSON childComponentsJson;
-		auto& childComponents = registry->EntityComponents(child.GetID());
-
-		for (auto& comp : childComponents)
-		{
-
-			auto& childComponent = registry->GetComponent(child.GetID(), static_cast<uint32_t>(comp));
-
-			if (!childComponent.m_SerializeToScene)
-				continue;
-
-			JSON childCompJson = componentFactory->WriteComponent(&childComponent);
-
-			if (!childCompJson.is_null())
-			{
-				childComponentsJson.merge_patch(childCompJson);
-			}
-		}
-
-		childEntityJson["components"] = childComponentsJson;
-
-		if (registry->HasComponent<ChildrenComponent>(child.GetID()))
-		{
-
-			const auto& childrenComponent = registry->GetComponent<ChildrenComponent>(child.GetID());
-			JSON childrenJson = JSON::array();
-
-			for (auto& childID : childrenComponent.m_Children)
-			{
-				auto& childEntity = GetEntity(childID);
-				auto childEntityJson = SerializeChildren(childEntity, registry, componentFactory);
-				childrenJson.push_back(childEntityJson);
-			}
-
-			childEntityJson["children"] = childrenJson;
-		}
-
-		return childEntityJson;
-	}
 
 	EntityID Scene::CreateEmptyEntity(const std::string& name)
 	{
-		NEntityFactory* entityFactory = NEngine::Instance().Get<NEntityFactory>();
-		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
-		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+		NEntityFactory* entityFactory = NEntityFactory::Instance();
+		NRegistry* registry = NRegistry::Instance();
+		NEventManager* eventManager =   NEventManager::Instance();
 
 		Entity entity = entityFactory->CreateEntity(registry);
 
@@ -201,10 +90,10 @@ namespace NULLENGINE
 
 	EntityID Scene::LoadArchetype(const std::string& name)
 	{
-		NEntityFactory* entityFactory = NEngine::Instance().Get<NEntityFactory>();
-		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
-		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
-		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+		NEntityFactory* entityFactory = NEntityFactory::Instance();
+		NRegistry* registry = NRegistry::Instance();
+		NComponentFactory* componentFactory = NComponentFactory::Instance();
+		NEventManager* eventManager =   NEventManager::Instance();
 
 		Entity& entity = GetEntity(CreateEmptyEntity(name + " (Clone)"));
 
@@ -243,140 +132,51 @@ namespace NULLENGINE
 
 	void Scene::Serialize(const std::string& name)
 	{
-		std::string filePath = "";
-		if (name.empty())
-			filePath = std::string("../Assets/Scenes/Paths/") + m_Name + std::string(".scene");
-		else
-			filePath = std::string("../Assets/Scenes/Paths/") + name + std::string(".scene");
+		std::string filePath = name.empty()
+			? "../Assets/Scenes/Paths/" + m_Name + ".scene"
+			: "../Assets/Scenes/Paths/" + name + ".scene";
 
 		std::ofstream outFile(filePath);
-
 		NLE_CORE_ASSERT(outFile, "Error opening file for writing");
-
-		// Write the JSON object to the file
-		//outFile << json.dump(4); // Pretty-print with an indent of 4 spaces
 
 		JSON json;
 		JSON entitiesJson = JSON::array();
 
-		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
-		NComponentFactory* compFactory = NEngine::Instance().Get<NComponentFactory>();
+		NRegistry* registry = NRegistry::Instance();
+		NComponentFactory* compFactory = NComponentFactory::Instance();
 
 		for (auto& entity : m_Entities)
 		{
 			if (registry->HasComponent<ParentComponent>(entity.GetID()))
 				continue;
 
-			JSON entityJson;
-			entityJson["name"] = entity.GetName();
-
-			if (!entity.m_Archetype.empty())
-				entityJson["archetype"] = entity.m_Archetype;
-
-			JSON componentsJson;
-			auto& components = registry->EntityComponents(entity.GetID());
-
-			for (auto& comp : components)
-			{
-
-				auto& component = registry->GetComponent(entity.GetID(), static_cast<uint32_t>(comp));
-
-				if (!component.m_SerializeToScene)
+			if (registry->HasComponent<TagComponent>(entity.GetID()))
+				if (registry->GetComponent<TagComponent>(entity.GetID()).m_Tags.contains("DoNotSerialize"))
 					continue;
 
-				JSON compJson = compFactory->WriteComponent(&component);
-				if (!compJson.is_null()) 
-				{
-					componentsJson.merge_patch(compJson); // Merge component JSON into the entity's components JSON
-				}
-			}
-
-			entityJson["components"] = componentsJson;
-
-
-
-			if (registry->HasComponent<ChildrenComponent>(entity.GetID()))
-			{
-				const auto& childrenComponent = registry->GetComponent<ChildrenComponent>(entity.GetID());
-				JSON childrenJson = JSON::array();
-
-				for (auto& childID : childrenComponent.m_Children)
-				{
-					auto& childEntity = GetEntity(childID);
-					auto childEntityJson = SerializeChildren(childEntity, registry, compFactory);
-					childrenJson.push_back(childEntityJson);
-				}
-
-				entityJson["children"] = childrenJson;
-			}
-
-
+			JSON entityJson = EntitySerializer::SerializeEntityWithChildren(entity, registry, compFactory, this);
 			entitiesJson.push_back(entityJson);
 		}
 
 		json["entities"] = entitiesJson;
-
 		outFile << json.dump(4);
-
 		outFile.close();
 	}
 
 
 	void Scene::SerializeArchetype(const std::string& archetype, EntityID entityID)
 	{
-		std::string filePath = std::string("../Assets/Archetypes/") + archetype + std::string(".ent");
+		std::string filePath = "../Assets/Archetypes/" + archetype + ".ent";
 
 		std::ofstream outFile(filePath);
-
 		NLE_CORE_ASSERT(outFile, "Error opening file for writing");
 
-		// Write the JSON object to the file
-		//outFile << json.dump(4); // Pretty-print with an indent of 4 spaces
-
-
-		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
-		NComponentFactory* compFactory = NEngine::Instance().Get<NComponentFactory>();
-
+		NRegistry* registry = NRegistry::Instance();
+		NComponentFactory* compFactory = NComponentFactory::Instance();
 		Entity& entity = GetEntity(entityID);
 
-		JSON entityJson;
-
-		entityJson["name"] = entity.GetName();
-
-
-		JSON componentsJson;
-		auto& signature = registry->EntityComponents(entity.GetID());
-
-		for (size_t i = 0; i < signature.size(); i++)
-		{
-
-			auto& component = registry->GetComponent(entity.GetID(), static_cast<uint32_t>(signature[i]));
-			JSON compJson = compFactory->WriteComponent(&component);
-			if (!compJson.is_null())
-			{
-				componentsJson.merge_patch(compJson); // Merge component JSON into the entity's components JSON
-			}
-		}
-
-		entityJson["components"] = componentsJson;
-
-		if (registry->HasComponent<ChildrenComponent>(entity.GetID()))
-		{
-			const auto& childrenComponent = registry->GetComponent<ChildrenComponent>(entity.GetID());
-			JSON childrenJson = JSON::array();
-
-			for (auto& childID : childrenComponent.m_Children)
-			{
-				auto& childEntity = GetEntity(childID);
-				auto childEntityJson = SerializeChildren(childEntity, registry, compFactory);
-				childrenJson.push_back(childEntityJson);
-			}
-
-			entityJson["children"] = childrenJson;
-		}
-
+		JSON entityJson = EntitySerializer::SerializeEntityWithChildren(entity, registry, compFactory, this);
 		outFile << entityJson.dump(4);
-
 		outFile.close();
 	}
 
@@ -412,7 +212,7 @@ namespace NULLENGINE
 
 	void Scene::ReloadScene()
 	{
-		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+		NEventManager* eventManager =   NEventManager::Instance();
 
 		auto engineState = NEngine::Instance().GetEngineState();
 
@@ -426,17 +226,17 @@ namespace NULLENGINE
 
 	void Scene::RegisterToScripAPI(sol::state& lua)
 	{
-		lua.new_usertype<Scene>(
-			"NScene",
-			"instantiate_archetype", [](Scene* sc, const std::string& name)
-			{
-				sc->LoadArchetype(name);
-			},
-			"reload", [](Scene* sc)
-			{
-				sc->ReloadScene();
-			}
-		);
+		//lua.new_usertype<Scene>(
+		//	"NScene",
+		//	"instantiate_archetype", [](Scene* sc, const std::string& name)
+		//	{
+		//		sc->LoadArchetype(name);
+		//	},
+		//	"reload", [](Scene* sc)
+		//	{
+		//		sc->ReloadScene();
+		//	}
+		//);
 	}
 
 
@@ -472,8 +272,8 @@ namespace NULLENGINE
 
 	void Scene::Update(float dt)
 	{
-		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
-		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+		NRegistry* registry = NRegistry::Instance();
+		NEventManager* eventManager =   NEventManager::Instance();
 
 		for (size_t i = 0; i < m_Entities.size(); i++)
 		{

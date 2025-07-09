@@ -1,4 +1,4 @@
-
+﻿
 //------------------------------------------------------------------------------
 //
 // File Name:	EasingCurve.cpp
@@ -13,7 +13,8 @@
 #include "EasingCurve.h"
 #include <glad/glad.h>
 #include <imgui.h>
-
+#include <magic_enum/magic_enum.hpp>
+#include <misc/cpp/imgui_stdlib.h>
 
 
 //******************************************************************************//
@@ -34,32 +35,36 @@ namespace NULLENGINE
     {
         ImGui::Text("%s", label);
 
-        static const char* typeNames[] = {
-                "Custom",
-                "Linear",
-                "Ease In",
-                "Ease Out",
-                "Ease In-Out",
-                "Fast In",
-                "Fast Out",
-                "InOut Peak",
-                "Parabola",
-                "SmoothStep",
-                "SmootherStep",
-                "Elastic Out",
-                "Bounce Out",
-                "Back In",
-                "Back Out"
-        };
+        auto names = magic_enum::enum_names<EasingType>();
 
-        int current = static_cast<int>(type);
-        if (ImGui::Combo("Ease Type", &current, typeNames, IM_ARRAYSIZE(typeNames)))
-            type = static_cast<CurveType>(current);
+        std::vector<std::string> easingNames;
+        for (auto name : magic_enum::enum_names<EasingType>()) {
+            easingNames.emplace_back(name); // convert string_view → string
+        }
+        easingNames.pop_back();
+        easingNames.emplace_back("Custom");;
 
-        if (type != CurveType::Custom)
+
+        std::vector<const char*> typeNames;
+        for (const auto& name : easingNames)
+            typeNames.push_back(name.c_str());
+
+
+        int current = static_cast<int>(type); // your current easing type index
+
+        if (ImGui::Combo("Ease Type", &current, typeNames.data(), static_cast<int>(typeNames.size())))
         {
-            if (ImGui::Button("Apply Easing"))
+            if (current >= static_cast<int>(magic_enum::enum_count<EasingType>()))
+            {
+                // User selected "Custom"
+                m_IsCustom = true;
+            }
+            else
+            {
+                type = static_cast<EasingType>(current);
+                m_IsCustom = false;
                 GenerateFromType();
+            }
         }
 
         constexpr float canvasWidth = 300;
@@ -148,13 +153,13 @@ namespace NULLENGINE
                 values[idxLeft] = valNorm * (1.0f - localT) + values[idxLeft] * localT;
                 values[idxRight] = valNorm * localT + values[idxRight] * (1.0f - localT);
                 m_IsDirty = true;
-                type = CurveType::Custom;
+                type = EasingType::EASINGTYPES;
             }
             else if (idxLeft >= 0 && idxLeft < kCurveSamples)
             {
                 values[idxLeft] = valNorm;
                 m_IsDirty = true;
-                type = CurveType::Custom;
+                type = EasingType::EASINGTYPES;
             }
         }
 
@@ -166,11 +171,20 @@ namespace NULLENGINE
             for (int i = 0; i < kCurveSamples; ++i)
                 values[i] = float(i) / float(kCurveSamples - 1);
             m_IsDirty = true;
-            type = CurveType::Custom;
+            type = EasingType::Linear;
         }
     }
 
+    float EasingCurve::Sample(float t) const
+    {
+        t = std::clamp(t, 0.0f, 1.0f);
+        float samplePos = t * (kCurveSamples - 1);
+        int idxLeft = static_cast<int>(samplePos);
+        int idxRight = std::min(idxLeft + 1, kCurveSamples - 1);
+        float localT = samplePos - idxLeft;
 
+        return std::lerp(values[idxLeft], values[idxRight], localT);
+    }
 
     void EasingCurve::UploadToGPU() {
         if (m_TextureID == 0)
@@ -195,85 +209,9 @@ namespace NULLENGINE
         for (int i = 0; i < kCurveSamples; ++i)
         {
             float t = float(i) / (kCurveSamples - 1);
-            float eased = 0.0f;
-
-            switch (type)
-            {
-            case CurveType::Linear:      eased = t; break;
-            case CurveType::EaseIn:      eased = std::sqrt(t); break;
-            case CurveType::EaseOut:     eased = t * t; break;
-            case CurveType::FastIn:      eased = std::sqrt(std::sqrt(t)); break;
-            case CurveType::FastOut:     eased = std::pow(t, 4.0f); break;
-            case CurveType::EaseInOut:
-                if (t < 0.5f)
-                    eased = std::pow(t * 2.0f, 2.0f) * 0.5f;
-                else
-                    eased = std::sqrt((t - 0.5f) * 2.0f) * 0.5f + 0.5f;
-                break;
-            case CurveType::InOutPeak:
-                eased = (t < 0.5f) ? 2.0f * t : 2.0f * (1.0f - t);
-                break;
-
-            case CurveType::Parabola:
-                eased = 4.0f * t * (1.0f - t); // Peaks at t=0.5
-                break;
-
-            case CurveType::SmoothStep:
-                eased = t * t * (3.0f - 2.0f * t);
-                break;
-
-            case CurveType::SmootherStep:
-                eased = t * t * t * (t * (6.0f * t - 15.0f) + 10.0f);
-                break;
-
-            case CurveType::ElasticOut:
-            {
-                float c4 = (2.0f * 3.14159265f) / 3.0f;
-                eased = (t == 0.0f) ? 0.0f :
-                    (t == 1.0f) ? 1.0f :
-                    pow(2.0f, -10.0f * t) * sin((t * 10.0f - 0.75f) * c4) + 1.0f;
-            }
-            break;
-
-            case CurveType::BounceOut:
-                if (t < 1 / 2.75f) {
-                    eased = 7.5625f * t * t;
-                }
-                else if (t < 2 / 2.75f) {
-                    t -= 1.5f / 2.75f;
-                    eased = 7.5625f * t * t + 0.75f;
-                }
-                else if (t < 2.5f / 2.75f) {
-                    t -= 2.25f / 2.75f;
-                    eased = 7.5625f * t * t + 0.9375f;
-                }
-                else {
-                    t -= 2.625f / 2.75f;
-                    eased = 7.5625f * t * t + 0.984375f;
-                }
-                break;
-
-            case CurveType::BackIn:
-            {
-                const float c1 = 1.70158f;
-                eased = c1 * t * t * t - c1 * t * t;
-            }
-            break;
-
-            case CurveType::BackOut:
-            {
-                const float c1 = 1.70158f;
-                const float c3 = c1 + 1.0f;
-                eased = 1.0f + c3 * pow(t - 1.0f, 3) + c1 * pow(t - 1.0f, 2);
-            }
-            break;
-
-            default: return;
-            }
-
-            values[i] = std::lerp(0.0f, 1.0f, eased);
+            float eased = Easing::Ease(t, type);
+            values[i] = std::clamp(eased, 0.0f, 1.0f);
         }
-
         m_IsDirty = true;
     }
 

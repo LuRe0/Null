@@ -15,8 +15,11 @@
 #include "Null/Core.h"
 #include "Null/Engine/Modules/Base/IModule.h"
 #include "Null/Engine/Submodules/ECS/Components/IComponent.h"
-
-
+#include "../../../Modules/NRegistry.h"
+#include "../../../Modules/NSceneManager.h"
+#include "../../../Modules/NEventManager.h"
+#include "../Helpers/ComponentSignature.h"
+#include "../../Scene.h"
 //******************************************************************************//
 // Definitions  														        //
 //******************************************************************************//
@@ -34,49 +37,12 @@
 
 namespace NULLENGINE
 {
-	const unsigned int MAX_COMPONENTS = 32;
-	typedef std::bitset<MAX_COMPONENTS> SignatureBits;
-	typedef std::vector<size_t> OwnedComponents;
-
-	using EntityID = uint32_t;
-
-
-
-	class NLE_API Signature {
-	public:
-		Signature() : m_Bitset(), m_Indices() {}
-
-		void set(size_t index, bool value = true);
-
-		void reset(size_t index);
-
-		bool test(size_t index) const;
-
-		size_t size();
-
-		size_t count();
 	
-
-		const std::bitset<MAX_COMPONENTS>& GetBitset() const
-		{
-			return m_Bitset;
-		}
-
-		const OwnedComponents& GetSetIndices() const
-		{
-			return m_Indices;
-		}
-
-
-
-	private:
-		std::bitset<MAX_COMPONENTS> m_Bitset;  // Adjust the size as needed
-		OwnedComponents m_Indices;
-	};
-
 	class NLE_API NRegistry;
+	class NLE_API NEventManager;
 
-	class NLE_API ISystem : public IModule
+	template<typename Derived>
+	class NLE_API ISystem : public ModuleBase<Derived>
 	{
 	public:
 		virtual ~ISystem() {};
@@ -160,6 +126,157 @@ namespace NULLENGINE
 		std::vector<EntityID> m_Entities;
 		//NRegistry* m_Parent;
 	};
+
+	template<typename Derived>
+	void ISystem<Derived>::Load()
+	{
+	}
+
+	template<typename Derived>
+	void ISystem<Derived>::Init()
+	{
+		NRegistry* registry = NRegistry::Instance();
+		NSceneManager* scMan = NSceneManager::Instance();
+		Scene* currScene = scMan->GetCurrentScene();
+
+		auto& entities = currScene->GetManagedEntities();
+
+		for (auto& entity : entities)
+		{
+			CheckEntity(entity.GetID(), registry);
+		}
+
+		NEventManager* eventManager = NEventManager::Instance();
+
+
+		SUBSCRIBE_EVENT(EntityCreatedEvent, &ISystem<Derived>::OnEntityCreate, eventManager, EventPriority::High);
+		SUBSCRIBE_EVENT(EntityAddComponentEvent, &ISystem<Derived>::OnEntityCreate, eventManager, EventPriority::Low);
+		SUBSCRIBE_EVENT(EntityRemoveComponentEvent, &ISystem<Derived>::OnEntityComponentRemoved, eventManager, EventPriority::Low);
+		SUBSCRIBE_EVENT(EntityDestroyedEvent, &ISystem<Derived>::OnEntityDestroyed, eventManager, EventPriority::Low);
+		SUBSCRIBE_EVENT(SceneSwitchEvent, &ISystem<Derived>::OnSceneSwitch, eventManager, EventPriority::Medium);
+	}
+
+
+	template<typename Derived>
+	void ISystem<Derived>::Update(float dt)
+	{
+	}
+
+
+	template<typename Derived>
+	void ISystem<Derived>::RenderImGui()
+	{
+		ImGui::Text("Registered Entities: %d", m_Entities.size());
+	}
+
+	template<typename Derived>
+	void ISystem<Derived>::Unload()
+	{
+	}
+
+	template<typename Derived>
+	void ISystem<Derived>::Shutdown()
+	{
+	}
+
+	template<typename Derived>
+	void ISystem<Derived>::Add(EntityID entity)
+	{
+		if (std::find(m_Entities.begin(), m_Entities.end(), entity) == m_Entities.end())
+			m_Entities.push_back(entity);
+	}
+
+	template<typename Derived>
+	void ISystem<Derived>::Remove(EntityID entity)
+	{
+		auto ent = std::find(m_Entities.begin(), m_Entities.end(), entity);
+		if (ent != m_Entities.end())
+		{
+			NLE_CORE_INFO("Entity found in list: {0}", *ent);
+
+			const int index = static_cast<int>(ent - m_Entities.begin());
+			std::swap(m_Entities[index], m_Entities.back());
+
+			m_Entities.pop_back();
+
+			NLE_CORE_INFO("Entity Successfully Removed.");
+		}
+		else
+			NLE_CORE_WARN("Entity not found in list!");
+	}
+
+	template<typename Derived>
+	const std::vector<EntityID>& ISystem<Derived>::GetSystemEntities() const
+	{
+		// TODO: insert return statement here
+		return m_Entities;
+	}
+
+	template<typename Derived>
+	const SignatureBits& ISystem<Derived>::GetComponentSignature() const
+	{
+		// TODO: insert return statement here
+		return m_ComponentSignatures;
+	}
+
+	template<typename Derived>
+	void ISystem<Derived>::CheckEntity(EntityID entityID, NRegistry* registry)
+	{
+		const auto& entityComponentSignatures = registry->EntitySignature(entityID);
+
+		const auto& systemComponentSignatures = GetComponentSignature();
+
+		bool match = ((entityComponentSignatures & systemComponentSignatures) == systemComponentSignatures);
+
+		if (match)
+			Add(entityID);
+	}
+
+	template<typename Derived>
+	void ISystem<Derived>::UpdateEntityList(EntityID entityID, NRegistry* registry)
+	{
+		const auto& entityComponentSignatures = registry->EntitySignature(entityID);
+
+		const auto& systemComponentSignatures = GetComponentSignature();
+
+		bool match = ((entityComponentSignatures & systemComponentSignatures) == systemComponentSignatures);
+
+		if (!match)
+		{
+			Remove(entityID);
+		}
+	}
+
+	template<typename Derived>
+	bool ISystem<Derived>::OnEntityCreate(const EntityModifiedEvent& e)
+	{
+		NRegistry* registry = NRegistry::Instance();
+
+		CheckEntity(e.GetID(), registry);
+		return true;
+	}
+
+	template<typename Derived>
+	bool ISystem<Derived>::OnEntityComponentRemoved(const EntityRemoveComponentEvent& e)
+	{
+		NRegistry* registry = NRegistry::Instance();
+		UpdateEntityList(e.GetID(), registry);
+		return true;
+	}
+
+	template<typename Derived>
+	bool ISystem<Derived>::OnSceneSwitch(const SceneSwitchEvent& e)
+	{
+		m_Entities.clear();
+		return true;
+	}
+
+	template<typename Derived>
+	bool ISystem<Derived>::OnEntityDestroyed(const EntityDestroyedEvent& e)
+	{
+		Remove(e.GetID());
+		return true;
+	}
 	
 	template <typename T>
 	class System

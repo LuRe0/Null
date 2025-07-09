@@ -33,7 +33,7 @@
 
 namespace NULLENGINE
 {
-	class NLE_API ScriptSystem : public ISystem
+	class NLE_API ScriptSystem : public ISystem<ScriptSystem>
 	{
 	public:
 

@@ -13,6 +13,9 @@
 #include "NEntityFactory.h"
 #include "Null/Engine/Submodules/ECS/Entities/Entity.h"
 #include "sol/sol.hpp"
+#include "nlohmann/json.hpp"
+#include "NSceneManager.h"
+#include "../Submodules/Scene.h"
 
 
 
@@ -67,7 +70,7 @@ namespace NULLENGINE
         if (!jsonWrapper.Empty())
         {
 
-            NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
+            NComponentFactory* componentFactory = NComponentFactory::Instance();
 
             const std::string& archetype = jsonWrapper.GetString("archetype", "");
 
@@ -131,7 +134,7 @@ namespace NULLENGINE
 
     void NEntityFactory::CloneChild(Entity& pEntity, const std::string& parentArchetype, NComponentFactory* componentFactory, NRegistry* registry, const JSON& entityData)
     {
-        NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+        NEventManager* eventManager =   NEventManager::Instance();
 
         auto& children = ArchetypeHelper::GetChildren(parentArchetype, m_Archetypes);
 
@@ -155,7 +158,7 @@ namespace NULLENGINE
 
     void NEntityFactory::CloneChild_Rec(Entity& pEntity, const std::string& parentArchetype, NComponentFactory* componentFactory, NRegistry* registry, const JSON& entityData, ArchetypeContainer& archetypeDef)
     {
-        NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+        NEventManager* eventManager =   NEventManager::Instance();
 
         auto& children = ArchetypeHelper::GetChildren(parentArchetype, archetypeDef);
 
@@ -263,7 +266,7 @@ namespace NULLENGINE
     void NEntityFactory::ReadChildrenFromArchetype(Entity& parentEntity, const std::string& archetype, const nlohmann::json& childrenData, NRegistry* registry,
                                                   NComponentFactory* componentFactory, NEntityFactory::ArchetypeContainer& archetypeContainer)
     {
-        NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+        NEventManager* eventManager =   NEventManager::Instance();
 
         for (const auto& childData : childrenData)
         {
@@ -351,12 +354,22 @@ namespace NULLENGINE
     void NEntityFactory::RegisterToScripAPI(sol::state& lua)
     {
         lua.new_usertype<Entity>("Entity",
-            "get_component", [](Entity& entity, const sol::table& comp, sol::this_state s)
+            sol::no_constructor,
+            sol::meta_function::to_string, [](Entity& e) { return "Entity: " + std::to_string(e.m_ID) + ", " + e.m_Name; },
+            sol::call_constructor, sol::constructors<Entity&>(),
+            "get_component", [](Entity& entity, const sol::table& comp, sol::this_state s) -> sol::object
             {
-                //const auto has_comp
-                auto component = NComponentFactory::InvokeSolFunctions(NComponentFactory::GetIdType(comp), "get_component", entity, s);
+                sol::state_view lua(s);
+                auto typeID = NComponentFactory::GetIdType(comp);
 
-                return component ? component.as<sol::reference>() : sol::lua_nil_t{};
+                auto hasComp = NComponentFactory::InvokeSolFunctions(typeID, "has_component", entity, s);
+                if (!hasComp.valid() || !hasComp.as<bool>())
+                    return sol::make_object(lua, sol::lua_nil);  // nil
+
+                auto component = NComponentFactory::InvokeSolFunctions(typeID, "get_component", entity, s);
+                return component.valid()
+                    ? component.as<sol::object>()
+                    : sol::make_object(lua, sol::lua_nil);  // fail-safe
             },
             "add_component", [](Entity& entity, const sol::table& comp, sol::this_state s)
             {
@@ -381,9 +394,16 @@ namespace NULLENGINE
             },
             "destroy", [](Entity& entity)
             {
-                NSceneManager* sceneManager = NEngine::Instance().Get<NSceneManager>();
+                NSceneManager* sceneManager = NSceneManager::Instance();
 
-                sceneManager->GetCurrentScene()->DeleteEntity(entity.m_ID);
+                if (sceneManager->GetCurrentScene()->HasEntity(entity.m_ID))
+                    sceneManager->GetCurrentScene()->GetEntity(entity.m_ID).m_isDestroyed = true;
+            },
+            "is_destroyed", [](Entity& entity)
+            {
+                NSceneManager* sceneManager = NSceneManager::Instance();
+
+                return !sceneManager->GetCurrentScene()->HasEntity(entity.m_ID) || entity.m_isDestroyed;
             },
         	"id", &Entity::m_ID,
         	"name", &Entity::m_Name

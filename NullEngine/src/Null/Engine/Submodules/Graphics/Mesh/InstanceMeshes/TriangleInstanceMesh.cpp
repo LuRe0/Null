@@ -81,7 +81,7 @@ namespace NULLENGINE
 		// uint32_t entityID (a_EntityID)
 		instancesLayouts.push_back({ 1, GL_INT, sizeof(int) }); // location 13
 
-		SetupVertexBuffer(std::vector<Instance>(), instancesLayouts, true, vertexCount);
+		SetupVertexBuffer(std::vector<DrawInstance>(), instancesLayouts, true, vertexCount);
 
 
 		m_Buffer.m_VAO.AttachVBO(m_Buffer.m_VBO);

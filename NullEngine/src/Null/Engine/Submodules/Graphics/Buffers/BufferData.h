@@ -52,7 +52,7 @@ struct Vertex
 //	v.uv = glm::vec2(j.at("uv")[0], j.at("uv")[1]);
 //}
 
-struct Instance
+struct DrawInstance
 {
 	glm::vec3 vertexposition;
 

@@ -39,7 +39,7 @@ namespace NULLENGINE
 {
 	struct ParticleSystemComponent;
 	struct ParticleEmitter;
-	class NLE_API ParticleSystem : public ISystem
+	class NLE_API ParticleSystem : public ISystem<ParticleSystem>
 	{
 	public:
 
@@ -50,6 +50,8 @@ namespace NULLENGINE
 		void SetEmitterUniforms(ComputeShader& shader, const ParticleEmitter& emitter, const TransformComponent& transform);
 		//! Virtual Update function
 		void Update(float dt) override;
+		virtual void RuntimeUpdate(float dt) override;
+
 		void RenderImGui() override;
 
 		void Render() override;

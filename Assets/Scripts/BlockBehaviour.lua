@@ -3,7 +3,7 @@
 local BlockBehaviour = {
     data = 
     {
-        name = { value = "BlockBehaviour", serialize = true }
+        ExplosionPrefab = { value = "Explosion", serialize = true }
     }
 }
 
@@ -45,6 +45,15 @@ function BlockBehaviour:OnCollisionEnter(otherEntity)
     -- Check if otherEntity is valid
     if otherEntity then
         if(otherEntity.name == "ball") then
+            local exp = Instantiate(BlockBehaviour.ExplosionPrefab)
+
+            local trans = pEntity:get_component(Transform)
+
+            if exp and exp:has_component(Transform) then
+                local t = exp:get_component(Transform)
+                Trace.debug("{0}", trans.translation.x)
+                t:set_translation(trans.translation.x, trans.translation.y, trans.translation.z)
+            end
             pEntity:destroy()
         end
     end

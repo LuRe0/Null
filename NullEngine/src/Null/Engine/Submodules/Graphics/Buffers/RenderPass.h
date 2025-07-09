@@ -39,6 +39,7 @@ namespace NULLENGINE
         Opaque,
         Transparent,
         Emissive,
+        Particles,
         PostProcess,
         UI,
         Debug,

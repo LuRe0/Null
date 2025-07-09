@@ -133,9 +133,9 @@ return Template_Script
 	{
 		const auto& modules = m_Parent->GetModules();
 		Input::RegisterToScripAPI(lua);
-		Random::RegisterToScripAPI(lua);
 		Trace::RegisterToScripAPI(lua);
 		RegisterMathStructures(lua);
+		Random::RegisterToScripAPI(lua);
       
 		for (const auto& mod : modules)
 		{
@@ -184,7 +184,7 @@ return Template_Script
     }
     void NScriptingInterface::ReloadScript(const std::string& filename)
     {
-        NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+        NEventManager* eventManager =   NEventManager::Instance();
         eventManager->QueueEvent(std::make_unique<ScriptModifiedEvent>(filename));
     }
     void NScriptingInterface::AddScriptWatcher(const std::string filepath, const std::string& filename)
@@ -317,6 +317,9 @@ return Template_Script
             "x", &glm::vec3::x,
             "y", &glm::vec3::y,
             "z", &glm::vec3::z,
+            "r", &glm::vec3::x,
+            "g", &glm::vec3::y,
+            "b", &glm::vec3::z,
             sol::meta_function::multiplication, vec3_multiply_overloads,
             sol::meta_function::division, vec3_divide_overloads,
             sol::meta_function::addition, vec3_addition_overloads,
@@ -358,6 +361,10 @@ return Template_Script
             "y", &glm::vec4::y,
             "z", &glm::vec4::z,
             "w", &glm::vec4::w,
+            "r", &glm::vec4::r,
+            "g", &glm::vec4::g,
+            "b", &glm::vec4::b,
+            "a", &glm::vec4::a,
             sol::meta_function::multiplication, vec4_multiply_overloads,
             sol::meta_function::division, vec4_divide_overloads,
             sol::meta_function::addition, vec4_addition_overloads,

@@ -42,9 +42,9 @@ namespace NULLENGINE
 
 	void Input::Init()
 	{
-		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+		NEventManager* eventManager =   NEventManager::Instance();
 
-
+											
 		SUBSCRIBE_INPUT_EVENT(KeyPressEvent, &Input::OnKey, eventManager);
 		SUBSCRIBE_INPUT_EVENT(KeyReleaseEvent, &Input::OnKey, eventManager);
 		SUBSCRIBE_INPUT_EVENT(KeyHoldEvent, &Input::OnKey, eventManager);
@@ -325,7 +325,7 @@ namespace NULLENGINE
 
 	void Input::OnEvent(const Event& e)
 	{
-		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+		NEventManager* eventManager =   NEventManager::Instance();
 
 		eventManager->QueueEvent(std::move(e.Clone()));
 	}

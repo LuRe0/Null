@@ -11,6 +11,7 @@
 //******************************************************************************//
 #include "stdafx.h"
 #include "Camera.h"
+#include "Null/Tools/ImGuiH.h"
 
 
 
@@ -42,72 +43,84 @@ namespace NULLENGINE
 
         return frustum;
     }
-    void Camera::View()
-    {
-        if (ImGui::TreeNode("Post Process"))
-        {
-            ImGui::Checkbox("Enabled", &m_PPSettings.Enabled);
+	void Camera::View()
+	{
+		if (auto [open, enabled] = ImGuiH::DrawTopLevelHeader("Post Process", &m_PPSettings.Enabled, 1000); open)
+		{
+			if (enabled)
+			{
+				if (auto [open, enabled] = ImGuiH::DrawModifierHeader("Bloom", &m_PPSettings.UseBloom, 0); open)
+				{
+					if (enabled)
+					{
+						ImGui::SliderFloat("Bloom Threshold", &m_PPSettings.BloomThreshold, 0.0f, 5.0f);
+						ImGui::SliderFloat("Bloom Intensity", &m_PPSettings.BloomIntensity, 0.0f, 2.0f);
+					}
+					ImGui::TreePop();
+				}
 
-            if (m_PPSettings.Enabled)
-            {
-                if (ImGui::CollapsingHeader("Bloom", ImGuiTreeNodeFlags_DefaultOpen))
-                {
-                    ImGui::Checkbox("Use Bloom", &m_PPSettings.UseBloom);
-                    if (m_PPSettings.UseBloom)
-                    {
-                        ImGui::SliderFloat("Bloom Threshold", &m_PPSettings.BloomThreshold, 0.0f, 5.0f);
-                        ImGui::SliderFloat("Bloom Intensity", &m_PPSettings.BloomIntensity, 0.0f, 2.0f);
-                    }
-                }
+				if (auto [open, enabled] = ImGuiH::DrawModifierHeader("Vignette", &m_PPSettings.UseVignette, 1); open)
+				{
+					if (enabled)
+					{
+						ImGui::SliderFloat("Vignette Radius", &m_PPSettings.VignetteRadius, 0.0f, 1.0f);
+						ImGui::SliderFloat("Vignette Intensity", &m_PPSettings.VignetteIntensity, 0.0f, 1.0f);
+					}
+					ImGui::TreePop();
+				}
 
-                if (ImGui::CollapsingHeader("Vignette"))
-                {
-                    ImGui::Checkbox("Use Vignette", &m_PPSettings.UseVignette);
-                    if (m_PPSettings.UseVignette)
-                    {
-                        ImGui::SliderFloat("Vignette Radius", &m_PPSettings.VignetteRadius, 0.0f, 1.0f);
-                        ImGui::SliderFloat("Vignette Intensity", &m_PPSettings.VignetteIntensity, 0.0f, 1.0f);
-                    }
-                }
+				if (auto [open, enabled] = ImGuiH::DrawModifierHeader("Grayscale", &m_PPSettings.UseGrayscale, 2); open)
+				{
+					if (enabled)
+					{
+						ImGui::SliderFloat("Grayscale Amount", &m_PPSettings.GrayscaleAmount, 0.0f, 1.0f);
+					}
+					ImGui::TreePop();
+				}
 
-                if (ImGui::CollapsingHeader("Grayscale"))
-                {
-                    ImGui::Checkbox("Use Grayscale", &m_PPSettings.UseGrayscale);
-                    if (m_PPSettings.UseGrayscale)
-                    {
-                        ImGui::SliderFloat("Grayscale Amount", &m_PPSettings.GrayscaleAmount, 0.0f, 1.0f);
-                    }
-                }
+				if (auto [open, enabled] = ImGuiH::DrawModifierHeader("Tint", &m_PPSettings.UseTint, 3); open)
+				{
+					if (enabled)
+					{
+						ImGui::ColorEdit4("Tint Color", glm::value_ptr(m_PPSettings.TintColor));
+						ImGui::SliderFloat("Tint Strength", &m_PPSettings.TintStrength, 0.0f, 1.0f);
+					}
+					ImGui::TreePop();
+				}
 
-                if (ImGui::CollapsingHeader("Tint"))
-                {
-                    ImGui::Checkbox("Use Tint", &m_PPSettings.UseTint);
-                    if (m_PPSettings.UseTint)
-                    {
-                        ImGui::ColorEdit4("Tint Color", glm::value_ptr(m_PPSettings.TintColor));
-                        ImGui::SliderFloat("Tint Strength", &m_PPSettings.TintStrength, 0.0f, 1.0f);
-                    }
-                }
+				if (auto [open, enabled] = ImGuiH::DrawModifierHeader("Chromatic Aberration", &m_PPSettings.UseChromatic, 4); open)
+				{
+					if (enabled)
+					{
+						ImGui::SliderFloat("Chromatic Offset", &m_PPSettings.ChromaticOffset, 0.0f, 5.0f);
+					}
+					ImGui::TreePop();
+				}
 
-                if (ImGui::CollapsingHeader("Chromatic Aberration"))
-                {
-                    ImGui::Checkbox("Use Chromatic Aberration", &m_PPSettings.UseChromatic);
-                    if (m_PPSettings.UseChromatic)
-                    {
-                        ImGui::SliderFloat("Chromatic Offset", &m_PPSettings.ChromaticOffset, 0.0f, 5.0f);
-                    }
-                }
-
-                if (ImGui::CollapsingHeader("Film Grain"))
-                {
-                    ImGui::Checkbox("Use Grain", &m_PPSettings.UseGrain);
-                    if (m_PPSettings.UseGrain)
-                    {
-                        ImGui::SliderFloat("Grain Amount", &m_PPSettings.GrainAmount, 0.0f, 1.0f);
-                    }
-                }
-            }
-            ImGui::TreePop();
-        }
-    }
+				if (auto [open, enabled] = ImGuiH::DrawModifierHeader("Film Grain", &m_PPSettings.UseGrain, 5); open)
+				{
+					if (enabled)
+					{
+						ImGui::SliderFloat("Grain Amount", &m_PPSettings.GrainAmount, 0.0f, 1.0f);
+					}
+					ImGui::TreePop();
+				}
+			}
+			ImGui::TreePop();
+		}
+	}
+	void Camera::Write(JSON& json)
+	{
+		if (!m_PPTemplateFilename.empty())
+			json["ppTemplateName"] = m_PPTemplateFilename;
+		else
+			m_PPSettings.Serialize(json);
+	}
+	void Camera::SetShakeOffset(const glm::vec3& offset)
+	{
+		if (offset != m_ShakeOffset)
+		{
+			m_ShakeOffset = offset; m_IsDirty = true;
+		}
+	}
 }

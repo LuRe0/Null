@@ -36,7 +36,7 @@ namespace NULLENGINE
 
 	class Entity;
 
-	class NLE_API NEntityFactory : public IModule
+	class NLE_API NEntityFactory : public ModuleBase<NEntityFactory>
 	{
 	private:
 

@@ -68,25 +68,32 @@ namespace NULLENGINE
 
         virtual void View();
 
-        virtual void Write(JSON& json) = 0;
+        virtual void Write(JSON& json);
 
         virtual bool IsWithinFrustum(const glm::vec3& center, const glm::vec3& halfExtents) const  = 0;
 
         virtual const glm::mat4 GetViewMatrix() const = 0;
 
+        void SetShakeOffset(const glm::vec3& offset);
+        const glm::vec3& GetShakeOffset() const { return m_ShakeOffset; }
+
         const glm::mat4& GetProjectionMatrix() const { return m_ProjectionMatrix; }
         const CameraType& GetCameraType() const { return m_CameraType; }
         const std::string& GetName() const { return m_Name; }
         void SetName(const std::string& name) { m_Name = name; }
-  
+        const PostProcess& GetPPSettings() { return m_PPSettings; }
+        PostProcess& PPSettings() { return m_PPSettings; }
     protected:
         glm::mat4 m_ProjectionMatrix = glm::mat4(1.0f);
         glm::mat4 m_ViewMatrix = glm::mat4(1.0f);
+        glm::vec3 m_ShakeOffset = glm::vec3(0.0f);
+
         CameraType m_CameraType = CameraType::INVALID;
         std::string m_Name = "";
         bool m_IsDirty = true;
 
         PostProcess m_PPSettings;
+        std::string m_PPTemplateFilename;
     };
 
 	template <typename T>

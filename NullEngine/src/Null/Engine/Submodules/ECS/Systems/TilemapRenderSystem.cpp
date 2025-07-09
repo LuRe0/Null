@@ -36,7 +36,7 @@ namespace NULLENGINE
 		Require<TransformComponent>();
 		Require<TilemapComponent>();
 
-		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
+		NComponentFactory* componentFactory = NComponentFactory::Instance();
 
 		componentFactory->Register<TilemapComponent>(CreateTilemapComponent,
 			[this](Entity& id) { this->ViewTilemapComponent(id); }, WriteTilemapComponent);
@@ -50,11 +50,11 @@ namespace NULLENGINE
 	void TilemapRenderSystem::Init()
 	{
 		ISystem::Init();
-		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+		NEventManager* eventManager =   NEventManager::Instance();
 
 		SUBSCRIBE_EVENT(EntityCreatedEvent, &TilemapRenderSystem::OnEntityCreated, eventManager, EventPriority::Low);
 
-		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+		NRegistry* registry = NRegistry::Instance();
 
 		InitTilemap(GetSystemEntities(), registry);
 	}
@@ -98,7 +98,7 @@ namespace NULLENGINE
 		}
 
 		// Add or update component in registry
-		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
+		NComponentFactory* componentFactory = NComponentFactory::Instance();
 		componentFactory->AddOrUpdate<TilemapComponent>(id, comp, registry, comp->m_Name, comp->m_PathName, comp->m_TileScale);
 	}
 
@@ -115,7 +115,7 @@ namespace NULLENGINE
 
 	bool TilemapRenderSystem::OnEntityCreated(const EntityCreatedEvent& e)
 	{
-		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+		NRegistry* registry = NRegistry::Instance();
 
 		const auto& entityList = GetSystemEntities();
 

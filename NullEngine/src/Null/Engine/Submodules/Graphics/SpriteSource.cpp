@@ -33,7 +33,7 @@ namespace NULLENGINE
 
 	SpriteSource::SpriteSource(const std::string name, int numRows, int numCols) : m_Rows(numRows), m_Cols(numCols), m_Name(name)
 	{
-		NTextureManager* textureManager = NEngine::Instance().Get<NTextureManager>();
+		NTextureManager* textureManager = NTextureManager::Instance();
 
 		m_Texture = textureManager->Create(name);
 	}

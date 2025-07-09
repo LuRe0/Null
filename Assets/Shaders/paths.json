@@ -37,6 +37,21 @@
             "path": "verticalBlur"
         },
         {
+            "path": "vignette"
+        },
+        {
+            "path": "grain"
+        },
+        {
+            "path": "chromaticAberration"
+        },
+        {
+            "path": "cameraTint"
+        },
+        {
+            "path": "grayscale"
+        },
+        {
             "path": "particle",
             "isCompute": false
         },

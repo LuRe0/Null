@@ -42,7 +42,7 @@ namespace NULLENGINE
 
 	//class NLE_API Scene;
 
-	class NLE_API NRenderer : public IModule
+	class NLE_API NRenderer : public ModuleBase<NRenderer>
 	{
 	public:
 		NRenderer();

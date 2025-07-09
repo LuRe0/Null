@@ -17,7 +17,8 @@
 #include <sol/sol.hpp>
 #include <misc/cpp/imgui_stdlib.h>
 #include <shellapi.h>
-
+#include "../Entities/Entity.h"
+#include "../../Scene.h"
 
 //******************************************************************************//
 // Public Variables															    //
@@ -41,7 +42,7 @@ namespace NULLENGINE
 	{
 		Require<ScriptComponent>();
 
-		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
+		NComponentFactory* componentFactory = NComponentFactory::Instance();
 
 		componentFactory->Register<ScriptComponent>(CreateScriptComponent,
 			[this](Entity& id) { this->ViewScriptComponent(id); }, WriteScriptComponent);
@@ -54,7 +55,10 @@ namespace NULLENGINE
 		NScriptingInterface* scriptingInterface = m_Parent->Get< NScriptingInterface>();
 		try
 		{
-			m_LuaState.open_libraries(sol::lib::base, sol::lib::coroutine, sol::lib::string, sol::lib::io);
+			m_LuaState.open_libraries(sol::lib::base, sol::lib::coroutine, sol::lib::string, sol::lib::io, sol::lib::table, sol::lib::math);
+
+			ScriptHelper::SetLuaState(m_LuaState);
+
 			scriptingInterface->RegisterEngineFunctions(m_LuaState);
 		}
 		catch (const std::exception&)
@@ -68,12 +72,12 @@ namespace NULLENGINE
 		ISystem::Init();
 
 
-		for (const auto entityId : GetSystemEntities())
-		{
-			InitializeScripts(entityId);
-		}
+		//for (const auto entityId : GetSystemEntities())
+		//{
+		//	InitializeScripts(entityId);
+		//}
 
-		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+		NEventManager* eventManager =   NEventManager::Instance();
 
 		SUBSCRIBE_EVENT(ScriptCreatedEvent, &ScriptSystem::OnScriptAdded, eventManager, EventPriority::High);
 		SUBSCRIBE_EVENT(ScriptModifiedEvent, &ScriptSystem::OnScriptModified, eventManager, EventPriority::High);
@@ -84,6 +88,10 @@ namespace NULLENGINE
 		SUBSCRIBE_EVENT(EntityCreatedEvent, &ScriptSystem::OnEntityCreated, eventManager, EventPriority::Low);
 
 
+
+
+		NRegistry* registry = NRegistry::Instance();
+
 	}
 
 	void ScriptSystem::Update(float dt)
@@ -93,7 +101,7 @@ namespace NULLENGINE
 
 	void ScriptSystem::RuntimeUpdate(float dt)
 	{
-		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+		NRegistry* registry = NRegistry::Instance();
 
 
 		for (const auto entityId : GetSystemEntities())
@@ -132,7 +140,7 @@ namespace NULLENGINE
 
 	void ScriptSystem::Shutdown()
 	{
-		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+		NRegistry* registry = NRegistry::Instance();
 
 		for (const auto entityId : GetSystemEntities())
 		{
@@ -143,7 +151,15 @@ namespace NULLENGINE
 				if (script.valid()) {
 					sol::function exit_func = script["Exit"];
 					if (exit_func.valid()) {
-						exit_func();
+					
+						try
+						{
+							exit_func(script);
+						}
+						catch (const sol::error& e)
+						{
+							NLE_CORE_ERROR("Lua Error: {0}", e.what());
+						}
 					}
 				}
 			}
@@ -157,7 +173,7 @@ namespace NULLENGINE
 
 	void ScriptSystem::CreateScriptComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id)
 	{
-		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
+		NComponentFactory* componentFactory = NComponentFactory::Instance();
 
 		auto* comp = static_cast<ScriptComponent*>(component);
 		JsonReader jsonWrapper(json);
@@ -209,7 +225,7 @@ namespace NULLENGINE
 			{
 				const sol::table& scriptTable = script.m_Scripts[i]["data"];
 
-				nlohmann::json scriptDiffs = ScriptHelper::GenerateScriptDifferences(scriptTable, defaults);
+				nlohmann::json scriptDiffs = ScriptHelper::GenerateScriptDifferences(scriptTable, defaults.toMap());
 				defaultsJSON["scripts"][scriptName] = scriptDiffs;
 			}
 		}
@@ -239,7 +255,7 @@ namespace NULLENGINE
 	void ScriptSystem::ViewScriptComponent(Entity& entity)
 	{
 		NScriptingInterface* scriptingInterface = m_Parent->Get< NScriptingInterface>();
-		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+		NEventManager* eventManager =   NEventManager::Instance();
 
 		ScriptComponent& script = entity.Get<ScriptComponent>();
 
@@ -281,9 +297,8 @@ namespace NULLENGINE
 
 			if (opened)
 			{
-				sol::table scr = script.m_Scripts[i];
-
-				sol::table data = scr["data"];
+	
+				sol::table data = script.m_Scripts[i]["data"];
 				for (auto& pair : data)
 				{
 					sol::object key = pair.first;
@@ -296,7 +311,25 @@ namespace NULLENGINE
 					LuaValue luaValue = ScriptHelper::GetValue(value);
 
 					if (serialize)
-						ScriptHelper::ImGuiDisplayAndModifyLuaValue(scr, data, keyStr, luaValue);
+					{
+						ScriptHelper::ImGuiDisplayAndModifyLuaValue(script.m_Scripts[i], data, keyStr, luaValue);
+
+						if (ImGui::IsItemDeactivatedAfterEdit()) 
+						{
+							sol::function _func = script.m_Scripts[i]["OnValueChangedInEditor"];
+							if (_func.valid()) {
+
+								try
+								{
+									_func(script.m_Scripts[i], keyStr);
+								}
+								catch (const sol::error& e)
+								{
+									NLE_CORE_ERROR("Lua Error: {0}", e.what());
+								}
+							}
+						}
+					}
 
 				}
 
@@ -429,7 +462,7 @@ namespace NULLENGINE
 	void ScriptSystem::InitializeScripts(EntityID id)
 	{
 
-		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+		NRegistry* registry = NRegistry::Instance();
 		ScriptComponent& scriptComponent = registry->GetComponent<ScriptComponent>(id);
 
 
@@ -467,8 +500,8 @@ namespace NULLENGINE
 
 		NScriptingInterface* scriptingInterface = m_Parent->Get< NScriptingInterface>();
 
-		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
-		NSceneManager* scene = NEngine::Instance().Get<NSceneManager>();
+		NRegistry* registry = NRegistry::Instance();
+		NSceneManager* scene = NSceneManager::Instance();
 
 		ScriptComponent& scriptComponent = registry->GetComponent<ScriptComponent>(id);
 
@@ -482,6 +515,7 @@ namespace NULLENGINE
 
 			// Load the script using require_file
 			scriptComponent.m_Script_Paths.push_back(fullPath);
+
 			scriptComponent.m_Environment = sol::environment(m_LuaState, sol::create, m_LuaState.globals());
 			sol::table script = m_LuaState.script_file(fullPath, scriptComponent.m_Environment);
 			//scriptComponent.m_Script_Names.push_back(scriptname);
@@ -555,8 +589,16 @@ namespace NULLENGINE
 		if (newScr.valid())
 		{
 			sol::function start_func = newScr["Start"];
-			if (start_func.valid()) {
-				start_func();
+			if (start_func.valid()) 
+			{
+				try
+				{
+					start_func(newScr);
+				}
+				catch (const sol::error& e)
+				{
+					NLE_CORE_ERROR("Lua Error: {0}", e.what());
+				}
 			}
 		}
 	}
@@ -564,8 +606,8 @@ namespace NULLENGINE
 	void ScriptSystem::RemoveScript(EntityID id, const std::string& script)
 	{
 		NScriptingInterface* scriptingInterface = m_Parent->Get< NScriptingInterface>();
-		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
-		NSceneManager* scene = NEngine::Instance().Get<NSceneManager>();
+		NRegistry* registry = NRegistry::Instance();
+		NSceneManager* scene = NSceneManager::Instance();
 
 		ScriptComponent& scriptComponent = registry->GetComponent<ScriptComponent>(id);
 
@@ -596,7 +638,7 @@ namespace NULLENGINE
 
 	bool ScriptSystem::OnScriptAdded(const ScriptCreatedEvent& e)
 	{
-		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+		NRegistry* registry = NRegistry::Instance();
 		ScriptComponent& scriptComponent = registry->GetComponent<ScriptComponent>(e.GetEntityID());
 		scriptComponent.m_Script_Names.push_back(e.GetScriptName());
 		AddScript(e.GetEntityID(), e.GetScriptName());
@@ -608,7 +650,7 @@ namespace NULLENGINE
 
 	bool ScriptSystem::OnScriptModified(const ScriptModifiedEvent& e)
 	{
-		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+		NRegistry* registry = NRegistry::Instance();
 		NScriptingInterface* scriptingInterface = m_Parent->Get< NScriptingInterface>();
 
 		for (const auto entityId : GetSystemEntities())
@@ -648,11 +690,39 @@ namespace NULLENGINE
 							sol::table newProps = newData[keyStr];
 							bool serialize = newProps["serialize"];
 							if (serialize)
-								newProps["value"] = oldValue;
+							{
+								sol::object newValue = newProps["value"];
+								if (oldValue.get_type() == newValue.get_type())
+								{
+									newProps["value"] = oldValue;
+								}
+								else
+								{
+									newProps["value"] = newValue;
+								}
+							}
 						}
 					}
 
 					scriptComponent.m_Scripts[index] = table;
+
+					auto& newScr = scriptComponent.m_Scripts[index];
+					if (newScr.valid())
+					{
+
+						sol::function _func = newScr["OnReload"];
+						if (_func.valid())
+						{
+							try
+							{
+								_func(newScr);
+							}
+							catch (const sol::error& e)
+							{
+								NLE_CORE_ERROR("Lua Error: {0}", e.what());
+							}
+						}
+					}
 
 					scriptingInterface->AddScripts(e.GetScriptName());
 				}
@@ -668,7 +738,7 @@ namespace NULLENGINE
 
 	bool ScriptSystem::OnScriptRemoved(const ScriptRemovedEvent& e)
 	{
-		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+		NRegistry* registry = NRegistry::Instance();
 		ScriptComponent& scriptComponent = registry->GetComponent<ScriptComponent>(e.GetEntityID());
 
 		RemoveScript(e.GetEntityID(), e.GetScriptName());
@@ -687,8 +757,8 @@ namespace NULLENGINE
 
 	bool ScriptSystem::OnCollisionEnter(const CollisionEnterEvent& e)
 	{
-		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
-		auto* sceneManager = NEngine::Instance().Get<NSceneManager>();
+		NRegistry* registry = NRegistry::Instance();
+		auto* sceneManager = NSceneManager::Instance();
 		auto* scene = sceneManager->GetCurrentScene();
 		//auto& entityA = scene->GetEntity(e.GetEntityA()); // Get the Entity directly
 
@@ -722,8 +792,8 @@ namespace NULLENGINE
 
 	bool ScriptSystem::OnCollisionExit(const CollisionExitEvent& e)
 	{
-		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
-		auto* sceneManager = NEngine::Instance().Get<NSceneManager>();
+		NRegistry* registry = NRegistry::Instance();
+		auto* sceneManager = NSceneManager::Instance();
 		auto* scene = sceneManager->GetCurrentScene();
 		if (scene->HasEntity(e.GetEntityB()))
 		{

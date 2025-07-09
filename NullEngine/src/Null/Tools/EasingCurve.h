@@ -13,7 +13,7 @@
 // Includes																        //
 //******************************************************************************//
 #include "Null/Core.h"
-
+#include "Null/Tools/Easing.h"
 
 //******************************************************************************//
 // Definitions  														        //
@@ -39,6 +39,7 @@ namespace NULLENGINE
         EasingCurve();
 
         void DrawEditorUI(const char* label = "Easing Curve");
+        float Sample(float t) const;
         void UploadToGPU(); // creates texture + bindless handle
         void GenerateFromType();
         void BindToShader(unsigned int shaderID, const char* uniformName, unsigned int textureUnit);
@@ -49,33 +50,13 @@ namespace NULLENGINE
 
         float values[kCurveSamples]; // public for serialization or raw access
 
-        enum class CurveType {
-            Custom,
-            Linear,
-            EaseIn,
-            EaseOut,
-            EaseInOut,
-            FastIn,
-            FastOut,
-
-            InOutPeak,     // new
-            Parabola,      // new
-            SmoothStep,    // new
-            SmootherStep,  // new
-            ElasticOut,    // new
-            BounceOut,     // new
-            BackIn,        // new
-            BackOut,       // new
-        };
-
-
-        CurveType type = CurveType::Custom;
+        EasingType type = EasingType::Linear;
 
     private:
         unsigned int m_TextureID = 0;
         unsigned int m_BindlessHandle = 0;
         bool m_IsDirty = true;
-
+        bool m_IsCustom = false;
 
       
         //float rangeStart = 0.0f;

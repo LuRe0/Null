@@ -1,10 +1,38 @@
 [
   {
     "name": "Scene",
-    "stage": "Main",
+    "stage": "Opaque",
     "shader": "instanceDefault",
     "framebuffer": "Scene",
     "clear": true,
+    "depthTest": false,
+    "depthWrite": true,
+    "depthFunc": "LESS",
+    "blendMode": "Alpha",
+    "cullMode": "None",
+    "batchersToFlush": ["Quad", "Cube","Line", "Tilemap", "Triangle", "Circle"],
+    "clearColor": [0.1, 0.1, 0.1, 1]
+  },
+  {
+    "name": "Scene",
+    "stage": "Particles",
+    "shader": "particle",
+    "framebuffer": "Scene",
+    "clear": false,
+    "depthTest": false,
+    "depthWrite": true,
+    "depthFunc": "LESS",
+    "blendMode": "Alpha",
+    "cullMode": "None",
+    "batchersToFlush": ["Particle"],
+    "clearColor": [0.1, 0.1, 0.1, 1]
+  },
+  {
+    "name": "Scene",
+    "stage": "Transparent",
+    "shader": "instanceDefault",
+    "framebuffer": "Scene",
+    "clear": false,
     "depthTest": false,
     "depthWrite": true,
     "depthFunc": "LESS",
@@ -77,5 +105,65 @@
   "cullMode": "None",
   "clearColor": [0.1, 0.1, 0.1, 1],
   "batchersToFlush": []
+  },
+  {
+    "name": "Vignette",
+    "stage": "PostProcess",
+    "shader": "vignette",
+    "framebuffer": "PostFX_A",
+    "inputs": ["CompositeOut"],
+    "clear": true,
+    "depthTest": false,
+    "depthWrite": false,
+    "blendMode": "None",
+    "cullMode": "None"
+  },
+  {
+    "name": "Grayscale",
+    "stage": "PostProcess",
+    "shader": "grayscale",
+    "framebuffer": "PostFX_B",
+    "inputs": ["PostFX_A"],
+    "clear": true,
+    "depthTest": false,
+    "depthWrite": false,
+    "blendMode": "None",
+    "cullMode": "None"
+  },
+  {
+    "name": "Tint",
+    "stage": "PostProcess",
+    "shader": "cameraTint",
+    "framebuffer": "PostFX_A",
+    "inputs": ["PostFX_B"],
+    "clear": true,
+    "depthTest": false,
+    "depthWrite": false,
+    "blendMode": "None",
+    "cullMode": "None"
+  },
+  {
+    "name": "Chromatic",
+    "stage": "PostProcess",
+    "shader": "chromaticAberration",
+    "framebuffer": "PostFX_B",
+    "inputs": ["PostFX_A"],
+    "clear": true,
+    "depthTest": false,
+    "depthWrite": false,
+    "blendMode": "None",
+    "cullMode": "None"
+  },
+  {
+    "name": "Grain",
+    "stage": "PostProcess",
+    "shader": "grain",
+    "framebuffer": "FinalOutput",
+    "inputs": ["PostFX_B"],
+    "clear": true,
+    "depthTest": false,
+    "depthWrite": false,
+    "blendMode": "None",
+    "cullMode": "None"
   }
 ]

@@ -21,7 +21,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
-
+#include "../Entities/Entity.h"
+#include "../../Scene.h"
 //******************************************************************************//
 // Public Variables															    //
 //******************************************************************************//
@@ -39,7 +40,7 @@ namespace NULLENGINE
 		Require<TransformComponent>();
 		Require<BoxCollider2DComponent>();
 
-		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
+		NComponentFactory* componentFactory = NComponentFactory::Instance();
 
 		componentFactory->Register<BoxCollider2DComponent>(CreateBoxCollider2DComponent,
 			[this](Entity& id) { this->ViewBoxCollider2DComponent(id); }, WriteBoxCollider2DComponent);
@@ -71,13 +72,13 @@ namespace NULLENGINE
 
 	void BoxCollider2DSystem::Render()
 	{
-		if (!NEngine::Instance().Get<NDebugManager>()->m_ShowDebug)
+		if (!NDebugManager::Instance()->m_ShowDebug)
 			return;
 
-		NRenderer* renderer = NEngine::Instance().Get<NRenderer>();
-		NRegistry* m_Parent = NEngine::Instance().Get<NRegistry>();
-		NMeshManager* meshManager = NEngine::Instance().Get<NMeshManager>();
-		NCameraManager* camManager = NEngine::Instance().Get<NCameraManager>();
+		NRenderer* renderer = NRenderer::Instance();
+		NRegistry* m_Parent = NRegistry::Instance();
+		NMeshManager* meshManager = NMeshManager::Instance();
+		NCameraManager* camManager = NCameraManager::Instance();
 
 		for (const auto entityId : GetSystemEntities())
 		{
@@ -149,7 +150,7 @@ namespace NULLENGINE
 				"set_offset", sol::overload(
 					[this](BoxCollider2DComponent& bc2d, float x, float y)
 					{
-						PhysicsSystem* physicsSys = NEngine::Instance().Get<PhysicsSystem>();
+						PhysicsSystem* physicsSys = PhysicsSystem::Instance();
 
 						bc2d.m_Offset = glm::vec2(x, y);
 
@@ -163,7 +164,7 @@ namespace NULLENGINE
 					},
 					[this](BoxCollider2DComponent& bc2d, glm::vec2 newOffset)
 					{
-						PhysicsSystem* physicsSys = NEngine::Instance().Get<PhysicsSystem>();
+						PhysicsSystem* physicsSys =PhysicsSystem::Instance();
 
 						bc2d.m_Offset = newOffset;
 
@@ -179,7 +180,7 @@ namespace NULLENGINE
 				"set_scale", sol::overload(
 					[this](BoxCollider2DComponent& bc2d, float x, float y)
 					{
-						PhysicsSystem* physicsSys = NEngine::Instance().Get<PhysicsSystem>();
+						PhysicsSystem* physicsSys =PhysicsSystem::Instance();
 
 						bc2d.m_Scale = glm::vec2(x, y);
 
@@ -193,7 +194,7 @@ namespace NULLENGINE
 					},
 					[this](BoxCollider2DComponent& bc2d, glm::vec2 newScale)
 					{
-						PhysicsSystem* physicsSys = NEngine::Instance().Get<PhysicsSystem>();
+						PhysicsSystem* physicsSys =PhysicsSystem::Instance();
 
 						bc2d.m_Scale = newScale;
 
@@ -213,7 +214,7 @@ namespace NULLENGINE
 	void BoxCollider2DSystem::CreateBoxCollider2DComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id)
 	{
 
-		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
+		NComponentFactory* componentFactory = NComponentFactory::Instance();
 
 		auto* comp = static_cast<BoxCollider2DComponent*>(component);
 		JsonReader jsonWrapper(json);
@@ -300,7 +301,7 @@ namespace NULLENGINE
 
 	void BoxCollider2DSystem::CalculateOffset(glm::vec3& offset, Entity& entity)
 	{
-		auto* sceneManager = NEngine::Instance().Get<NSceneManager>();
+		auto* sceneManager = NSceneManager::Instance();
 
 		if (entity.Has<ParentComponent>())
 		{

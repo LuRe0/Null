@@ -31,7 +31,7 @@ namespace NULLENGINE
 
     void NDebugManager::Init()
     {
-        NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+        NEventManager* eventManager =   NEventManager::Instance();
 
     }
 

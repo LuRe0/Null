@@ -30,7 +30,7 @@ namespace NULLENGINE
 	void NFramebufferManager::Load()
 	{
 
-        NWindow* window = NEngine::Instance().Get<NWindow>();
+        NWindow* window = NWindow::Instance();
 
 
 		std::string filePath = std::string("../Assets/Framebuffers");
@@ -101,7 +101,7 @@ namespace NULLENGINE
 
     void NFramebufferManager::Init()
     {
-        NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+        NEventManager* eventManager =   NEventManager::Instance();
 
         SUBSCRIBE_EVENT(WindowResizeEvent, &NFramebufferManager::OnWindowResize, eventManager, EventPriority::Low);
     }
@@ -121,8 +121,7 @@ namespace NULLENGINE
 
     bool NFramebufferManager::OnWindowResize(const WindowResizeEvent& e)
     {
-        if (!m_Parent->GetIsEditorEnabled())
-        {
+
             m_WinWidth = static_cast<float>(e.GetWidth());
             m_WinHeight = static_cast<float>(e.GetHeight());
 
@@ -132,7 +131,7 @@ namespace NULLENGINE
             }
 
             SetViewport(0, 0, static_cast<uint32_t>(m_WinWidth), static_cast<uint32_t>(m_WinHeight));
-        }
+        
 
         return true;
     }

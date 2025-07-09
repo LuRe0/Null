@@ -36,7 +36,7 @@
 
 namespace NULLENGINE
 {
-	struct NLE_API NDebugManager : public IModule
+	struct NLE_API NDebugManager : public ModuleBase<NDebugManager>
 	{
 	public:
         NDebugManager() = default;

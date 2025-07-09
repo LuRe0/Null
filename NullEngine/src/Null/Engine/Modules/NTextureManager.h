@@ -36,7 +36,7 @@
 namespace NULLENGINE
 {
 	// Specialize for resource
-	class NLE_API NTextureManager : public NResourceManager<Texture>
+	class NLE_API NTextureManager : public NResourceManager<Texture, NTextureManager>
 	{
 	public:
 

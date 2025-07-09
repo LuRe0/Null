@@ -34,7 +34,7 @@
 namespace NULLENGINE
 {
 	struct CircleCollider2DComponent;
-	class NLE_API CircleCollider2DSystem : public ISystem
+	class NLE_API CircleCollider2DSystem : public ISystem<CameraSystem>
 	{
 	public:
 

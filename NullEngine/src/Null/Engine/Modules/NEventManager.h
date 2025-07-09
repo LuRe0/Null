@@ -37,7 +37,7 @@ Code adapted from https://denyskryvytskyi.github.io/event-system
 
 namespace NULLENGINE
 {
-	class NLE_API NEventManager : public IModule
+	class NLE_API NEventManager : public ModuleBase<NEventManager>
 	{
 	public:
 

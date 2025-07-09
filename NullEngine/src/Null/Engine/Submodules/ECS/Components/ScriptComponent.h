@@ -4,8 +4,66 @@
 
 namespace NULLENGINE
 {
-	using LuaValue = std::variant<float, int, std::string, bool, sol::object, sol::table, sol::function, std::monostate>;
-	using ScriptDefaults = std::unordered_map<std::string, std::unordered_map<std::string, LuaValue>>;
+	using LuaValue = std::variant<
+		float,
+		int,
+		std::string,
+		bool,
+		sol::object,
+		sol::table,
+		sol::function,
+		std::monostate
+	>;
+
+	struct OrderedMap {
+		std::vector<std::pair<std::string, LuaValue>> entries = std::vector<std::pair<std::string, LuaValue>>();
+		std::unordered_map<std::string, size_t> indexMap = std::unordered_map<std::string, size_t>();
+
+		LuaValue& operator[](const std::string& key) {
+			auto it = indexMap.find(key);
+			if (it != indexMap.end()) {
+				// Return existing value
+				return entries[it->second].second;
+			}
+			// Insert new entry with default LuaValue
+			entries.emplace_back(key, LuaValue{});
+			indexMap[key] = entries.size() - 1;
+			return entries.back().second;
+		}
+
+		LuaValue& at(const std::string& key) 
+		{
+			auto it = indexMap.find(key);
+			if (it == indexMap.end()) {
+				NLE_CORE_THROW("OrderedMap::at: key not found: {}",  key);
+			}
+			return entries[it->second].second;
+		}
+
+		const LuaValue& at(const std::string& key) const {
+			auto it = indexMap.find(key);
+			if (it == indexMap.end()) 
+			{
+				NLE_CORE_THROW("OrderedMap::at: key not found: {}", key);
+			}
+			return entries[it->second].second;
+		}
+
+		bool contains(const std::string& key) const {
+			return indexMap.find(key) != indexMap.end();
+		}
+
+		const std::unordered_map<std::string, LuaValue> toMap() const
+		{
+			std::unordered_map<std::string, LuaValue> map;
+			for (const auto& [key, val] : entries) {
+				map.emplace(key, val);
+			}
+			return map;
+		}
+	};
+
+	using ScriptDefaults = std::unordered_map<std::string, OrderedMap>;
 
 	//bool operator==(const LuaValue& lhs, const LuaValue& rhs) {
 	//	return lhs.index() == rhs.index() && std::visit(

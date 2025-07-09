@@ -202,8 +202,15 @@ namespace NULLENGINE
 
         bool followParent;
         bool openInWindow;
+
+
         // Burst
-        float burstCount = 0.0f;
+        bool useBurst = false;                
+        int burstCount = 0;                   
+        float burstCooldown = 0.0f;           
+        int burstsRemaining = 0;              
+        float burstTimer = 0.0f;              
+        bool bursting = false;                
 
 
         // Flags

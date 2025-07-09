@@ -14,8 +14,9 @@
 //******************************************************************************//
 #include "Null/Core.h"
 #include "Null/Engine/Modules/Base/IModule.h"
-#include "Null/Engine/Submodules/Scene.h"
+#include "nlohmann/json.hpp"
 
+using JSON = nlohmann::json;
 
 //******************************************************************************//
 // Definitions  														        //
@@ -34,10 +35,12 @@
 
 namespace NULLENGINE
 {
+	//using JSON = nlohmann::json;
 
-	//class NLE_API Scene;
 
-	class NLE_API NSceneManager : public IModule
+	class NLE_API Scene;
+
+	class NLE_API NSceneManager : public ModuleBase<NSceneManager>
 	{
 	public:
 		NSceneManager();
@@ -94,6 +97,8 @@ namespace NULLENGINE
 		NSceneManager(NSceneManager const&) = delete;
 		NSceneManager& operator=(NSceneManager const&) = delete;
 
+
+		// like  static SceneManager = nullptr thats set to this in the constructor?
 	};
 
 }

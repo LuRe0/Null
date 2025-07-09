@@ -34,7 +34,7 @@
 namespace NULLENGINE
 {
 	struct SpriteComponent;
-	class NLE_API BoxCollider2DSystem : public ISystem
+	class NLE_API BoxCollider2DSystem : public ISystem<BoxCollider2DSystem>
 	{
 	public:
 

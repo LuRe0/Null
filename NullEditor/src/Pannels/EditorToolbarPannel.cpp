@@ -48,6 +48,7 @@ namespace NULLENGINE
 	{
 		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
 		NDebugManager* debugManager = NEngine::Instance().Get<NDebugManager>();
+		NFramebufferManager* fbMan = NEngine::Instance().Get<NFramebufferManager>();
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
@@ -67,8 +68,31 @@ namespace NULLENGINE
 
 		ImGui::SameLine((ImGui::GetContentRegionMax().x * 0.75f));
 
+		const auto& fbNames = fbMan->GetResourceNames();
+
+
+		ImGui::PushItemWidth(150);
+		if (ImGui::BeginCombo("##RenderTarget", m_Parent->GetRenderTarget().c_str()))
+		{
+			for (const auto& name : fbNames)
+			{
+				bool isSelected = (m_Parent->GetRenderTarget() == name);
+				if (ImGui::Selectable(name.c_str(), isSelected)) {
+					m_Parent->SetRenderTarget(name);
+				}
+				if (isSelected)
+					ImGui::SetItemDefaultFocus();
+			}
+			ImGui::EndCombo();
+		}
+		ImGui::PopItemWidth();
+
+		ImGui::SameLine();
+
+
+		ImGui::PushItemWidth(150);
 		// Start the combo
-		if (ImGui::BeginCombo("Window Mode", m_CurrentMode == MODE_MAXIMIZED ? "Maximized" : "Windowed"))
+		if (ImGui::BeginCombo("##Window Mode", m_CurrentMode == MODE_MAXIMIZED ? "Maximized" : "Windowed"))
 		{
 			// Option to set to Maximized
 			if (ImGui::Selectable("Maximized", m_CurrentMode == MODE_MAXIMIZED))
@@ -84,6 +108,7 @@ namespace NULLENGINE
 
 			ImGui::EndCombo();
 		}
+		ImGui::PopItemWidth();
 
 		ImGui::SameLine((ImGui::GetContentRegionMax().x * 0.50f) - (size * 0.5f));
 

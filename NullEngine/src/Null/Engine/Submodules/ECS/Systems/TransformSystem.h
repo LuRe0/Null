@@ -35,7 +35,7 @@ namespace NULLENGINE
 {
 	struct TransformComponent;
 
-	class NLE_API TransformSystem : public ISystem
+	class NLE_API TransformSystem : public ISystem<TransformSystem>
 	{
 	public:
 

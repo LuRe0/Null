@@ -91,8 +91,12 @@ function PlayerMovement:OnCollisionEnter(otherEntity)
                 local r = Random.range_float(0.1,1.0)
                 local g = Random.range_float(r,1.0)
                 local b = Random.range_float(g,1.0)
-                local newtint = vec4(r, g, b, 1)
-                sprite:set_tint(newtint)
+                local min = vec4(0.3,0.2,0.1,1.0)
+                local max = vec4(1.0,1.0,1.0,1.0)
+                local newtint = Random.range_vec4(min, max)
+                -- Trace.debug("{0}", newtint.a)
+
+                sprite:set_emissive_color(newtint)
             end
     
         end

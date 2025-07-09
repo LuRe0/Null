@@ -56,7 +56,7 @@ namespace NULLENGINE
             return JsonReader(emptyObject);
         }
 
-        nlohmann::json GetArray(const std::string& key) const
+        nlohmann::json GetJSONArray(const std::string& key) const
         {
             if (HasData(key) && data[key].is_array())
             {
@@ -71,6 +71,29 @@ namespace NULLENGINE
         bool Empty() const;
 
         std::vector<float> GetFloatArray(const std::string& key, const std::vector<float>& defaultValues) const;
+
+
+        template <typename T>
+        std::vector<T> GetArray(const std::string& key, const std::vector<T>& defaultValues) const
+        {
+            if (data.contains(key) && data[key].is_array())
+            {
+                std::vector<T> result;
+                for (const auto& elem : data[key])
+                    result.push_back(elem.get<T>());
+
+                if (result.size() < defaultValues.size())
+                {
+                    size_t currentSize = result.size();
+                    result.resize(defaultValues.size());
+                    for (size_t i = currentSize; i < defaultValues.size(); i++)
+                        result[i] = defaultValues[i];
+                }
+                return result;
+            }
+            return defaultValues;
+        }
+
 
     private:
         const nlohmann::json& data;

@@ -46,10 +46,16 @@
             "type": "NRegistry"
         },
         {
+            "type": "ScriptSystem"            
+        },
+        {
             "type": "NSceneManager"            
         },
         {
-            "type": "ScriptSystem"            
+            "type": "LifetimeSystem"            
+        },
+        {
+            "type": "TagSystem"            
         },
         {
             "type": "CameraSystem"

@@ -40,13 +40,19 @@ namespace NULLENGINE
 		static bool LoadScript(sol::state& lua, const std::string& scriptName);
 		static void SetValue(sol::table& table, const std::string& key, const LuaValue& value);
 		static void ImGuiDisplayAndModifyLuaValue(sol::table& dataOwner, sol::table& table, const std::string& key, LuaValue& value);
+		static void CallLuaFunc(sol::table& table, const std::string& func);
 		static JSON GenerateScriptDifferences(const sol::table& script, const std::unordered_map<std::string, LuaValue>& defaults);
 		static JSON LuaValueToJson(const LuaValue& luaValue);
 		static LuaValue JsonToLuaValue(const JSON& jValue);
 		static bool IsScriptLoaded(sol::state& lua, const std::string& scriptName);
 		static void MarkScriptAsLoaded(sol::state& lua, const std::string& scriptName);
-
+		static void SetLuaState(sol::state& lua) 
+		{
+			s_LuaState = &lua;
+		}
 	private:
+		static sol::state* s_LuaState;
+
 
 	};
 

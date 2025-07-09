@@ -1,4 +1,4 @@
-
+﻿
 //------------------------------------------------------------------------------
 //
 // File Name:	NRenderer.cpp
@@ -81,7 +81,7 @@ namespace NULLENGINE
 
 	void NRenderer::BeginRender()
 	{
-		NFramebufferManager* fbMan = NEngine::Instance().Get<NFramebufferManager>();
+		NFramebufferManager* fbMan = NFramebufferManager::Instance();
 		Framebuffer* fb = fbMan->Get("Scene");
 		fb->Bind();
 
@@ -105,8 +105,8 @@ namespace NULLENGINE
 
 	void NRenderer::RenderElement(const ElementData& render)
 	{
-		NShaderManager* shaderMan = NEngine::Instance().Get<NShaderManager>();
-		NCameraManager* cameraManager = NEngine::Instance().Get<NCameraManager>();
+		NShaderManager* shaderMan = NShaderManager::Instance();
+		NCameraManager* cameraManager = NCameraManager::Instance();
 
 		std::string shaderName = render.shaderName.empty() ? "default" : render.shaderName;
 
@@ -156,7 +156,7 @@ namespace NULLENGINE
 		if (!render->mesh)
 			return;
 
-		NShaderManager* shaderMan = NEngine::Instance().Get<NShaderManager>();
+		NShaderManager* shaderMan = NShaderManager::Instance();
 
 
 		m_Batchers[render->mesh->GetName()].get()->AddInstance(*render, shader);
@@ -173,7 +173,7 @@ namespace NULLENGINE
 
 		//Flush(nullptr);
 
-		NFramebufferManager* fbMan = NEngine::Instance().Get<NFramebufferManager>();
+		NFramebufferManager* fbMan = NFramebufferManager::Instance();
 		Framebuffer* fb = fbMan->Get("Scene");
 		
 		fb->Unbind();
@@ -248,16 +248,17 @@ namespace NULLENGINE
 
 	void NRenderer::RenderCompositePass(const RenderPass& pass)
 	{
-		NShaderManager* shaderMan = NEngine::Instance().Get<NShaderManager>();
-		NMeshManager* meshManager = NEngine::Instance().Get<NMeshManager>();
-		NFramebufferManager* fbMan = NEngine::Instance().Get<NFramebufferManager>();
+		NShaderManager* shaderMan = NShaderManager::Instance();
+		NMeshManager* meshManager = NMeshManager::Instance();
+		NFramebufferManager* fbMan = NFramebufferManager::Instance();
 
 		Shader* shader = pass.shader;
 		Mesh* mesh = meshManager->Get("Quad");
 
 		shader->Bind();
 
-		Camera* camera = NEngine::Instance().Get<NCameraManager>()->GetCamera<Camera2D>("Default2D");
+		Camera* camera = NCameraManager::Instance()->GetCamera<Camera2D>("Default2D");
+		Camera* currentCamera = NCameraManager::Instance()->GetCurrentCamera();
 		glm::mat4 projection = camera->GetProjectionMatrix();
 		glm::vec2 dims = pass.framebuffer->GetSize();
 
@@ -283,19 +284,37 @@ namespace NULLENGINE
 			pass.shader->setInt("inputs[" + std::to_string(i) + "]", i);
 		}
 
-		// Set blur uniforms if needed
-		if (pass.name == "BlurH") {
-			float texelWidth = 1.0f / dims.x;
-			shader->setFloat("texelWidth", texelWidth);
+		const PostProcess& pp = currentCamera->GetPPSettings();
+
+		if (pass.name == "BrightPass") {
+			shader->setFloat("threshold", pp.BloomThreshold * pp.UseBloom);
+			shader->setFloat("intensity", pp.BloomIntensity * pp.UseBloom);
+		}
+		else if (pass.name == "BlurH") {
+			shader->setFloat("texelWidth", 1.0f / dims.x);
 		}
 		else if (pass.name == "BlurV") {
-			float texelHeight = 1.0f / dims.y;
-			shader->setFloat("texelHeight", texelHeight);
+			shader->setFloat("texelHeight", 1.0f / dims.y);
 		}
-		else if (pass.name == "BrightPass") {
-			float threshold = 0.1f; // tweak or pass from your postprocess config
-			shader->setFloat("threshold", threshold);
+		else if (pass.name == "Vignette") {
+			shader->setFloat("radius", pp.VignetteRadius*pp.UseVignette);
+			shader->setFloat("intensity", pp.VignetteIntensity * pp.UseVignette);
 		}
+		else if (pass.name == "Grayscale") {
+			shader->setFloat("grayscaleAmount", pp.GrayscaleAmount * pp.UseGrayscale);
+		}
+		else if (pass.name == "Tint") {
+			shader->setVec4("tintColor", pp.TintColor * static_cast<float>(pp.UseTint));
+			shader->setFloat("tintStrength", pp.TintStrength * pp.UseTint);
+		}
+		else if (pass.name == "Chromatic") {
+			shader->setFloat("offset", pp.ChromaticOffset / dims.x * static_cast<float>(pp.UseChromatic)); // pixel offset → UV
+		}
+		else if (pass.name == "Grain") {
+			shader->setFloat("grainAmount", pp.GrainAmount*pp.UseGrain);
+			shader->setFloat("time", Time::LastTime()); // or your delta/total time
+		}
+
 
 		mesh->Render();
 
@@ -315,9 +334,9 @@ namespace NULLENGINE
 		//{
 		//	ClearRender();
 
-		//	NShaderManager* shaderMan = NEngine::Instance().Get<NShaderManager>();
-		//	NMeshManager* meshManager = NEngine::Instance().Get<NMeshManager>();
-		//	NCameraManager* cameraManager = NEngine::Instance().Get<NCameraManager>();
+		//	NShaderManager* shaderMan = NShaderManager::Instance();
+		//	NMeshManager* meshManager = NMeshManager::Instance();
+		//	NCameraManager* cameraManager = NCameraManager::Instance();
 
 		//	Shader* shader = shaderMan->Get("framebuffer");
 		//	Mesh* mesh = meshManager->Get("Quad");
@@ -345,8 +364,8 @@ namespace NULLENGINE
 
 	void NRenderer::Init()
 	{
-		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
-		NWindow* window = NEngine::Instance().Get<NWindow>();
+		NEventManager* eventManager =   NEventManager::Instance();
+		NWindow* window = NWindow::Instance();
 		SUBSCRIBE_EVENT(WindowResizeEvent, &NRenderer::OnWindowResize, eventManager, EventPriority::Low);
 
 		m_WinWidth = static_cast<float>(window->Width());
@@ -361,11 +380,11 @@ namespace NULLENGINE
 		//glEnable(GL_CULL_FACE);
 		//glCullFace(GL_FRONT); // Or GL_FRONT, depending on your winding order
 
-		m_Batchers.emplace("Cube", std::make_unique<CubeBatchRenderer<Instance, CubeInstanceMesh>>(10000));
-		m_Batchers.emplace("Line", std::make_unique<LineBatchRenderer<Instance, LineInstanceMesh>>(5000));
-		m_Batchers.emplace("Triangle", std::make_unique<TriangleBatchRenderer<Instance, TriangleInstanceMesh>>(10000));
-		m_Batchers.emplace("Circle", std::make_unique<CircleBatchRenderer<Instance, CircleInstanceMesh>>(10000));
-		m_Batchers.emplace("Quad", std::make_unique<QuadBatchRenderer<Instance, QuadInstanceMesh>>(10000));
+		m_Batchers.emplace("Cube", std::make_unique<CubeBatchRenderer<DrawInstance, CubeInstanceMesh>>(10000));
+		m_Batchers.emplace("Line", std::make_unique<LineBatchRenderer<DrawInstance, LineInstanceMesh>>(5000));
+		m_Batchers.emplace("Triangle", std::make_unique<TriangleBatchRenderer<DrawInstance, TriangleInstanceMesh>>(10000));
+		m_Batchers.emplace("Circle", std::make_unique<CircleBatchRenderer<DrawInstance, CircleInstanceMesh>>(10000));
+		m_Batchers.emplace("Quad", std::make_unique<QuadBatchRenderer<DrawInstance, QuadInstanceMesh>>(10000));
 
 
 		m_RenderCommands.resize(static_cast<int>(RenderCommandTypes::QUEUES));
@@ -446,11 +465,15 @@ namespace NULLENGINE
 
 				break;
 
+			case RenderStage::Particles:
+				DrawQueue(RenderCommandTypes::Particles, pass);
+				Flush(pass);
+				break;
+
+
 			case RenderStage::Emissive:
 				DrawQueue(RenderCommandTypes::Emissive, pass);
 				Flush(pass);
-
-
 				break;
 
 			case RenderStage::UI:

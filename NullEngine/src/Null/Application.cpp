@@ -60,6 +60,8 @@ namespace NULLENGINE
 		AddCreateFunction<PhysicsSystem>([&engine]() { engine.Add<NULLENGINE::PhysicsSystem>(); });
 		AddCreateFunction<TransformSystem>([&engine]() { engine.Add<NULLENGINE::TransformSystem>(); });
 		AddCreateFunction<TilemapRenderSystem>([&engine]() { engine.Add<NULLENGINE::TilemapRenderSystem>(); });
+		AddCreateFunction<TagSystem>([&engine]() { engine.Add<NULLENGINE::TagSystem>(); });
+		AddCreateFunction<LifetimeSystem>([&engine]() { engine.Add<NULLENGINE::LifetimeSystem>(); });
 		AddCreateFunction<SpriteRenderSystem>([&engine]() { engine.Add<NULLENGINE::SpriteRenderSystem>(); });
 		AddCreateFunction<CircleCollider2DSystem>([&engine]() { engine.Add<NULLENGINE::CircleCollider2DSystem>(); });
 		AddCreateFunction<BoxCollider2DSystem>([&engine]() { engine.Add<NULLENGINE::BoxCollider2DSystem>(); });

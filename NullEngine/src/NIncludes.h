@@ -37,6 +37,8 @@
 #include "Null/Engine/Submodules/ECS/Systems/TilemapRenderSystem.h"
 #include "Null/Engine/Submodules/ECS/Systems/ParticleSystem.h"
 #include "Null/Engine/Submodules/ECS/Systems/ScriptSystem.h"
+#include "Null/Engine/Submodules/ECS/Systems/TagSystem.h"
+#include "Null/Engine/Submodules/ECS/Systems/LifetimeSystem.h"
 #include "Null/Engine/Submodules/ECS/Systems/CameraSystem.h"
 #include "Null/Engine/Submodules/ECS/Systems/BoxCollider2DSystem.h"
 #include "Null/Engine/Submodules/ECS/Systems/CircleCollider2DSystem.h"
@@ -52,6 +54,7 @@
 #include "Null/Engine/Submodules/ECS/Components/BoxCollider2DComponent.h"
 #include "Null/Engine/Submodules/ECS/Components/TilemapComponent.h"
 #include "Null/Engine/Submodules/ECS/Components/ParticleSystemComponent.h"
+#include "Null/Engine/Submodules/ECS/Components/LifetimeComponent.h"
 
 #include "Null/Engine/NEngine.h"
 #include "Null/Engine/Misc/Time.h"

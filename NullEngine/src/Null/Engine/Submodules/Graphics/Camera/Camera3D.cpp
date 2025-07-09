@@ -43,7 +43,7 @@ namespace NULLENGINE
 
 	void Camera3D::Init()
 	{
-		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+		NEventManager* eventManager =   NEventManager::Instance();
 
 
 		SUBSCRIBE_EVENT(WindowResizeEvent, &Camera3D::OnWindowResize, eventManager, EventPriority::Low);
@@ -56,7 +56,7 @@ namespace NULLENGINE
 		{
 			UpdateCameraVectors();
 
-			m_ViewMatrix = glm::lookAt(m_Position, m_Position + m_Front, m_Up);
+			m_ViewMatrix = glm::lookAt(m_Position + m_ShakeOffset, m_Position + m_ShakeOffset + m_Front, m_Up);
 
 			UpdateProjectionMatrix();
 
@@ -185,14 +185,22 @@ namespace NULLENGINE
 	{
 		ImGui::Text("Camera name: %s", m_Name.c_str());
 
-		ImGui::DragFloat3("Position", glm::value_ptr(m_Position), 0.5f);
-		ImGui::SliderFloat("Yaw", &m_Yaw, -180.0f, 180.0f);
-		ImGui::SliderFloat("Pitch", &m_Pitch, -90.0f, 90.0f);
-		ImGui::SliderFloat("Zoom", &m_Zoom, 0.1f, 10.0f);
-		ImGui::SliderFloat("Field of View (FOV)", &m_FOV, 1.0f, 179.0f);
-		ImGui::SliderFloat("Near Clip", &m_NearClip, 0.0f, 10.0f);
-		ImGui::SliderFloat("Far Clip", &m_FarClip, 10.0f, 10000.0f);
+		bool dirty = false;
 
+		glm::vec3 position = m_Position;
+		if (ImGui::DragFloat3("Position", glm::value_ptr(position), 0.5f)) {
+			m_Position = position;
+			dirty = true;
+		}
+		dirty |= ImGui::SliderFloat("Yaw", &m_Yaw, -180.0f, 180.0f);
+		dirty |= ImGui::SliderFloat("Pitch", &m_Pitch, -90.0f, 90.0f);
+		dirty |= ImGui::SliderFloat("Zoom", &m_Zoom, 0.1f, 10.0f);
+		dirty |= ImGui::SliderFloat("Field of View (FOV)", &m_FOV, 1.0f, 179.0f);
+		dirty |= ImGui::SliderFloat("Near Clip", &m_NearClip, 0.0f, 10.0f);
+		dirty |= ImGui::SliderFloat("Far Clip", &m_FarClip, 10.0f, 10000.0f);
+
+		if (dirty)
+			m_IsDirty = true;
 
 		Camera::View();
 	}
@@ -209,6 +217,8 @@ namespace NULLENGINE
 		json["fov"] = m_FOV;
 		json["nearclip"] = m_NearClip;
 		json["farclip"] = m_FarClip;
+
+		Camera::Write(json);
 
 	}
 

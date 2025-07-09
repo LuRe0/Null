@@ -26,6 +26,7 @@
 #include <glm/gtx/matrix_decompose.hpp>
 #include <glm/gtx/euler_angles.hpp>
 #include "Null/Engine/Submodules/ECS/Entities/Entity.h"
+#include "../../Scene.h"
 //******************************************************************************//
 // Public Variables															    //
 //******************************************************************************//
@@ -42,8 +43,8 @@ namespace NULLENGINE
 	public:
 		void BeginContact(b2Contact* contact) override
 		{
-			NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
-			NSceneManager* sceneManager = NEngine::Instance().Get<NSceneManager>();
+			NEventManager* eventManager =   NEventManager::Instance();
+			NSceneManager* sceneManager = NSceneManager::Instance();
 			Scene* scene = sceneManager->GetCurrentScene();
 
 			b2Body* bodyA = contact->GetFixtureA()->GetBody();
@@ -77,7 +78,7 @@ namespace NULLENGINE
 		Require<TransformComponent>();
 		Require<Rigidbody2DComponent>();
 
-		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
+		NComponentFactory* componentFactory = NComponentFactory::Instance();
 
 		componentFactory->Register<Rigidbody2DComponent>(CreateRigidbody2DComponent,
 			[this](Entity& id) { this->ViewRigidbody2DComponent(id); }, WriteRigidbody2DComponent);
@@ -93,7 +94,7 @@ namespace NULLENGINE
 	{
 		ISystem::Init();
 
-		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+		NEventManager* eventManager =   NEventManager::Instance();
 
 		SUBSCRIBE_EVENT(EntityCreatedEvent, &PhysicsSystem::OnEntityCreated, eventManager, EventPriority::Low);
 		SUBSCRIBE_EVENT(EntityDestroyedEvent, &PhysicsSystem::OnEntityDestroyed, eventManager, EventPriority::High);
@@ -104,7 +105,7 @@ namespace NULLENGINE
 		SUBSCRIBE_EVENT(EntityParentedEvent, &PhysicsSystem::OnEntityParented, eventManager, EventPriority::High);
 		SUBSCRIBE_EVENT(EntitySeparatedEvent, &PhysicsSystem::OnEntitySeparated, eventManager, EventPriority::High);
 
-		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+		NRegistry* registry = NRegistry::Instance();
 
 
 		for (const auto entityId : GetSystemEntities())
@@ -124,7 +125,7 @@ namespace NULLENGINE
 
 	void PhysicsSystem::RuntimeUpdate(float dt)
 	{
-		NRegistry* m_Parent = NEngine::Instance().Get<NRegistry>();
+		NRegistry* m_Parent = NRegistry::Instance();
 
 		const int32_t velocityIterations = 6;
 		const int32_t positionIterations = 2;
@@ -212,13 +213,13 @@ namespace NULLENGINE
 
 	void PhysicsSystem::Render()
 	{
-		if (!NEngine::Instance().Get<NDebugManager>()->m_ShowDebug)
+		if (!NDebugManager::Instance()->m_ShowDebug)
 			return;
 
-		NRenderer* renderer = NEngine::Instance().Get<NRenderer>();
-		NRegistry* m_Parent = NEngine::Instance().Get<NRegistry>();
-		NMeshManager* meshManager = NEngine::Instance().Get<NMeshManager>();
-		NCameraManager* camManager = NEngine::Instance().Get<NCameraManager>();
+		NRenderer* renderer = NRenderer::Instance();
+		NRegistry* m_Parent = NRegistry::Instance();
+		NMeshManager* meshManager = NMeshManager::Instance();
+		NCameraManager* camManager = NCameraManager::Instance();
 
 
 		for (const auto entityId : GetSystemEntities())
@@ -386,7 +387,7 @@ namespace NULLENGINE
 	void PhysicsSystem::CreateRigidbody2DComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id)
 	{
 
-		NComponentFactory* componentFactory = NEngine::Instance().Get<NComponentFactory>();
+		NComponentFactory* componentFactory = NComponentFactory::Instance();
 
 		auto* comp = static_cast<Rigidbody2DComponent*>(component);
 		JsonReader jsonWrapper(json);
@@ -583,8 +584,8 @@ namespace NULLENGINE
 
 	bool PhysicsSystem::OnEntityCreated(const EntityCreatedEvent& e)
 	{
-		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
-		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+		NEventManager* eventManager =   NEventManager::Instance();
+		NRegistry* registry = NRegistry::Instance();
 
 		const auto& entityList = GetSystemEntities();
 
@@ -597,8 +598,8 @@ namespace NULLENGINE
 
 	bool PhysicsSystem::OnEntityDestroyed(const EntityDestroyedEvent& e)
 	{
-		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
-		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+		NEventManager* eventManager =   NEventManager::Instance();
+		NRegistry* registry = NRegistry::Instance();
 
 		const auto& entityList = GetSystemEntities();
 
@@ -650,7 +651,7 @@ namespace NULLENGINE
 
 	bool PhysicsSystem::OnEntityComponentRemoved(const EntityRemoveComponentEvent& e)
 	{
-		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+		NRegistry* registry = NRegistry::Instance();
 
 		if (e.GetComponentID() == Component<Rigidbody2DComponent>::GetID())
 		{
@@ -699,7 +700,7 @@ namespace NULLENGINE
 
 	bool PhysicsSystem::OnEntityParented(const EntityParentedEvent& e)
 	{
-		auto* sceneManager = NEngine::Instance().Get<NSceneManager>();
+		auto* sceneManager = NSceneManager::Instance();
 
 		auto& parent = sceneManager->GetCurrentScene()->GetEntity(e.GetParentID());
 		auto& child = sceneManager->GetCurrentScene()->GetEntity(e.GetChildID());
@@ -786,7 +787,7 @@ namespace NULLENGINE
 
 	bool PhysicsSystem::OnEntitySeparated(const EntitySeparatedEvent& e)
 	{
-		auto* sceneManager = NEngine::Instance().Get<NSceneManager>();
+		auto* sceneManager = NSceneManager::Instance();
 
 		auto& parent = sceneManager->GetCurrentScene()->GetEntity(e.GetParentID());
 		auto& child = sceneManager->GetCurrentScene()->GetEntity(e.GetChildID());
@@ -841,8 +842,8 @@ namespace NULLENGINE
 
 	bool PhysicsSystem::OnEntityComponentAdded(const EntityAddComponentEvent& e)
 	{
-		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
-		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+		NRegistry* registry = NRegistry::Instance();
+		NEventManager* eventManager =   NEventManager::Instance();
 
 		const auto& entityList = GetSystemEntities();
 
@@ -880,7 +881,7 @@ namespace NULLENGINE
 		{
 			EntityID id = m_Entities[i];
 
-			NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+			NRegistry* registry = NRegistry::Instance();
 
 			Rigidbody2DComponent& rb2d = registry->GetComponent<Rigidbody2DComponent>(id);
 
@@ -924,7 +925,7 @@ namespace NULLENGINE
 
 	bool PhysicsSystem::OnSceneStart(const InitializeBox2DEvent& e)
 	{
-		NRegistry* registry = NEngine::Instance().Get<NRegistry>();
+		NRegistry* registry = NRegistry::Instance();
 
 		return InitializePhysics(e.GetEntityID(), registry);
 	}
@@ -1059,7 +1060,7 @@ namespace NULLENGINE
 
 	bool PhysicsSystem::InitializePhysics(EntityID entityId, NRegistry* registry)
 	{
-		auto* sceneManager = NEngine::Instance().Get<NSceneManager>();
+		auto* sceneManager = NSceneManager::Instance();
 
 		TransformComponent& transform = registry->GetComponent<TransformComponent>(entityId);
 		Rigidbody2DComponent& rb2d = registry->GetComponent<Rigidbody2DComponent>(entityId);

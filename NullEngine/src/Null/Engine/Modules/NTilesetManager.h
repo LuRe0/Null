@@ -37,7 +37,7 @@ namespace NULLENGINE
 {
 
 	// Specialize for resource
-	class NLE_API NTilesetManager : public NResourceManager<Tileset>
+	class NLE_API NTilesetManager : public NResourceManager<Tileset, NTilesetManager>
 	{
 	public:
 

@@ -49,6 +49,24 @@ public:
 
 	static float RangeFloat(float rangeMin, float rangeMax);
 
+	static glm::vec2 RangeVec2(const glm::vec2& min, const glm::vec2& max);
+
+	static glm::vec3 RangeVec3(const glm::vec3& min, const glm::vec3& max);
+
+	static glm::vec4 RangeVec4(const glm::vec4& min, const glm::vec4& max);
+
+	static glm::vec2 Vec2();
+
+	static glm::vec3 Vec3();
+
+	static glm::vec4 Vec4();
+
+	static glm::vec2 UnitVec2();
+
+	static glm::vec3 UnitVec3();
+
+	static glm::vec4 UnitVec4();
+
 	static void RegisterToScripAPI(sol::state& lua);
 
 private:

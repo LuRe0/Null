@@ -17,6 +17,7 @@
 
 #include "Null/Engine/Submodules/Graphics/Camera/Controllers/OrthographicCameraController.h"
 #include "Null/Engine/Submodules/Graphics/Camera/Controllers/PerspectiveCameraController.h"
+#include <glm/glm.hpp>
 
 //#include "Pannels/SceneHierarchyPannel.h"
 
@@ -38,6 +39,8 @@
 
 namespace NULLENGINE
 {
+	class Sceene;
+	using EntityID = std::uint32_t;
 
 	struct PannelData
 	{
@@ -48,6 +51,7 @@ namespace NULLENGINE
 	class NLE_API CameraController;
 	class NLE_API OrthographicCameraController;
 	class NLE_API PerspectiveCameraController;
+	class NLE_API ImGuiLayer;
 
 	class NLE_API Pannel
 	{
@@ -91,6 +95,9 @@ namespace NULLENGINE
 
 		 void SetCamera(Camera::CameraType type);
 
+
+		 void SetRenderTarget(const std::string& fbName);
+		 const std::string& GetRenderTarget() { return m_DisplayedFB; }
 		 void SetGuizmo(int g);
 
 		 Camera* GetCurrentCamera();
@@ -113,6 +120,8 @@ namespace NULLENGINE
 		PannelData m_PannelData;
 
 		CameraController* m_CameraController;
+
+		std::string m_DisplayedFB = "FinalOutput";
 
 		std::unique_ptr<OrthographicCameraController> m_CameraController2D;
 		std::unique_ptr<PerspectiveCameraController> m_CameraController3D;

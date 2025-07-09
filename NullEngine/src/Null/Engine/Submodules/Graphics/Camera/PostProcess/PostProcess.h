@@ -33,12 +33,12 @@
 
 namespace NULLENGINE
 {
+    using JSON = nlohmann::json;
+
     struct NLE_API PostProcess
     {
         bool Enabled = true;
 
-        // Flags bitmask for fast shader usage
-        uint32_t EffectMask = 0;
 
         // Basic Effects and params:
         bool UseBloom = true;
@@ -61,6 +61,10 @@ namespace NULLENGINE
 
         bool UseGrain = false;
         float GrainAmount = 0.2f;
+
+        void Deserialize(const JSON& json);
+
+        void Serialize(JSON& json) const;
     };
 
 

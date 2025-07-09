@@ -12,7 +12,7 @@
 #include "stdafx.h"
 #include "NComponentFactory.h"
 #include "Null/Engine/Submodules/ECS/Components/IComponent.h"
-
+#include "../Submodules/ECS/Entities/Entity.h"
 
 //******************************************************************************//
 // Public Variables															    //

@@ -18,7 +18,9 @@ Code adapted from https://courses.pikuma.com/courses/take/2dgameengine/lessons/1
 #include "Null/Core.h"
 #include "Null/Engine/Modules/Base/IModule.h"
 #include "Null/Engine/Submodules/ComponentManager.h"
-#include "Null/Engine/Submodules/ECS/Systems/System.h"
+//#include "Null/Engine/Submodules/ECS/Systems/System.h"
+#include "../Submodules/ECS/Helpers/ComponentSignature.h"
+#include "Null/Engine/Submodules/ECS/Components/IComponent.h"
 #include "Null/Tools/Trace.h"
 
 
@@ -39,7 +41,7 @@ Code adapted from https://courses.pikuma.com/courses/take/2dgameengine/lessons/1
 
 namespace NULLENGINE
 {
-	class NLE_API NRegistry : public IModule
+	class NLE_API NRegistry : public ModuleBase<NRegistry>
 	{
 	public:
 		NRegistry();

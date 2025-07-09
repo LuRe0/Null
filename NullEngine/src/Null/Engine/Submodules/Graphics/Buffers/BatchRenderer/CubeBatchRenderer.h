@@ -100,9 +100,9 @@ namespace NULLENGINE
 
 		m_InstanceMesh.get()->UpdateInstances(m_InstanceBuffer, m_InstanceBuffer.size());
 
-		NShaderManager* shaderMan = NEngine::Instance().Get<NShaderManager>();
-		NCameraManager* cameraManager = NEngine::Instance().Get<NCameraManager>();
-		NTextureManager* textureMan = NEngine::Instance().Get<NTextureManager>();
+		NShaderManager* shaderMan = NShaderManager::Instance();
+		NCameraManager* cameraManager = NCameraManager::Instance();
+		NTextureManager* textureMan = NTextureManager::Instance();
 
 		//std::string shaderName = "cubeInstance";
 
@@ -147,7 +147,7 @@ namespace NULLENGINE
 			return;
 
 
-		NTextureManager* texMan = NEngine::Instance().Get<NTextureManager>();
+		NTextureManager* texMan = NTextureManager::Instance();
 
 		if (m_InstanceIndexCount >= m_MaxIndices)
 			NextBatch(shader);
@@ -231,7 +231,7 @@ namespace NULLENGINE
 		}
 
 
-		NShaderManager* shaderMan = NEngine::Instance().Get<NShaderManager>();
+		NShaderManager* shaderMan = NShaderManager::Instance();
 
 		//Shader* shader = shaderMan->Get("instanceDefault");
 

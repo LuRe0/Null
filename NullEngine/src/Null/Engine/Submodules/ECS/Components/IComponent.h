@@ -71,4 +71,39 @@ namespace NULLENGINE
 		bool m_SerializeToScene = true;
 	};
 
+
+
+
+#define DEFINE_FLAG_SET(Name, ...) \
+struct Name                         \
+{                                   \
+    union                           \
+    {                               \
+        struct { __VA_ARGS__ };     \
+        uint8_t m_Flags = 0;        \
+    };                              \
+                                    \
+    void Set(uint8_t mask, bool value = true) { \
+        if (value) m_Flags |= mask;            \
+        else m_Flags &= ~mask;                 \
+    }                                          \
+    bool IsSet(uint8_t mask) const { return (m_Flags & mask) != 0; } \
+    void Clear(uint8_t mask) { m_Flags &= ~mask; }                   \
+    void Reset() { m_Flags = 0; }                                     \
+};
+
+
+	enum ComponentFlags : uint8_t
+	{
+		ComponentFlags_Enabled = 1 << 0,
+		ComponentFlags_Serialized = 1 << 1,
+	};
+
+	DEFINE_FLAG_SET(ComponentFlagSet,
+		uint8_t m_Enabled : 1;
+	uint8_t m_Serialized : 1;
+	uint8_t m_Reserved : 6;
+		);
+
+
 }

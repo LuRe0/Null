@@ -67,8 +67,11 @@ namespace NULLENGINE
 
 	private:
 
-		static void CreateParticleSystemComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
-		static JSON WriteParticleSystemComponent(BaseComponent* component);
+		static void CreateParticleSystemComponent(void* component, const nlohmann::json& json);
+		static void AddParticleSystemComponent(void* component, NRegistry* registry, EntityID id);
+		static JSON WriteParticleSystemComponent(const void* component);
+
+		static JSON DiffParticleSystemComponent(const void* base, const void* modified);
 
 		void DrawCoreSettings(ParticleEmitter& emitter, size_t i);
 

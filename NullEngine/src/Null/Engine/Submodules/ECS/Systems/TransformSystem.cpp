@@ -26,6 +26,7 @@
 #include "../Entities/Entity.h"
 #include "../../../Modules/NSceneManager.h"
 #include "../../Scene.h"
+#include "../../../../Tools/ImGuiH.h"
 //******************************************************************************//
 // Public Variables															    //
 //******************************************************************************//
@@ -45,7 +46,8 @@ namespace NULLENGINE
 		NComponentFactory* componentFactory = NComponentFactory::Instance();
 
 		componentFactory->Register<TransformComponent>(CreateTransformComponent,
-			[this](Entity& id) { this->ViewTransformComponent(id); }, WriteTransformComponent);
+			[this](Entity& id) { this->ViewTransformComponent(id); }, WriteTransformComponent,
+			AddTransformComponent, DiffTransformComponent);
 
 	}
 
@@ -58,7 +60,7 @@ namespace NULLENGINE
 	{
 		ISystem::Init();
 
-		NEventManager* eventManager =   NEventManager::Instance();
+		NEventManager* eventManager = NEventManager::Instance();
 
 
 		//SUBSCRIBE_EVENT(WindowResizeEvent, &TransformSystem::OnWindowResize, eventManager);
@@ -66,6 +68,41 @@ namespace NULLENGINE
 		SUBSCRIBE_EVENT(EntityParentedEvent, &TransformSystem::OnEntityParented, eventManager, EventPriority::High);
 		SUBSCRIBE_EVENT(EntitySeparatedEvent, &TransformSystem::OnEntitySeparated, eventManager, EventPriority::High);
 	}
+
+	void TransformSystem::UpdateChildTransform(EntityID childId, const TransformComponent& parentTransform, NRegistry* registry)
+	{
+		// Retrieve the child's local transform component
+		TransformComponent& childTransform = registry->GetComponent<TransformComponent>(childId);
+
+		if (!childTransform.m_ComponentFlags.IsSet(ComponentFlags_Enabled))
+			return;
+
+		// Compute the child's local transform matrix
+		//PhysicsSystem::LocalToWorldPos(childTransform, childTransform.m_Translation, childTransform.m_Rotation, childTransform.m_Scale);
+		glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), childTransform.m_Translation);
+		glm::mat4 rotationMatrix = glm::toMat4(glm::quat(glm::radians(childTransform.m_Rotation)));
+		glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), childTransform.m_Scale);
+
+		glm::mat4 localTransformMatrix = translationMatrix * rotationMatrix * scaleMatrix;
+
+		// Combine the parent's world transform with the child's local transform
+		childTransform.m_TransformMatrix = parentTransform.m_TransformMatrix * localTransformMatrix;
+
+		// Mark the child's transform as clean
+
+		childTransform.m_Flags.Set(TransformFlags_DirectManipulation);
+
+		// Recursively update the child’s children
+		if (registry->HasComponent<ChildrenComponent>(childId))
+		{
+			auto& childrenComp = registry->GetComponent<ChildrenComponent>(childId);
+			for (const auto& grandchildId : childrenComp.m_Children)
+			{
+				UpdateChildTransform(grandchildId, childTransform, registry);
+			}
+		}
+	}
+
 
 	void TransformSystem::Update(float dt)
 	{
@@ -75,10 +112,10 @@ namespace NULLENGINE
 		{
 			TransformComponent& transform = registry->GetComponent<TransformComponent>(entityId);
 
-			if (!transform.m_Enabled)
+			if (!transform.m_ComponentFlags.IsSet(ComponentFlags_Enabled))
 				continue;
 
-			if (transform.m_Dirty)
+			if (transform.m_Flags.IsSet(TransformFlags_Dirty))
 			{
 				if (transform.m_Scale.z == 0.0)
 				{
@@ -114,20 +151,7 @@ namespace NULLENGINE
 					}
 				}
 
-
-				//if (m_Parent->HasComponent<Rigidbody2DComponent>(entityId))
-				//{
-				//	Rigidbody2DComponent& rb2d = m_Parent->GetComponent<Rigidbody2DComponent>(entityId);
-
-				//	if (rb2d.m_RuntimeBody)
-				//	{
-				//		PhysicsSystem* physicsSys =PhysicsSystem::Instance();
-				//		auto pos = physicsSys->PixelsToMeters(transform.m_Translation.x, transform.m_Translation.y);
-				//		rb2d.m_RuntimeBody->SetTransform({ pos.x, pos.y }, transform.m_Rotation.z);
-				//	}
-				//}
-
-				transform.m_Dirty = false;
+				transform.m_Flags.Clear(TransformFlags_Dirty);
 
 			}
 		}
@@ -153,118 +177,57 @@ namespace NULLENGINE
 
 	void TransformSystem::RegisterToScripAPI(sol::state& lua)
 	{
-		lua.new_usertype<TransformComponent>
-			(
-				"Transform",
-				sol::no_constructor,
-				"type_id", &Component<TransformComponent>::GetID,
-				"translation", sol::readonly(&TransformComponent::m_Translation),
-				"scale", sol::readonly(&TransformComponent::m_Scale),
-				"rotation", sol::readonly(&TransformComponent::m_Rotation),
-				"set_translation",
-				sol::overload(
-					[](TransformComponent& transform, float x, float y, float z)
-					{
-						transform.m_Translation = glm::vec3(x, y, z);
-						transform.m_Dirty = transform.m_DirectManipulation = true;
-					},
-					[](TransformComponent& transform, glm::vec3 newPos)
-					{
-						transform.m_Translation = newPos;
-						transform.m_Dirty = transform.m_DirectManipulation = true;
-					}
-				),
-				"set_scale", sol::overload(
-					[](TransformComponent& transform, float x, float y, float z)
-					{
-						transform.m_Scale = glm::vec3(x, y, z);
-						transform.m_Dirty = true;
-					},
-					[](TransformComponent& transform, glm::vec3 newScale)
-					{
-						transform.m_Scale = newScale;
-						transform.m_Dirty = true;
-					}
-				),
-				"set_rotation", sol::overload(
-					[](TransformComponent& transform, float x, float y, float z)
-					{
-						transform.m_Rotation = glm::vec3(x, y, z);
-						transform.m_Dirty = transform.m_DirectManipulation = true;
-					},
-					[](TransformComponent& transform, glm::vec3 newRot)
-					{
-						transform.m_Rotation = newRot;
-						transform.m_Dirty = transform.m_DirectManipulation = true;
-					}
-				)
-			);
+		//lua.new_usertype<TransformComponent>
+		//	(
+		//		"Transform",
+		//		sol::no_constructor,
+		//		"type_id", &Component<TransformComponent>::GetID,
+		//		"translation", sol::readonly(&TransformComponent::m_Translation),
+		//		"scale", sol::readonly(&TransformComponent::m_Scale),
+		//		"rotation", sol::readonly(&TransformComponent::m_Rotation),
+		//		"set_translation",
+		//		sol::overload(
+		//			[](TransformComponent& transform, float x, float y, float z)
+		//			{
+		//				transform.m_Translation = glm::vec3(x, y, z);
+		//				transform.m_Dirty = transform.m_DirectManipulation = true;
+		//			},
+		//			[](TransformComponent& transform, glm::vec3 newPos)
+		//			{
+		//				transform.m_Translation = newPos;
+		//				transform.m_Dirty = transform.m_DirectManipulation = true;
+		//			}
+		//		),
+		//		"set_scale", sol::overload(
+		//			[](TransformComponent& transform, float x, float y, float z)
+		//			{
+		//				transform.m_Scale = glm::vec3(x, y, z);
+		//				transform.m_Dirty = true;
+		//			},
+		//			[](TransformComponent& transform, glm::vec3 newScale)
+		//			{
+		//				transform.m_Scale = newScale;
+		//				transform.m_Dirty = true;
+		//			}
+		//		),
+		//		"set_rotation", sol::overload(
+		//			[](TransformComponent& transform, float x, float y, float z)
+		//			{
+		//				transform.m_Rotation = glm::vec3(x, y, z);
+		//				transform.m_Dirty = transform.m_DirectManipulation = true;
+		//			},
+		//			[](TransformComponent& transform, glm::vec3 newRot)
+		//			{
+		//				transform.m_Rotation = newRot;
+		//				transform.m_Dirty = transform.m_DirectManipulation = true;
+		//			}
+		//		)
+		//	);
 	}
 
 
-	void TransformSystem::UpdateChildTransform(EntityID childId, const TransformComponent& parentTransform, NRegistry* registry)
-	{
-		// Retrieve the child's local transform component
-		TransformComponent& childTransform = registry->GetComponent<TransformComponent>(childId);
 
-		if (!childTransform.m_Enabled)
-			return;
-
-	/*	if (!parentTransform.m_Dirty)
-			return;*/
-
-		//	glm::mat4 inverseParentTransform = glm::inverse(parentTransform.m_TransformMatrix);
-
-		//	childTransform.m_Translation = glm::vec3((inverseParentTransform * glm::vec4(childTransform.m_Translation, 1.0f)));
-		//	childTransform.m_Scale = childTransform.m_Scale / parentTransform.m_Scale;
-
-		//	// Extract parent rotation as Euler angles (assume in degrees)
-		//	glm::vec3 parentRotationEuler = parentTransform.m_Rotation; // Euler angles in degrees
-
-		//	// Convert parent rotation to quaternion
-		//	glm::vec3 parentRotationRadians = glm::radians(parentRotationEuler);
-		//	glm::quat parentRotation = glm::quat(glm::yawPitchRoll(parentRotationRadians.y, parentRotationRadians.x, parentRotationRadians.z));
-
-		//	// Convert child rotation from Euler angles (assume in degrees)
-		//	glm::vec3 childRotationEuler = childTransform.m_Rotation; // Euler angles in degrees
-		//	glm::vec3 childRotationRadians = glm::radians(childRotationEuler);
-		//	glm::quat childRotation = glm::quat(glm::yawPitchRoll(childRotationRadians.y, childRotationRadians.x, childRotationRadians.z));
-
-		//	// Compute local rotation by applying the inverse of the parent’s rotation
-		//	glm::quat localRotation = glm::normalize(glm::inverse(parentRotation) * childRotation);
-
-		//	// Convert local rotation back to Euler angles
-		//	glm::vec3 localRotationEuler = glm::degrees(glm::eulerAngles(localRotation));
-		//	childTransform.m_Rotation = localRotationEuler;
-		//}
-
-		// Compute the child's local transform matrix
-		//PhysicsSystem::LocalToWorldPos(childTransform, childTransform.m_Translation, childTransform.m_Rotation, childTransform.m_Scale);
-		glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), childTransform.m_Translation);
-		glm::mat4 rotationMatrix = glm::toMat4(glm::quat(glm::radians(childTransform.m_Rotation)));
-		glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), childTransform.m_Scale);
-
-		glm::mat4 localTransformMatrix = translationMatrix * rotationMatrix * scaleMatrix;
-
-		// Combine the parent's world transform with the child's local transform
-		childTransform.m_TransformMatrix = parentTransform.m_TransformMatrix * localTransformMatrix;
-
-		// Mark the child's transform as clean
-	
-		childTransform.m_DirectManipulation  = true;
-
-		// Recursively update the child’s children
-		if (registry->HasComponent<ChildrenComponent>(childId))
-		{
-			auto& childrenComp = registry->GetComponent<ChildrenComponent>(childId);
-			for (const auto& grandchildId : childrenComp.m_Children)
-			{
-				UpdateChildTransform(grandchildId, childTransform, registry);
-			}
-		}
-	}
-
-	void TransformSystem::CreateTransformComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id)
+	void TransformSystem::CreateTransformComponent(void* component, const nlohmann::json& json)
 	{
 		NComponentFactory* componentFactory = NComponentFactory::Instance();
 
@@ -276,45 +239,117 @@ namespace NULLENGINE
 			comp->m_Translation = jsonWrapper.GetVec3("translation", { 0.0f, 0.0f, 0.0f });
 			comp->m_Scale = jsonWrapper.GetVec3("scale", { 1.0f, 1.0f, 1.0f });
 			comp->m_Rotation = jsonWrapper.GetVec3("rotation", { 0.0f, 0.0f, 0.0f });
+
+			ComponentFlagSet flags;
+			flags.Set(ComponentFlags_Enabled);
+			flags.Set(ComponentFlags_Serialized);
+
+			TransformFlagSet transformFlags;
+			transformFlags.Set(TransformFlags_Dirty);
+			comp->m_Flags = transformFlags;
+		
+			comp->m_ComponentFlags.m_Flags = jsonWrapper.GetUInt8("ComponentFlags", flags.m_Flags);
 		}
 
-		componentFactory->AddOrUpdate<TransformComponent>(id, comp, registry, comp->m_Translation, comp->m_Scale, comp->m_Rotation);
 	}
 
-	JSON TransformSystem::WriteTransformComponent(BaseComponent* component)
+	void TransformSystem::AddTransformComponent(void* component, NRegistry* registry, EntityID id)
+	{
+		NComponentFactory* componentFactory = NComponentFactory::Instance();
+
+		auto* comp = static_cast<TransformComponent*>(component);
+
+
+
+		componentFactory->AddOrUpdate<TransformComponent>(id, comp, registry, comp->m_Translation, comp->m_Scale, comp->m_Rotation, comp->m_ComponentFlags, comp->m_Flags, comp->m_TransformMatrix);
+
+	}
+
+	JSON TransformSystem::WriteTransformComponent(const void* component)
 	{
 		nlohmann::json json;
 
-		auto& transform = *static_cast<TransformComponent*>(component);
+		auto& transform = *static_cast<const TransformComponent*>(component);
 
 		json["Transform"]["translation"] = { transform.m_Translation.x, transform.m_Translation.y, transform.m_Translation.z };
 		json["Transform"]["scale"] = { transform.m_Scale.x, transform.m_Scale.y, transform.m_Scale.z };
 		json["Transform"]["rotation"] = { transform.m_Rotation.x, transform.m_Rotation.y, transform.m_Rotation.z };
+		json["Transform"]["ComponentFlags"] = transform.m_ComponentFlags.m_Flags;
 
 		return json;
 	}
 
+	JSON TransformSystem::DiffTransformComponent(const void* base, const void* modified)
+	{
+		auto* a = static_cast<const TransformComponent*>(base);
+		auto* b = static_cast<const TransformComponent*>(modified);
+
+		JSON diff;
+		JSON compJson;
+
+		if (a->m_Translation != b->m_Translation)
+			compJson["translation"] = { b->m_Translation.x, b->m_Translation.y, b->m_Translation.z };
+
+		if (a->m_Scale != b->m_Scale)
+			compJson["scale"] = { b->m_Scale.x, b->m_Scale.y, b->m_Scale.z };
+
+		if (a->m_Rotation != b->m_Rotation)
+			compJson["rotation"] = { b->m_Rotation.x, b->m_Rotation.y, b->m_Rotation.z };
+
+		if (a->m_ComponentFlags.m_Flags != b->m_ComponentFlags.m_Flags)
+			diff["ComponentFlags"] = b->m_ComponentFlags.m_Flags;
+
+		if (!compJson.empty())
+			diff["Transform"] = compJson;
+
+		return diff;
+	}
+
+
 	void TransformSystem::ViewTransformComponent(Entity& entity)
 	{
+		// Access the transform component
 		TransformComponent& transform = entity.Get<TransformComponent>();
+		uint8_t& flags = transform.m_ComponentFlags.m_Flags;
+		// Show collapsible header with enable checkbox and remove button, tied to the Enabled flag
+		auto [open, enabled, remove] = ImGuiH::CollapsingHeaderWithFlagCheckboxAndRemove("Transform", flags, ComponentFlags_Enabled);
 
+		if (remove)
+		{
+			NEventManager::Instance()->QueueEvent(std::make_unique<EntityRemoveComponentEvent>(entity.GetID(), Component<TransformComponent>::GetID()));
+		}
 
+		if (!open)
+			return;
+
+		if (!enabled)
+			ImGui::BeginDisabled();
+
+		// On drag edits, set the dirty & direct manipulation flags
 		if (ImGui::DragFloat3("Translation", glm::value_ptr(transform.m_Translation), 0.5f))
 		{
-			transform.m_Dirty = transform.m_DirectManipulation = true;
+			flags |= TransformFlags_Dirty | TransformFlags_DirectManipulation;
 		}
 
 		if (ImGui::DragFloat3("Rotation", glm::value_ptr(transform.m_Rotation), 0.5f))
 		{
-			transform.m_Dirty = transform.m_DirectManipulation = true;
+			flags |= TransformFlags_Dirty | TransformFlags_DirectManipulation;
 		}
 
 		if (ImGui::DragFloat3("Scale", glm::value_ptr(transform.m_Scale), 0.5f))
 		{
-			transform.m_Dirty = true;
+			flags |= TransformFlags_Dirty;
 		}
 
+		if (!enabled)
+			ImGui::EndDisabled();
+
+
+	
+
+		ImGui::TreePop();
 	}
+
 	bool TransformSystem::OnEntityParented(const EntityParentedEvent& e)
 	{
 		auto* sceneManager = NSceneManager::Instance();

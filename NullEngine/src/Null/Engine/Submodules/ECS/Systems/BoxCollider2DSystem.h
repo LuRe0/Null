@@ -62,8 +62,10 @@ namespace NULLENGINE
 		float m_Thickness = 0.55f;
 		glm::vec4 m_Color = glm::vec4(0, 1, 0, 0.5);
 
-		static JSON WriteBoxCollider2DComponent(BaseComponent* component);
-		static void CreateBoxCollider2DComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
+		static JSON WriteBoxCollider2DComponent(const void* component);
+		static JSON DiffBoxCollider2DComponent(const void* base, const void* modified);
+		static void CreateBoxCollider2DComponent(void* component, const nlohmann::json& json);
+		static void AddBoxCollider2DComponent(void* component, NRegistry* registry, EntityID id);
 		void ViewBoxCollider2DComponent(Entity& entityID);
 
 

@@ -53,8 +53,8 @@ namespace NULLENGINE
         EasingType type = EasingType::Linear;
 
     private:
-        unsigned int m_TextureID = 0;
         unsigned int m_BindlessHandle = 0;
+        unsigned int m_TextureID = 0;
         bool m_IsDirty = true;
         bool m_IsCustom = false;
 
@@ -62,5 +62,6 @@ namespace NULLENGINE
         //float rangeStart = 0.0f;
         //float rangeEnd = 1.0f;
 	};
+
 
 }

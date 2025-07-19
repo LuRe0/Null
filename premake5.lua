@@ -221,13 +221,16 @@ project "NullEditor"
 
     filter "configurations:Debug"
         defines "NLE_DEBUG"
+        runtime "Debug"
         symbols "On"
 
     filter "configurations:Release"
         defines "NLE_RELEASE"
-        symbols "On"
+        runtime "Release"
+        optimize "On"
 
     filter "configurations:Dist"
         defines "NLE_DIST"
-        symbols "On"
+        runtime "Release"
+        optimize "On"
 

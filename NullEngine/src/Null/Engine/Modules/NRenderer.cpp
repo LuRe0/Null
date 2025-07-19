@@ -159,12 +159,12 @@ namespace NULLENGINE
 		NShaderManager* shaderMan = NShaderManager::Instance();
 
 
-		m_Batchers[render->mesh->GetName()].get()->AddInstance(*render, shader);
+		m_Batchers[STRID(render->mesh->GetName())].get()->AddInstance(*render, shader);
 	}
 
 	void NRenderer::RenderParticles(const ParticleData* renderData)
 	{
-		static_cast<ParticleBatchRenderer<Mesh>*>(m_Batchers["Particle"].get())->AddInstance(*renderData, nullptr);
+		static_cast<ParticleBatchRenderer<Mesh>*>(m_Batchers[STRID("Particle")].get())->AddInstance(*renderData, nullptr);
 	}
 
 	void NRenderer::EndRender()
@@ -187,7 +187,7 @@ namespace NULLENGINE
 	{
 		for (const auto& batchName : pass.batchersToFlush)
 		{
-			auto it = m_Batchers.find(batchName);
+			auto it = m_Batchers.find(STRID(batchName));
 			if (it != m_Batchers.end())
 			{
 				it->second->BindTextureBuffer(pass.shader);
@@ -380,11 +380,11 @@ namespace NULLENGINE
 		//glEnable(GL_CULL_FACE);
 		//glCullFace(GL_FRONT); // Or GL_FRONT, depending on your winding order
 
-		m_Batchers.emplace("Cube", std::make_unique<CubeBatchRenderer<DrawInstance, CubeInstanceMesh>>(10000));
-		m_Batchers.emplace("Line", std::make_unique<LineBatchRenderer<DrawInstance, LineInstanceMesh>>(5000));
-		m_Batchers.emplace("Triangle", std::make_unique<TriangleBatchRenderer<DrawInstance, TriangleInstanceMesh>>(10000));
-		m_Batchers.emplace("Circle", std::make_unique<CircleBatchRenderer<DrawInstance, CircleInstanceMesh>>(10000));
-		m_Batchers.emplace("Quad", std::make_unique<QuadBatchRenderer<DrawInstance, QuadInstanceMesh>>(10000));
+		m_Batchers.emplace(STRID("Cube"), std::make_unique<CubeBatchRenderer<DrawInstance, CubeInstanceMesh>>(10000));
+		m_Batchers.emplace(STRID("Line"), std::make_unique<LineBatchRenderer<DrawInstance, LineInstanceMesh>>(5000));
+		m_Batchers.emplace(STRID("Triangle"), std::make_unique<TriangleBatchRenderer<DrawInstance, TriangleInstanceMesh>>(10000));
+		m_Batchers.emplace(STRID("Circle"), std::make_unique<CircleBatchRenderer<DrawInstance, CircleInstanceMesh>>(10000));
+		m_Batchers.emplace(STRID("Quad"), std::make_unique<QuadBatchRenderer<DrawInstance, QuadInstanceMesh>>(10000));
 
 
 		m_RenderCommands.resize(static_cast<int>(RenderCommandTypes::QUEUES));
@@ -557,10 +557,10 @@ namespace NULLENGINE
 
 	void NRenderer::Shutdown()
 	{
-		for (auto& fb : m_Framebuffers)
-		{
-			fb.second.Shutdown();
-		}
+		//for (auto& fb : m_Framebuffers)
+		//{
+		//	fb.second.Shutdown();
+		//}
 	}
 
 	void NRenderer::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
@@ -620,18 +620,14 @@ namespace NULLENGINE
 	//	m_RenderQueue.push_back(render);
 	//}
 
-	Framebuffer& NRenderer::GetFramebuffer(const std::string& buffer)
-	{
-		// TODO: insert return statement here
-		return m_Framebuffers.at(buffer);
-	}
+
 
 	void NRenderer::ResizeFramebuffer(unsigned int width, unsigned int height)
 	{
-		for (auto& fb : m_Framebuffers)
-		{
-			fb.second.Resize(width, height);
-		}
+		//for (auto& fb : m_Framebuffers)
+		//{
+		//	fb.second.Resize(width, height);
+		//}
 	}
 
 	void NRenderer::ClearRender()
@@ -661,10 +657,10 @@ namespace NULLENGINE
 			m_WinWidth = static_cast<float>(e.GetWidth());
 			m_WinHeight = static_cast<float>(e.GetHeight());
 
-			for (auto& fb : m_Framebuffers)
+	/*		for (auto& fb : m_Framebuffers)
 			{
 				fb.second.Resize(static_cast<unsigned int>(m_WinWidth), static_cast<unsigned int>(m_WinHeight));
-			}
+			}*/
 
 			SetViewport(0, 0, static_cast<uint32_t>(m_WinWidth), static_cast<uint32_t>(m_WinHeight));
 		}

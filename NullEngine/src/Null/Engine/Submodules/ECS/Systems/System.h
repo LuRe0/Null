@@ -119,6 +119,7 @@ namespace NULLENGINE
 		bool OnEntityCreate(const EntityModifiedEvent& e);
 		bool OnEntityDestroyed(const EntityDestroyedEvent& e);
 		bool OnEntityComponentRemoved(const EntityRemoveComponentEvent& e);
+		bool OnEntityComponentAdded(const EntityAddComponentEvent& e);
 		bool OnSceneSwitch(const SceneSwitchEvent& e);
 
 
@@ -245,6 +246,10 @@ namespace NULLENGINE
 		{
 			Remove(entityID);
 		}
+		else
+		{
+			Add(entityID);
+		}
 	}
 
 	template<typename Derived>
@@ -263,6 +268,16 @@ namespace NULLENGINE
 		UpdateEntityList(e.GetID(), registry);
 		return true;
 	}
+
+
+	template<typename Derived>
+	bool ISystem<Derived>::OnEntityComponentAdded(const EntityAddComponentEvent& e)
+	{
+		NRegistry* registry = NRegistry::Instance();
+		UpdateEntityList(e.GetID(), registry);
+		return true;
+	}
+
 
 	template<typename Derived>
 	bool ISystem<Derived>::OnSceneSwitch(const SceneSwitchEvent& e)

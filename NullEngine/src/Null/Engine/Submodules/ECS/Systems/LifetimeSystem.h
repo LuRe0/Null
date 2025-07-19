@@ -61,9 +61,13 @@ namespace NULLENGINE
 
 	private:
 		bool OnRuntimeStart(const EngineRunStateEvent& e);
-		static void CreateLifetimeComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
+		static void CreateLifetimeComponent(void* component, const nlohmann::json& json);
 
-		static JSON WriteLifetimeComponent(BaseComponent* component);
+		static void AddLifetimeComponent(void* component, NRegistry* registry, EntityID id);
+
+		static JSON WriteLifetimeComponent(const void* component);
+
+		static JSON DiffLifetimeComponent(const void* base, const void* modified);
 
 
 		void ViewLifetimeComponent(Entity& entity);

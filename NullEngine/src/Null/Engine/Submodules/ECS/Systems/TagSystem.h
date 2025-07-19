@@ -62,15 +62,19 @@ namespace NULLENGINE
 
 	private:
 		bool OnRuntimeStart(const EngineRunStateEvent& e);
-		static void CreateTagComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
+		static void CreateTagComponent(void* component, const nlohmann::json& json);
 
-		static JSON WriteTagComponent(BaseComponent* component);
+		static void AddTagComponent(void* component, NRegistry* registry, EntityID id);
+
+		static JSON WriteTagComponent(const void* component);
+
+		static JSON DiffTagComponent(const void* base, const void* modified);
 
 
 		void ViewTagComponent(Entity& entity);
 
 
-		std::set<std::string> m_tags;
+		std::set<uint32_t> m_tags;
 	};
 
 }

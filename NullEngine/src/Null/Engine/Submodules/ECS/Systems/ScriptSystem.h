@@ -71,9 +71,12 @@ namespace NULLENGINE
 		bool OnCollisionExit(const CollisionExitEvent& e);
 
 
-		static void CreateScriptComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
+		static void CreateScriptComponent(void* component, const nlohmann::json& json);
+		static void AddScriptComponent(void* component, NRegistry* registry, EntityID id);
 
-		static JSON WriteScriptComponent(BaseComponent* component);
+		static JSON WriteScriptComponent(const void* component);
+
+		static JSON DiffScriptComponent(const void* baseComp, const void* modifiedComp);
 
 		void ViewScriptComponent(Entity& entity);
 
@@ -87,6 +90,7 @@ namespace NULLENGINE
 		std::string m_ScriptName = "New Script";
 
 		sol::state m_LuaState;
+		ImGuiTextFilter m_ScriptFilter;
 
 
 	};

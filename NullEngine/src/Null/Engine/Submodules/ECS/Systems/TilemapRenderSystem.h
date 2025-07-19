@@ -58,10 +58,13 @@ namespace NULLENGINE
 
 	private:
 
-		static void CreateTilemapComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
-		static JSON WriteTilemapComponent(BaseComponent* component);
+		static void CreateTilemapComponent(void* component, const nlohmann::json& json);
+		static void AddTilemapComponent(void* component, NRegistry* registry, EntityID id);
+		static JSON WriteTilemapComponent(const void* component);
 
 		void ViewTilemapComponent(Entity& entityID);
+
+		static JSON DiffTilemapComponent(const void* base, const void* modified);
 
 		bool OnEntityCreated(const EntityCreatedEvent& e);
 

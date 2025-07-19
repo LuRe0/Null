@@ -1,0 +1,51 @@
+{
+    "entities": [
+        {
+            "components": null,
+            "name": "ball"
+        },
+        {
+            "components": null,
+            "name": "LeftWall"
+        },
+        {
+            "archetype": "BlockManager",
+            "components": null,
+            "name": "BlockManager (Clone)"
+        },
+        {
+            "components": null,
+            "name": "background"
+        },
+        {
+            "components": null,
+            "name": "RightWall"
+        },
+        {
+            "children": [
+                {
+                    "components": null,
+                    "name": "0"
+                },
+                {
+                    "components": null,
+                    "name": "1"
+                },
+                {
+                    "components": null,
+                    "name": "2"
+                }
+            ],
+            "components": null,
+            "name": "Player"
+        },
+        {
+            "components": null,
+            "name": "TopWall"
+        },
+        {
+            "components": null,
+            "name": "BottomWall"
+        }
+    ]
+}

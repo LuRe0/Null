@@ -85,6 +85,17 @@ namespace NULLENGINE
 		shader.setBool("u_FollowParent", emitter.followParent);
 	}
 
+	bool Vec3Equal(const glm::vec3& a, const glm::vec3& b)
+	{
+		constexpr float EPSILON = 0.0001f;
+		return glm::all(glm::lessThan(glm::abs(a - b), glm::vec3(EPSILON)));
+	}
+
+	inline bool FloatEqual(float a, float b, float epsilon = 0.0001f)
+	{
+		return std::abs(a - b) < epsilon;
+	}
+
 
 	ParticleSystem::ParticleSystem()
 	{
@@ -94,7 +105,9 @@ namespace NULLENGINE
 		NComponentFactory* componentFactory = NComponentFactory::Instance();
 
 		componentFactory->Register<ParticleSystemComponent>(CreateParticleSystemComponent,
-			[this](Entity& id) { this->ViewParticleSystemComponent(id); }, WriteParticleSystemComponent);
+			[this](Entity& id) { this->ViewParticleSystemComponent(id); }, 
+			WriteParticleSystemComponent, 
+			AddParticleSystemComponent, DiffParticleSystemComponent);
 
 		m_TotalMaxParticles = 0;
 		m_EmitComputeShader = 0;
@@ -400,7 +413,7 @@ namespace NULLENGINE
 	}
 
 
-	void ParticleSystem::CreateParticleSystemComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id)
+	void ParticleSystem::CreateParticleSystemComponent(void* component, const nlohmann::json& json)
 	{
 		NSpriteSourceManager* spritesrcManager = NSpriteSourceManager::Instance();
 
@@ -608,16 +621,473 @@ namespace NULLENGINE
 
 
 		// Add or update component in registry
-		NComponentFactory* componentFactory = NComponentFactory::Instance();
-		componentFactory->AddOrUpdate<ParticleSystemComponent>(id, comp, registry, comp->m_Name, comp->m_Emitters);
+		//NComponentFactory* componentFactory = NComponentFactory::Instance();
 	}
 
 
-	JSON ParticleSystem::WriteParticleSystemComponent(BaseComponent* component)
+
+	void ParticleSystem::AddParticleSystemComponent(void* component, NRegistry* registry, EntityID id)
+	{
+		NComponentFactory* componentFactory = NComponentFactory::Instance();
+
+		auto* comp = static_cast<ParticleSystemComponent*>(component);
+		componentFactory->AddOrUpdate<ParticleSystemComponent>(id, comp, registry, comp->m_Name, comp->m_Emitters);
+	}
+
+	JSON DiffEmitter(const ParticleEmitter& a, const ParticleEmitter& b)
+	{
+		JSON diff;
+
+		if (a.name != b.name)
+			diff["name"] = b.name;
+
+		if (a.emitterID != b.emitterID)
+			diff["emitterID"] = b.emitterID;
+
+		// Texture comparison (handle nullptr)
+		std::string texA = a.spriteSource ? a.spriteSource->GetName() : "";
+		std::string texB = b.spriteSource ? b.spriteSource->GetName() : "";
+		if (texA != texB)
+			diff["texture"] = texB;
+
+		// Dimension: compare vectors or arrays of int
+		if (a.spriteSource == nullptr && b.spriteSource == nullptr)
+		{
+			// both null => dimension default {1,1}, no diff needed
+		}
+		else if (a.spriteSource == nullptr || b.spriteSource == nullptr)
+		{
+			diff["dimension"] = nlohmann::json::array({ b.spriteSource->GetRows(), b.spriteSource->GetCols() });
+		}
+		else
+		{
+			if (a.spriteSource->GetRows() != b.spriteSource->GetRows() ||
+				a.spriteSource->GetCols() != b.spriteSource->GetCols())
+			{
+				diff["dimension"] = nlohmann::json::array({ b.spriteSource->GetRows(), b.spriteSource->GetCols() });
+			}
+		}
+
+		// Simple vector3 comparisons:
+		if (!Vec3Equal(a.offset, b.offset))
+			diff["offset"] = { b.offset.x, b.offset.y, b.offset.z };
+
+		if (a.emitRate != b.emitRate)
+			diff["emissionRate"] = b.emitRate;
+
+		if (a.minLifetime != b.minLifetime)
+			diff["minLifetime"] = b.minLifetime;
+
+		if (a.maxLifetime != b.maxLifetime)
+			diff["maxLifetime"] = b.maxLifetime;
+
+		if (a.randomizeLifetime != b.randomizeLifetime)
+			diff["randomizeLifetime"] = b.randomizeLifetime;
+
+		if (a.drag != b.drag)
+			diff["drag"] = b.drag;
+
+		if (a.maxParticles != b.maxParticles)
+			diff["maxParticles"] = static_cast<int>(b.maxParticles);
+
+		if (a.bufferOffset != b.bufferOffset)
+			diff["bufferOffset"] = static_cast<int>(b.bufferOffset);
+
+		if (a.flags != b.flags)
+			diff["flags"] = b.flags;
+
+		if (a.enabled != b.enabled)
+			diff["enabled"] = b.enabled;
+
+		if (a.finished != b.finished)
+			diff["finished"] = b.finished;
+
+		// Now many more simple scalar and vector fields:
+
+		// initialVelocity, initialAngularVelocity, initialAcceleration, initialLifetime, initialRotation
+
+		if (a.initialVelocity != b.initialVelocity)
+			diff["initialVelocity"] = b.initialVelocity;
+
+		if (a.initialAngularVelocity != b.initialAngularVelocity)
+			diff["initialAngularVelocity"] = b.initialAngularVelocity;
+
+		if (a.initialAcceleration != b.initialAcceleration)
+			diff["initialAcceleration"] = b.initialAcceleration;
+
+		if (a.initialLifetime != b.initialLifetime)
+			diff["initialLifetime"] = b.initialLifetime;
+
+		if (a.initialRotation != b.initialRotation)
+			diff["initialRotation"] = b.initialRotation;
+
+		// initialSize vector2
+		if (a.initialSize.x != b.initialSize.x || a.initialSize.y != b.initialSize.y)
+			diff["initialSize"] = { b.initialSize.x, b.initialSize.y };
+
+		if (a.initialFrame != b.initialFrame)
+			diff["initialFrame"] = b.initialFrame;
+
+		// initialColor (RGBA floats)
+		if (a.initialColor != b.initialColor)
+			diff["initialColor"] = { b.initialColor.r, b.initialColor.g, b.initialColor.b, b.initialColor.a };
+
+		// startSize & endSize (vec2)
+		if (a.startSize != b.startSize)
+			diff["startSize"] = { b.startSize.x, b.startSize.y };
+		if (a.endSize != b.endSize)
+			diff["endSize"] = { b.endSize.x, b.endSize.y };
+
+		// Curves: compare type and values arrays
+		if (a.sizeEaseCurve.GetType() != b.sizeEaseCurve.GetType())
+			diff["sizeCurve"]["type"] = b.sizeEaseCurve.GetType();
+
+		if (std::vector<float>(std::begin(a.sizeEaseCurve.values), std::end(a.sizeEaseCurve.values)) !=
+			std::vector<float>(std::begin(b.sizeEaseCurve.values), std::end(b.sizeEaseCurve.values)))
+		{
+			diff["sizeCurve"]["values"] = std::vector<float>(std::begin(b.sizeEaseCurve.values), std::end(b.sizeEaseCurve.values));
+		}
+
+		// Similarly for colorCurve
+		if (a.colorEaseCurve.GetType() != b.colorEaseCurve.GetType())
+			diff["colorCurve"]["type"] = b.colorEaseCurve.GetType();
+
+		if (std::vector<float>(std::begin(a.colorEaseCurve.values), std::end(a.colorEaseCurve.values)) !=
+			std::vector<float>(std::begin(b.colorEaseCurve.values), std::end(b.colorEaseCurve.values)))
+		{
+			diff["colorCurve"]["values"] = std::vector<float>(std::begin(b.colorEaseCurve.values), std::end(b.colorEaseCurve.values));
+		}
+
+		// startColor & endColor
+		if (a.startColor != b.startColor)
+			diff["startColor"] = { b.startColor.r, b.startColor.g, b.startColor.b, b.startColor.a };
+
+		if (a.endColor != b.endColor)
+			diff["endColor"] = { b.endColor.r, b.endColor.g, b.endColor.b, b.endColor.a };
+
+		// rotationCurve same pattern as above
+		if (a.rotationEaseCurve.GetType() != b.rotationEaseCurve.GetType())
+			diff["rotationCurve"]["type"] = b.rotationEaseCurve.GetType();
+
+		if (std::vector<float>(std::begin(a.rotationEaseCurve.values), std::end(a.rotationEaseCurve.values)) !=
+			std::vector<float>(std::begin(b.rotationEaseCurve.values), std::end(b.rotationEaseCurve.values)))
+		{
+			diff["rotationCurve"]["values"] = std::vector<float>(std::begin(b.rotationEaseCurve.values), std::end(b.rotationEaseCurve.values));
+		}
+
+		// startRotation, endRotation
+		if (a.startRotation != b.startRotation)
+			diff["startRotation"] = b.startRotation;
+
+		if (a.endRotation != b.endRotation)
+			diff["endRotation"] = b.endRotation;
+
+		// fadeCurve
+		if (a.fadeEaseCurve.GetType() != b.fadeEaseCurve.GetType())
+			diff["fadeCurve"]["type"] = b.fadeEaseCurve.GetType();
+
+		if (std::vector<float>(std::begin(a.fadeEaseCurve.values), std::end(a.fadeEaseCurve.values)) !=
+			std::vector<float>(std::begin(b.fadeEaseCurve.values), std::end(b.fadeEaseCurve.values)))
+		{
+			diff["fadeCurve"]["values"] = std::vector<float>(std::begin(b.fadeEaseCurve.values), std::end(b.fadeEaseCurve.values));
+		}
+
+		// startFade, endFade
+		if (a.startFade != b.startFade)
+			diff["startFade"] = b.startFade;
+
+		if (a.endFade != b.endFade)
+			diff["endFade"] = b.endFade;
+
+		// vortexCenter (vec3), vortexStrength (float)
+		if (!Vec3Equal(a.vortexCenter, b.vortexCenter))
+			diff["vortexCenter"] = { b.vortexCenter.x, b.vortexCenter.y, b.vortexCenter.z };
+
+		if (a.vortexStrength != b.vortexStrength)
+			diff["vortexStrength"] = b.vortexStrength;
+
+		// windDirection, windStrength
+		if (!Vec3Equal(a.windDirection, b.windDirection))
+			diff["windDirection"] = { b.windDirection.x, b.windDirection.y, b.windDirection.z };
+
+		if (a.windStrength != b.windStrength)
+			diff["windStrength"] = b.windStrength;
+
+		// AttractorPosition, AttractionStrength
+		if (!Vec3Equal(a.AttractorPosition, b.AttractorPosition))
+			diff["attractorPosition"] = { b.AttractorPosition.x, b.AttractorPosition.y, b.AttractorPosition.z };
+
+		if (a.AttractionStrength != b.AttractionStrength)
+			diff["attractionStrength"] = b.AttractionStrength;
+
+		// Animation related fields
+		if (a.animDuration != b.animDuration)
+			diff["animDuration"] = b.animDuration;
+
+		if (a.animFrameCount != b.animFrameCount)
+			diff["animFrameCount"] = b.animFrameCount;
+
+		if (a.loop != b.loop)
+			diff["loop"] = b.loop;
+
+		if (a.playOnce != b.playOnce)
+			diff["playOnce"] = b.playOnce;
+
+		if (a.reverse != b.reverse)
+			diff["reverse"] = b.reverse;
+
+		if (a.pingPong != b.pingPong)
+			diff["pingPong"] = b.pingPong;
+
+		if (a.startOffset != b.startOffset)
+			diff["startOffset"] = b.startOffset;
+
+		// Gravity vector3 and gravityScale
+		if (!Vec3Equal(a.gravity, b.gravity))
+			diff["gravity"] = { b.gravity.x, b.gravity.y, b.gravity.z };
+
+		if (a.gravityScale != b.gravityScale)
+			diff["gravityScale"] = b.gravityScale;
+
+		// Spin center & speed
+		if (!Vec3Equal(a.spinCenter, b.spinCenter))
+			diff["spinCenter"] = { b.spinCenter.x, b.spinCenter.y, b.spinCenter.z };
+
+		if (a.spinSpeed != b.spinSpeed)
+			diff["spinSpeed"] = b.spinSpeed;
+
+		// Burst stuff
+		if (a.useBurst != b.useBurst)
+			diff["useBurst"] = b.useBurst;
+
+		if (a.burstCount != b.burstCount)
+			diff["burstCount"] = b.burstCount;
+
+		if (a.burstCooldown != b.burstCooldown)
+			diff["burstCooldown"] = b.burstCooldown;
+
+		// Shape enum and shape-specific fields:
+		if (a.shape != b.shape)
+		{
+			diff["shape"] = static_cast<int>(b.shape);
+			// Include full new shape details here if you want.
+		}
+		else
+		{
+			// Same shape - compare shape-specific data
+			switch (b.shape)
+			{
+			case SpawnShape::LINE:
+				if (!Vec3Equal(a.line.point1, b.line.point1))
+				{
+					diff["line"]["point1_x"] = b.line.point1.x;
+					diff["line"]["point1_y"] = b.line.point1.y;
+					diff["line"]["point1_z"] = b.line.point1.z;
+				}
+				if (!Vec3Equal(a.line.point2, b.line.point2))
+				{
+					diff["line"]["point2_x"] = b.line.point2.x;
+					diff["line"]["point2_y"] = b.line.point2.y;
+					diff["line"]["point2_z"] = b.line.point2.z;
+				}
+				break;
+
+			case SpawnShape::CIRCLE:
+				if (a.circle.radius != b.circle.radius)
+					diff["circle"]["radius"] = b.circle.radius;
+				break;
+
+			case SpawnShape::DONUT:
+				if (a.donut.radius1 != b.donut.radius1)
+					diff["donut"]["radius1"] = b.donut.radius1;
+				if (a.donut.radius2 != b.donut.radius2)
+					diff["donut"]["radius2"] = b.donut.radius2;
+				break;
+
+			case SpawnShape::POINT:
+				if (!Vec3Equal(a.point.point, b.point.point))
+				{
+					diff["point"]["x"] = b.point.point.x;
+					diff["point"]["y"] = b.point.point.y;
+					diff["point"]["z"] = b.point.point.z;
+				}
+				break;
+
+			case SpawnShape::RECT:
+				if (a.rect.center != b.rect.center)
+					diff["rect"]["rectCenter"] = { b.rect.center.x, b.rect.center.y };
+				if (a.rect.extent != b.rect.extent)
+					diff["rect"]["rectExtent"] = { b.rect.extent.x, b.rect.extent.y };
+				break;
+
+			case SpawnShape::TEXTURE:
+				if (a.texture.worldSize != b.texture.worldSize)
+					diff["textureShape"]["worldSize"] = { b.texture.worldSize.x, b.texture.worldSize.y };
+
+				if (a.texture.alphaThreshold != b.texture.alphaThreshold)
+					diff["textureShape"]["alphaThreshold"] = b.texture.alphaThreshold;
+
+				if (a.texture.invertMask != b.texture.invertMask)
+					diff["textureShape"]["invertMask"] = b.texture.invertMask;
+
+				{
+					std::string texShapeA = a.texture.spriteSource ? a.texture.spriteSource->GetName() : "";
+					std::string texShapeB = b.texture.spriteSource ? b.texture.spriteSource->GetName() : "";
+					if (texShapeA != texShapeB)
+						diff["textureShape"]["shapeTexture"] = texShapeB;
+				}
+				break;
+
+			default:
+				break;
+			}
+		}
+
+		return diff;
+	}
+
+	JSON SerializeEmitter(const ParticleEmitter& emitter)
+	{
+		nlohmann::json e;
+
+		e["name"] = emitter.name;
+		e["emitterID"] = emitter.emitterID;
+
+		e["texture"] = emitter.spriteSource != nullptr ? emitter.spriteSource->GetName() : "";
+		e["dimension"] = emitter.spriteSource == nullptr
+			? nlohmann::json::array({ 1, 1 })
+			: nlohmann::json::array({ emitter.spriteSource->GetRows(), emitter.spriteSource->GetCols() });
+
+		e["offset"] = { emitter.offset.x, emitter.offset.y, emitter.offset.z };
+		e["emissionRate"] = emitter.emitRate;
+		e["minLifetime"] = emitter.minLifetime;
+		e["maxLifetime"] = emitter.maxLifetime;
+		e["randomizeLifetime"] = emitter.randomizeLifetime;
+		e["drag"] = emitter.drag;
+
+		e["maxParticles"] = static_cast<int>(emitter.maxParticles);
+
+		e["bufferOffset"] = static_cast<int>(emitter.bufferOffset);
+
+		e["flags"] = emitter.flags;
+		e["enabled"] = emitter.enabled;
+
+		e["finished"] = emitter.finished;
+
+		e["initialVelocity"] = emitter.initialVelocity;
+		e["initialAngularVelocity"] = emitter.initialAngularVelocity;
+		e["initialAcceleration"] = emitter.initialAcceleration;
+		e["initialLifetime"] = emitter.initialLifetime;
+		e["initialSize"] = { emitter.initialSize.x, emitter.initialSize.y };
+		e["initialRotation"] = emitter.initialRotation;
+		e["initialFrame"] = emitter.initialFrame;
+		e["initialColor"] = { emitter.initialColor.r, emitter.initialColor.g,emitter.initialColor.b, emitter.initialColor.a };
+
+		e["startSize"] = { emitter.startSize.x, emitter.startSize.y };
+		e["endSize"] = { emitter.endSize.x, emitter.endSize.y };
+		e["sizeCurve"]["type"] = emitter.sizeEaseCurve.GetType();
+		e["sizeCurve"]["values"] = std::vector<float>(std::begin(emitter.sizeEaseCurve.values), std::end(emitter.sizeEaseCurve.values));
+
+		e["startColor"] = { emitter.startColor.r, emitter.startColor.g, emitter.startColor.b, emitter.startColor.a };
+		e["endColor"] = { emitter.endColor.r, emitter.endColor.g, emitter.endColor.b, emitter.endColor.a };
+		e["colorCurve"]["type"] = emitter.colorEaseCurve.GetType();
+		e["colorCurve"]["values"] = std::vector<float>(std::begin(emitter.colorEaseCurve.values), std::end(emitter.colorEaseCurve.values));
+
+		e["startRotation"] = emitter.startRotation;
+		e["endRotation"] = emitter.endRotation;
+		e["rotationCurve"]["type"] = emitter.rotationEaseCurve.GetType();
+		e["rotationCurve"]["values"] = std::vector<float>(std::begin(emitter.rotationEaseCurve.values), std::end(emitter.rotationEaseCurve.values));
+
+
+		e["startFade"] = emitter.startFade;
+		e["endFade"] = emitter.endFade;
+		e["fadeCurve"]["type"] = emitter.fadeEaseCurve.GetType();
+		e["fadeCurve"]["values"] = std::vector<float>(std::begin(emitter.fadeEaseCurve.values), std::end(emitter.fadeEaseCurve.values));
+
+		e["vortexCenter"] = { emitter.vortexCenter.x, emitter.vortexCenter.y, emitter.vortexCenter.z };
+		e["vortexStrength"] = emitter.vortexStrength;
+
+		e["windDirection"] = { emitter.windDirection.x, emitter.windDirection.y, emitter.windDirection.z };
+		e["windStrength"] = emitter.windStrength;
+
+		e["attractorPosition"] = { emitter.AttractorPosition.x, emitter.AttractorPosition.y, emitter.AttractorPosition.z };
+		e["attractionStrength"] = emitter.AttractionStrength;
+
+
+		e["animDuration"] = emitter.animDuration;
+		e["animFrameCount"] = emitter.animFrameCount;
+		e["loop"] = emitter.loop;
+		e["playOnce"] = emitter.playOnce;
+		e["reverse"] = emitter.reverse;
+		e["pingPong"] = emitter.pingPong;
+		e["startOffset"] = emitter.startOffset;
+
+
+
+		e["gravity"] = { emitter.gravity.x, emitter.gravity.y, emitter.gravity.z };
+		e["gravityScale"] = emitter.gravityScale;
+
+		e["spinCenter"] = { emitter.spinCenter.x, emitter.spinCenter.y, emitter.spinCenter.z };
+		e["spinSpeed"] = emitter.spinSpeed;
+
+		e["useBurst"] = emitter.useBurst;
+		e["burstCount"] = emitter.burstCount;
+		e["burstCooldown"] = emitter.burstCooldown;
+
+		e["shape"] = static_cast<int>(emitter.shape);
+
+		// Write each shape struct depending on current shape
+		switch (emitter.shape)
+		{
+		case SpawnShape::LINE:
+			e["line"]["point1_x"] = emitter.line.point1.x;
+			e["line"]["point1_y"] = emitter.line.point1.y;
+			e["line"]["point1_z"] = emitter.line.point1.z;
+
+			e["line"]["point2_x"] = emitter.line.point2.x;
+			e["line"]["point2_y"] = emitter.line.point2.y;
+			e["line"]["point2_z"] = emitter.line.point2.z;
+			break;
+
+		case SpawnShape::CIRCLE:
+			e["circle"]["radius"] = emitter.circle.radius;
+			break;
+
+		case SpawnShape::DONUT:
+			e["donut"]["radius1"] = emitter.donut.radius1;
+			e["donut"]["radius2"] = emitter.donut.radius2;
+			break;
+
+		case SpawnShape::POINT:
+			e["point"]["x"] = emitter.point.point.x;
+			e["point"]["y"] = emitter.point.point.y;
+			e["point"]["z"] = emitter.point.point.z;
+			break;
+
+		case SpawnShape::RECT:
+			e["rect"]["rectCenter"] = { emitter.rect.center.x, emitter.rect.center.y };
+			e["rect"]["rectExtent"] = { emitter.rect.extent.x, emitter.rect.extent.y };
+			break;
+		case SpawnShape::TEXTURE:
+			e["textureShape"]["worldSize"] = { emitter.texture.worldSize.x, emitter.texture.worldSize.y };
+			e["textureShape"]["alphaThreshold"] = emitter.texture.alphaThreshold;
+			e["textureShape"]["invertMask"] = emitter.texture.invertMask;
+			e["textureShape"]["shapeTexture"] = emitter.texture.spriteSource != nullptr ? emitter.texture.spriteSource->GetName() : "";
+			break;
+		default:
+			break;
+		}
+
+
+		return e;
+	}
+
+
+	JSON ParticleSystem::WriteParticleSystemComponent(const void* component)
 	{
 		nlohmann::json json;
 
-		auto& psComp = *static_cast<ParticleSystemComponent*>(component);
+		auto& psComp = *static_cast<const ParticleSystemComponent*>(component);
 
 
 
@@ -628,144 +1098,70 @@ namespace NULLENGINE
 
 		for (const auto& emitter : psComp.m_Emitters)
 		{
-			nlohmann::json e;
-
-			e["name"] = emitter.name;
-			e["emitterID"] = emitter.emitterID;
-
-			e["texture"] = emitter.spriteSource != nullptr ? emitter.spriteSource->GetName() : "";
-			e["dimension"] = emitter.spriteSource == nullptr
-				? nlohmann::json::array({ 1, 1 })
-				: nlohmann::json::array({ emitter.spriteSource->GetRows(), emitter.spriteSource->GetCols() });
-
-			e["offset"] = { emitter.offset.x, emitter.offset.y, emitter.offset.z };
-			e["emissionRate"] = emitter.emitRate;
-			e["minLifetime"] = emitter.minLifetime;
-			e["maxLifetime"] = emitter.maxLifetime;
-			e["randomizeLifetime"] = emitter.randomizeLifetime;
-			e["drag"] = emitter.drag;
-
-			e["maxParticles"] = static_cast<int>(emitter.maxParticles);
-
-			e["bufferOffset"] = static_cast<int>(emitter.bufferOffset);
-
-			e["flags"] = emitter.flags;
-			e["enabled"] = emitter.enabled;
-
-			e["finished"] = emitter.finished;
-
-			e["initialVelocity"] = emitter.initialVelocity;
-			e["initialAngularVelocity"] = emitter.initialAngularVelocity;
-			e["initialAcceleration"] = emitter.initialAcceleration;
-			e["initialLifetime"] = emitter.initialLifetime;
-			e["initialSize"] = { emitter.initialSize.x, emitter.initialSize.y };
-			e["initialRotation"] = emitter.initialRotation;
-			e["initialFrame"] = emitter.initialFrame;
-			e["initialColor"] = { emitter.initialColor.r, emitter.initialColor.g,emitter.initialColor.b, emitter.initialColor.a };
-
-			e["startSize"] = { emitter.startSize.x, emitter.startSize.y };
-			e["endSize"] = { emitter.endSize.x, emitter.endSize.y };
-			e["sizeCurve"]["type"] = emitter.sizeEaseCurve.GetType(); 
-			e["sizeCurve"]["values"] = std::vector<float>(std::begin(emitter.sizeEaseCurve.values), std::end(emitter.sizeEaseCurve.values));
-
-			e["startColor"] = { emitter.startColor.r, emitter.startColor.g, emitter.startColor.b, emitter.startColor.a };
-			e["endColor"] = { emitter.endColor.r, emitter.endColor.g, emitter.endColor.b, emitter.endColor.a };
-			e["colorCurve"]["type"] = emitter.colorEaseCurve.GetType(); 
-			e["colorCurve"]["values"] = std::vector<float>(std::begin(emitter.colorEaseCurve.values), std::end(emitter.colorEaseCurve.values));
-
-			e["startRotation"] = emitter.startRotation;
-			e["endRotation"] = emitter.endRotation;
-			e["rotationCurve"]["type"] = emitter.rotationEaseCurve.GetType(); 
-			e["rotationCurve"]["values"] = std::vector<float>(std::begin(emitter.rotationEaseCurve.values), std::end(emitter.rotationEaseCurve.values));
-
-
-			e["startFade"] = emitter.startFade;
-			e["endFade"] = emitter.endFade;
-			e["fadeCurve"]["type"] = emitter.fadeEaseCurve.GetType(); 
-			e["fadeCurve"]["values"] = std::vector<float>(std::begin(emitter.fadeEaseCurve.values), std::end(emitter.fadeEaseCurve.values));
-
-			e["vortexCenter"] = { emitter.vortexCenter.x, emitter.vortexCenter.y, emitter.vortexCenter.z };
-			e["vortexStrength"] = emitter.vortexStrength;
-
-			e["windDirection"] = { emitter.windDirection.x, emitter.windDirection.y, emitter.windDirection.z };
-			e["windStrength"] = emitter.windStrength;
-
-			e["attractorPosition"] = { emitter.AttractorPosition.x, emitter.AttractorPosition.y, emitter.AttractorPosition.z };
-			e["attractionStrength"] = emitter.AttractionStrength;
-
-
-			e["animDuration"] = emitter.animDuration;
-			e["animFrameCount"] = emitter.animFrameCount;
-			e["loop"] = emitter.loop;
-			e["playOnce"] = emitter.playOnce;
-			e["reverse"] = emitter.reverse;
-			e["pingPong"] = emitter.pingPong;
-			e["startOffset"] = emitter.startOffset;
-
-
-
-			e["gravity"] = { emitter.gravity.x, emitter.gravity.y, emitter.gravity.z };
-			e["gravityScale"] = emitter.gravityScale;
-
-			e["spinCenter"] = { emitter.spinCenter.x, emitter.spinCenter.y, emitter.spinCenter.z };
-			e["spinSpeed"] = emitter.spinSpeed;
-
-			e["useBurst"] = emitter.useBurst;
-			e["burstCount"] = emitter.burstCount;
-			e["burstCooldown"] = emitter.burstCooldown;
-
-			e["shape"] = static_cast<int>(emitter.shape);
-
-			// Write each shape struct depending on current shape
-			switch (emitter.shape)
-			{
-			case SpawnShape::LINE:
-				e["line"]["point1_x"] = emitter.line.point1.x;
-				e["line"]["point1_y"] = emitter.line.point1.y;
-				e["line"]["point1_z"] = emitter.line.point1.z;
-
-				e["line"]["point2_x"] = emitter.line.point2.x;
-				e["line"]["point2_y"] = emitter.line.point2.y;
-				e["line"]["point2_z"] = emitter.line.point2.z;
-				break;
-
-			case SpawnShape::CIRCLE:
-				e["circle"]["radius"] = emitter.circle.radius;
-				break;
-
-			case SpawnShape::DONUT:
-				e["donut"]["radius1"] = emitter.donut.radius1;
-				e["donut"]["radius2"] = emitter.donut.radius2;
-				break;
-
-			case SpawnShape::POINT:
-				e["point"]["x"] = emitter.point.point.x;
-				e["point"]["y"] = emitter.point.point.y;
-				e["point"]["z"] = emitter.point.point.z;
-				break;
-
-			case SpawnShape::RECT:
-				e["rect"]["rectCenter"] = { emitter.rect.center.x, emitter.rect.center.y };
-				e["rect"]["rectExtent"] = { emitter.rect.extent.x, emitter.rect.extent.y };
-				break;
-			case SpawnShape::TEXTURE:
-				e["textureShape"]["worldSize"] = { emitter.texture.worldSize.x, emitter.texture.worldSize.y };
-				e["textureShape"]["alphaThreshold"] = emitter.texture.alphaThreshold;
-				e["textureShape"]["invertMask"] = emitter.texture.invertMask;
-				e["textureShape"]["shapeTexture"] = emitter.texture.spriteSource != nullptr ? emitter.texture.spriteSource->GetName() : "";
-				break;
-			default:
-				break;
-			}
-
-
-			emittersJson.push_back(e);
+			emittersJson.push_back(SerializeEmitter(emitter));
 		}
 
 		json["ParticleSystem"]["Emitters"] = emittersJson;
 
 		return json;
 	}
+
+
+	JSON ParticleSystem::DiffParticleSystemComponent(const void* base, const void* modified)
+	{
+		auto* a = static_cast<const ParticleSystemComponent*>(base);
+		auto* b = static_cast<const ParticleSystemComponent*>(modified);
+
+		JSON diff;
+		JSON psJson;
+
+		// Check name
+		if (a->m_Name != b->m_Name)
+			psJson["name"] = b->m_Name;
+
+		// Compare emitters count first
+		if (a->m_Emitters.size() != b->m_Emitters.size())
+		{
+			// Output full emitters array from modified since structure changed
+			nlohmann::json emittersJson = nlohmann::json::array();
+
+			for (const auto& emitter : b->m_Emitters)
+			{
+				emittersJson.push_back(SerializeEmitter(emitter));
+			}
+			psJson["Emitters"] = emittersJson;
+		}
+		else
+		{
+			// Same size, diff each emitter
+			nlohmann::json emittersJson = nlohmann::json::array();
+
+			bool anyEmitterDiff = false;
+			for (size_t i = 0; i < a->m_Emitters.size(); ++i)
+			{
+				JSON emitterDiff = DiffEmitter(a->m_Emitters[i], b->m_Emitters[i]);
+				if (!emitterDiff.empty())
+				{
+					anyEmitterDiff = true;
+					emittersJson.push_back(emitterDiff);
+				}
+				else
+				{
+					// Could push empty or skip — decide based on your use case
+					emittersJson.push_back(JSON::object());
+				}
+			}
+
+			if (anyEmitterDiff)
+				psJson["Emitters"] = emittersJson;
+		}
+
+		if (!psJson.empty())
+			diff["ParticleSystem"] = psJson;
+
+		return diff;
+	}
+
 
 
 	void ParticleSystem::DrawCoreSettings(ParticleEmitter& emitter, size_t i)

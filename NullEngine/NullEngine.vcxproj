@@ -140,6 +140,8 @@
     <ClInclude Include="src\Null\Engine\Misc\Time.h" />
     <ClInclude Include="src\Null\Engine\Modules\Base\IModule.h" />
     <ClInclude Include="src\Null\Engine\Modules\NAsyncTaskManager.h" />
+    <ClInclude Include="src\Null\Engine\Modules\NB2BodyManager.h" />
+    <ClInclude Include="src\Null\Engine\Modules\NB2FixtureManager.h" />
     <ClInclude Include="src\Null\Engine\Modules\NCameraManager.h" />
     <ClInclude Include="src\Null\Engine\Modules\NComponentFactory.h" />
     <ClInclude Include="src\Null\Engine\Modules\NComputeShaderManager.h" />
@@ -155,7 +157,9 @@
     <ClInclude Include="src\Null\Engine\Modules\NScriptingInterface.h" />
     <ClInclude Include="src\Null\Engine\Modules\NShaderManager.h" />
     <ClInclude Include="src\Null\Engine\Modules\NSpriteSourceManager.h" />
+    <ClInclude Include="src\Null\Engine\Modules\NStringIDManager.h" />
     <ClInclude Include="src\Null\Engine\Modules\NTextureManager.h" />
+    <ClInclude Include="src\Null\Engine\Modules\NThreadPool.h" />
     <ClInclude Include="src\Null\Engine\Modules\NTilesetManager.h" />
     <ClInclude Include="src\Null\Engine\Modules\NWindow.h" />
     <ClInclude Include="src\Null\Engine\NEngine.h" />
@@ -178,6 +182,7 @@
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Helpers\ComponentSignature.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\AnimationSystem.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\BoxCollider2DSystem.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\CameraSystem - Copy.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\CameraSystem.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\CircleCollider2DSystem.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\LifetimeSystem.h" />
@@ -205,6 +210,7 @@
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\Framebuffer.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\RenderData.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\RenderPass.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\SSBO.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\UBO.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\VAO.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\VBO.h" />
@@ -234,19 +240,21 @@
     <ClInclude Include="src\Null\Engine\Submodules\Tilemap.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Tileset.h" />
     <ClInclude Include="src\Null\EntryPoint.h" />
+    <ClInclude Include="src\Null\Tools\ArchetypeDefinitions.h" />
     <ClInclude Include="src\Null\Tools\Easing.h" />
     <ClInclude Include="src\Null\Tools\EasingCurve.h" />
     <ClInclude Include="src\Null\Tools\EntitySerializer.h" />
     <ClInclude Include="src\Null\Tools\FileDialog.h" />
     <ClInclude Include="src\Null\Tools\GLHelper.h" />
+    <ClInclude Include="src\Null\Tools\Handle.h" />
     <ClInclude Include="src\Null\Tools\ImGuiH.h" />
     <ClInclude Include="src\Null\Tools\ImguiSink.h" />
     <ClInclude Include="src\Null\Tools\JsonWrapper.h" />
+    <ClInclude Include="src\Null\Tools\NRegistryView.h" />
     <ClInclude Include="src\Null\Tools\Random.h" />
     <ClInclude Include="src\Null\Tools\ScriptHelper.h" />
     <ClInclude Include="src\Null\Tools\Trace.h" />
     <ClInclude Include="src\stdafx.h" />
-    <ClInclude Include="SSBO.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Null\Application.cpp" />
@@ -255,6 +263,8 @@
     <ClCompile Include="src\Null\Engine\Misc\Time.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\Base\IModule.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NAsyncTaskManager.cpp" />
+    <ClCompile Include="src\Null\Engine\Modules\NB2BodyManager.cpp" />
+    <ClCompile Include="src\Null\Engine\Modules\NB2FixtureManager.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NCameraManager.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NComponentFactory.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NComputeShaderManager.cpp" />
@@ -270,7 +280,9 @@
     <ClCompile Include="src\Null\Engine\Modules\NScriptingInterface.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NShaderManager.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NSpriteSourceManager.cpp" />
+    <ClCompile Include="src\Null\Engine\Modules\NStringIDManager.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NTextureManager.cpp" />
+    <ClCompile Include="src\Null\Engine\Modules\NThreadPool.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NTilesetManager.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NWindow.cpp" />
     <ClCompile Include="src\Null\Engine\NEngine.cpp" />
@@ -325,14 +337,17 @@
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Texture1D.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Layers\ImGuiLayer.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Layers\Layer.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\Scene - Copy.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Scene.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Tilemap.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Tileset.cpp" />
+    <ClCompile Include="src\Null\Tools\ArchetypeDefinitions.cpp" />
     <ClCompile Include="src\Null\Tools\Easing.cpp" />
     <ClCompile Include="src\Null\Tools\EasingCurve.cpp" />
     <ClCompile Include="src\Null\Tools\EntitySerializer.cpp" />
     <ClCompile Include="src\Null\Tools\FileDialog.cpp" />
     <ClCompile Include="src\Null\Tools\GLHelper.cpp" />
+    <ClCompile Include="src\Null\Tools\Handle.cpp" />
     <ClCompile Include="src\Null\Tools\ImGuiH.cpp" />
     <ClCompile Include="src\Null\Tools\ImguiSink.cpp" />
     <ClCompile Include="src\Null\Tools\JsonWrapper.cpp" />

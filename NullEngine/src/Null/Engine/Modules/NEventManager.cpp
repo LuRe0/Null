@@ -147,6 +147,15 @@ namespace NULLENGINE
 		// Expose the existing instance to Lua under a different global variable
 		//lua[Module<NEventManager>::TypeName().c_str()] = this;
 	}
+	void NEventManager::RenderImGui()
+	{
+		ImGui::Text("Event Queue Size: %d", static_cast<int>(m_EventsQueue.size()));
+		ImGui::Text("Async Event Queue Size: %d", static_cast<int>(m_AsychEventsQueue.size()));
+		//if (ImGui::Button("Clear Event Queue")) {
+		//	m_EventsQueue.clear();
+		//	m_AsychEventsQueue.clear();
+		//}
+	}
 	void NEventManager::SortSubscribers(std::uint32_t eventId)
 	{
 		auto& handlers = m_Subscribers[eventId];

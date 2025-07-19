@@ -43,7 +43,8 @@ namespace NULLENGINE
 		NComponentFactory* componentFactory = NComponentFactory::Instance();
 
 		componentFactory->Register<BoxCollider2DComponent>(CreateBoxCollider2DComponent,
-			[this](Entity& id) { this->ViewBoxCollider2DComponent(id); }, WriteBoxCollider2DComponent);
+			[this](Entity& id) { this->ViewBoxCollider2DComponent(id); },
+			WriteBoxCollider2DComponent, AddBoxCollider2DComponent, DiffBoxCollider2DComponent);
 
 	}
 
@@ -211,10 +212,10 @@ namespace NULLENGINE
 	}
 
 
-	void BoxCollider2DSystem::CreateBoxCollider2DComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id)
+	void BoxCollider2DSystem::CreateBoxCollider2DComponent(void* component, const nlohmann::json& json)
 	{
 
-		NComponentFactory* componentFactory = NComponentFactory::Instance();
+		//NComponentFactory* componentFactory = NComponentFactory::Instance();
 
 		auto* comp = static_cast<BoxCollider2DComponent*>(component);
 		JsonReader jsonWrapper(json);
@@ -228,14 +229,23 @@ namespace NULLENGINE
 			comp->m_Restitution = jsonWrapper.GetFloat("restitution", 1.0f);
 			comp->m_RestitutionThreshold = jsonWrapper.GetFloat("restitutionThreshold", 0.5f);
 		}
+		//componentFactory->AddOrUpdate<BoxCollider2DComponent>(id, comp, registry, comp->m_Offset, comp->m_Scale, comp->m_Density, comp->m_Friction, comp->m_Restitution, comp->m_RestitutionThreshold);
+	}
+
+	void BoxCollider2DSystem::AddBoxCollider2DComponent(void* component, NRegistry* registry, EntityID id)
+	{
+		NComponentFactory* componentFactory = NComponentFactory::Instance();
+
+		auto* comp = static_cast<BoxCollider2DComponent*>(component);
+
 		componentFactory->AddOrUpdate<BoxCollider2DComponent>(id, comp, registry, comp->m_Offset, comp->m_Scale, comp->m_Density, comp->m_Friction, comp->m_Restitution, comp->m_RestitutionThreshold);
 	}
 
-	JSON BoxCollider2DSystem::WriteBoxCollider2DComponent(BaseComponent* component)
+	JSON BoxCollider2DSystem::WriteBoxCollider2DComponent(const void* component)
 	{
 		nlohmann::json json;
 
-		auto& collider = *static_cast<BoxCollider2DComponent*>(component);
+		auto& collider = *static_cast<const BoxCollider2DComponent*>(component);
 
 		json["BoxCollider2D"]["offset"] = { collider.m_Offset.x, collider.m_Offset.y };
 		json["BoxCollider2D"]["scale"] = { collider.m_Scale.x, collider.m_Scale.y };
@@ -246,6 +256,39 @@ namespace NULLENGINE
 
 		return json;
 	}
+
+	JSON BoxCollider2DSystem::DiffBoxCollider2DComponent(const void* base, const void* modified)
+	{
+		auto* b = static_cast<const BoxCollider2DComponent*>(modified);
+		auto* a = static_cast<const BoxCollider2DComponent*>(base);
+
+		JSON diff;
+		JSON colliderJson;
+
+		if (a->m_Offset != b->m_Offset)
+			colliderJson["offset"] = { b->m_Offset.x, b->m_Offset.y };
+
+		if (a->m_Scale != b->m_Scale)
+			colliderJson["scale"] = { b->m_Scale.x, b->m_Scale.y };
+
+		if (a->m_Density != b->m_Density)
+			colliderJson["density"] = b->m_Density;
+
+		if (a->m_Friction != b->m_Friction)
+			colliderJson["friction"] = b->m_Friction;
+
+		if (a->m_Restitution != b->m_Restitution)
+			colliderJson["restitution"] = b->m_Restitution;
+
+		if (a->m_RestitutionThreshold != b->m_RestitutionThreshold)
+			colliderJson["restitutionThreshold"] = b->m_RestitutionThreshold;
+
+		if (!colliderJson.empty())
+			diff["BoxCollider2D"] = colliderJson;
+
+		return diff;
+	}
+
 
 	void BoxCollider2DSystem::ViewBoxCollider2DComponent(Entity& entity)
 	{

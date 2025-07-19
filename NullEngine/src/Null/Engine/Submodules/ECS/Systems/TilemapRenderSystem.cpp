@@ -39,7 +39,8 @@ namespace NULLENGINE
 		NComponentFactory* componentFactory = NComponentFactory::Instance();
 
 		componentFactory->Register<TilemapComponent>(CreateTilemapComponent,
-			[this](Entity& id) { this->ViewTilemapComponent(id); }, WriteTilemapComponent);
+			[this](Entity& id) { this->ViewTilemapComponent(id); }, WriteTilemapComponent,
+			AddTilemapComponent, DiffTilemapComponent);
 	}
 
 	void TilemapRenderSystem::Load()
@@ -83,7 +84,7 @@ namespace NULLENGINE
 	}
 
 
-	void TilemapRenderSystem::CreateTilemapComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id)
+	void TilemapRenderSystem::CreateTilemapComponent(void* component, const nlohmann::json& json)
 	{
 		auto* comp = static_cast<TilemapComponent*>(component);
 		JsonReader jsonWrapper(json);
@@ -98,19 +99,54 @@ namespace NULLENGINE
 		}
 
 		// Add or update component in registry
+		//NComponentFactory* componentFactory = NComponentFactory::Instance();
+	}
+
+	void TilemapRenderSystem::AddTilemapComponent(void* component, NRegistry* registry, EntityID id)
+	{
 		NComponentFactory* componentFactory = NComponentFactory::Instance();
+
+		auto* comp = static_cast<TilemapComponent*>(component);
 		componentFactory->AddOrUpdate<TilemapComponent>(id, comp, registry, comp->m_Name, comp->m_PathName, comp->m_TileScale);
 	}
 
 
-	JSON TilemapRenderSystem::WriteTilemapComponent(BaseComponent* component)
+	JSON TilemapRenderSystem::WriteTilemapComponent(const void* component)
 	{
+		nlohmann::json json;
 
-		return JSON();
+		auto& tilemap = *static_cast<const TilemapComponent*>(component);
+
+		json["Tilemap"]["name"] = tilemap.m_Name;
+		json["Tilemap"]["path"] = tilemap.m_PathName;
+		json["Tilemap"]["tileScale"] = tilemap.m_TileScale;
+
+		return json;
 	}
+
 
 	void TilemapRenderSystem::ViewTilemapComponent(Entity& entity)
 	{
+	}
+
+
+	JSON TilemapRenderSystem::DiffTilemapComponent(const void* base, const void* modified)
+	{
+		nlohmann::json diff;
+
+		auto& a = *static_cast<const TilemapComponent*>(base);
+		auto& b = *static_cast<const TilemapComponent*>(modified);
+
+		if (a.m_Name != b.m_Name)
+			diff["name"] = b.m_Name;
+
+		if (a.m_PathName != b.m_PathName)
+			diff["path"] = b.m_PathName;
+
+		if (a.m_TileScale != b.m_TileScale)
+			diff["tileScale"] = b.m_TileScale;
+
+		return diff;
 	}
 
 	bool TilemapRenderSystem::OnEntityCreated(const EntityCreatedEvent& e)

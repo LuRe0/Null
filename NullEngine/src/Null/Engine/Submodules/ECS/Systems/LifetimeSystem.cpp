@@ -18,6 +18,7 @@
 #include "../Entities/Entity.h"
 #include "../../Scene.h"
 
+#include "../../../../Tools/ImGuiH.h"
 
 
 //******************************************************************************//
@@ -39,7 +40,9 @@ namespace NULLENGINE
 		NComponentFactory* componentFactory = NComponentFactory::Instance();
 
 		componentFactory->Register<LifetimeComponent>(CreateLifetimeComponent,
-			[this](Entity& id) { this->ViewLifetimeComponent(id); }, WriteLifetimeComponent);
+			[this](Entity& id) { this->ViewLifetimeComponent(id); },
+			WriteLifetimeComponent, 
+			AddLifetimeComponent, DiffLifetimeComponent);
 
 	}
 
@@ -113,9 +116,9 @@ namespace NULLENGINE
 		return false;
 	}
 
-	void LifetimeSystem::CreateLifetimeComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id)
+	void LifetimeSystem::CreateLifetimeComponent(void* component, const nlohmann::json& json)
 	{
-		NComponentFactory* componentFactory = NComponentFactory::Instance();
+		//NComponentFactory* componentFactory = NComponentFactory::Instance();
 		NCameraManager* camManager = NCameraManager::Instance();
 
 		auto* comp = static_cast<LifetimeComponent*>(component);
@@ -123,29 +126,93 @@ namespace NULLENGINE
 		if (!jsonWrapper.Empty())
 		{
 			comp->timeRemaining = jsonWrapper.GetFloat("timeRemaining", 1.0f);
+			ComponentFlagSet flags;
+			flags.Set(ComponentFlags_Enabled);
+			flags.Set(ComponentFlags_Serialized);
+			comp->m_ComponentFlags.m_Flags = jsonWrapper.GetUInt8("ComponentFlags", flags.m_Flags);
+
 		}
 
+	}
+
+	void LifetimeSystem::AddLifetimeComponent(void* component, NRegistry* registry, EntityID id)
+	{
+		NComponentFactory* componentFactory = NComponentFactory::Instance();
+
+		auto* comp = static_cast<LifetimeComponent*>(component);
 		componentFactory->AddOrUpdate<LifetimeComponent>(id, comp, registry, comp->timeRemaining);
 	}
 
-	JSON LifetimeSystem::WriteLifetimeComponent(BaseComponent* component)
+
+	JSON LifetimeSystem::WriteLifetimeComponent(const void* component)
 	{
 		nlohmann::json json;
 
-		auto& comp = *static_cast<LifetimeComponent*>(component);
+		auto& comp = *static_cast<const LifetimeComponent*>(component);
 		json["Lifetime"]["timeRemaining"] = comp.timeRemaining;
+		json["Lifetime"]["ComponentFlags"] = comp.m_ComponentFlags.m_Flags;
 
 
 		return json;
 	}
+
+	JSON LifetimeSystem::DiffLifetimeComponent(const void* base, const void* modified)
+	{
+		auto* a = static_cast<const LifetimeComponent*>(base);
+		auto* b = static_cast<const LifetimeComponent*>(modified);
+
+		JSON diff;
+		JSON lifetimeJson;
+
+		if (a->timeRemaining != b->timeRemaining)
+			lifetimeJson["timeRemaining"] = b->timeRemaining;
+
+
+		if (a->m_ComponentFlags.m_Flags != b->m_ComponentFlags.m_Flags)
+			diff["ComponentFlags"] = b->m_ComponentFlags.m_Flags;
+
+		if (!lifetimeJson.empty())
+			diff["Lifetime"] = lifetimeJson;
+
+		return diff;
+	}
+
 	void LifetimeSystem::ViewLifetimeComponent(Entity& entity)
 	{
 		if (!entity.Has<LifetimeComponent>())
 			return;
 
+
+
+
 		auto& LifetimeComp = entity.Get<LifetimeComponent>();
 
+
+		uint8_t& flags = LifetimeComp.m_ComponentFlags.m_Flags;
+		// Show collapsible header with enable checkbox and remove button, tied to the Enabled flag
+		auto [open, enabled, remove] = ImGuiH::CollapsingHeaderWithFlagCheckboxAndRemove("Transform", flags, ComponentFlags_Enabled);
+
+		if (remove)
+		{
+			NEventManager::Instance()->QueueEvent(std::make_unique<EntityRemoveComponentEvent>(entity.GetID(), Component<LifetimeComponent>::GetID()));
+		}
+
+		if (!open)
+			return;
+
+		if (!enabled)
+			ImGui::BeginDisabled();
+
 		ImGui::DragFloat("Lifetime", &LifetimeComp.timeRemaining, 0.001f, 0);
+
+
+		if (!enabled)
+			ImGui::EndDisabled();
+
+
+
+
+		ImGui::TreePop();
 
 	}
 

@@ -117,6 +117,11 @@ namespace NULLENGINE
 
 		EntityID GetID() const { return m_ID; }
 
+		bool IsValid() const
+		{
+			return m_ID > 0 && !m_isDestroyed;
+		}
+
 		bool operator==(EntityID id) const
 		{
 			return m_ID == id;

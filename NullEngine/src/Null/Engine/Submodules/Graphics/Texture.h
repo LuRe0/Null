@@ -40,6 +40,7 @@ namespace NULLENGINE
 	{
 	public:
 		Texture(const std::string& filePath, bool fullpath = false);
+		Texture(const std::string& name, const std::string& filePath, bool fullpath);
 		Texture() = default;
 		void Bind() const ;
 		void BindUnit(uint32_t slot) const ;

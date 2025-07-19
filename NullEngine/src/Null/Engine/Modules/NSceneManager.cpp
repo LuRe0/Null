@@ -85,6 +85,85 @@ namespace NULLENGINE
 		return m_Scenes[m_CurrentScene].get();
 	}
 
+	const SceneDefinition* NSceneManager::GetSceneDefinition(const std::string& name) const
+	{
+		auto it = m_SceneDefinitions.find(name);
+		return it != m_SceneDefinitions.end() ? &it->second : nullptr;
+	}
+
+	void NSceneManager::ClearSceneCache(const std::string& name)
+	{
+		m_SceneDefinitions.erase(name);
+	}
+
+	void NSceneManager::CacheSceneDefinition(const std::string& sceneName, const JSON& sceneJson)
+	{
+		SceneDefinition def;
+		def.originalJson = sceneJson;
+		auto* componentFactory = NComponentFactory::Instance();
+
+
+		for (const auto& entityData : sceneJson["entities"])
+		{
+			EntityDefinition entDef;
+			entDef.referencedArchetype = STRID(entityData.value("archetype", ""));
+
+			if (entityData.contains("components"))
+			{
+				for (const auto& [compName, compData] : entityData["components"].items())
+				{
+					const auto& component = componentFactory->CreateComponent(compName + "Component", compData);
+					entDef.components[STRID(compName + "Component")] = component;
+				}
+			}
+
+			if (entityData.contains("children"))
+			{
+				for (const auto& childDef : entityData["children"])
+				{
+					std::string baseName = childDef.value("name", "Child");
+					std::string uniqueName = def.GenerateUniqueName(baseName);
+
+					entDef.children[STRID(uniqueName)] = ParseEntityDefinition(childDef);
+				}
+			}
+
+			std::string entityName = entityData.value("name", "");
+			def.entities[STRID(def.GenerateUniqueName(entityName))] = std::move(entDef);
+		}
+
+		m_SceneDefinitions[sceneName] = std::move(def);
+	}
+
+	EntityDefinition NSceneManager::ParseEntityDefinition(const JSON& entityJson)
+	{
+		auto* componentFactory = NComponentFactory::Instance();
+
+		EntityDefinition entDef;
+		entDef.referencedArchetype = STRID(entityJson.value("archetype", ""));
+
+		if (entityJson.contains("components"))
+		{
+			for (const auto& [compName, compData] : entityJson["components"].items())
+			{
+				const auto& component = componentFactory->CreateComponent(compName + "Component", compData);
+				entDef.components[STRID(compName + "Component")] = component;
+			}
+		}
+
+		if (entityJson.contains("children"))
+		{
+			for (const auto& child : entityJson["children"])
+			{
+				std::string childName = child.value("name", "");
+				entDef.children[STRID(childName)] = ParseEntityDefinition(child);
+			}
+		}
+
+		return entDef;
+	}
+
+
 	void NSceneManager::RegisterToScripAPI(sol::state& lua)
 	{
 		lua.new_usertype<NSceneManager>(
@@ -175,6 +254,12 @@ namespace NULLENGINE
 
 	void NSceneManager::Unload()
 	{
+		for( auto& def : m_SceneDefinitions)
+		{
+			def.second.Destroy();
+		}
+
+		m_SceneDefinitions.clear();
 	}
 
 	void NSceneManager::Shutdown()
@@ -183,49 +268,90 @@ namespace NULLENGINE
 
 	void NSceneManager::SwitchScene(const std::string& nextScene)
 	{
-		std::string filePath = std::string("../Assets/Scenes/Paths/") + nextScene + std::string(".scene");
+		// Try cache first
+		if (LoadSceneFromCache(nextScene)) {
+			NLE_CORE_INFO("Loaded scene '{0}' from cache", nextScene);
+			return;
+		}
 
-		// Open the JSON file
+		std::string filePath = "../Assets/Scenes/Paths/" + nextScene + ".scene";
 		std::ifstream inputFile(filePath);
+
 		if (!inputFile.is_open())
 		{
-			NLE_CORE_ERROR("Error: Could not open file");
+			NLE_CORE_ERROR("Could not open file: {0}", filePath);
 
 			if (m_Parent->GetIsEditorEnabled())
 			{
-				std::unique_ptr<Scene> scene = std::make_unique<Scene>("New Scene");
-
-				RegisterScene("New Scene", std::move(scene));
-
+				std::unique_ptr<Scene> newScene = std::make_unique<Scene>("New Scene");
+				RegisterScene("New Scene", std::move(newScene));
 				m_CurrentScene = "New Scene";
-
-				NLE_CORE_WARN("Creating Empty Scene");
+				NLE_CORE_WARN("Created empty scene");
 			}
 
 			return;
 		}
 
-		// Parse the JSON file
 		JSON sceneData;
-
 		try {
 			inputFile >> sceneData;
 		}
 		catch (JSON::parse_error& e) {
-			NLE_ERROR("Error: JSON parsing failed: _{0}", e.what());
+			NLE_ERROR("JSON parsing failed: {0}", e.what());
 			return;
 		}
 
+		// Cache it
+		CacheSceneDefinition(nextScene, sceneData);
 
-		std::string sceneName = nextScene;
+		std::unique_ptr<Scene> scene = std::make_unique<Scene>(nextScene);
+		scene->BuildFromDefinition(m_SceneDefinitions[nextScene]);
+		RegisterScene(nextScene, std::move(scene));
 
-		std::unique_ptr<Scene> scene = std::make_unique<Scene>(sceneName);
+		m_CurrentScene = nextScene;
 
-		scene->Load(sceneData);
 
-		RegisterScene(sceneName, std::move(scene));
-
-		m_CurrentScene = sceneName;
+		//exit(0); // Exit the program after building the scene from definition
 
 	}
+
+
+
+	bool NSceneManager::LoadSceneFromCache(const std::string& sceneName)
+	{
+		auto it = m_SceneDefinitions.find(sceneName);
+		if (it == m_SceneDefinitions.end())
+			return false;
+
+		std::unique_ptr<Scene> scene = std::make_unique<Scene>(sceneName);
+		scene->BuildFromDefinition(it->second);
+		RegisterScene(sceneName, std::move(scene));
+		m_CurrentScene = sceneName;
+
+		return true;
+	}
+
+	void NSceneManager::ForceReloadSceneDefinition(const std::string& sceneName)
+	{
+		std::string filePath = "../Assets/Scenes/Paths/" + sceneName + ".scene";
+		std::ifstream inputFile(filePath);
+
+		if (!inputFile.is_open())
+		{
+			NLE_CORE_ERROR("Could not reopen scene for reload: {0}", filePath);
+			return;
+		}
+
+		JSON sceneData;
+		try {
+			inputFile >> sceneData;
+		}
+		catch (JSON::parse_error& e) {
+			NLE_CORE_ERROR("Failed to re-parse scene: {0}", e.what());
+			return;
+		}
+
+		CacheSceneDefinition(sceneName, sceneData);
+	}
+
 }

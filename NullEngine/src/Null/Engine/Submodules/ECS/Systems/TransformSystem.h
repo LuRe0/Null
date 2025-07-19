@@ -63,9 +63,13 @@ namespace NULLENGINE
 		void UpdateChildTransform(EntityID childId, const TransformComponent& parentTransform, NRegistry* registry);
 
 		//void OnWindowResize(const WindowResizeEvent& e);
-		static void CreateTransformComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
+		static void CreateTransformComponent(void* component, const nlohmann::json& json);
 
-		static JSON WriteTransformComponent(BaseComponent* component);
+		static void AddTransformComponent(void* component, NRegistry* registry, EntityID id);
+
+		static JSON WriteTransformComponent(const void* component);
+
+		static JSON DiffTransformComponent(const void* base, const void* modified);
 
 		void ViewTransformComponent(Entity& entity);
 

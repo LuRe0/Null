@@ -83,8 +83,13 @@ namespace NULLENGINE
 
 		NEventManager() : m_EventId(0) {}
 
+		bool HasRenderImGui() const override { return true; }
 
 		void RegisterToScripAPI(sol::state& lua) override;
+
+		void RenderImGui() override;
+
+
 
 		static const std::string Name() { return "EventManager"; }
 

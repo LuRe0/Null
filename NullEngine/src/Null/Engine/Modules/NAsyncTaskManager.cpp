@@ -39,11 +39,14 @@ namespace NULLENGINE
 
     void NAsyncTaskManager::Update(float dt)
     {
-        int processedThisFrame = 0;
-        while (!m_TaskQueue.empty() && processedThisFrame < m_TasksToProcess)
+        using clock = std::chrono::steady_clock;
+        auto start = clock::now();
+
+        const float maxTimePerFrameMS = m_MaxTimePerFrameMS;
+
+        while (!m_TaskQueue.empty())
         {
             auto& task = m_TaskQueue.front();
-
             task->Process();
 
             if (task->IsComplete())
@@ -53,46 +56,80 @@ namespace NULLENGINE
             }
             else
             {
-                break;
+                break; // let it continue next frame
             }
 
-            ++processedThisFrame;
+            auto now = clock::now();
+            float elapsedMS = std::chrono::duration<float, std::milli>(now - start).count();
+            if (elapsedMS > maxTimePerFrameMS)
+                break; // Don't blow the frame time
         }
     }
 
+
+    void NAsyncTaskManager::RuntimeUpdate(float dt)
+    {
+        Update(dt);
+    }
+
+    //void NAsyncTaskManager::Render()
+    //{
+    //}
+
     void NAsyncTaskManager::RenderLoadScreen()
     {
-        if (m_TaskQueue.empty())
+        bool show = !m_TaskQueue.empty() || m_TasksProcessed < m_TotalTasks;
+        if (!show)
             return;
 
         ImGuiIO& io = ImGui::GetIO();
+        const float windowHeight = 80.0f;
+        const float windowWidth = io.DisplaySize.x;
 
-        ImGui::SetNextWindowPos(ImVec2(0, 0));
-        ImGui::SetNextWindowSize(io.DisplaySize);
+        // Position it at the bottom of the screen
+        ImGui::SetNextWindowPos(ImVec2(0.0f, io.DisplaySize.y - windowHeight), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(windowWidth, windowHeight), ImGuiCond_Always);
 
-        ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove |
-            ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings |
-            ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+        ImGuiWindowFlags flags =
+            ImGuiWindowFlags_NoTitleBar |
+            ImGuiWindowFlags_NoResize |
+            ImGuiWindowFlags_NoMove |
+            ImGuiWindowFlags_NoCollapse |
+            ImGuiWindowFlags_NoSavedSettings |
+            ImGuiWindowFlags_NoBringToFrontOnFocus |
+            ImGuiWindowFlags_NoScrollbar;
 
-        ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 0.75f)); // translucent black
-        ImGui::Begin("Loading Overlay", nullptr, window_flags);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+        ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 0.85f)); // Dark translucent background
 
-        ImGui::SetCursorPosY(io.DisplaySize.y * 0.45f);
-        ImGui::SetCursorPosX(io.DisplaySize.x * 0.5f - 70);
+        if (ImGui::Begin("Bottom Loading Bar", nullptr, flags))
+        {
+            float progress = (m_TotalTasks > 0) ? (float)m_TasksProcessed / (float)m_TotalTasks : 0.0f;
 
-        ImGui::TextColored(ImVec4(1, 1, 1, 1), "Loading...");
+            ImGui::SetCursorPosX((windowWidth - 200.0f) * 0.5f);
+            ImGui::ProgressBar(progress, ImVec2(200, 20));
 
-        float progress = (m_TotalTasks > 0) ? (float)m_TasksProcessed / (float)m_TotalTasks : 0.0f;
-
-        ImGui::SetCursorPosY(io.DisplaySize.y * 0.5f);
-        ImGui::SetCursorPosX(io.DisplaySize.x * 0.5f - 100);
-
-        ImGui::ProgressBar(progress, ImVec2(200, 20));
+            ImGui::SetCursorPosY(50.0f);
+            ImGui::SetCursorPosX((windowWidth - 200.0f) * 0.5f);
+            if (progress >= 1.0f)
+                ImGui::TextColored(ImVec4(0.2f, 1.0f, 0.2f, 1.0f), "Loading Complete!");
+            else
+                ImGui::TextColored(ImVec4(1, 1, 1, 1), "Loading...");
+        }
 
         ImGui::End();
         ImGui::PopStyleColor();
+        ImGui::PopStyleVar();
     }
 
+    void NThreadPool::Unload()
+    {
+    }
+
+
+    void NAsyncTaskManager::RegisterToScripAPI(sol::state& lua)
+    {
+    }
 
 
     void NAsyncTaskManager::Unload()
@@ -130,16 +167,16 @@ namespace NULLENGINE
 
     void NAsyncTaskManager::RenderImGui()
     {
-        ImGui::Begin("Async Task Manager");
+        //ImGui::Begin("Async Task Manager");
 
         ImGui::Text("Pending Tasks: %d", static_cast<int>(m_TaskQueue.size()));
 
-        ImGui::SliderInt("Tasks Per Frame", &m_TasksToProcess, 1, 20);
+        ImGui::SliderFloat("Max Time Per Frame (ms)", &m_MaxTimePerFrameMS, 0.1f, 10.0f);
 
         ImGui::TextWrapped("Increase this value to process more tasks per frame, "
             "which speeds up loading but may cause frame drops.");
 
-        ImGui::End();
+        //ImGui::End();
 
         RenderLoadScreen();
     }

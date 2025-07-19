@@ -33,6 +33,14 @@
                         1,
                         1
                     ],
+                    "emissiveColor": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "emissiveStrength": 0.0,
+                    "emissiveTexture": "",
                     "fade": 0.004999999888241291,
                     "frameindex": 0,
                     "meshname": "Quad",
@@ -99,6 +107,14 @@
                         1,
                         1
                     ],
+                    "emissiveColor": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "emissiveStrength": 0.0,
+                    "emissiveTexture": "",
                     "fade": 0.004999999888241291,
                     "frameindex": 0,
                     "meshname": "Quad",
@@ -165,6 +181,14 @@
                         1,
                         1
                     ],
+                    "emissiveColor": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "emissiveStrength": 0.0,
+                    "emissiveTexture": "",
                     "fade": 0.004999999888241291,
                     "frameindex": 0,
                     "meshname": "Quad",
@@ -289,6 +313,29 @@
                         0.0,
                         0.0
                     ],
+                    "postprocess": {
+                        "BloomIntensity": 0.800000011920929,
+                        "BloomThreshold": 1.0,
+                        "ChromaticOffset": 1.5,
+                        "Enabled": true,
+                        "GrainAmount": 0.20000000298023224,
+                        "GrayscaleAmount": 1.0,
+                        "TintColor": [
+                            1.0,
+                            0.699999988079071,
+                            0.699999988079071,
+                            1.0
+                        ],
+                        "TintStrength": 0.5,
+                        "UseBloom": true,
+                        "UseChromatic": false,
+                        "UseGrain": false,
+                        "UseGrayscale": false,
+                        "UseTint": false,
+                        "UseVignette": false,
+                        "VignetteIntensity": 0.5,
+                        "VignetteRadius": 0.75
+                    },
                     "rotation": 0.0,
                     "type": "Camera2D",
                     "zoom": 1.0
@@ -317,6 +364,14 @@
                         1,
                         1
                     ],
+                    "emissiveColor": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "emissiveStrength": 0.0,
+                    "emissiveTexture": "",
                     "fade": 0.4359999895095825,
                     "frameindex": 0,
                     "meshname": "Quad",
@@ -378,6 +433,8 @@
                 "Script": {
                     "scripts": {
                         "BallBehaviour": {
+                            "boost": 10.0,
+                            "boostDuration": 2.0,
                             "speed": 20.0
                         }
                     }
@@ -387,6 +444,14 @@
                         1,
                         1
                     ],
+                    "emissiveColor": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "emissiveStrength": 0.0,
+                    "emissiveTexture": "",
                     "fade": 0.5960000157356262,
                     "frameindex": 0,
                     "meshname": "Circle",
@@ -419,609 +484,6 @@
                 }
             },
             "name": "ball"
-        },
-        {
-            "archetype": "Block",
-            "components": {
-                "BoxCollider2D": {
-                    "density": 1.0,
-                    "friction": 0.5,
-                    "offset": [
-                        0.0,
-                        0.0
-                    ],
-                    "restitution": 0.0,
-                    "restitutionThreshold": 0.5,
-                    "scale": [
-                        50.0,
-                        20.0
-                    ]
-                },
-                "Rigidbody2D": {
-                    "angularDamping": 0.0,
-                    "angularVelocity": 0.0,
-                    "fixedRotation": true,
-                    "gravityScale": 0.0,
-                    "linearDamping": 0.0,
-                    "linearVelocity": [
-                        0.0,
-                        0.0
-                    ],
-                    "type": 0
-                },
-                "Sprite": {
-                    "dimension": [
-                        1,
-                        1
-                    ],
-                    "fade": 0.004999999888241291,
-                    "frameindex": 0,
-                    "meshname": "Quad",
-                    "shadername": "default",
-                    "texture": "",
-                    "thickness": 1.0,
-                    "tint": [
-                        1.0,
-                        1.0,
-                        1.0,
-                        1.0
-                    ]
-                },
-                "Transform": {
-                    "rotation": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "scale": [
-                        50.0,
-                        20.0,
-                        1.0
-                    ],
-                    "translation": [
-                        -250.0,
-                        450.0,
-                        0.0
-                    ]
-                }
-            },
-            "name": "Block (Clone)"
-        },
-        {
-            "archetype": "Block",
-            "components": {
-                "BoxCollider2D": {
-                    "density": 1.0,
-                    "friction": 0.5,
-                    "offset": [
-                        0.0,
-                        0.0
-                    ],
-                    "restitution": 0.0,
-                    "restitutionThreshold": 0.5,
-                    "scale": [
-                        50.0,
-                        20.0
-                    ]
-                },
-                "Rigidbody2D": {
-                    "angularDamping": 0.0,
-                    "angularVelocity": 0.0,
-                    "fixedRotation": true,
-                    "gravityScale": 0.0,
-                    "linearDamping": 0.0,
-                    "linearVelocity": [
-                        0.0,
-                        0.0
-                    ],
-                    "type": 0
-                },
-                "Sprite": {
-                    "dimension": [
-                        1,
-                        1
-                    ],
-                    "fade": 0.004999999888241291,
-                    "frameindex": 0,
-                    "meshname": "Quad",
-                    "shadername": "default",
-                    "texture": "",
-                    "thickness": 1.0,
-                    "tint": [
-                        1.0,
-                        1.0,
-                        1.0,
-                        1.0
-                    ]
-                },
-                "Transform": {
-                    "rotation": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "scale": [
-                        50.0,
-                        20.0,
-                        1.0
-                    ],
-                    "translation": [
-                        -190.0,
-                        450.0,
-                        0.0
-                    ]
-                }
-            },
-            "name": "Block (Clone)"
-        },
-        {
-            "archetype": "Block",
-            "components": {
-                "BoxCollider2D": {
-                    "density": 1.0,
-                    "friction": 0.5,
-                    "offset": [
-                        0.0,
-                        0.0
-                    ],
-                    "restitution": 0.0,
-                    "restitutionThreshold": 0.5,
-                    "scale": [
-                        50.0,
-                        20.0
-                    ]
-                },
-                "Rigidbody2D": {
-                    "angularDamping": 0.0,
-                    "angularVelocity": 0.0,
-                    "fixedRotation": true,
-                    "gravityScale": 0.0,
-                    "linearDamping": 0.0,
-                    "linearVelocity": [
-                        0.0,
-                        0.0
-                    ],
-                    "type": 0
-                },
-                "Sprite": {
-                    "dimension": [
-                        1,
-                        1
-                    ],
-                    "fade": 0.004999999888241291,
-                    "frameindex": 0,
-                    "meshname": "Quad",
-                    "shadername": "default",
-                    "texture": "",
-                    "thickness": 1.0,
-                    "tint": [
-                        1.0,
-                        1.0,
-                        1.0,
-                        1.0
-                    ]
-                },
-                "Transform": {
-                    "rotation": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "scale": [
-                        50.0,
-                        20.0,
-                        1.0
-                    ],
-                    "translation": [
-                        -130.0,
-                        450.0,
-                        0.0
-                    ]
-                }
-            },
-            "name": "Block (Clone)"
-        },
-        {
-            "archetype": "Block",
-            "components": {
-                "BoxCollider2D": {
-                    "density": 1.0,
-                    "friction": 0.5,
-                    "offset": [
-                        0.0,
-                        0.0
-                    ],
-                    "restitution": 0.0,
-                    "restitutionThreshold": 0.5,
-                    "scale": [
-                        50.0,
-                        20.0
-                    ]
-                },
-                "Rigidbody2D": {
-                    "angularDamping": 0.0,
-                    "angularVelocity": 0.0,
-                    "fixedRotation": true,
-                    "gravityScale": 0.0,
-                    "linearDamping": 0.0,
-                    "linearVelocity": [
-                        0.0,
-                        0.0
-                    ],
-                    "type": 0
-                },
-                "Sprite": {
-                    "dimension": [
-                        1,
-                        1
-                    ],
-                    "fade": 0.004999999888241291,
-                    "frameindex": 0,
-                    "meshname": "Quad",
-                    "shadername": "default",
-                    "texture": "",
-                    "thickness": 1.0,
-                    "tint": [
-                        1.0,
-                        1.0,
-                        1.0,
-                        1.0
-                    ]
-                },
-                "Transform": {
-                    "rotation": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "scale": [
-                        50.0,
-                        20.0,
-                        1.0
-                    ],
-                    "translation": [
-                        -70.0,
-                        450.0,
-                        0.0
-                    ]
-                }
-            },
-            "name": "Block (Clone)"
-        },
-        {
-            "archetype": "Block",
-            "components": {
-                "BoxCollider2D": {
-                    "density": 1.0,
-                    "friction": 0.5,
-                    "offset": [
-                        0.0,
-                        0.0
-                    ],
-                    "restitution": 0.0,
-                    "restitutionThreshold": 0.5,
-                    "scale": [
-                        50.0,
-                        20.0
-                    ]
-                },
-                "Rigidbody2D": {
-                    "angularDamping": 0.0,
-                    "angularVelocity": 0.0,
-                    "fixedRotation": true,
-                    "gravityScale": 0.0,
-                    "linearDamping": 0.0,
-                    "linearVelocity": [
-                        0.0,
-                        0.0
-                    ],
-                    "type": 0
-                },
-                "Sprite": {
-                    "dimension": [
-                        1,
-                        1
-                    ],
-                    "fade": 0.004999999888241291,
-                    "frameindex": 0,
-                    "meshname": "Quad",
-                    "shadername": "default",
-                    "texture": "",
-                    "thickness": 1.0,
-                    "tint": [
-                        1.0,
-                        1.0,
-                        1.0,
-                        1.0
-                    ]
-                },
-                "Transform": {
-                    "rotation": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "scale": [
-                        50.0,
-                        20.0,
-                        1.0
-                    ],
-                    "translation": [
-                        -10.0,
-                        450.0,
-                        0.0
-                    ]
-                }
-            },
-            "name": "Block (Clone)"
-        },
-        {
-            "archetype": "Block",
-            "components": {
-                "BoxCollider2D": {
-                    "density": 1.0,
-                    "friction": 0.5,
-                    "offset": [
-                        0.0,
-                        0.0
-                    ],
-                    "restitution": 0.0,
-                    "restitutionThreshold": 0.5,
-                    "scale": [
-                        50.0,
-                        20.0
-                    ]
-                },
-                "Rigidbody2D": {
-                    "angularDamping": 0.0,
-                    "angularVelocity": 0.0,
-                    "fixedRotation": true,
-                    "gravityScale": 0.0,
-                    "linearDamping": 0.0,
-                    "linearVelocity": [
-                        0.0,
-                        0.0
-                    ],
-                    "type": 0
-                },
-                "Sprite": {
-                    "dimension": [
-                        1,
-                        1
-                    ],
-                    "fade": 0.004999999888241291,
-                    "frameindex": 0,
-                    "meshname": "Quad",
-                    "shadername": "default",
-                    "texture": "",
-                    "thickness": 1.0,
-                    "tint": [
-                        1.0,
-                        1.0,
-                        1.0,
-                        1.0
-                    ]
-                },
-                "Transform": {
-                    "rotation": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "scale": [
-                        50.0,
-                        20.0,
-                        1.0
-                    ],
-                    "translation": [
-                        50.0,
-                        450.0,
-                        0.0
-                    ]
-                }
-            },
-            "name": "Block (Clone)"
-        },
-        {
-            "archetype": "Block",
-            "components": {
-                "BoxCollider2D": {
-                    "density": 1.0,
-                    "friction": 0.5,
-                    "offset": [
-                        0.0,
-                        0.0
-                    ],
-                    "restitution": 0.0,
-                    "restitutionThreshold": 0.5,
-                    "scale": [
-                        50.0,
-                        20.0
-                    ]
-                },
-                "Rigidbody2D": {
-                    "angularDamping": 0.0,
-                    "angularVelocity": 0.0,
-                    "fixedRotation": true,
-                    "gravityScale": 0.0,
-                    "linearDamping": 0.0,
-                    "linearVelocity": [
-                        0.0,
-                        0.0
-                    ],
-                    "type": 0
-                },
-                "Sprite": {
-                    "dimension": [
-                        1,
-                        1
-                    ],
-                    "fade": 0.004999999888241291,
-                    "frameindex": 0,
-                    "meshname": "Quad",
-                    "shadername": "default",
-                    "texture": "",
-                    "thickness": 1.0,
-                    "tint": [
-                        1.0,
-                        1.0,
-                        1.0,
-                        1.0
-                    ]
-                },
-                "Transform": {
-                    "rotation": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "scale": [
-                        50.0,
-                        20.0,
-                        1.0
-                    ],
-                    "translation": [
-                        110.0,
-                        450.0,
-                        0.0
-                    ]
-                }
-            },
-            "name": "Block (Clone)"
-        },
-        {
-            "archetype": "Block",
-            "components": {
-                "BoxCollider2D": {
-                    "density": 1.0,
-                    "friction": 0.5,
-                    "offset": [
-                        0.0,
-                        0.0
-                    ],
-                    "restitution": 0.0,
-                    "restitutionThreshold": 0.5,
-                    "scale": [
-                        50.0,
-                        20.0
-                    ]
-                },
-                "Rigidbody2D": {
-                    "angularDamping": 0.0,
-                    "angularVelocity": 0.0,
-                    "fixedRotation": true,
-                    "gravityScale": 0.0,
-                    "linearDamping": 0.0,
-                    "linearVelocity": [
-                        0.0,
-                        0.0
-                    ],
-                    "type": 0
-                },
-                "Sprite": {
-                    "dimension": [
-                        1,
-                        1
-                    ],
-                    "fade": 0.004999999888241291,
-                    "frameindex": 0,
-                    "meshname": "Quad",
-                    "shadername": "default",
-                    "texture": "",
-                    "thickness": 1.0,
-                    "tint": [
-                        1.0,
-                        1.0,
-                        1.0,
-                        1.0
-                    ]
-                },
-                "Transform": {
-                    "rotation": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "scale": [
-                        50.0,
-                        20.0,
-                        1.0
-                    ],
-                    "translation": [
-                        170.0,
-                        450.0,
-                        0.0
-                    ]
-                }
-            },
-            "name": "Block (Clone)"
-        },
-        {
-            "archetype": "Block",
-            "components": {
-                "BoxCollider2D": {
-                    "density": 1.0,
-                    "friction": 0.5,
-                    "offset": [
-                        0.0,
-                        0.0
-                    ],
-                    "restitution": 0.0,
-                    "restitutionThreshold": 0.5,
-                    "scale": [
-                        50.0,
-                        20.0
-                    ]
-                },
-                "Rigidbody2D": {
-                    "angularDamping": 0.0,
-                    "angularVelocity": 0.0,
-                    "fixedRotation": true,
-                    "gravityScale": 0.0,
-                    "linearDamping": 0.0,
-                    "linearVelocity": [
-                        0.0,
-                        0.0
-                    ],
-                    "type": 0
-                },
-                "Sprite": {
-                    "dimension": [
-                        1,
-                        1
-                    ],
-                    "fade": 0.004999999888241291,
-                    "frameindex": 0,
-                    "meshname": "Quad",
-                    "shadername": "default",
-                    "texture": "",
-                    "thickness": 1.0,
-                    "tint": [
-                        1.0,
-                        1.0,
-                        1.0,
-                        1.0
-                    ]
-                },
-                "Transform": {
-                    "rotation": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "scale": [
-                        50.0,
-                        20.0,
-                        1.0
-                    ],
-                    "translation": [
-                        230.0,
-                        450.0,
-                        0.0
-                    ]
-                }
-            },
-            "name": "Block (Clone)"
         }
     ]
 }

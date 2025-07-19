@@ -192,6 +192,18 @@ namespace NULLENGINE
         return m_CurrentCamera->IsWithinFrustum(center, halfExtents);
     }
 
+    void NCameraManager::ResizeCameras(float width, float height)
+    {
+        for (auto& camera : m_Cameras2D)
+        {
+            camera.second->OnWindowResize(WindowResizeEvent(width, height));;
+        }
+        for (auto& camera : m_Cameras3D)
+        {
+            camera.second->OnWindowResize(WindowResizeEvent(width, height));;
+        }
+    }
+
     void NCameraManager::SetCurrentCamera(const std::string& name)
     {
         if (auto camera2D = GetCamera<Camera2D>(name)) {

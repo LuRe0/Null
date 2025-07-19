@@ -34,6 +34,9 @@
     <Filter Include="Null\Engine\Submodules\ECS\Entities">
       <UniqueIdentifier>{F5E7179E-61A1-8248-EA00-9D2256B938B8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Null\Engine\Submodules\ECS\Helpers">
+      <UniqueIdentifier>{E31B7B0C-CF57-7E76-386A-966D24C52691}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Null\Engine\Submodules\ECS\Systems">
       <UniqueIdentifier>{28C1638A-14FD-66F4-7D0F-7FEB696A0F0F}</UniqueIdentifier>
     </Filter>
@@ -58,6 +61,12 @@
     <Filter Include="Null\Engine\Submodules\Graphics\Camera\Frustum">
       <UniqueIdentifier>{549D0AB3-401B-5B4C-2913-19E415309D74}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Null\Engine\Submodules\Graphics\Camera\PostProcess">
+      <UniqueIdentifier>{C3ADF599-AF41-EB41-1806-45F604B92534}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Null\Engine\Submodules\Graphics\Camera\Shake">
+      <UniqueIdentifier>{EA5DEE4D-D670-EEA6-7F5A-CB936B4C8BF4}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Null\Engine\Submodules\Graphics\Mesh">
       <UniqueIdentifier>{93C4C193-7FAB-838B-28FC-E9A814C2FCF1}</UniqueIdentifier>
     </Filter>
@@ -72,9 +81,6 @@
     </Filter>
     <Filter Include="Null\Tools">
       <UniqueIdentifier>{A071EE46-8C29-3094-F530-09F0E107CB84}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Null\Engine\Submodules\ECS\Helpers">
-      <UniqueIdentifier>{96ca6831-1e68-4c92-9c2e-1b403d13ae46}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -98,10 +104,16 @@
     <ClInclude Include="src\Null\Engine\Modules\Base\IModule.h">
       <Filter>Null\Engine\Modules\Base</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Engine\Modules\NAsyncTaskManager.h">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClInclude>
     <ClInclude Include="src\Null\Engine\Modules\NCameraManager.h">
       <Filter>Null\Engine\Modules</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Modules\NComponentFactory.h">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Modules\NComputeShaderManager.h">
       <Filter>Null\Engine\Modules</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Modules\NDebugManager.h">
@@ -111,6 +123,9 @@
       <Filter>Null\Engine\Modules</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Modules\NEventManager.h">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Modules\NFramebufferManager.h">
       <Filter>Null\Engine\Modules</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Modules\NMeshManager.h">
@@ -137,7 +152,13 @@
     <ClInclude Include="src\Null\Engine\Modules\NSpriteSourceManager.h">
       <Filter>Null\Engine\Modules</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Engine\Modules\NStringIDManager.h">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClInclude>
     <ClInclude Include="src\Null\Engine\Modules\NTextureManager.h">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Modules\NThreadPool.h">
       <Filter>Null\Engine\Modules</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Modules\NTilesetManager.h">
@@ -162,6 +183,9 @@
       <Filter>Null\Engine\Submodules\ECS\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\IComponent.h">
+      <Filter>Null\Engine\Submodules\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\LifetimeComponent.h">
       <Filter>Null\Engine\Submodules\ECS\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\Parent-ChildComponents.h">
@@ -194,16 +218,25 @@
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Entities\Entity.h">
       <Filter>Null\Engine\Submodules\ECS\Entities</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Helpers\ComponentSignature.h">
+      <Filter>Null\Engine\Submodules\ECS\Helpers</Filter>
+    </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\AnimationSystem.h">
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\BoxCollider2DSystem.h">
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\CameraSystem - Copy.h">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\CameraSystem.h">
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\CircleCollider2DSystem.h">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\LifetimeSystem.h">
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\ParticleSystem.h">
@@ -219,6 +252,9 @@
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\System.h">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\TagSystem.h">
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\TilemapRenderSystem.h">
@@ -248,6 +284,9 @@
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\LineBatchRenderer.h">
       <Filter>Null\Engine\Submodules\Graphics\Buffers\BatchRenderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\ParticleBatchRenderer.h">
+      <Filter>Null\Engine\Submodules\Graphics\Buffers\BatchRenderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\QuadBatchRenderer.h">
       <Filter>Null\Engine\Submodules\Graphics\Buffers\BatchRenderer</Filter>
     </ClInclude>
@@ -267,6 +306,15 @@
       <Filter>Null\Engine\Submodules\Graphics\Buffers</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\RenderData.h">
+      <Filter>Null\Engine\Submodules\Graphics\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\RenderPass.h">
+      <Filter>Null\Engine\Submodules\Graphics\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\SSBO.h">
+      <Filter>Null\Engine\Submodules\Graphics\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\UBO.h">
       <Filter>Null\Engine\Submodules\Graphics\Buffers</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\VAO.h">
@@ -295,6 +343,12 @@
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\Frustum\Frustum.h">
       <Filter>Null\Engine\Submodules\Graphics\Camera\Frustum</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\PostProcess\PostProcess.h">
+      <Filter>Null\Engine\Submodules\Graphics\Camera\PostProcess</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\Shake\CameraShake.h">
+      <Filter>Null\Engine\Submodules\Graphics\Camera\Shake</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\CircleInstanceMesh.h">
       <Filter>Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes</Filter>
@@ -326,6 +380,9 @@
     <ClInclude Include="src\Null\Engine\Submodules\Graphics\Texture.h">
       <Filter>Null\Engine\Submodules\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Texture1D.h">
+      <Filter>Null\Engine\Submodules\Graphics</Filter>
+    </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\Layers\ImGuiLayer.h">
       <Filter>Null\Engine\Submodules\Layers</Filter>
     </ClInclude>
@@ -344,13 +401,34 @@
     <ClInclude Include="src\Null\EntryPoint.h">
       <Filter>Null</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Tools\ArchetypeDefinitions.h">
+      <Filter>Null\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Tools\Easing.h">
+      <Filter>Null\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Tools\EasingCurve.h">
+      <Filter>Null\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Tools\EntitySerializer.h">
+      <Filter>Null\Tools</Filter>
+    </ClInclude>
     <ClInclude Include="src\Null\Tools\FileDialog.h">
+      <Filter>Null\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Tools\GLHelper.h">
+      <Filter>Null\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Tools\ImGuiH.h">
       <Filter>Null\Tools</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Tools\ImguiSink.h">
       <Filter>Null\Tools</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Tools\JsonWrapper.h">
+      <Filter>Null\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Tools\NRegistryView.h">
       <Filter>Null\Tools</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Tools\Random.h">
@@ -363,49 +441,9 @@
       <Filter>Null\Tools</Filter>
     </ClInclude>
     <ClInclude Include="src\stdafx.h" />
-    <ClInclude Include="SSBO.h">
-      <Filter>Null\Engine\Submodules\Graphics\Buffers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\BatchRenderer\ParticleBatchRenderer.h">
-      <Filter>Null\Engine\Submodules\Graphics\Buffers\BatchRenderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Null\Engine\Modules\NComputeShaderManager.h">
-      <Filter>Null\Engine\Modules</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Null\Tools\EasingCurve.h">
-      <Filter>Null\Tools</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\UBO.h">
-      <Filter>Null\Engine\Submodules\Graphics\Buffers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Texture1D.h">
-      <Filter>Null\Engine\Submodules\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Null\Engine\Modules\NFramebufferManager.h">
-      <Filter>Null\Engine\Modules</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Null\Tools\GLHelper.h">
-      <Filter>Null\Tools</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Buffers\RenderPass.h">
-      <Filter>Null\Engine\Submodules\Graphics\Buffers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\PostProcess\PostProcess.h" />
-    <ClInclude Include="src\Null\Tools\ImGuiH.h" />
-    <ClInclude Include="src\Null\Tools\Easing.h" />
-    <ClInclude Include="src\Null\Engine\Submodules\Graphics\Camera\Shake\CameraShake.h" />
-    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\TagSystem.h">
-      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\LifetimeComponent.h">
-      <Filter>Null\Engine\Submodules\ECS\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\LifetimeSystem.h">
-      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Null\Engine\Submodules\ECS\Helpers\ComponentSignature.h" />
-    <ClInclude Include="src\Null\Tools\EntitySerializer.h" />
-    <ClInclude Include="src\Null\Engine\Modules\NAsyncTaskManager.h" />
+    <ClInclude Include="src\Null\Tools\Handle.h" />
+    <ClInclude Include="src\Null\Engine\Modules\NB2FixtureManager.h" />
+    <ClInclude Include="src\Null\Engine\Modules\NB2BodyManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Null\Application.cpp">
@@ -423,10 +461,16 @@
     <ClCompile Include="src\Null\Engine\Modules\Base\IModule.cpp">
       <Filter>Null\Engine\Modules\Base</Filter>
     </ClCompile>
+    <ClCompile Include="src\Null\Engine\Modules\NAsyncTaskManager.cpp">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClCompile>
     <ClCompile Include="src\Null\Engine\Modules\NCameraManager.cpp">
       <Filter>Null\Engine\Modules</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Modules\NComponentFactory.cpp">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Modules\NComputeShaderManager.cpp">
       <Filter>Null\Engine\Modules</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Modules\NDebugManager.cpp">
@@ -436,6 +480,9 @@
       <Filter>Null\Engine\Modules</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Modules\NEventManager.cpp">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Modules\NFramebufferManager.cpp">
       <Filter>Null\Engine\Modules</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Modules\NMeshManager.cpp">
@@ -462,7 +509,13 @@
     <ClCompile Include="src\Null\Engine\Modules\NSpriteSourceManager.cpp">
       <Filter>Null\Engine\Modules</Filter>
     </ClCompile>
+    <ClCompile Include="src\Null\Engine\Modules\NStringIDManager.cpp">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClCompile>
     <ClCompile Include="src\Null\Engine\Modules\NTextureManager.cpp">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Modules\NThreadPool.cpp">
       <Filter>Null\Engine\Modules</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Modules\NTilesetManager.cpp">
@@ -486,6 +539,9 @@
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Entities\Entity.cpp">
       <Filter>Null\Engine\Submodules\ECS\Entities</Filter>
     </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Helpers\ComponentSignature.cpp">
+      <Filter>Null\Engine\Submodules\ECS\Helpers</Filter>
+    </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\AnimationSystem.cpp">
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClCompile>
@@ -498,6 +554,9 @@
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\CircleCollider2DSystem.cpp">
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\LifetimeSystem.cpp">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\ParticleSystem.cpp">
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClCompile>
@@ -508,6 +567,12 @@
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\SpriteRenderSystem.cpp">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\System.cpp">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\TagSystem.cpp">
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\TilemapRenderSystem.cpp">
@@ -532,6 +597,15 @@
       <Filter>Null\Engine\Submodules\Graphics\Buffers</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Buffers\Framebuffer.cpp">
+      <Filter>Null\Engine\Submodules\Graphics\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Buffers\RenderPass.cpp">
+      <Filter>Null\Engine\Submodules\Graphics\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Buffers\SSBO.cpp">
+      <Filter>Null\Engine\Submodules\Graphics\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Buffers\UBO.cpp">
       <Filter>Null\Engine\Submodules\Graphics\Buffers</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Buffers\VAO.cpp">
@@ -560,6 +634,12 @@
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\Frustum\Frustum.cpp">
       <Filter>Null\Engine\Submodules\Graphics\Camera\Frustum</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\PostProcess\PostProcess.cpp">
+      <Filter>Null\Engine\Submodules\Graphics\Camera\PostProcess</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\Shake\CameraShake.cpp">
+      <Filter>Null\Engine\Submodules\Graphics\Camera\Shake</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes\CircleInstanceMesh.cpp">
       <Filter>Null\Engine\Submodules\Graphics\Mesh\InstanceMeshes</Filter>
@@ -591,11 +671,17 @@
     <ClCompile Include="src\Null\Engine\Submodules\Graphics\Texture.cpp">
       <Filter>Null\Engine\Submodules\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Texture1D.cpp">
+      <Filter>Null\Engine\Submodules\Graphics</Filter>
+    </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\Layers\ImGuiLayer.cpp">
       <Filter>Null\Engine\Submodules\Layers</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\Layers\Layer.cpp">
       <Filter>Null\Engine\Submodules\Layers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Scene - Copy.cpp">
+      <Filter>Null\Engine\Submodules</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\Scene.cpp">
       <Filter>Null\Engine\Submodules</Filter>
@@ -606,7 +692,22 @@
     <ClCompile Include="src\Null\Engine\Submodules\Tileset.cpp">
       <Filter>Null\Engine\Submodules</Filter>
     </ClCompile>
+    <ClCompile Include="src\Null\Tools\Easing.cpp">
+      <Filter>Null\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Tools\EasingCurve.cpp">
+      <Filter>Null\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Tools\EntitySerializer.cpp">
+      <Filter>Null\Tools</Filter>
+    </ClCompile>
     <ClCompile Include="src\Null\Tools\FileDialog.cpp">
+      <Filter>Null\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Tools\GLHelper.cpp">
+      <Filter>Null\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Tools\ImGuiH.cpp">
       <Filter>Null\Tools</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Tools\ImguiSink.cpp">
@@ -625,45 +726,9 @@
       <Filter>Null\Tools</Filter>
     </ClCompile>
     <ClCompile Include="src\stdafx.cpp" />
-    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Buffers\SSBO.cpp">
-      <Filter>Null\Engine\Submodules\Graphics\Buffers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Null\Engine\Modules\NComputeShaderManager.cpp">
-      <Filter>Null\Engine\Modules</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Null\Tools\EasingCurve.cpp">
-      <Filter>Null\Tools</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Buffers\UBO.cpp">
-      <Filter>Null\Engine\Submodules\Graphics\Buffers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Texture1D.cpp">
-      <Filter>Null\Engine\Submodules\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Null\Engine\Modules\NFramebufferManager.cpp">
-      <Filter>Null\Engine\Modules</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Null\Tools\GLHelper.cpp">
-      <Filter>Null\Tools</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Buffers\RenderPass.cpp">
-      <Filter>Null\Engine\Submodules\Graphics\Buffers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\PostProcess\PostProcess.cpp" />
-    <ClCompile Include="src\Null\Tools\ImGuiH.cpp" />
-    <ClCompile Include="src\Null\Tools\Easing.cpp" />
-    <ClCompile Include="src\Null\Engine\Submodules\Graphics\Camera\Shake\CameraShake.cpp" />
-    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\TagSystem.cpp">
-      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\LifetimeSystem.cpp">
-      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\System.cpp">
-      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Null\Engine\Submodules\ECS\Helpers\ComponentSignature.cpp" />
-    <ClCompile Include="src\Null\Tools\EntitySerializer.cpp" />
-    <ClCompile Include="src\Null\Engine\Modules\NAsyncTaskManager.cpp" />
+    <ClCompile Include="src\Null\Tools\ArchetypeDefinitions.cpp" />
+    <ClCompile Include="src\Null\Tools\Handle.cpp" />
+    <ClCompile Include="src\Null\Engine\Modules\NB2FixtureManager.cpp" />
+    <ClCompile Include="src\Null\Engine\Modules\NB2BodyManager.cpp" />
   </ItemGroup>
 </Project>

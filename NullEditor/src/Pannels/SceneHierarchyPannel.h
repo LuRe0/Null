@@ -51,6 +51,10 @@ namespace NULLENGINE
 
 
 		void SelectedEntityMenuItems(Entity& entity);
+
+
+		ImGuiTextFilter m_EntityFilter;
+
 	};
 
 }

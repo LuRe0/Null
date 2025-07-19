@@ -40,7 +40,7 @@ namespace NULLENGINE
 	{
 	public:
 		virtual ~IComponentManager() {};
-		virtual BaseComponent& Get(EntityID entityID) = 0;
+		//virtual BaseComponent& Get(EntityID entityID) = 0;
 		virtual void Remove(EntityID entityID) = 0;
 		virtual void Clear() = 0;
 	private:
@@ -79,14 +79,15 @@ namespace NULLENGINE
 			m_IndexToEntityMap.clear();
 		}
 
-		void Add(EntityID entityID, std::unique_ptr<T>&& component)
+		template<typename... Args>
+		void Add(EntityID entityID, Args&&... args)
 		{
-			// Put new entry at end and update the maps
-			m_InternalComponents.emplace_back(std::move(component));
+			m_InternalComponents.emplace_back(std::forward<Args>(args)...);
 			size_t newIndex = m_InternalComponents.size() - 1;
 			m_EntityToIndexMap[entityID] = newIndex;
 			m_IndexToEntityMap[newIndex] = entityID;
 		}
+
 
 		void Remove(EntityID entityID)
 		{
@@ -106,10 +107,11 @@ namespace NULLENGINE
 
 		T& Get(EntityID entityID)
 		{
-			return static_cast<T&>(*(m_InternalComponents[m_EntityToIndexMap[entityID]]));
+			return m_InternalComponents[m_EntityToIndexMap[entityID]];
 		}
+
 	private:
-		std::vector<std::unique_ptr<T>> m_InternalComponents;
+		std::vector<T> m_InternalComponents;
 
 		// Map from an entity ID to an array index.
 		std::unordered_map<EntityID, size_t> m_EntityToIndexMap;

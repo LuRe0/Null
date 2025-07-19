@@ -32,6 +32,11 @@ namespace NULLENGINE
         m_FilePath =  fullpath ? filePath : std::string("../Assets/Textures/") + filePath + std::string(".png");
 	}
 
+    Texture::Texture(const std::string& name, const std::string& filePath, bool fullpath)
+    {
+        m_FilePath = fullpath ? filePath : std::string("../Assets/Textures/") + filePath + std::string(".png");
+    }
+
     void Texture::Bind() const
     {
         glActiveTexture(GL_TEXTURE0);

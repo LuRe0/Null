@@ -654,4 +654,26 @@ namespace NULLENGINE
         EVENT_CLASS_TYPE(CollisionExit)
     };
 
+
+    class EntityReadyEvent : public Event {
+    public:
+        explicit EntityReadyEvent(uint32_t id)
+            : m_EntityID(id) {
+        }
+
+        uint32_t GetEntityID() const { return m_EntityID; }
+
+        std::string Print() const override {
+            std::stringstream ss;
+            ss << "EntityReadyEvent: ID=" << m_EntityID;
+            return ss.str();
+        }
+
+        EVENT_CLASS_TYPE(EntityReady)
+
+    private:
+        uint32_t m_EntityID;
+    };
+
+
 }

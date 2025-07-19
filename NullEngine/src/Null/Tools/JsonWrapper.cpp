@@ -41,6 +41,8 @@ namespace NULLENGINE
         return defaultValue;
     }
 
+
+
     glm::vec4 JsonReader::GetVec4(const std::string& key, const glm::vec4& defaultValue) const {
         if (data.contains(key)) {
             return { data[key][0], data[key][1], data[key][2], data[key][3] };
@@ -52,9 +54,20 @@ namespace NULLENGINE
         return data.value(key, defaultValue);
     }
 
+
+    uint8_t JsonReader::GetUInt8(const std::string& key, uint8_t defaultValue = 0) const
+    {
+        if (!data.contains(key) || !data[key].is_number_unsigned())
+            return defaultValue;
+
+        return static_cast<uint8_t>(data[key].get<uint32_t>());
+    }
+
+
     float JsonReader::GetFloat(const std::string& key, float defaultValue) const {
         return data.value(key, defaultValue);
     }
+
 
     bool JsonReader::GetBool(const std::string& key, bool defaultValue) const {
         return data.value(key, defaultValue);

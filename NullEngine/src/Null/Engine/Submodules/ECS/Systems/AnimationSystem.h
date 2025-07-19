@@ -59,8 +59,10 @@ namespace NULLENGINE
 
 	private:
 
-		static void CreateAnimationComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
-		static JSON WriteAnimationComponent(BaseComponent* component);
+		static void CreateAnimationComponent(void* component, const nlohmann::json& json);
+		static void AddAnimationComponent(void* component, NRegistry* registry, EntityID id);
+		static JSON WriteAnimationComponent(const void* component);
+		static JSON DiffAnimationComponent(const void* base, const void* modified);
 
 
 		void ViewAnimationComponent(Entity& entity);

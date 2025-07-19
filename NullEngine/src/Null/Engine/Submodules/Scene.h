@@ -65,6 +65,11 @@ namespace NULLENGINE
 		/// </summary>
 		void Load(const JSON& jsonData);
 
+		void BuildFromDefinition(const SceneDefinition& definition);
+
+		void HandleDefinitionChildren(Entity& parentEntity, const std::unordered_map<uint32_t, EntityDefinition>& children, NRegistry* registry, NEntityFactory* entityFactory, NComponentFactory* componentFactory, NEventManager* eventManager);
+
+
 		//!  Init function
 		void Init();
 
@@ -86,6 +91,10 @@ namespace NULLENGINE
 
 		JSON SerializeChildren(Entity& child, NRegistry* registry, NComponentFactory* componentFactory);
 		EntityID CreateEmptyEntity(const std::string& name);
+
+		EntityID LoadArchetypeDeffered(const std::string& name);
+
+		std::string GenerateUniqueName(const std::string& baseName);
 
 		EntityID LoadArchetype(const std::string& name);
 
@@ -140,6 +149,7 @@ namespace NULLENGINE
 
         std::vector<Transition> m_Transitions;
 
+		std::unordered_map<std::string, int> m_NameFrequency; // To track how many times a given name was assigned
 
 		friend class SceneHierarchyPannel;
 		friend class ImGuiLayer;

@@ -47,7 +47,9 @@ namespace NULLENGINE
 		NComponentFactory* componentFactory = NComponentFactory::Instance();
 
 		componentFactory->Register<CircleCollider2DComponent>(CreateCircleCollider2DComponent,
-			[this](Entity& id) { this->ViewCircleCollider2DComponent(id); }, WriteCircleCollider2DComponent);
+			[this](Entity& id) { this->ViewCircleCollider2DComponent(id); },
+			WriteCircleCollider2DComponent,
+			AddCircleCollider2DComponent, DiffCircleCollider2DComponent);
 	}
 
 	void CircleCollider2DSystem::Load()
@@ -193,7 +195,7 @@ namespace NULLENGINE
 	}
 
 
-	void CircleCollider2DSystem::CreateCircleCollider2DComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id)
+	void CircleCollider2DSystem::CreateCircleCollider2DComponent(void* component, const nlohmann::json& json)
 	{
 		NComponentFactory* componentFactory = NComponentFactory::Instance();
 
@@ -209,15 +211,23 @@ namespace NULLENGINE
 			comp->m_Restitution = jsonWrapper.GetFloat("restitution", 1.0f);
 			comp->m_RestitutionThreshold = jsonWrapper.GetFloat("restitutionThreshold", 0.5f);
 		}
-		componentFactory->AddOrUpdate<CircleCollider2DComponent>(id, comp, registry, comp->m_Offset, comp->m_Radius, comp->m_Density, comp->m_Friction, comp->m_Restitution, comp->m_RestitutionThreshold);
 
 	}
 
-	JSON CircleCollider2DSystem::WriteCircleCollider2DComponent(BaseComponent* component)
+	void CircleCollider2DSystem::AddCircleCollider2DComponent(void* component, NRegistry* registry, EntityID id)
+	{
+		NComponentFactory* componentFactory = NComponentFactory::Instance();
+
+		auto* comp = static_cast<CircleCollider2DComponent*>(component);
+		componentFactory->AddOrUpdate<CircleCollider2DComponent>(id, comp, registry, comp->m_Offset, comp->m_Radius,
+			comp->m_Density, comp->m_Friction, comp->m_Restitution, comp->m_RestitutionThreshold);
+	}
+
+	JSON CircleCollider2DSystem::WriteCircleCollider2DComponent(const void* component)
 	{
 		nlohmann::json json;
 
-		auto& collider = *static_cast<CircleCollider2DComponent*>(component);
+		auto& collider = *static_cast<const CircleCollider2DComponent*>(component);
 
 		json["CircleCollider2D"]["offset"] = { collider.m_Offset.x, collider.m_Offset.y };
 		json["CircleCollider2D"]["radius"] = collider.m_Radius;
@@ -229,6 +239,39 @@ namespace NULLENGINE
 		return json;
 
 	}
+
+	JSON CircleCollider2DSystem::DiffCircleCollider2DComponent(const void* base, const void* modified)
+	{
+		auto* a = static_cast<const CircleCollider2DComponent*>(base);
+		auto* b = static_cast<const CircleCollider2DComponent*>(modified);
+
+		JSON diff;
+		JSON circleJson;
+
+		if (a->m_Offset != b->m_Offset)
+			circleJson["offset"] = { b->m_Offset.x, b->m_Offset.y };
+
+		if (a->m_Radius != b->m_Radius)
+			circleJson["radius"] = b->m_Radius;
+
+		if (a->m_Density != b->m_Density)
+			circleJson["density"] = b->m_Density;
+
+		if (a->m_Friction != b->m_Friction)
+			circleJson["friction"] = b->m_Friction;
+
+		if (a->m_Restitution != b->m_Restitution)
+			circleJson["restitution"] = b->m_Restitution;
+
+		if (a->m_RestitutionThreshold != b->m_RestitutionThreshold)
+			circleJson["restitutionThreshold"] = b->m_RestitutionThreshold;
+
+		if (!circleJson.empty())
+			diff["CircleCollider2D"] = circleJson;
+
+		return diff;
+	}
+
 
 	void CircleCollider2DSystem::ViewCircleCollider2DComponent(Entity& entity)
 	{

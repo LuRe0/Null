@@ -4,7 +4,16 @@
             "type": "NWindow"
         },
         {
+            "type": "NStringIDManager"
+        },
+        {
             "type": "NDebugManager"
+        },
+        {
+            "type": "NThreadPool"
+        },
+        {
+            "type": "NAsyncTaskManager"
         },
         {
             "type": "NEventManager"

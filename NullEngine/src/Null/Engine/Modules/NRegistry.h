@@ -16,12 +16,18 @@ Code adapted from https://courses.pikuma.com/courses/take/2dgameengine/lessons/1
 // Includes																        //
 //******************************************************************************//
 #include "Null/Core.h"
+
+#include <vector>
+#include <tuple>
+
+
 #include "Null/Engine/Modules/Base/IModule.h"
 #include "Null/Engine/Submodules/ComponentManager.h"
 //#include "Null/Engine/Submodules/ECS/Systems/System.h"
 #include "../Submodules/ECS/Helpers/ComponentSignature.h"
 #include "Null/Engine/Submodules/ECS/Components/IComponent.h"
 #include "Null/Tools/Trace.h"
+#include "../../Tools/NRegistryView.h"
 
 
 //******************************************************************************//
@@ -41,6 +47,8 @@ Code adapted from https://courses.pikuma.com/courses/take/2dgameengine/lessons/1
 
 namespace NULLENGINE
 {
+
+
 	class NLE_API NRegistry : public ModuleBase<NRegistry>
 	{
 	public:
@@ -101,7 +109,7 @@ namespace NULLENGINE
 				// Successfully casted
 				if (!HasComponent<T>(entityID))
 				{
-					newManager->Add(entityID, std::make_unique<T>(std::forward<TArgs>(args)...));
+					newManager->Add(entityID, std::forward<TArgs>(args)...);
 					NLE_CORE_INFO("Succesfully added {0}, {1} to entity {2}", Component<T>::TypeName(), componentID, entityID);
 				}
 				else
@@ -117,6 +125,28 @@ namespace NULLENGINE
 			NLE_CORE_WARN("Failed to locate appropriate manager");
 
 		}
+
+		template<typename... Components>
+		auto View(EntityID id)
+		{
+			return RegistryView<NRegistry, Components...>(this, id);
+		}
+
+		template<typename... Components>
+		auto PackedView(const std::vector<EntityID>& entities) {
+			RegistryPackedView<NRegistry, Components...> view(this);
+			view.Build(entities);
+			return view;
+		}
+
+		template<typename... Components, typename Predicate>
+		auto PackedView(const std::vector<EntityID>& entities, Predicate&& predicate) {
+			RegistryPackedView<NRegistry, Components...> view(this);
+			view.BuildFiltered(entities, std::forward<Predicate>(predicate));
+			return view;
+		}
+
+
 
 		template <typename T>
 		void RemoveComponent(EntityID entityID)
@@ -191,28 +221,31 @@ namespace NULLENGINE
 			return signature.test(componentID);
 		}
 
-		BaseComponent& GetComponent(EntityID entityID, uint32_t componentID)
-		{
-			if (HasComponent(entityID, componentID))
-			{
-				IComponentManager* newManager = m_ComponentManagers[componentID - 1].get();
-				if (newManager)
-				{
-					BaseComponent& component = newManager->Get(entityID);
+		//BaseComponent& GetComponent(EntityID entityID, uint32_t componentID)
+		//{
+		//	if (HasComponent(entityID, componentID))
+		//	{
+		//		IComponentManager* newManager = m_ComponentManagers[componentID - 1].get();
+		//		if (newManager)
+		//		{
+		//			BaseComponent& component = newManager->Get(entityID);
 
-					//NLE_CORE_INFO("Succesfully Retrieved {0}, {1} from entity {2}", Component<T>::TypeName(), componentID, entityID);
+		//			//NLE_CORE_INFO("Succesfully Retrieved {0}, {1} from entity {2}", Component<T>::TypeName(), componentID, entityID);
 
-					return component;
-				}
-			}
-			else
-			{
-				NLE_CORE_ERROR("Attempted to retrieve {0} which entity {1} does not possess!", componentID, entityID);
-				assert(false);
-			}
+		//			return component;
+		//		}
+		//	}
+		//	else
+		//	{
+		//		NLE_CORE_ERROR("Attempted to retrieve {0} which entity {1} does not possess!", componentID, entityID);
+		//		assert(false);
+		//	}
 
-			NLE_CORE_THROW("Attempted to retrieve {0} which entity {1} does not possess!", componentID, entityID);
-		}
+		//	NLE_CORE_THROW("Attempted to retrieve {0} which entity {1} does not possess!", componentID, entityID);
+		//}
+
+
+		//BaseComponent& GetComponent(EntityID entityID, const std::string& component);
 
 		template <typename T>
 		T& GetComponent(EntityID entityID)
@@ -237,9 +270,7 @@ namespace NULLENGINE
 				NLE_CORE_ASSERT(false, "Attempted to retrieve {0} {1} which entity {1} does not possess!", Component<T>::TypeName(), Component<T>::GetID(), entityID);
 			}
 
-			// Avoid warning by returning a reference to a static dummy.
-			static T dummy;
-			return dummy;
+			NLE_CORE_THROW("Attempted to retrieve {0} which entity {1} does not possess!", componentID, entityID);
 		}
 
 
@@ -275,12 +306,10 @@ namespace NULLENGINE
 				}
 			}
 
-			NLE_CORE_ASSERT(false, "Attempted to retrieve {0} {1} which entity {1} does not possess!", Component<T>::TypeName(), Component<T>::GetID(), entityID);
-
-			// Avoid warning by returning a reference to a static dummy.
-			static T dummy;
-			return dummy;
+			NLE_CORE_THROW("Attempted to retrieve {0} which entity {1} does not possess!", Component<T>::GetID(), entityID);
 		}
+
+
 
 
 

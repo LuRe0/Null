@@ -60,13 +60,15 @@ namespace NULLENGINE
 
 	private:
 
-		static void CreateCircleCollider2DComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
-		static JSON WriteCircleCollider2DComponent(BaseComponent* component);
+		static void CreateCircleCollider2DComponent(void* component, const nlohmann::json& json);
+		static void AddCircleCollider2DComponent(void* component, NRegistry* registry, EntityID id);
+		static JSON WriteCircleCollider2DComponent(const void* component);
+		static JSON DiffCircleCollider2DComponent(const void* base, const void* modified);
+		void ViewCircleCollider2DComponent(Entity& entityID);
 
 		float m_Thickness = 0.075f;
 		glm::vec4 m_Color = glm::vec4(1, 0.54, 0.31, 0.75);
 
-		void ViewCircleCollider2DComponent(Entity& entityID);
 
 		void CalculateOffset(glm::vec3& offset, Entity& entity);
 		void CalculateOffset_rec(glm::vec3& offset, Entity& entity, Entity& parent, NSceneManager* sceneManager);

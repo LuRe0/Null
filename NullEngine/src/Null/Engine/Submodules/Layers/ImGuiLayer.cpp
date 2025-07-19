@@ -509,7 +509,7 @@ namespace NULLENGINE
 								transform.m_Translation = translation;
 							}
 
-							transform.m_DirectManipulation = true;
+							transform.m_Flags.Set(TransformFlags_DirectManipulation);
 						}
 					}
 
@@ -558,7 +558,8 @@ namespace NULLENGINE
 								}
 							}  
 						}
-						transform.m_DirectManipulation = true;
+
+						transform.m_Flags.Set(TransformFlags_DirectManipulation);
 					}
 
 					if ((m_GuizmoType & ImGuizmo::SCALE) != 0)
@@ -587,7 +588,7 @@ namespace NULLENGINE
 						}
 					}
 
-					transform.m_Dirty = true;
+					transform.m_Flags.Set(TransformFlags_Dirty);
 
 				}
 			}
@@ -620,7 +621,7 @@ namespace NULLENGINE
 
 	void ImGuiLayer::KeyboardShortcuts(const KeyPressEvent& e)
 	{
-		if (m_FlyMode)
+		if (m_FlyMode || NAsyncTaskManager::Instance()->HasPendingTasks())
 			return;
 
 		switch (e.GetKeyCode())
@@ -662,7 +663,7 @@ namespace NULLENGINE
 		Framebuffer* dataBuffer = fbMan->Get("Scene");
 		uint32_t texture = buffer->GetColorAttachment(0);
 
-		window->SetBlockEvents(!ImGui::IsWindowHovered() && !ImGui::IsWindowFocused());
+		window->SetBlockEvents(!ImGui::IsWindowHovered() && !ImGui::IsWindowFocused() && !NAsyncTaskManager::Instance()->HasPendingTasks());
 
 		m_CameraController->SetEnabled(!(!ImGui::IsWindowHovered() || !ImGui::IsWindowFocused()));
 
@@ -672,7 +673,8 @@ namespace NULLENGINE
 		{
 			dataBuffer->Resize(static_cast<unsigned int>(viewportPanelSize.x), static_cast<unsigned int>(viewportPanelSize.y));
 			buffer->Resize(static_cast<unsigned int>(viewportPanelSize.x), static_cast<unsigned int>(viewportPanelSize.y));
-			m_CameraController->OnResize(static_cast<unsigned int>(viewportPanelSize.x), static_cast<unsigned int>(viewportPanelSize.y));
+			//m_CameraController->OnResize(static_cast<unsigned int>(viewportPanelSize.x), static_cast<unsigned int>(viewportPanelSize.y));
+			ResizeCamera();
 			m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
 		}
 
@@ -1154,6 +1156,9 @@ namespace NULLENGINE
 
 	void ImGuiLayer::KeyboardShortcuts()
 	{
+		if(NAsyncTaskManager::Instance()->HasPendingTasks())
+			return;
+
 		if ((ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl)) && ImGui::IsKeyPressed(ImGuiKey_N))
 		{
 			NewSceneImpl();

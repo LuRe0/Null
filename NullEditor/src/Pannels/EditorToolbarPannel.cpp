@@ -116,9 +116,9 @@ namespace NULLENGINE
 
 		ImGui::SameLine((ImGui::GetContentRegionMax().x * 0.0f) + (size * 0.5f));
 
-		Texture& icon = NEngine::Instance().GetEngineState() == IEngine::EDIT ? m_PlayButton : m_StopButton;
+		Texture& icon = NEngine::Instance().GetEngineState() == IEngine::EDIT ? *NTextureManager::Instance()->Get("PlayButton") : *NTextureManager::Instance()->Get("StopButton");
 
-		if (ImGui::ImageButton((ImTextureID)icon.GetID(), ImVec2(size,size)))
+		if (ImGui::ImageButton((ImTextureID)icon.GetID(), ImVec2(size, size)))
 		{
 			switch (NEngine::Instance().GetEngineState())
 			{

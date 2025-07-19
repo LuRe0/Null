@@ -81,7 +81,8 @@ namespace NULLENGINE
 		NComponentFactory* componentFactory = NComponentFactory::Instance();
 
 		componentFactory->Register<Rigidbody2DComponent>(CreateRigidbody2DComponent,
-			[this](Entity& id) { this->ViewRigidbody2DComponent(id); }, WriteRigidbody2DComponent);
+			[this](Entity& id) { this->ViewRigidbody2DComponent(id); }, WriteRigidbody2DComponent,
+			AddRigidbody2DComponent, DiffRigidbody2DComponent);
 	}
 	void PhysicsSystem::Load()
 	{
@@ -135,7 +136,7 @@ namespace NULLENGINE
 			TransformComponent& transform = m_Parent->GetComponent<TransformComponent>(entityId);
 
 
-			if (!transform.m_DirectManipulation)
+			if (!transform.m_Flags.IsSet(TransformFlags_DirectManipulation))
 				continue;
 
 			Rigidbody2DComponent& rb2d = m_Parent->GetComponent<Rigidbody2DComponent>(entityId);
@@ -160,7 +161,7 @@ namespace NULLENGINE
 				auto pos = PixelsToMeters(translation.x, translation.y);
 				body->SetTransform({ pos.x, pos.y }, rotation.z);
 
-				transform.m_DirectManipulation = false;
+				transform.m_Flags.Clear(TransformFlags_DirectManipulation);
 			}
 
 		}
@@ -206,7 +207,7 @@ namespace NULLENGINE
 				}
 
 
-				transform.m_Dirty = true;
+				transform.m_Flags.Set(TransformFlags_Dirty);
 			}
 		}
 	}
@@ -384,7 +385,7 @@ namespace NULLENGINE
 
 
 
-	void PhysicsSystem::CreateRigidbody2DComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id)
+	void PhysicsSystem::CreateRigidbody2DComponent(void* component, const nlohmann::json& json)
 	{
 
 		NComponentFactory* componentFactory = NComponentFactory::Instance();
@@ -404,18 +405,27 @@ namespace NULLENGINE
 			comp->m_GravityScale = jsonWrapper.GetFloat("gravityScale", 1.0f);
 		}
 
-		componentFactory->AddOrUpdate<Rigidbody2DComponent>(id, comp, registry, static_cast<Rigidbody2DComponent::BodyType>(comp->m_Type), comp->m_FixedRotation,
-			nullptr, comp->m_LinearVelocity, comp->m_AngularVelocity, comp->m_LinearDamping, comp->m_AngularDamping,
-			comp->m_GravityScale);
+
 
 	}
 
 
-	JSON PhysicsSystem::WriteRigidbody2DComponent(BaseComponent* component)
+	void PhysicsSystem::AddRigidbody2DComponent(void* component, NRegistry* registry, EntityID id)
+	{
+		NComponentFactory* componentFactory = NComponentFactory::Instance();
+
+		auto* comp = static_cast<Rigidbody2DComponent*>(component);
+
+		componentFactory->AddOrUpdate<Rigidbody2DComponent>(id, comp, registry, static_cast<Rigidbody2DComponent::BodyType>(comp->m_Type), comp->m_FixedRotation,
+			nullptr, comp->m_LinearVelocity, comp->m_AngularVelocity, comp->m_LinearDamping, comp->m_AngularDamping,
+			comp->m_GravityScale);
+	}
+
+	JSON PhysicsSystem::WriteRigidbody2DComponent(const void* component)
 	{
 		nlohmann::json json;
 
-		auto& rigidbody = *static_cast<Rigidbody2DComponent*>(component);
+		auto& rigidbody = *static_cast<const Rigidbody2DComponent*>(component);
 
 		json["Rigidbody2D"]["type"] = rigidbody.m_Type;
 		json["Rigidbody2D"]["fixedRotation"] = rigidbody.m_FixedRotation;
@@ -427,6 +437,38 @@ namespace NULLENGINE
 
 		return json;
 	}
+
+	JSON PhysicsSystem::DiffRigidbody2DComponent(const void* base, const void* modified)
+	{
+		JSON diff;
+
+		auto& a = *static_cast<const Rigidbody2DComponent*>(base);
+		auto& b = *static_cast<const Rigidbody2DComponent*>(modified);
+
+		if (a.m_Type != b.m_Type)
+			diff["type"] = b.m_Type;
+
+		if (a.m_FixedRotation != b.m_FixedRotation)
+			diff["fixedRotation"] = b.m_FixedRotation;
+
+		if (a.m_LinearVelocity.x != b.m_LinearVelocity.x || a.m_LinearVelocity.y != b.m_LinearVelocity.y)
+			diff["linearVelocity"] = { b.m_LinearVelocity.x, b.m_LinearVelocity.y };
+
+		if (a.m_AngularVelocity != b.m_AngularVelocity)
+			diff["angularVelocity"] = b.m_AngularVelocity;
+
+		if (a.m_LinearDamping != b.m_LinearDamping)
+			diff["linearDamping"] = b.m_LinearDamping;
+
+		if (a.m_AngularDamping != b.m_AngularDamping)
+			diff["angularDamping"] = b.m_AngularDamping;
+
+		if (a.m_GravityScale != b.m_GravityScale)
+			diff["gravityScale"] = b.m_GravityScale;
+
+		return diff;
+	}
+
 
 	void PhysicsSystem::ViewRigidbody2DComponent(Entity& entity)
 	{
@@ -1080,7 +1122,7 @@ namespace NULLENGINE
 
 				TransformComponent& parentTransform = registry->GetComponent<TransformComponent>(parentComp.m_Parent);
 
-				if (parentTransform.m_Dirty)
+				if (parentTransform.m_Flags.IsSet(TransformFlags_Dirty))
 				{
 					return false;
 				}
@@ -1171,7 +1213,7 @@ namespace NULLENGINE
 		{
 			auto transform = registry->GetComponent<TransformComponent>(entityID);
 
-			if (transform.m_Dirty)
+			if (transform.m_Flags.IsSet(TransformFlags_Dirty))
 				return false;
 
 			auto& cComp = registry->GetComponent<ChildrenComponent>(entityID);
@@ -1238,7 +1280,7 @@ namespace NULLENGINE
 		{
 			auto transform = registry->GetComponent<TransformComponent>(entityID);
 
-			if (transform.m_Dirty)
+			if (parentTransform.m_Flags.IsSet(TransformFlags_Dirty))
 				return false;
 
 			CircleCollider2DComponent& cc2d = registry->GetComponent<CircleCollider2DComponent>(entityID);

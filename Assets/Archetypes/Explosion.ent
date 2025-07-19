@@ -1,7 +1,7 @@
 {
     "components": {
         "Lifetime": {
-            "timeRemaining": 0.5
+            "timeRemaining": 1.0
         },
         "ParticleSystem": {
             "Emitters": [

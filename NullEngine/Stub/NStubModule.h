@@ -33,19 +33,25 @@
 
 namespace NULLENGINE
 {
-	class NLE_API NWindow : public IModule
+	class NLE_API NStub : public ModuleBase<NStub>
 	{
 	public:
 
-		void Load() override;
-		//! Virtual Init function
-		void Init() override;
-		//! Virtual Update function
-		void Update(float dt) override;
 
+		void Load() override;
+		void Init() override;
+		void Update(float dt) override;
+		void RuntimeUpdate(float dt) override;
+		//void Render() override;
+		void RenderLoadScreen();
 		void Unload() override;
-		//! Virtual Shutdown function
 		void Shutdown() override;
+
+		bool HasRenderImGui() const override { return true; }
+
+		void RegisterToScripAPI(sol::state& lua) override;
+
+		void RenderImGui() override;
 
 	private:
 

@@ -15,6 +15,7 @@
 #include "Null/Core.h"
 #include "Null/Engine/Modules/Base/IModule.h"
 #include "nlohmann/json.hpp"
+#include "../../Tools/ArchetypeDefinitions.h"
 
 using JSON = nlohmann::json;
 
@@ -39,6 +40,7 @@ namespace NULLENGINE
 
 
 	class NLE_API Scene;
+
 
 	class NLE_API NSceneManager : public ModuleBase<NSceneManager>
 	{
@@ -74,8 +76,46 @@ namespace NULLENGINE
 
 		void SwitchScene(const std::string& nextScene);
 
+		bool LoadSceneFromCache(const std::string& sceneName);
+
+		void ForceReloadSceneDefinition(const std::string& sceneName);
+
 		Scene* GetCurrentScene();
 
+
+
+		// Returns pointer to a cached scene definition, or nullptr if not found
+		const SceneDefinition* GetSceneDefinition(const std::string& sceneName) const;
+
+		void ClearSceneCache(const std::string& name);
+
+		void CacheSceneDefinition(const std::string& sceneName, const JSON& sceneJson);
+
+		// Checks if a scene definition is already cached
+		bool HasSceneDefinition(const std::string& sceneName) const;
+
+
+		// Loads a scene from its .scene file, parses to SceneDefinition, builds & registers scene
+		void LoadSceneFromFile(const std::string& sceneName);
+
+
+		// Reloads current scene using its cached SceneDefinition
+		void ReloadCurrentScene();
+
+
+		// Writes only the diff between current scene and its archetypes/original data
+		void SaveSceneDiff(const std::string& sceneName);
+
+		// Writes full scene state (regardless of archetypes)
+		void SaveSceneFull(const std::string& sceneName);
+
+
+
+		// Extracts a full definition from the current live Scene (useful for resaving or cloning)
+		SceneDefinition GenerateSceneDefinitionFromLiveScene(Scene* scene);
+
+
+		EntityDefinition ParseEntityDefinition(const JSON& entityJson);
 
 		void RegisterToScripAPI(sol::state& lua) override;
 
@@ -88,6 +128,7 @@ namespace NULLENGINE
 		std::string m_CurrentScene = "";
 		std::string m_DefaultScene = "";
 
+		std::unordered_map<std::string, SceneDefinition> m_SceneDefinitions;
 
 		void LoadScene(const std::string& scene);
 

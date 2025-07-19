@@ -49,6 +49,8 @@ namespace NULLENGINE
 		void Load() override;
 		void Init() override;
 		void Update(float dt) override;
+		void RuntimeUpdate(float dt) override;
+		//void Render() override;
 		void RenderLoadScreen();
 		void Unload() override;
 		void Shutdown() override;
@@ -58,13 +60,14 @@ namespace NULLENGINE
 
 		bool HasRenderImGui() const override { return true; }
 
+		void RegisterToScripAPI(sol::state& lua) override;
 
 		void RenderImGui() override;
 
 	private:
 		std::queue<std::unique_ptr<IAsyncTask>> m_TaskQueue;
 
-		 int m_TasksToProcess = 2;
+		 float m_MaxTimePerFrameMS = 1.60f;
 
 		 int m_TotalTasks = 0;
 		 int m_TasksProcessed = 0;

@@ -3,17 +3,13 @@
 
 namespace NULLENGINE
 {
-	struct TagComponent : public BaseComponent
+
+	struct TagComponent
 	{
-		std::set<std::string> m_Tags;
-
-		TagComponent(std::set<std::string> tags = std::set<std::string>())
-			: m_Tags(tags)
-		{}
-
-		const std::string Name() const { return Component<TagComponent>::TypeName(); };
-		const uint32_t ID() const { return Component<TagComponent>::GetID(); };
-
+		static constexpr uint32_t MaxTags = 8;
+		std::array<uint32_t, MaxTags> m_TagIDs = {};
+		uint8_t m_TagCount = 0;
+		ComponentFlagSet m_ComponentFlags;
 	};
 
 }

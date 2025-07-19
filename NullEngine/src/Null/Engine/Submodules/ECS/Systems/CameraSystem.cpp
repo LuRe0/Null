@@ -38,7 +38,7 @@ namespace NULLENGINE
 		NComponentFactory* componentFactory = NComponentFactory::Instance();
 
 		componentFactory->Register<CameraComponent>(CreateCameraComponent,
-			[this](Entity& id) { this->ViewCameraComponent(id); }, WriteCameraComponent);
+			[this](Entity& id) { this->ViewCameraComponent(id); }, WriteCameraComponent, AddCameraComponent, DiffCameraComponent);
 
 	}
 
@@ -67,7 +67,7 @@ namespace NULLENGINE
 		{
 			CameraComponent& cam = registry->GetComponent<CameraComponent>(entityId);
 
-			if (!cam.m_Enabled)
+			if (!cam.m_ComponentFlags.IsSet(ComponentFlags_Enabled))
 				continue;
 
 			cam.m_IsMainCamera ? ++m_MainCameraCount : m_MainCameraCount += 0;
@@ -116,38 +116,43 @@ namespace NULLENGINE
 				"type_id", &Component<CameraComponent>::GetID,
 				"get_position", [](CameraComponent& cam)
 				{
-					if (dynamic_cast<Camera3D*>(cam.m_Camera)) {
-						auto camera = dynamic_cast<Camera3D*>(cam.m_Camera);
+					Camera* c =  NCameraManager::Instance()->GetCamera(cam.m_CameraID);
+					if (dynamic_cast<Camera3D*>(c)) {
+						auto camera = dynamic_cast<Camera3D*>(c);
 						return glm::vec2(camera->GetPosition().x, camera->GetPosition().y);
 					}
 					else
 					{
-						auto camera = dynamic_cast<Camera2D*>(cam.m_Camera);
+						auto camera = dynamic_cast<Camera2D*>(c);
 						return camera->GetPosition();
 					}
 				},
 				"set_position",
 				sol::overload([](CameraComponent& cam, float x, float y)
 					{
-						if (dynamic_cast<Camera3D*>(cam.m_Camera)) {
-							auto camera = dynamic_cast<Camera3D*>(cam.m_Camera);
+						Camera* c = NCameraManager::Instance()->GetCamera(cam.m_CameraID);
+
+						if (dynamic_cast<Camera3D*>(c)) {
+							auto camera = dynamic_cast<Camera3D*>(c);
 							camera->SetPosition(glm::vec3(x, y, camera->GetPosition().z));
 						}
 						else
 						{
-							auto camera = dynamic_cast<Camera2D*>(cam.m_Camera);
+							auto camera = dynamic_cast<Camera2D*>(c);
 							camera->SetPosition(glm::vec2(x, y));
 						}
 					},
 					[](CameraComponent& cam, glm::vec2 pos)
 					{
-						if (dynamic_cast<Camera3D*>(cam.m_Camera)) {
-							auto camera = dynamic_cast<Camera3D*>(cam.m_Camera);
+						Camera* c = NCameraManager::Instance()->GetCamera(cam.m_CameraID);
+
+						if (dynamic_cast<Camera3D*>(c)) {
+							auto camera = dynamic_cast<Camera3D*>(c);
 							camera->SetPosition(glm::vec3(pos, camera->GetPosition().z));
 						}
 						else
 						{
-							auto camera = dynamic_cast<Camera2D*>(cam.m_Camera);
+							auto camera = dynamic_cast<Camera2D*>(c);
 							camera->SetPosition(pos);
 						}
 					}
@@ -162,13 +167,15 @@ namespace NULLENGINE
 
 				"set_zoom", [](CameraComponent& cam, float z)
 				{
-					if (dynamic_cast<Camera3D*>(cam.m_Camera)) {
-						auto camera = dynamic_cast<Camera3D*>(cam.m_Camera);
+					Camera* c = NCameraManager::Instance()->GetCamera(cam.m_CameraID);
+
+					if (dynamic_cast<Camera3D*>(c)) {
+						auto camera = dynamic_cast<Camera3D*>(c);
 						camera->SetZoom(z);
 					}
 					else
 					{
-						auto camera = dynamic_cast<Camera2D*>(cam.m_Camera);
+						auto camera = dynamic_cast<Camera2D*>(c);
 						camera->SetZoom(z);
 					}
 				});
@@ -199,7 +206,7 @@ namespace NULLENGINE
 		{
 			CameraComponent& cam = registry->GetComponent<CameraComponent>(entityId);
 
-			if (!cam.m_Enabled)
+			if (!cam.m_ComponentFlags.IsSet(ComponentFlags_Enabled))
 				continue;
 
 			if (!cam.m_IsMainCamera)
@@ -208,7 +215,7 @@ namespace NULLENGINE
 			}
 			else
 			{
-				camManager->SetCurrentCamera(cam.m_Name);
+				camManager->SetCurrentCamera(STRFROM(cam.m_CameraID));
 
 				return true;
 			}
@@ -217,7 +224,7 @@ namespace NULLENGINE
 		return false;
 	}
 
-	void CameraSystem::CreateCameraComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id)
+	void CameraSystem::CreateCameraComponent(void* component, const nlohmann::json& json)
 	{
 		NComponentFactory* componentFactory = NComponentFactory::Instance();
 		NCameraManager* camManager = NCameraManager::Instance();
@@ -227,25 +234,79 @@ namespace NULLENGINE
 
 		if (!jsonWrapper.Empty())
 		{
-			comp->m_Name = jsonWrapper.GetString("name", "");
-			comp->m_Type = jsonWrapper.GetString("type", "");
+			comp->m_CameraID = STRID(jsonWrapper.GetString("name", ""));
+			comp->m_TypeID = STRID(jsonWrapper.GetString("type", ""));
 			comp->m_IsMainCamera = jsonWrapper.GetBool("mainCamera", false);
-			comp->m_Camera = camManager->ReadCamera(json);
+
+			camManager->ReadCamera(json);
 		}
 
-		componentFactory->AddOrUpdate<CameraComponent>(id, comp, registry, comp->m_Name, comp->m_Type, comp->m_Camera, comp->m_IsMainCamera);
 	}
 
-	JSON CameraSystem::WriteCameraComponent(BaseComponent* component)
+
+	void CameraSystem::AddCameraComponent(void* component, NRegistry* registry, EntityID id)
+	{
+		NComponentFactory* componentFactory = NComponentFactory::Instance();
+
+		auto* comp = static_cast<CameraComponent*>(component);
+		componentFactory->AddOrUpdate<CameraComponent>(id, comp, registry, comp->m_CameraID, comp->m_TypeID, comp->m_ComponentFlags, comp->m_IsMainCamera);
+	}
+
+
+	JSON CameraSystem::WriteCameraComponent(const void* component)
 	{
 		nlohmann::json json;
 
-		auto& cam = *static_cast<CameraComponent*>(component);
+		auto& cam = *static_cast<const CameraComponent*>(component);
 		json["Camera"]["mainCamera"] = cam.m_IsMainCamera;
-		cam.m_Camera->Write(json["Camera"]);
+		json["Camera"]["ComponentFlags"] = cam.m_ComponentFlags.m_Flags;
+
+		Camera* camera = NCameraManager::Instance()->GetCamera(cam.m_CameraID);
+		if(camera)
+			camera->Write(json["Camera"]);
 
 		return json;
 	}
+
+	JSON CameraSystem::DiffCameraComponent(const void* base, const void* modified)
+	{
+		auto* b = static_cast<const CameraComponent*>(modified);
+		auto* a = static_cast<const CameraComponent*>(base);
+
+		JSON diff;
+		JSON cameraJson;
+
+		// Compare main camera flag
+		if (a->m_IsMainCamera != b->m_IsMainCamera)
+			cameraJson["mainCamera"] = b->m_IsMainCamera;
+
+		// Let the Camera objects write themselves into JSON for comparison
+		JSON baseCamJson, modCamJson;
+		Camera* cameraA = NCameraManager::Instance()->GetCamera(a->m_CameraID);
+		Camera* cameraB = NCameraManager::Instance()->GetCamera(b->m_CameraID);
+
+
+		if (cameraA) cameraA->Write(baseCamJson);
+		if (cameraB) cameraB->Write(modCamJson);
+
+		// Compare each field individually in the written JSON
+		for (auto& [key, modValue] : modCamJson.items())
+		{
+			if (!baseCamJson.contains(key) || baseCamJson[key] != modValue)
+			{
+				cameraJson[key] = modValue;
+			}
+		}
+
+		if (a->m_ComponentFlags.m_Flags != b->m_ComponentFlags.m_Flags)
+			diff["ComponentFlags"] = b->m_ComponentFlags.m_Flags;
+
+		if (!cameraJson.empty())
+			diff["Camera"] = cameraJson;
+
+		return diff;
+	}
+
 
 	void CameraSystem::ViewCameraComponent(Entity& entity)
 	{
@@ -275,8 +336,7 @@ namespace NULLENGINE
 				{
 					if (ImGui::MenuItem(name.c_str()))
 					{
-						Camera.m_Camera = camManager->GetCamera<Camera3D>(name);
-						Camera.m_Name = name;
+						Camera.m_CameraID = STRID(name);
 					}
 				}
 			}
@@ -290,8 +350,7 @@ namespace NULLENGINE
 				{
 					if (ImGui::MenuItem(name.c_str()))
 					{
-						Camera.m_Camera = camManager->GetCamera<Camera2D>(name);
-						Camera.m_Name = name;
+						Camera.m_CameraID = STRID(name);
 					}
 				}
 			}
@@ -349,14 +408,22 @@ namespace NULLENGINE
 
 				if (m_CameraType == Camera::ORTHOGRAPHIC)
 				{
-					Camera.m_Camera = camManager->AddCamera<Camera2D>(m_CameraName, window->Width(), window->Height());
+					if (auto* c =camManager->AddCamera<Camera2D>(m_CameraName, window->Width(), window->Height()))
+					{
+						Camera.m_CameraID = STRID(m_CameraName);
+						c->SetName(m_CameraName);
+
+					}
 				}
 				else if (m_CameraType == Camera::PERSPECTIVE)
 				{
-					Camera.m_Camera = camManager->AddCamera<Camera3D>(m_CameraName, window->Width(), window->Height());
+					if (auto* c = camManager->AddCamera<Camera3D>(m_CameraName, window->Width(), window->Height()))
+					{
+						Camera.m_CameraID = STRID(m_CameraName);
+						c->SetName(m_CameraName);
+					}
 				}
 
-				Camera.m_Camera->SetName(m_CameraName);
 
 				m_ShowCreationMenu = false; // Close the input box
 				ImGui::CloseCurrentPopup();
@@ -373,8 +440,9 @@ namespace NULLENGINE
 			ImGui::EndPopup();
 		}
 
+		auto* c = camManager->GetCamera(Camera.m_CameraID);
 
-		if (Camera.m_Camera)
+		if (c)
 		{
 
 			//ImGui::Text("Main Camera: ");
@@ -384,12 +452,12 @@ namespace NULLENGINE
 				if (ImGui::Checkbox("Preview", &m_Preview))
 				{
 					if (m_Preview)
-						camManager->SetCurrentCamera(Camera.m_Name);
+						camManager->SetCurrentCamera(c->GetName());
 					else
 						camManager->SetCurrentCamera("Editor3D");
 				}
 
-			Camera.m_Camera->View();
+			c->View();
 		}
 		else
 		{

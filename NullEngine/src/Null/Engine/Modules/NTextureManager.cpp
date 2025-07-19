@@ -29,7 +29,7 @@ namespace NULLENGINE
 {
 	void NTextureManager::Load()
 	{
-		std::string filePath = std::string("../Assets/Textures");
+		const std::string& filePath = std::string("../Assets/Textures");
 
 		for (const auto& entry : std::filesystem::directory_iterator(filePath))
 		{
@@ -46,6 +46,30 @@ namespace NULLENGINE
 				const std::string& name = filePath.substr(start, end - start);
 
 				auto tex = Create(name);
+				tex->Init();
+				GetTextureIndex(name);
+			}
+		}
+
+		const std::string fileP = std::string("../Assets/Resources/Textures");
+
+		for (const auto& entry : std::filesystem::directory_iterator(fileP))
+		{
+			if (entry.is_regular_file()) // Ensure it's a regular file (not a directory or symlink)
+			{
+				const std::string& file = entry.path().string();
+
+				size_t lastSlash = file.find_last_of("\\/");
+				size_t start = (lastSlash == std::string::npos) ? 0 : lastSlash + 1;
+
+				size_t lastDot = file.find_last_of('.');
+				size_t end = (lastDot == std::string::npos) ? file.length() : lastDot;
+
+				const std::string& name = file.substr(start, end);
+				const std::string& nameNoEX = file.substr(start, end-start);
+				const std::string& fullpath = fileP+"/" + name;
+
+				auto tex = Create(nameNoEX, fullpath, true);
 				tex->Init();
 				GetTextureIndex(name);
 			}

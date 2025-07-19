@@ -58,11 +58,14 @@ namespace NULLENGINE
 
 	private:
 
-		static void CreateSpriteComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
-		static JSON WriteSpriteComponent(BaseComponent* component);
+		static void CreateSpriteComponent(void* component, const nlohmann::json& json);
+		static void AddSpriteComponent(void* component, NRegistry* registry, EntityID id);
+		static JSON WriteSpriteComponent(const void* component);
+
+		static JSON DiffSpriteComponent(const void* base, const void* modified);
 
 		void ViewSpriteComponent(Entity& entityID);
-		void DrawDragDrop(const char* label, SpriteComponent& sprite, SpriteSource*& source, NTextureManager* texMgr, NSpriteSourceManager* srcMgr);
+		void DrawDragDrop(const char* label, uint32_t& nameID, SpriteSource*& source, NTextureManager* texMgr, NSpriteSourceManager* srcMgr);
 	};
 
 }

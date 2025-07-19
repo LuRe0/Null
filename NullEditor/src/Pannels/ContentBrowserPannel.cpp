@@ -44,14 +44,20 @@ namespace NULLENGINE
 
 	void ContentBrowserPannel::OnImGUIRender()
 	{
+		auto* textureManager = NTextureManager::Instance();
 		ImGui::Begin("Content Browser");
 
 		if (m_CurrentDirectory != s_AssetsPath)
 		{
-			if (ImGui::Button("<-"))
+			auto* tex = NTextureManager::Instance()->Get("Back_Arrow");
+			ImTextureID imageTexture = (ImTextureID)tex->GetID();
+
+
+			if (ImGui::ImageButton(imageTexture, ImVec2(16, 16)))
 			{
 				m_CurrentDirectory = m_CurrentDirectory.parent_path();
 			}
+
 
 		}
 
@@ -84,11 +90,47 @@ namespace NULLENGINE
 			{
 				ImGui::PushID(filename.c_str());
 
-				ImGui::Button(filename.c_str()) && ImGui::IsMouseDoubleClicked(0);
+		
+				// Display the filename under the button, centered
 
 				std::filesystem::relative(p.path(), s_AssetsPath);
 
 				std::string extension = p.path().extension().string();
+
+
+				Texture* tex;
+
+				if (extension == ".ent")
+				{
+					tex = textureManager->Get("Ent_Icon");
+				}
+				else if (extension == ".scene")
+				{
+					tex = textureManager->Get("Scene_Icon_");
+				}
+				else if (extension == ".scene")
+				{
+					tex = textureManager->Get("Scene_Icon_");
+				}
+				else
+				{
+					if (p.is_directory())
+					{
+						tex = textureManager->Get("Folder_Icon");
+					}
+					else
+					{
+						tex = textureManager->Get("Default_Icon_1");
+					}
+				}
+
+
+				ImTextureID imageTexture = (ImTextureID)tex->GetID();
+
+				// Display the ImageButton with some size (e.g., 64x64)
+				ImGui::ImageButton(imageTexture, ImVec2(64, 64));
+
+
 
 				if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 				{
@@ -103,6 +145,9 @@ namespace NULLENGINE
 						ShellExecuteA(0, 0, fileP.c_str(), 0, 0, SW_SHOW);
 					}
 				}
+
+				ImGui::TextWrapped("%s", filename.c_str());
+
 
 				if (extension == ".ent")
 				{

@@ -62,9 +62,13 @@ namespace NULLENGINE
 
 	private:
 		bool OnRuntimeStart(const EngineRunStateEvent& e);
-		static void CreateCameraComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
+		static void CreateCameraComponent(void* component, const nlohmann::json& json);
 
-		static JSON WriteCameraComponent(BaseComponent* component);
+		static void AddCameraComponent(void* component, NRegistry* registry, EntityID id);
+
+		static JSON WriteCameraComponent(const void* component);
+
+		static JSON DiffCameraComponent(const void* base, const void* modified);
 
 		void AddShake(const CameraShake& shake);
 

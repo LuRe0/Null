@@ -34,7 +34,7 @@ namespace NULLENGINE
 		ImGui::Begin("Scene Hierarchy");
 
 
-		ImGui::PushItemWidth(100);
+		ImGui::PushItemWidth(200);
 		ImGui::Text("Scene Name: "); ImGui::SameLine();
 
 		if (ImGui::InputText("##name", &m_PannelData->m_Context->m_Name))
@@ -65,7 +65,7 @@ namespace NULLENGINE
 		if (ImGui::BeginPopupContextWindow())
 		{
 			if (ImGui::MenuItem("Create Entity"))
-				m_PannelData->m_SelectedEntity = m_PannelData->m_Context->CreateEmptyEntity("New Entiy");
+				m_PannelData->m_SelectedEntity = m_PannelData->m_Context->CreateEmptyEntity(m_PannelData->m_Context->GenerateUniqueName("New Entiy"));
 
 
 			if (ImGui::MenuItem("Load Archetype"))
@@ -82,10 +82,19 @@ namespace NULLENGINE
 
 
 
+		m_EntityFilter.Draw("Search Entity");
+
+		ImGui::Separator();
+
 		for (auto& entity : entities)
 		{
 
 			if (entity.Has<ParentComponent>())
+				continue;
+
+			std::string name = entity.GetName(); // or however you get the entity's name
+
+			if (!m_EntityFilter.PassFilter(name.c_str()))
 				continue;
 
 			ImGuiTreeNodeFlags flags = (m_PannelData->m_SelectedEntity == entity.GetID() ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;

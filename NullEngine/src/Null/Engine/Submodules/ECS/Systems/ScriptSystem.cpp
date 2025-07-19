@@ -45,7 +45,20 @@ namespace NULLENGINE
 		NComponentFactory* componentFactory = NComponentFactory::Instance();
 
 		componentFactory->Register<ScriptComponent>(CreateScriptComponent,
-			[this](Entity& id) { this->ViewScriptComponent(id); }, WriteScriptComponent);
+			[this](Entity& id) { this->ViewScriptComponent(id); }, WriteScriptComponent,
+			AddScriptComponent, DiffScriptComponent);
+
+		try
+		{
+			m_LuaState.open_libraries(sol::lib::base, sol::lib::coroutine, sol::lib::string, sol::lib::io, sol::lib::table, sol::lib::math);
+
+			ScriptHelper::SetLuaState(m_LuaState);
+
+		}
+		catch (const std::exception&)
+		{
+			NLE_CORE_ERROR("Could not initialize Lua State");
+		}
 
 	}
 
@@ -53,18 +66,8 @@ namespace NULLENGINE
 	void ScriptSystem::Load()
 	{
 		NScriptingInterface* scriptingInterface = m_Parent->Get< NScriptingInterface>();
-		try
-		{
-			m_LuaState.open_libraries(sol::lib::base, sol::lib::coroutine, sol::lib::string, sol::lib::io, sol::lib::table, sol::lib::math);
 
-			ScriptHelper::SetLuaState(m_LuaState);
-
-			scriptingInterface->RegisterEngineFunctions(m_LuaState);
-		}
-		catch (const std::exception&)
-		{
-			NLE_CORE_ERROR("Could not initialize Lua State");
-		}
+		scriptingInterface->RegisterEngineFunctions(m_LuaState);
 	}
 
 	void ScriptSystem::Init()
@@ -171,7 +174,7 @@ namespace NULLENGINE
 	}
 
 
-	void ScriptSystem::CreateScriptComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id)
+	void ScriptSystem::CreateScriptComponent(void* component, const nlohmann::json& json)
 	{
 		NComponentFactory* componentFactory = NComponentFactory::Instance();
 
@@ -201,16 +204,24 @@ namespace NULLENGINE
 			}
 		}
 
+	}
+
+
+	void ScriptSystem::AddScriptComponent(void* component, NRegistry* registry, EntityID id)
+	{
+		NComponentFactory* componentFactory = NComponentFactory::Instance();
+
+		auto* comp = static_cast<ScriptComponent*>(component);
 		componentFactory->AddOrUpdate<ScriptComponent>(id, comp, registry, comp->m_Script_Names, comp->m_ScriptDefaults);
 	}
 
 
 
-	JSON ScriptSystem::WriteScriptComponent(BaseComponent* component)
+	JSON ScriptSystem::WriteScriptComponent(const void* component)
 	{
 		nlohmann::json json;
 
-		auto& script = *static_cast<ScriptComponent*>(component);
+		auto& script = *static_cast<const ScriptComponent*>(component);
 
 		//json["Script"]["scripts"] = script.m_Script_Names;
 
@@ -251,6 +262,25 @@ namespace NULLENGINE
 
 		return json;
 	}
+
+
+	JSON ScriptSystem::DiffScriptComponent(const void* baseComp, const void* modifiedComp)
+	{
+		JSON diff;
+
+		auto& baseScript = *static_cast<const ScriptComponent*>(baseComp);
+		auto& modScript = *static_cast<const ScriptComponent*>(modifiedComp);
+
+		const auto& baseNames = baseScript.m_Script_Names;
+		const auto& modNames = modScript.m_Script_Names;
+
+		if (baseNames != modNames) {
+			diff["scripts"] = modNames; // Save the new full list
+		}
+
+		return diff;
+	}
+
 
 	void ScriptSystem::ViewScriptComponent(Entity& entity)
 	{
@@ -390,10 +420,9 @@ namespace NULLENGINE
 		const auto& names = scriptingInterface->GetScriptNames();
 		if (ImGui::BeginMenu("Add Script"))
 		{
-			static ImGuiTextFilter filterBeh;
 
-
-			filterBeh.Draw("##searchbarBehAdd");
+			
+			m_ScriptFilter.Draw("##searchbarBehAdd");
 
 			ImGui::Separator();
 
@@ -401,7 +430,7 @@ namespace NULLENGINE
 			for (auto name : names)
 			{
 				if (std::find(script.m_Script_Names.begin(), script.m_Script_Names.end(), name) == script.m_Script_Names.end())
-					if (filterBeh.PassFilter(name.c_str()))
+					if (m_ScriptFilter.PassFilter(name.c_str()))
 					{
 						if (ImGui::MenuItem(name.c_str()))
 						{

@@ -63,6 +63,8 @@ namespace NULLENGINE
 
 		static std::pair<bool, bool> DrawTopLevelHeader(const char* label, bool* enabled, int id);
 
+		static std::tuple<bool, bool, bool> CollapsingHeaderWithFlagCheckboxAndRemove(const std::string& label, uint8_t& flags, uint32_t flagBit);
+
 		template<typename Func>
 		static void DrawModifierSection(const char* label, bool* enabled, int id, Func drawContents)
 		{

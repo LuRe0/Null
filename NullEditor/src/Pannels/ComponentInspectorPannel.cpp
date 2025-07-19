@@ -78,53 +78,55 @@ namespace NULLENGINE
 			for (const auto& comp : entityComponents)
 			{
 
-				//ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{ 4,4 });
-				float lineHeight = ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2.0f;
-				ImVec2 contentRegion = ImGui::GetContentRegionAvail();
+				////ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{ 4,4 });
+				//float lineHeight = ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2.0f;
+				//ImVec2 contentRegion = ImGui::GetContentRegionAvail();
 
 
-				BaseComponent& component = registry->GetComponent(m_PannelData->m_SelectedEntity, comp);
-				ImGui::Separator();
+				//BaseComponent& component = registry->GetComponent(m_PannelData->m_SelectedEntity, comp);
+				//ImGui::Separator();
 
-				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(3, 0));
-				std::string checkboxLabel = "##Enable Component" + std::to_string(comp);
-				ImGui::Checkbox(checkboxLabel.c_str(), &component.m_Enabled);
+				//ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(3, 0));
+				//std::string checkboxLabel = "##Enable Component" + std::to_string(comp);
+				//ImGui::Checkbox(checkboxLabel.c_str(), &component.m_Enabled);
 
-				ImGui::SameLine();
+				//ImGui::SameLine();
 
-				bool opened = ImGui::TreeNodeEx(component.Name().data(), flags);
+				//bool opened = ImGui::TreeNodeEx(component.Name().data(), flags);
 
-				ImGui::PopStyleVar();
+				//ImGui::PopStyleVar();
 
 			
-				ImGui::SameLine(contentRegion.x - lineHeight * .55f);
-				bool removed = false;
+				//ImGui::SameLine(contentRegion.x - lineHeight * .55f);
+				//bool removed = false;
 
-				// Push the style color for the button
-				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
-				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 0.5f, 0.5f, 1.0f));
-				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(1.0f, 0.3f, 0.3f, 1.0f));
+				//// Push the style color for the button
+				//ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+				//ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 0.5f, 0.5f, 1.0f));
+				//ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(1.0f, 0.3f, 0.3f, 1.0f));
 
-				if (ImGui::Button("X", ImVec2{ lineHeight, lineHeight }))
-				{
-					removed = true;
-				}
+				//if (ImGui::Button("X", ImVec2{ lineHeight, lineHeight }))
+				//{
+				//	removed = true;
+				//}
 
-				ImGui::PopStyleColor(3);
-				if (opened)
-				{
-					//std::string checkboxLabel = "##Enable Component" + std::to_string(comp);
-					ImGui::Checkbox("Serialize in scene", &component.m_SerializeToScene);
+				//ImGui::PopStyleColor(3);
+				//if (opened)
+				//{
+				//	//std::string checkboxLabel = "##Enable Component" + std::to_string(comp);
+				//	ImGui::Checkbox("Serialize in scene", &component.m_SerializeToScene);
 
-					factory->ViewComponent(Entity(m_PannelData->m_SelectedEntity, registry), comp);
-					ImGui::TreePop();
-				}
+				//
+				//	ImGui::TreePop();
+				//}
 
-				if (removed)
-				{
-					eventManager->QueueEvent(std::make_unique<EntityRemoveComponentEvent>(m_PannelData->m_SelectedEntity, comp));
-				}
+				//if (removed)
+				//{
+				//	eventManager->QueueEvent(std::make_unique<EntityRemoveComponentEvent>(m_PannelData->m_SelectedEntity, comp));
+				//}
 
+
+				factory->ViewComponent(Entity(m_PannelData->m_SelectedEntity, registry), comp);
 			}
 
 			ImGui::Separator();
@@ -145,13 +147,16 @@ namespace NULLENGINE
 
 				for (const auto& name : componentsNames)
 				{
-					if (!registry->HasComponent(m_PannelData->m_SelectedEntity, factory->GetComponentID(name)))
+					auto id = factory->GetComponentID(name);
+					if (!registry->HasComponent(m_PannelData->m_SelectedEntity, id))
 					{
 						if (ImGui::MenuItem(name.c_str()))
 						{
-							eventManager->QueueEvent(std::make_unique<EntityAddComponentEvent>(m_PannelData->m_SelectedEntity, factory->GetComponentID(name)));
+							eventManager->QueueEvent(std::make_unique<EntityAddComponentEvent>(m_PannelData->m_SelectedEntity, id));
 
-							factory->CreateUniqueComponent(name, JSON(), registry, m_PannelData->m_SelectedEntity);
+							const auto& bin = factory->CreateComponent(name, JSON());
+							factory->AddComponentFromBinary(name, bin, registry, m_PannelData->m_SelectedEntity);
+
 							ImGui::CloseCurrentPopup();
 						}
 					}

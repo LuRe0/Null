@@ -48,6 +48,7 @@ namespace NULLENGINE
 		AddCreateFunction<NShaderManager>([&engine]() { engine.Add<NULLENGINE::NShaderManager>(); });
 		AddCreateFunction<NComputeShaderManager>([&engine]() { engine.Add<NULLENGINE::NComputeShaderManager>(); });
 		AddCreateFunction<NMeshManager>([&engine]() { engine.Add<NULLENGINE::NMeshManager>(); });
+		AddCreateFunction<NStringIDManager>([&engine]() { engine.Add<NULLENGINE::NStringIDManager>(); });
 		AddCreateFunction<NSpriteSourceManager>([&engine]() { engine.Add<NULLENGINE::NSpriteSourceManager>(); });
 		AddCreateFunction<NTextureManager>([&engine]() { engine.Add<NULLENGINE::NTextureManager>(); });
 		AddCreateFunction<NTilesetManager>([&engine]() { engine.Add<NULLENGINE::NTilesetManager>(); });
@@ -57,6 +58,8 @@ namespace NULLENGINE
 		AddCreateFunction<NEntityFactory>([&engine]() { engine.Add<NULLENGINE::NEntityFactory>(); });
 		AddCreateFunction<NDebugManager>([&engine]() { engine.Add<NULLENGINE::NDebugManager>(); });
 		AddCreateFunction<NRenderer>([&engine]() { engine.Add<NULLENGINE::NRenderer>(); });
+		AddCreateFunction<NAsyncTaskManager>([&engine]() { engine.Add<NULLENGINE::NAsyncTaskManager>(); });
+		AddCreateFunction<NThreadPool>([&engine]() { engine.Add<NULLENGINE::NThreadPool>(); });
 		AddCreateFunction<PhysicsSystem>([&engine]() { engine.Add<NULLENGINE::PhysicsSystem>(); });
 		AddCreateFunction<TransformSystem>([&engine]() { engine.Add<NULLENGINE::TransformSystem>(); });
 		AddCreateFunction<TilemapRenderSystem>([&engine]() { engine.Add<NULLENGINE::TilemapRenderSystem>(); });

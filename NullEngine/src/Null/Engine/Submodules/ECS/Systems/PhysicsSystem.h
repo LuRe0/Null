@@ -75,8 +75,10 @@ namespace NULLENGINE
 	private:
 		b2World* m_PhysicsWorld;
 
-		static void CreateRigidbody2DComponent(void* component, const nlohmann::json& json, NRegistry* registry, EntityID id);
-		static JSON WriteRigidbody2DComponent(BaseComponent* component);
+		static void CreateRigidbody2DComponent(void* component, const nlohmann::json& json);
+		static void AddRigidbody2DComponent(void* component, NRegistry* registry, EntityID id);
+		static JSON WriteRigidbody2DComponent(const void* component);
+		static JSON DiffRigidbody2DComponent(const void* base, const void* modified);
 		void ViewRigidbody2DComponent(Entity& entityID);
 
 

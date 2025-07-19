@@ -1,0 +1,44 @@
+{
+    "components": {
+        "Script": {
+            "scripts": {
+                "BlockManager": {
+                    "blockName": "Block",
+                    "blockSpacing": [
+                        60.0,
+                        50.0
+                    ],
+                    "cols": 10.0,
+                    "decaySpeed": 1.5,
+                    "delayPerBlock": 0.20000000298023224,
+                    "maxStrength": 2.0,
+                    "moveSpeed": 20.0,
+                    "rows": 4.0,
+                    "spawnCooldown": 2.0,
+                    "spawnOffset": [
+                        -251.0,
+                        0.0
+                    ]
+                }
+            }
+        },
+        "Transform": {
+            "rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                50.0,
+                50.0,
+                1.0
+            ],
+            "translation": [
+                0.0,
+                0.0,
+                0.0
+            ]
+        }
+    },
+    "name": "BlockManager (Clone)"
+}

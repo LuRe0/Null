@@ -138,6 +138,13 @@ namespace NULLENGINE
 		//		system.second.get()->Add(entityID);
 		//}
 	}
+	//BaseComponent& NRegistry::GetComponent(EntityID entityID, const std::string& component)
+	//{
+	//	uint32_t componentID = NComponentFactory::Instance()->GetComponentID(component);
+
+	//	return GetComponent(entityID, componentID);
+	//}
+
 	const SignatureBits& NRegistry::EntitySignature(EntityID entityID)
 	{
 		// TODO: insert return statement here
@@ -178,11 +185,14 @@ namespace NULLENGINE
 	}
 	bool NRegistry::OnSceneSwitch(const SceneSwitchEvent& e)
 	{
-		std::vector<std::unique_ptr<IComponentManager>> m_ComponentManagers;
 
 		for (size_t i = 0; i < m_ComponentManagers.size(); i++)
 		{
-			m_ComponentManagers[i].get()->Clear();
+			if(m_ComponentManagers[i])
+			{
+				m_ComponentManagers[i].get()->Clear();
+			}
+			//m_ComponentManagers[i].get()->Clear();
 		}
 
 		m_EntityToIndexMap.clear();

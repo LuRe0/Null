@@ -63,6 +63,41 @@ namespace NULLENGINE
 	}
 
 
+	std::tuple<bool, bool> ImGuiH::CollapsingHeaderWithRemove(const std::string& label)
+	{
+		bool remove = false;
+		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_AllowItemOverlap |
+			ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_OpenOnDoubleClick |
+			ImGuiTreeNodeFlags_SpanAvailWidth;
+
+		float lineHeight = ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2.0f;
+		ImVec2 contentRegion = ImGui::GetContentRegionAvail();
+		ImVec2 cursorPos = ImGui::GetCursorScreenPos();
+
+		ImGui::PushID(label.c_str());
+
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(3, 0));
+
+		bool open = ImGui::TreeNodeEx(label.c_str(), flags);
+		ImGui::PopStyleVar();
+
+		ImGui::SameLine(contentRegion.x - lineHeight);
+		ImGui::SetCursorScreenPos(ImVec2(cursorPos.x + contentRegion.x - lineHeight, cursorPos.y));
+
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 0, 0, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 0.5f, 0.5f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(1.0f, 0.3f, 0.3f, 1.0f));
+
+		if (ImGui::Button(("X##" + label).c_str(), ImVec2(lineHeight, lineHeight)))
+			remove = true;
+
+		ImGui::PopStyleColor(3);
+		ImGui::PopID();
+
+		return { open, remove };
+	}
+
+
 
 	std::pair<bool, bool>  ImGuiH::DrawModifierHeader(const char* label, uint32_t& flags, uint32_t flagBit, int id)
 	{

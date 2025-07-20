@@ -83,51 +83,51 @@ namespace NULLENGINE
 
 		for (const auto entityId : GetSystemEntities())
 		{
-			TransformComponent& transform = m_Parent->GetComponent<TransformComponent>(entityId);
-			BoxCollider2DComponent& bc2d = m_Parent->GetComponent<BoxCollider2DComponent>(entityId);
+			//TransformComponent& transform = m_Parent->GetComponent<TransformComponent>(entityId);
+			//BoxCollider2DComponent& bc2d = m_Parent->GetComponent<BoxCollider2DComponent>(entityId);
 
-			if (!bc2d.m_RuntimeFixture)
-				continue;
+			//if (!bc2d.m_RuntimeFixture)
+			//	continue;
 
-			auto translation = (transform.m_Translation);
-			auto rot = bc2d.m_RuntimeFixture->GetBody()->GetAngle();
-
-
-			glm::mat4 viewMatrix = camManager->GetCurrentCamera()->GetViewMatrix();
-
-			// Transform the world position to camera space
-			glm::vec4 cameraSpacePosition = viewMatrix * glm::vec4(translation, 1.0f);
-
-			// The depth is the z-component of the camera space position
-			float depth = cameraSpacePosition.z;
-
-			if (m_Parent->HasComponent<ParentComponent>(entityId))
-			{
-				auto& parentComp = m_Parent->GetComponent<ParentComponent>(entityId);
-
-				TransformComponent& parentTransform = m_Parent->GetComponent<TransformComponent>(parentComp.m_Parent);
-
-				translation = (parentTransform.m_TransformMatrix * glm::vec4(translation, 1.0f));
-			}
-
-			translation += camManager->GetCurrentCamera()->GetCameraType() == Camera::PERSPECTIVE ?
-				(glm::vec3(bc2d.m_Offset, transform.m_Translation.z + transform.m_Scale.z * 0.5f + 1.0f)) :
-				(glm::vec3(bc2d.m_Offset, transform.m_Translation.z + 1.0f));
-
-			glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), translation);
-			// Calculate rotation matrix (assuming Euler angles in radians)
-			glm::mat4 rotationMatrix = glm::toMat4(glm::quat(glm::radians(glm::vec3(0, 0, rot))));
-
-			glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(bc2d.m_Scale, 1.0f));
-
-			glm::mat4 matrix = translationMatrix * rotationMatrix * scaleMatrix;
+			//auto translation = (transform.translation);
+			//auto rot = bc2d.m_RuntimeFixture->GetBody()->GetAngle();
 
 
-			/*		matrix, meshManager->Get("Quad"), "", glm::vec4(0, 1, 0, 1), "",
-						0, entityId, 0.05f, 0.005f, RenderData::INSTANCED)*/
-						//model, mesh, spritesrc, tint, shadername, frameindex, entity
-			renderer->AddDebugRenderCall(std::make_unique<ElementData>(matrix, meshManager->Get("Quad"), nullptr, m_Color, "", 0,
-				entityId, m_Thickness, 0.005f, RenderData::INSTANCED, -depth));
+			//glm::mat4 viewMatrix = camManager->GetCurrentCamera()->GetViewMatrix();
+
+			//// Transform the world position to camera space
+			//glm::vec4 cameraSpacePosition = viewMatrix * glm::vec4(translation, 1.0f);
+
+			//// The depth is the z-component of the camera space position
+			//float depth = cameraSpacePosition.z;
+
+			//if (m_Parent->HasComponent<ParentComponent>(entityId))
+			//{
+			//	auto& parentComp = m_Parent->GetComponent<ParentComponent>(entityId);
+
+			//	TransformComponent& parentTransform = m_Parent->GetComponent<TransformComponent>(parentComp.m_Parent);
+
+			//	translation = (parentTransform.transformMatrix * glm::vec4(translation, 1.0f));
+			//}
+
+			//translation += camManager->GetCurrentCamera()->GetCameraType() == Camera::PERSPECTIVE ?
+			//	(glm::vec3(bc2d.m_Offset, transform.translation.z + transform.scale.z * 0.5f + 1.0f)) :
+			//	(glm::vec3(bc2d.m_Offset, transform.translation.z + 1.0f));
+
+			//glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), translation);
+			//// Calculate rotation matrix (assuming Euler angles in radians)
+			//glm::mat4 rotationMatrix = glm::toMat4(glm::quat(glm::radians(glm::vec3(0, 0, rot))));
+
+			//glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(bc2d.m_Scale, 1.0f));
+
+			//glm::mat4 matrix = translationMatrix * rotationMatrix * scaleMatrix;
+
+
+			///*		matrix, meshManager->Get("Quad"), "", glm::vec4(0, 1, 0, 1), "",
+			//			0, entityId, 0.05f, 0.005f, RenderData::INSTANCED)*/
+			//			//model, mesh, spritesrc, tint, shadername, frameindex, entity
+			//renderer->AddDebugRenderCall(std::make_unique<ElementData>(matrix, meshManager->Get("Quad"), nullptr, m_Color, "", 0,
+			//	entityId, m_Thickness, 0.005f, RenderData::INSTANCED, -depth));
 		}
 	}
 
@@ -141,7 +141,7 @@ namespace NULLENGINE
 
 	void BoxCollider2DSystem::RegisterToScripAPI(sol::state& lua)
 	{
-		lua.new_usertype<BoxCollider2DComponent>
+	/*	lua.new_usertype<BoxCollider2DComponent>
 			(
 				"BoxCollider2D",
 				sol::no_constructor,
@@ -208,29 +208,57 @@ namespace NULLENGINE
 						}
 					}
 				)
-			);
+			);*/
 	}
 
 
 	void BoxCollider2DSystem::CreateBoxCollider2DComponent(void* component, const nlohmann::json& json)
 	{
-
-		//NComponentFactory* componentFactory = NComponentFactory::Instance();
-
 		auto* comp = static_cast<BoxCollider2DComponent*>(component);
 		JsonReader jsonWrapper(json);
 
-		if (!jsonWrapper.Empty())
+		if (jsonWrapper.Empty() || !json.contains("colliders") || !json["colliders"].is_array())
+			return;
+
+
+
+		const auto& colliderArray = json["colliders"];
+
+		comp->colliderCount = 0;
+
+		for (const auto& entry : colliderArray)
 		{
-			comp->m_Offset = jsonWrapper.GetVec2("offset", { 0.0f, 0.0f });
-			comp->m_Scale = jsonWrapper.GetVec2("scale", { 50.0f, 50.0f });
-			comp->m_Density = jsonWrapper.GetFloat("density", 1.0f);
-			comp->m_Friction = jsonWrapper.GetFloat("friction", 0.5f);
-			comp->m_Restitution = jsonWrapper.GetFloat("restitution", 1.0f);
-			comp->m_RestitutionThreshold = jsonWrapper.GetFloat("restitutionThreshold", 0.5f);
+			if (comp->colliderCount >= MAX_COLLIDERS)
+				break;
+
+			BoxCollider2D box;
+			JsonReader entryReader(entry);
+
+			box.offset = entryReader.GetVec2("offset", { 0.0f, 0.0f });
+			box.size = entryReader.GetVec2("size", { 50.0f, 50.0f });
+			box.density = entryReader.GetFloat("density", 1.0f);
+			box.friction = entryReader.GetFloat("friction", 0.5f);
+			box.restitution = entryReader.GetFloat("restitution", 0.0f);
+			box.restitutionThreshold = entryReader.GetFloat("restitutionThreshold", 0.5f);
+
+			const auto& filterJson = entry.contains("filter") ? entry["filter"] : nlohmann::json::object();
+			box.filter.categoryBits = JsonReader(filterJson).GetUint16("categoryBits", 0x0001);
+			box.filter.maskBits = JsonReader(filterJson).GetUint16("maskBits", 0xFFFF);
+			box.filter.groupIndex = JsonReader(filterJson).GetInt16("groupIndex", 0);
+
+			comp->colliders[comp->colliderCount++] = box;
 		}
-		//componentFactory->AddOrUpdate<BoxCollider2DComponent>(id, comp, registry, comp->m_Offset, comp->m_Scale, comp->m_Density, comp->m_Friction, comp->m_Restitution, comp->m_RestitutionThreshold);
+
+
+
+		ComponentFlagSet flags;
+		flags.Set(ComponentFlags_Enabled);
+		flags.Set(ComponentFlags_Serialized);
+
+		comp->componentFlags.m_Flags = jsonWrapper.GetUInt8("ComponentFlags", flags.m_Flags);
+
 	}
+
 
 	void BoxCollider2DSystem::AddBoxCollider2DComponent(void* component, NRegistry* registry, EntityID id)
 	{
@@ -238,24 +266,42 @@ namespace NULLENGINE
 
 		auto* comp = static_cast<BoxCollider2DComponent*>(component);
 
-		componentFactory->AddOrUpdate<BoxCollider2DComponent>(id, comp, registry, comp->m_Offset, comp->m_Scale, comp->m_Density, comp->m_Friction, comp->m_Restitution, comp->m_RestitutionThreshold);
+		componentFactory->AddOrUpdate<BoxCollider2DComponent>(id, comp, registry, comp->colliders, comp->colliderCount, comp->runtimeBodyIndex, comp->componentFlags);
 	}
 
-	JSON BoxCollider2DSystem::WriteBoxCollider2DComponent(const void* component)
+	nlohmann::json BoxCollider2DSystem::WriteBoxCollider2DComponent(const void* component)
 	{
 		nlohmann::json json;
+		auto& comp = *static_cast<const BoxCollider2DComponent*>(component);
 
-		auto& collider = *static_cast<const BoxCollider2DComponent*>(component);
+		json["BoxCollider2D"]["colliders"] = nlohmann::json::array();
 
-		json["BoxCollider2D"]["offset"] = { collider.m_Offset.x, collider.m_Offset.y };
-		json["BoxCollider2D"]["scale"] = { collider.m_Scale.x, collider.m_Scale.y };
-		json["BoxCollider2D"]["density"] = collider.m_Density;
-		json["BoxCollider2D"]["friction"] = collider.m_Friction;
-		json["BoxCollider2D"]["restitution"] = collider.m_Restitution;
-		json["BoxCollider2D"]["restitutionThreshold"] = collider.m_RestitutionThreshold;
+		for (uint8_t i = 0; i < comp.colliderCount; ++i)
+		{
+			const BoxCollider2D& box = comp.colliders[i];
+
+			nlohmann::json colliderJson;
+			colliderJson["offset"] = { box.offset.x, box.offset.y };
+			colliderJson["size"] = { box.size.x, box.size.y };
+			colliderJson["density"] = box.density;
+			colliderJson["friction"] = box.friction;
+			colliderJson["restitution"] = box.restitution;
+			colliderJson["restitutionThreshold"] = box.restitutionThreshold;
+
+			colliderJson["filter"] = {
+				{ "categoryBits", box.filter.categoryBits },
+				{ "maskBits", box.filter.maskBits },
+				{ "groupIndex", box.filter.groupIndex }
+			};
+
+			json["BoxCollider2D"]["colliders"].push_back(colliderJson);
+		}
+		// Add component flags
+		json["BoxCollider2D"]["ComponentFlags"] = comp.componentFlags.m_Flags;
 
 		return json;
 	}
+
 
 	JSON BoxCollider2DSystem::DiffBoxCollider2DComponent(const void* base, const void* modified)
 	{
@@ -263,28 +309,31 @@ namespace NULLENGINE
 		auto* a = static_cast<const BoxCollider2DComponent*>(base);
 
 		JSON diff;
-		JSON colliderJson;
+		//JSON colliderJson;
 
-		if (a->m_Offset != b->m_Offset)
-			colliderJson["offset"] = { b->m_Offset.x, b->m_Offset.y };
+		//if (a->m_Offset != b->m_Offset)
+		//	colliderJson["offset"] = { b->m_Offset.x, b->m_Offset.y };
 
-		if (a->m_Scale != b->m_Scale)
-			colliderJson["scale"] = { b->m_Scale.x, b->m_Scale.y };
+		//if (a->m_Scale != b->m_Scale)
+		//	colliderJson["scale"] = { b->m_Scale.x, b->m_Scale.y };
 
-		if (a->m_Density != b->m_Density)
-			colliderJson["density"] = b->m_Density;
+		//if (a->m_Density != b->m_Density)
+		//	colliderJson["density"] = b->m_Density;
 
-		if (a->m_Friction != b->m_Friction)
-			colliderJson["friction"] = b->m_Friction;
+		//if (a->m_Friction != b->m_Friction)
+		//	colliderJson["friction"] = b->m_Friction;
 
-		if (a->m_Restitution != b->m_Restitution)
-			colliderJson["restitution"] = b->m_Restitution;
+		//if (a->m_Restitution != b->m_Restitution)
+		//	colliderJson["restitution"] = b->m_Restitution;
 
-		if (a->m_RestitutionThreshold != b->m_RestitutionThreshold)
-			colliderJson["restitutionThreshold"] = b->m_RestitutionThreshold;
+		//if (a->m_RestitutionThreshold != b->m_RestitutionThreshold)
+		//	colliderJson["restitutionThreshold"] = b->m_RestitutionThreshold;
 
-		if (!colliderJson.empty())
-			diff["BoxCollider2D"] = colliderJson;
+		//if (a->componentFlags.m_Flags != b->componentFlags.m_Flags)
+		//	diff["ComponentFlags"] = b->componentFlags.m_Flags;
+
+		//if (!colliderJson.empty())
+		//	diff["BoxCollider2D"] = colliderJson;
 
 		return diff;
 	}
@@ -292,54 +341,54 @@ namespace NULLENGINE
 
 	void BoxCollider2DSystem::ViewBoxCollider2DComponent(Entity& entity)
 	{
-		BoxCollider2DComponent& bc2d = entity.Get<BoxCollider2DComponent>();
+		//BoxCollider2DComponent& bc2d = entity.Get<BoxCollider2DComponent>();
 
-		if (bc2d.m_RuntimeFixture)
-		{
+		//if (bc2d.m_RuntimeFixture)
+		//{
 
-			if (ImGui::DragFloat2("Offset", glm::value_ptr(bc2d.m_Offset), 0.5f))
-			{
-				auto scale = PhysicsSystem::PixelsToMeters(bc2d.m_Scale.x / 2, bc2d.m_Scale.y / 2);
-				auto offset = PhysicsSystem::PixelsToMeters(bc2d.m_Offset.x, bc2d.m_Offset.y);
-				glm::vec3 childOffset(0.0f);
+		//	if (ImGui::DragFloat2("Offset", glm::value_ptr(bc2d.m_Offset), 0.5f))
+		//	{
+		//		auto scale = PhysicsSystem::PixelsToMeters(bc2d.m_Scale.x / 2, bc2d.m_Scale.y / 2);
+		//		auto offset = PhysicsSystem::PixelsToMeters(bc2d.m_Offset.x, bc2d.m_Offset.y);
+		//		glm::vec3 childOffset(0.0f);
 
-				CalculateOffset(childOffset, entity);
+		//		CalculateOffset(childOffset, entity);
 
-				auto childWorldPositionMeters = PhysicsSystem::PixelsToMeters(childOffset.x, childOffset.y);
+		//		auto childWorldPositionMeters = PhysicsSystem::PixelsToMeters(childOffset.x, childOffset.y);
 
-				// Combine the child’s world position and the collider’s local offset
-				b2Vec2 finalOffset(childWorldPositionMeters.x + offset.x,
-					childWorldPositionMeters.y + offset.y);
+		//		// Combine the child’s world position and the collider’s local offset
+		//		b2Vec2 finalOffset(childWorldPositionMeters.x + offset.x,
+		//			childWorldPositionMeters.y + offset.y);
 
-				dynamic_cast<b2PolygonShape*>(bc2d.m_RuntimeFixture->GetShape())->SetAsBox(scale.x, scale.y, b2Vec2(finalOffset.x, finalOffset.y), 0.0f);
+		//		dynamic_cast<b2PolygonShape*>(bc2d.m_RuntimeFixture->GetShape())->SetAsBox(scale.x, scale.y, b2Vec2(finalOffset.x, finalOffset.y), 0.0f);
 
-			}
+		//	}
 
-			if (ImGui::DragFloat2("Scale", glm::value_ptr(bc2d.m_Scale), 0.5f))
-			{
-				auto scale = PhysicsSystem::PixelsToMeters(bc2d.m_Scale.x / 2, bc2d.m_Scale.y / 2);
+		//	if (ImGui::DragFloat2("Scale", glm::value_ptr(bc2d.m_Scale), 0.5f))
+		//	{
+		//		auto scale = PhysicsSystem::PixelsToMeters(bc2d.m_Scale.x / 2, bc2d.m_Scale.y / 2);
 
-				auto* shape = dynamic_cast<b2PolygonShape*>(bc2d.m_RuntimeFixture->GetShape());
+		//		auto* shape = dynamic_cast<b2PolygonShape*>(bc2d.m_RuntimeFixture->GetShape());
 
-				shape->SetAsBox(scale.x, scale.y, shape->m_centroid, 0.0f);
-			}
-			if (ImGui::DragFloat("Density", &bc2d.m_Density, 0.5f))
-				bc2d.m_RuntimeFixture->SetDensity(bc2d.m_Density);
+		//		shape->SetAsBox(scale.x, scale.y, shape->m_centroid, 0.0f);
+		//	}
+		//	if (ImGui::DragFloat("Density", &bc2d.m_Density, 0.5f))
+		//		bc2d.m_RuntimeFixture->SetDensity(bc2d.m_Density);
 
-			if (ImGui::DragFloat("Friction", &bc2d.m_Friction, 0.5f, 0, 1.0f))
-				bc2d.m_RuntimeFixture->SetFriction(bc2d.m_Friction);
+		//	if (ImGui::DragFloat("Friction", &bc2d.m_Friction, 0.5f, 0, 1.0f))
+		//		bc2d.m_RuntimeFixture->SetFriction(bc2d.m_Friction);
 
-			if (ImGui::DragFloat("Resitution", &bc2d.m_Restitution, 0.5f))
-				bc2d.m_RuntimeFixture->SetRestitution(bc2d.m_Restitution);
+		//	if (ImGui::DragFloat("Resitution", &bc2d.m_Restitution, 0.5f))
+		//		bc2d.m_RuntimeFixture->SetRestitution(bc2d.m_Restitution);
 
-			if (ImGui::DragFloat("Resitution Threshold", &bc2d.m_RestitutionThreshold, 0.5f))
-				bc2d.m_RuntimeFixture->SetRestitutionThreshold(bc2d.m_RestitutionThreshold);
+		//	if (ImGui::DragFloat("Resitution Threshold", &bc2d.m_RestitutionThreshold, 0.5f))
+		//		bc2d.m_RuntimeFixture->SetRestitutionThreshold(bc2d.m_RestitutionThreshold);
 
-		}
-		else
-		{
-			ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Warning: Requires Rigidbody2D component to enable physics");
-		}
+		//}
+		//else
+		//{
+		//	ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Warning: Requires Rigidbody2D component to enable physics");
+		//}
 	}
 
 	void BoxCollider2DSystem::CalculateOffset(glm::vec3& offset, Entity& entity)
@@ -357,12 +406,12 @@ namespace NULLENGINE
 				auto& parentTransform = parent.Get<TransformComponent>();
 				auto& transform = entity.Get<TransformComponent>();
 
-				auto rotation = transform.m_Rotation;
-				auto translation = transform.m_Translation;
+				auto rotation = transform.rotation;
+				auto translation = transform.translation;
 
 				PhysicsSystem::LocalToWorldPos(transform, translation, rotation);
 
-				offset = translation - parentTransform.m_Translation;
+				offset = translation - parentTransform.translation;
 			}
 			else
 			{
@@ -384,12 +433,12 @@ namespace NULLENGINE
 				auto& parentTransform = grandParent.Get<TransformComponent>();
 				auto& transform = entity.Get<TransformComponent>();
 
-				auto rotation = transform.m_Rotation;
-				auto translation = transform.m_Translation;
+				auto rotation = transform.rotation;
+				auto translation = transform.translation;
 
 				PhysicsSystem::LocalToWorldPos(transform, translation, rotation);
 
-				offset = translation - parentTransform.m_Translation;
+				offset = translation - parentTransform.translation;
 			}
 			else
 			{

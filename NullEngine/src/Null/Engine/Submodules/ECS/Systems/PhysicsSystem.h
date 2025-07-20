@@ -30,7 +30,11 @@
 // Private structures													        //
 //******************************************************************************//
 
-class b2World;
+struct b2World;
+struct b2Body;
+struct b2Fixture;
+struct b2FixtureDef;
+struct b2BodyDef;
 
 namespace NULLENGINE
 {
@@ -72,8 +76,33 @@ namespace NULLENGINE
 		static void LocalToWorldPos(TransformComponent& transform, glm::vec3& translation, glm::vec3& rotation);
 		static void LocalToWorldPos(TransformComponent& transform, glm::vec3& translation, glm::vec3& rotation, glm::vec3& scale);
 		static void WorldToLocalPos(TransformComponent& transform, TransformComponent& parentTransform);
+
+		size_t AddActiveBody(b2Body* body);	
+		size_t AddActiveFixture(b2Fixture* fixture);
+
+		void RemoveActiveBody(uint32_t index);
+		void RemoveActiveFixture(uint32_t index, b2Body* body);
+
+		b2Body* GetActiveBody(uint32_t index) const;
+		b2Fixture* GetActiveFixture(uint32_t index) const;
+
+		b2Body* CreateBody(const b2BodyDef& bodyDef);
+		b2Fixture* CreateFixture(b2Body* body, const b2FixtureDef& fixtureDef);
+
+		//void RegisterB2Body(b2Body* body);
 	private:
 		b2World* m_PhysicsWorld;
+
+		std::vector<b2Body*> m_ActiveBodies;
+		std::vector<b2Fixture*> m_ActiveFixtures;
+		std::vector<uint32_t> m_FreeFixtureIDs;
+		std::vector<uint32_t> m_FreeBodyIDs;
+
+
+	/*	uint32_t CreateFixture(b2Body* body, const b2FixtureDef& fixtureDef);
+		
+
+		uint32_t CreateBody(const Rigidbody2DComponent& rb2d, EntityID entID);*/
 
 		static void CreateRigidbody2DComponent(void* component, const nlohmann::json& json);
 		static void AddRigidbody2DComponent(void* component, NRegistry* registry, EntityID id);
@@ -83,23 +112,21 @@ namespace NULLENGINE
 
 
 		bool InitializePhysics(EntityID entityID, NRegistry* registry);
-		bool InitializeColliders(EntityID entityID, NRegistry* registry, Rigidbody2DComponent& rb2d);
-		bool InitializeChildrenColliders(EntityID entityID, NRegistry* registry, Rigidbody2DComponent& rb2d, TransformComponent& parentTransform);
+		bool DestroyPhysics(EntityID entityID, NRegistry* registry);
+
+
 		//bool HasRequiredComponents(NRegistry* registry, EntityID entityID);
 		//bool HandleParents(NRegistry* registry, EntityID entityID);
 		bool OnEntityCreated(const EntityCreatedEvent& e);
 		bool OnEntityDestroyed(const EntityDestroyedEvent& e);
 		bool OnEntityComponentRemoved(const EntityRemoveComponentEvent& e);
-		bool OnEntityParented(const EntityParentedEvent& e);
-		bool OnEntitySeparated(const EntitySeparatedEvent& e);
+		//bool OnEntityParented(const EntityParentedEvent& e);
+		//bool OnEntitySeparated(const EntitySeparatedEvent& e);
 		bool OnEntityComponentAdded(const EntityAddComponentEvent& e);
 		bool OnSceneSwitched(const SceneSwitchEvent& e);
 		bool OnSceneStart(const InitializeBox2DEvent& e);
 
 
-
-		void HandleParenting_Rec(NSceneManager* sceneManager, Entity& parent, Entity& child);
-		void HandleSeparation_Rec(NSceneManager* sceneManager, Entity& parent, Entity& child);
 		float m_Thickness = 0.55f;
 		glm::vec4 m_Color = glm::vec4(0, 0, 1, 1);
 

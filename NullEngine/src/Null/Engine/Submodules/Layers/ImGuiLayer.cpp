@@ -461,7 +461,7 @@ namespace NULLENGINE
 			{
 				TransformComponent& transform = entity.Get<TransformComponent>();
 
-				glm::mat4 transformMatrix = transform.m_TransformMatrix;
+				glm::mat4 transformMatrix = transform.transformMatrix;
 
 				bool snap = Input::KeyDown(GLFW_KEY_LEFT_CONTROL);
 				float snapValue = 0.5f;
@@ -487,7 +487,7 @@ namespace NULLENGINE
 					if ((m_GuizmoType & ImGuizmo::TRANSLATE) != 0)
 					{
 
-						if (glm::any(glm::epsilonNotEqual(transform.m_Translation, translation, epsilon)))
+						if (glm::any(glm::epsilonNotEqual(transform.translation, translation, epsilon)))
 						{
 							if (entity.Has<ParentComponent>())
 							{
@@ -495,27 +495,27 @@ namespace NULLENGINE
 								// Get the parent's world transform and update the child
 								TransformComponent& parentTransform = entity.GetFromEntity<TransformComponent>(parentComp.m_Parent);
 
-								glm::mat4 inverseParentTransform = glm::inverse(parentTransform.m_TransformMatrix);
+								glm::mat4 inverseParentTransform = glm::inverse(parentTransform.transformMatrix);
 
 								auto localTranslation = glm::vec3((inverseParentTransform * glm::vec4(translation, 1.0f)));
 
-								if (glm::any(glm::epsilonNotEqual(transform.m_Translation, localTranslation, epsilon)))
+								if (glm::any(glm::epsilonNotEqual(transform.translation, localTranslation, epsilon)))
 								{
-									transform.m_Translation = localTranslation;
+									transform.translation = localTranslation;
 								}
 							}
 							else
 							{
-								transform.m_Translation = translation;
+								transform.translation = translation;
 							}
 
-							transform.m_Flags.Set(TransformFlags_DirectManipulation);
+							transform.flags.Set(TransformFlags_DirectManipulation);
 						}
 					}
 
 					if ((m_GuizmoType & ImGuizmo::ROTATE) != 0)
 					{
-						if (glm::any(glm::epsilonNotEqual(transform.m_Rotation, rotation, epsilon)))
+						if (glm::any(glm::epsilonNotEqual(transform.rotation, rotation, epsilon)))
 						{
 
 							if (entity.Has<ParentComponent>())
@@ -524,7 +524,7 @@ namespace NULLENGINE
 								// Get the parent's world transform and update the child
 								TransformComponent& parentTransform = entity.GetFromEntity<TransformComponent>(parentComp.m_Parent);
 								// Extract parent rotation as Euler angles (assume in degrees)
-								glm::vec3 parentRotationEuler = parentTransform.m_Rotation; // Euler angles in degrees
+								glm::vec3 parentRotationEuler = parentTransform.rotation; // Euler angles in degrees
 
 								// Convert parent rotation to quaternion
 								glm::vec3 parentRotationRadians = glm::radians(parentRotationEuler);
@@ -541,31 +541,31 @@ namespace NULLENGINE
 								// Convert local rotation back to Euler angles
 								glm::vec3 localRotationEuler = glm::degrees(glm::eulerAngles(localRotation));
 
-								glm::vec3 localdeltaRotation = localRotationEuler - transform.m_Rotation;
+								glm::vec3 localdeltaRotation = localRotationEuler - transform.rotation;
 
 								if (glm::length(localdeltaRotation) > epsilon)
 								{
-									transform.m_Rotation += localdeltaRotation;
+									transform.rotation += localdeltaRotation;
 								}
 							}
 							else
 							{
-								glm::vec3 deltaRotation = glm::degrees(rotation) - transform.m_Rotation;
+								glm::vec3 deltaRotation = glm::degrees(rotation) - transform.rotation;
 
 								if (glm::length(deltaRotation) > epsilon)
 								{
-									transform.m_Rotation += deltaRotation;
+									transform.rotation += deltaRotation;
 								}
 							}  
 						}
 
-						transform.m_Flags.Set(TransformFlags_DirectManipulation);
+						transform.flags.Set(TransformFlags_DirectManipulation);
 					}
 
 					if ((m_GuizmoType & ImGuizmo::SCALE) != 0)
 					{
 
-						if (glm::any(glm::epsilonNotEqual(transform.m_Scale, scale, epsilon)))
+						if (glm::any(glm::epsilonNotEqual(transform.scale, scale, epsilon)))
 						{
 							if (entity.Has<ParentComponent>())
 							{
@@ -574,21 +574,21 @@ namespace NULLENGINE
 								TransformComponent& parentTransform = entity.GetFromEntity<TransformComponent>(parentComp.m_Parent);
 
 
-								auto localScale = scale / parentTransform.m_Scale;
+								auto localScale = scale / parentTransform.scale;
 
-								if (glm::any(glm::epsilonNotEqual(transform.m_Scale, localScale, epsilon)))
+								if (glm::any(glm::epsilonNotEqual(transform.scale, localScale, epsilon)))
 								{
-									transform.m_Scale = localScale;
+									transform.scale = localScale;
 								}
 							}
 							else
 							{
-								transform.m_Scale = scale;
+								transform.scale = scale;
 							}
 						}
 					}
 
-					transform.m_Flags.Set(TransformFlags_Dirty);
+					transform.flags.Set(TransformFlags_Dirty);
 
 				}
 			}

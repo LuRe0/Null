@@ -78,7 +78,7 @@ namespace NULLENGINE
 			//if (!camManager->IsWithinFrustum(transform.m_Translation, (transform.m_Scale/2.0f)))
 			//	continue;
 
-			glm::vec4 worldPosition = transform.m_TransformMatrix * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+			glm::vec4 worldPosition = transform.transformMatrix * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
 			// Transform the world position to camera space
 			glm::vec4 cameraSpacePosition = viewMatrix * worldPosition;
@@ -93,12 +93,12 @@ namespace NULLENGINE
 
 			if (sprite.m_Color.a < 1.0f)
 			{
-				renderer->AddRenderCall(RenderCommandTypes::Transparent, std::make_unique<ElementData>(transform.m_TransformMatrix, mesh, src, sprite.m_Color, "",
+				renderer->AddRenderCall(RenderCommandTypes::Transparent, std::make_unique<ElementData>(transform.transformMatrix, mesh, src, sprite.m_Color, "",
 					sprite.m_FrameIndex, entityId, sprite.m_Thickness, sprite.m_Fade, RenderData::INSTANCED, -depth));
 			}
 			else
 			{
-				renderer->AddRenderCall(RenderCommandTypes::Opaque, std::make_unique<ElementData>(transform.m_TransformMatrix, mesh, src, sprite.m_Color, "",
+				renderer->AddRenderCall(RenderCommandTypes::Opaque, std::make_unique<ElementData>(transform.transformMatrix, mesh, src, sprite.m_Color, "",
 					sprite.m_FrameIndex, entityId, sprite.m_Thickness, sprite.m_Fade, RenderData::INSTANCED, -depth));
 			}
 
@@ -106,7 +106,7 @@ namespace NULLENGINE
 			SpriteSource* selectedSrc = emissiveSrc != nullptr ? emissiveSrc : src;
 			if (sprite.m_EmissiveStrength > 0.0f)
 			{
-				glm::mat4 emissiveTransform = transform.m_TransformMatrix * glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.01f));
+				glm::mat4 emissiveTransform = transform.transformMatrix * glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.01f));
 				glm::vec4 emissiveTint = sprite.m_EmissiveColor * sprite.m_EmissiveStrength;
 				renderer->AddRenderCall(RenderCommandTypes::Emissive, std::make_unique<ElementData>(
 					emissiveTransform,

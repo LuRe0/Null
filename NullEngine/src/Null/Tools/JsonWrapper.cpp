@@ -63,7 +63,21 @@ namespace NULLENGINE
         return static_cast<uint8_t>(data[key].get<uint32_t>());
     }
 
+    uint16_t JsonReader::GetUint16(const std::string& key, uint16_t defaultValue = 0) const
+    {
+        if (!data.contains(key) || !data[key].is_number_unsigned())
+            return defaultValue;
 
+        return static_cast<uint16_t>(data[key].get<uint32_t>());
+    }
+
+    int16_t JsonReader::GetInt16(const std::string& key, int16_t defaultValue = 0) const
+    {
+        if (!data.contains(key) || !data[key].is_number_integer())
+            return defaultValue;
+
+        return static_cast<int16_t>(data[key].get<int32_t>());
+    }
     float JsonReader::GetFloat(const std::string& key, float defaultValue) const {
         return data.value(key, defaultValue);
     }

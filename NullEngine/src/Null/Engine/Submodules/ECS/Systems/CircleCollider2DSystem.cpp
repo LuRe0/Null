@@ -26,6 +26,8 @@
 #include "../Entities/Entity.h"
 #include "../../../Modules/NSceneManager.h"
 #include "../../Scene.h"
+#include "../../../../Tools/ImGuiH.h"
+
 //******************************************************************************//
 // Public Variables															    //
 //******************************************************************************//
@@ -60,6 +62,25 @@ namespace NULLENGINE
 	{
 		ISystem::Init();
 
+
+		NEventManager* eventManager = NEventManager::Instance();
+
+		SUBSCRIBE_EVENT(EntityCreatedEvent, &CircleCollider2DSystem::OnEntityCreated, eventManager, EventPriority::Low);
+		//SUBSCRIBE_EVENT(EntityDestroyedEvent, &CircleCollider2DSystem::OnEntityDestroyed, eventManager, EventPriority::High);
+		SUBSCRIBE_EVENT(EntityRemoveComponentEvent, &CircleCollider2DSystem::OnEntityComponentRemoved, eventManager, EventPriority::High);
+		SUBSCRIBE_EVENT(EntityAddComponentEvent, &CircleCollider2DSystem::OnEntityComponentAdded, eventManager, EventPriority::High);
+		//SUBSCRIBE_EVENT(SceneSwitchEvent, &CircleCollider2DSystem::OnSceneSwitched, eventManager, EventPriority::High);
+		SUBSCRIBE_EVENT(InitializeBox2DColliderEvent, &CircleCollider2DSystem::OnInitializeBox2DStart, eventManager, EventPriority::High);
+		//SUBSCRIBE_EVENT(EntityParentedEvent, &PhysicsSystem::OnEntityParented, eventManager, EventPriority::High);
+		//SUBSCRIBE_EVENT(EntitySeparatedEvent, &PhysicsSystem::OnEntitySeparated, eventManager, EventPriority::High);
+
+		NRegistry* registry = NRegistry::Instance();
+
+
+		for (const auto entityId : GetSystemEntities())
+		{
+			eventManager->QueueEvent(std::make_unique<InitializeBox2DColliderEvent>(entityId));
+		}
 	}
 
 	void CircleCollider2DSystem::Update(float dt)
@@ -90,48 +111,59 @@ namespace NULLENGINE
 			TransformComponent& transform = m_Parent->GetComponent<TransformComponent>(entityId);
 			CircleCollider2DComponent& cc2D = m_Parent->GetComponent<CircleCollider2DComponent>(entityId);
 
-			if (!cc2D.m_RuntimeFixture)
+			if (!cc2D.componentFlags.IsSet(ComponentFlags_Enabled))
 				continue;
 
-			auto translation = camManager->GetCurrentCamera()->GetCameraType() == Camera::PERSPECTIVE ?
-				(transform.m_Translation + glm::vec3(cc2D.m_Offset, transform.m_Translation.z + transform.m_Scale.z + 0.50f)) :
-				(transform.m_Translation + glm::vec3(cc2D.m_Offset, transform.m_Translation.z + 0.50f));
+			b2Body* body = PhysicsSystem::Instance()->GetActiveBody(cc2D.runtimeBodyIndex);
 
-			auto rot = cc2D.m_RuntimeFixture->GetBody()->GetAngle();
+			if (!body)
+				continue;
 
-			
-			glm::mat4 viewMatrix = camManager->GetCurrentCamera()->GetViewMatrix();
-
-			// Transform the world position to camera space
-			glm::vec4 cameraSpacePosition = viewMatrix * glm::vec4(translation, 1.0f);
-
-			// The depth is the z-component of the camera space position
-			float depth = cameraSpacePosition.z;
-
-
-			if (m_Parent->HasComponent<ParentComponent>(entityId))
+			for (size_t i = 0; i < cc2D.colliderCount; i++)
 			{
-				auto& parentComp = m_Parent->GetComponent<ParentComponent>(entityId);
+				const CircleCollider2D& collider = cc2D.colliders[i];
 
-				TransformComponent& parentTransform = m_Parent->GetComponent<TransformComponent>(parentComp.m_Parent);
+				auto translation = camManager->GetCurrentCamera()->GetCameraType() == Camera::PERSPECTIVE ?
+					(transform.translation + glm::vec3(collider.offset, transform.translation.z + transform.scale.z + 0.50f)) :
+					(transform.translation + glm::vec3(collider.offset, transform.translation.z + 0.50f));
 
-				translation = (parentTransform.m_TransformMatrix * glm::vec4(translation, 1.0f));
+				auto rot = body->GetAngle();
+
+
+				glm::mat4 viewMatrix = camManager->GetCurrentCamera()->GetViewMatrix();
+
+				// Transform the world position to camera space
+				glm::vec4 cameraSpacePosition = viewMatrix * glm::vec4(translation, 1.0f);
+
+				// The depth is the z-component of the camera space position
+				float depth = cameraSpacePosition.z;
+
+
+				if (m_Parent->HasComponent<ParentComponent>(entityId))
+				{
+					auto& parentComp = m_Parent->GetComponent<ParentComponent>(entityId);
+
+					TransformComponent& parentTransform = m_Parent->GetComponent<TransformComponent>(parentComp.m_Parent);
+
+					translation = (parentTransform.transformMatrix * glm::vec4(translation, 1.0f));
+				}
+
+				glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), translation);
+				// Calculate rotation matrix (assuming Euler angles in radians)
+				glm::mat4 rotationMatrix = glm::toMat4(glm::quat(glm::radians(glm::vec3(0, 0, rot))));
+
+				glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(collider.radius, collider.radius, 1.0f));
+
+				glm::mat4 matrix = translationMatrix * rotationMatrix * scaleMatrix;
+
+
+				/*		matrix, meshManager->Get("Quad"), "", glm::vec4(0, 1, 0, 1), "",
+							0, entityId, 0.05f, 0.005f, RenderData::INSTANCED)*/
+							//model, mesh, spritesrc, tint, shadername, frameindex, entity
+				renderer->AddRenderCall(RenderCommandTypes::Debug, std::make_unique<ElementData>(matrix, meshManager->Get("Circle"), nullptr, m_Color, "", 0,
+					entityId, m_Thickness, 0.005f, RenderData::INSTANCED, -depth));
+
 			}
-
-			glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), translation);
-			// Calculate rotation matrix (assuming Euler angles in radians)
-			glm::mat4 rotationMatrix = glm::toMat4(glm::quat(glm::radians(glm::vec3(0, 0, rot))));
-
-			glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(cc2D.m_Radius, cc2D.m_Radius, 1.0f));
-
-			glm::mat4 matrix = translationMatrix * rotationMatrix * scaleMatrix;
-
-
-			/*		matrix, meshManager->Get("Quad"), "", glm::vec4(0, 1, 0, 1), "",
-						0, entityId, 0.05f, 0.005f, RenderData::INSTANCED)*/
-						//model, mesh, spritesrc, tint, shadername, frameindex, entity
-			renderer->AddDebugRenderCall(std::make_unique<ElementData>(matrix, meshManager->Get("Circle"), nullptr, m_Color, "", 0,
-				entityId, m_Thickness, 0.005f, RenderData::INSTANCED, -depth));
 		}
 	}
 
@@ -145,100 +177,172 @@ namespace NULLENGINE
 
 	void CircleCollider2DSystem::RegisterToScripAPI(sol::state& lua)
 	{
-		lua.new_usertype<CircleCollider2DComponent>
-			(
-				"BoxCollider2D",
-				sol::no_constructor,
-				"type_id", &Component<CircleCollider2DComponent>::GetID,
-				"offset", sol::readonly(&CircleCollider2DComponent::m_Offset),
-				"radius", sol::readonly(&CircleCollider2DComponent::m_Radius),
-				"set_offset", sol::overload(
-					[this](CircleCollider2DComponent& cc2d, float x, float y)
-					{
-						PhysicsSystem* physicsSys =PhysicsSystem::Instance();
+		//lua.new_usertype<CircleCollider2DComponent>
+		//	(
+		//		"BoxCollider2D",
+		//		sol::no_constructor,
+		//		"type_id", &Component<CircleCollider2DComponent>::GetID,
+		//		"offset", sol::readonly(&CircleCollider2DComponent::m_Offset),
+		//		"radius", sol::readonly(&CircleCollider2DComponent::m_Radius),
+		//		"set_offset", sol::overload(
+		//			[this](CircleCollider2DComponent& cc2d, float x, float y)
+		//			{
+		//				PhysicsSystem* physicsSys =PhysicsSystem::Instance();
 
-						cc2d.m_Offset = glm::vec2(x, y);
+		//				cc2d.m_Offset = glm::vec2(x, y);
 
-						if (cc2d.m_RuntimeFixture)
-						{
-							auto offset = physicsSys->PixelsToMeters(cc2d.m_Offset.x, cc2d.m_Offset.y);
-							dynamic_cast<b2CircleShape*>(cc2d.m_RuntimeFixture->GetShape())->m_p.Set(offset.x, offset.y);
-						}
-					},
-					[this](CircleCollider2DComponent& cc2d, glm::vec2 newOffset)
-					{
-						PhysicsSystem* physicsSys =PhysicsSystem::Instance();
+		//				if (cc2d.m_RuntimeFixture)
+		//				{
+		//					auto offset = physicsSys->PixelsToMeters(cc2d.m_Offset.x, cc2d.m_Offset.y);
+		//					dynamic_cast<b2CircleShape*>(cc2d.m_RuntimeFixture->GetShape())->m_p.Set(offset.x, offset.y);
+		//				}
+		//			},
+		//			[this](CircleCollider2DComponent& cc2d, glm::vec2 newOffset)
+		//			{
+		//				PhysicsSystem* physicsSys =PhysicsSystem::Instance();
 
-						cc2d.m_Offset = newOffset;
+		//				cc2d.m_Offset = newOffset;
 
-						if (cc2d.m_RuntimeFixture)
-						{
-							auto offset = physicsSys->PixelsToMeters(cc2d.m_Offset.x, cc2d.m_Offset.y);
-							dynamic_cast<b2CircleShape*>(cc2d.m_RuntimeFixture->GetShape())->m_p.Set(offset.x, offset.y);
-						}
-					}
-				),
-				"set_radius", [this](CircleCollider2DComponent& cc2d, float r)
-				{
-					PhysicsSystem* physicsSys =PhysicsSystem::Instance();
+		//				if (cc2d.m_RuntimeFixture)
+		//				{
+		//					auto offset = physicsSys->PixelsToMeters(cc2d.m_Offset.x, cc2d.m_Offset.y);
+		//					dynamic_cast<b2CircleShape*>(cc2d.m_RuntimeFixture->GetShape())->m_p.Set(offset.x, offset.y);
+		//				}
+		//			}
+		//		),
+		//		"set_radius", [this](CircleCollider2DComponent& cc2d, float r)
+		//		{
+		//			PhysicsSystem* physicsSys =PhysicsSystem::Instance();
 
-					cc2d.m_Radius = r;
+		//			cc2d.m_Radius = r;
 
-					if (cc2d.m_RuntimeFixture)
-					{
-						auto radius = physicsSys->PixelsToMeters(cc2d.m_Radius);
+		//			if (cc2d.m_RuntimeFixture)
+		//			{
+		//				auto radius = physicsSys->PixelsToMeters(cc2d.m_Radius);
 
-						dynamic_cast<b2CircleShape*>(cc2d.m_RuntimeFixture->GetShape())->m_radius = radius;
-					}
-				}
-		);
+		//				dynamic_cast<b2CircleShape*>(cc2d.m_RuntimeFixture->GetShape())->m_radius = radius;
+		//			}
+		//		}
+		//);
 	}
 
+
+	void CircleCollider2DSystem::AddCollider(CircleCollider2DComponent& collider)
+	{
+		CircleCollider2D circle;
+		auto* body = PhysicsSystem::Instance()->GetActiveBody(collider.runtimeBodyIndex);
+		auto* PhysicsSystem = PhysicsSystem::Instance();
+		if (!body)
+			return;
+
+		b2CircleShape circleShape;
+
+		auto offset = PhysicsSystem::PixelsToMeters(circle.offset.x, circle.offset.y);
+		auto radius = PhysicsSystem::PixelsToMeters(circle.radius);
+
+
+		circleShape.m_p.Set(offset.x, offset.y);
+		circleShape.m_radius = radius;
+
+		b2FixtureDef fixDef;
+
+		fixDef.shape = &circleShape;
+		fixDef.density = circle.density;
+		fixDef.friction = circle.friction;
+		fixDef.restitution = circle.restitution;
+		fixDef.restitutionThreshold = circle.restitutionThreshold;
+
+		circle.runtimeFixtureIndex = PhysicsSystem->AddActiveFixture(PhysicsSystem->CreateFixture(body, fixDef));
+
+		collider.colliders[collider.colliderCount++] = circle;
+	}
 
 	void CircleCollider2DSystem::CreateCircleCollider2DComponent(void* component, const nlohmann::json& json)
 	{
-		NComponentFactory* componentFactory = NComponentFactory::Instance();
-
 		auto* comp = static_cast<CircleCollider2DComponent*>(component);
 		JsonReader jsonWrapper(json);
 
-		if (!jsonWrapper.Empty())
+		if (jsonWrapper.Empty() || !json.contains("colliders") || !json["colliders"].is_array())
+			return;
+
+		const auto& colliderArray = json["colliders"];
+		comp->colliderCount = 0;
+
+		for (const auto& entry : colliderArray)
 		{
-			comp->m_Offset = jsonWrapper.GetVec2("offset", { 0.0f, 0.0f });
-			comp->m_Radius = jsonWrapper.GetFloat("radius", 50.0f);
-			comp->m_Density = jsonWrapper.GetFloat("density", 1.0f);
-			comp->m_Friction = jsonWrapper.GetFloat("friction", 0.5f);
-			comp->m_Restitution = jsonWrapper.GetFloat("restitution", 1.0f);
-			comp->m_RestitutionThreshold = jsonWrapper.GetFloat("restitutionThreshold", 0.5f);
+			if (comp->colliderCount >= MAX_COLLIDERS)
+				break;
+
+			CircleCollider2D circle;
+			JsonReader entryReader(entry);
+
+			circle.offset = entryReader.GetVec2("offset", { 0.0f, 0.0f });
+			circle.radius = entryReader.GetFloat("radius", 50.0f);
+			circle.density = entryReader.GetFloat("density", 1.0f);
+			circle.friction = entryReader.GetFloat("friction", 0.5f);
+			circle.restitution = entryReader.GetFloat("restitution", 0.0f);
+			circle.restitutionThreshold = entryReader.GetFloat("restitutionThreshold", 0.5f);
+
+			const auto& filterJson = entry.contains("filter") ? entry["filter"] : nlohmann::json::object();
+			circle.filter.categoryBits = JsonReader(filterJson).GetUint16("categoryBits", 0x0001);
+			circle.filter.maskBits = JsonReader(filterJson).GetUint16("maskBits", 0xFFFF);
+			circle.filter.groupIndex = JsonReader(filterJson).GetInt16("groupIndex", 0);
+
+			comp->colliders[comp->colliderCount++] = circle;
 		}
 
+
+		ComponentFlagSet flags;
+		flags.Set(ComponentFlags_Enabled);
+		flags.Set(ComponentFlags_Serialized);
+
+		comp->componentFlags.m_Flags = jsonWrapper.GetUInt8("ComponentFlags", flags.m_Flags);
 	}
+
 
 	void CircleCollider2DSystem::AddCircleCollider2DComponent(void* component, NRegistry* registry, EntityID id)
 	{
 		NComponentFactory* componentFactory = NComponentFactory::Instance();
 
 		auto* comp = static_cast<CircleCollider2DComponent*>(component);
-		componentFactory->AddOrUpdate<CircleCollider2DComponent>(id, comp, registry, comp->m_Offset, comp->m_Radius,
-			comp->m_Density, comp->m_Friction, comp->m_Restitution, comp->m_RestitutionThreshold);
+		componentFactory->AddOrUpdate<CircleCollider2DComponent>(id, comp, registry, comp->colliders, comp->colliderCount, comp->runtimeBodyIndex,
+			comp->componentFlags);
 	}
 
-	JSON CircleCollider2DSystem::WriteCircleCollider2DComponent(const void* component)
+	nlohmann::json CircleCollider2DSystem::WriteCircleCollider2DComponent(const void* component)
 	{
 		nlohmann::json json;
+		auto& comp = *static_cast<const CircleCollider2DComponent*>(component);
 
-		auto& collider = *static_cast<const CircleCollider2DComponent*>(component);
+		json["CircleCollider2D"]["colliders"] = nlohmann::json::array();
 
-		json["CircleCollider2D"]["offset"] = { collider.m_Offset.x, collider.m_Offset.y };
-		json["CircleCollider2D"]["radius"] = collider.m_Radius;
-		json["CircleCollider2D"]["density"] = collider.m_Density;
-		json["CircleCollider2D"]["friction"] = collider.m_Friction;
-		json["CircleCollider2D"]["restitution"] = collider.m_Restitution;
-		json["CircleCollider2D"]["restitutionThreshold"] = collider.m_RestitutionThreshold;
+		for (uint8_t i = 0; i < comp.colliderCount; ++i)
+		{
+			const CircleCollider2D& circle = comp.colliders[i];
+
+			nlohmann::json colliderJson;
+			colliderJson["offset"] = { circle.offset.x, circle.offset.y };
+			colliderJson["radius"] = circle.radius;
+			colliderJson["density"] = circle.density;
+			colliderJson["friction"] = circle.friction;
+			colliderJson["restitution"] = circle.restitution;
+			colliderJson["restitutionThreshold"] = circle.restitutionThreshold;
+
+			colliderJson["filter"] = {
+				{ "categoryBits", circle.filter.categoryBits },
+				{ "maskBits", circle.filter.maskBits },
+				{ "groupIndex", circle.filter.groupIndex }
+			};
+
+			json["CircleCollider2D"]["colliders"].push_back(colliderJson);
+		}
+
+		json["CircleCollider2D"]["ComponentFlags"] = comp.componentFlags.m_Flags;
+
 
 		return json;
-
 	}
+
 
 	JSON CircleCollider2DSystem::DiffCircleCollider2DComponent(const void* base, const void* modified)
 	{
@@ -248,26 +352,26 @@ namespace NULLENGINE
 		JSON diff;
 		JSON circleJson;
 
-		if (a->m_Offset != b->m_Offset)
-			circleJson["offset"] = { b->m_Offset.x, b->m_Offset.y };
+		//if (a->m_Offset != b->m_Offset)
+		//	circleJson["offset"] = { b->m_Offset.x, b->m_Offset.y };
 
-		if (a->m_Radius != b->m_Radius)
-			circleJson["radius"] = b->m_Radius;
+		//if (a->m_Radius != b->m_Radius)
+		//	circleJson["radius"] = b->m_Radius;
 
-		if (a->m_Density != b->m_Density)
-			circleJson["density"] = b->m_Density;
+		//if (a->m_Density != b->m_Density)
+		//	circleJson["density"] = b->m_Density;
 
-		if (a->m_Friction != b->m_Friction)
-			circleJson["friction"] = b->m_Friction;
+		//if (a->m_Friction != b->m_Friction)
+		//	circleJson["friction"] = b->m_Friction;
 
-		if (a->m_Restitution != b->m_Restitution)
-			circleJson["restitution"] = b->m_Restitution;
+		//if (a->m_Restitution != b->m_Restitution)
+		//	circleJson["restitution"] = b->m_Restitution;
 
-		if (a->m_RestitutionThreshold != b->m_RestitutionThreshold)
-			circleJson["restitutionThreshold"] = b->m_RestitutionThreshold;
+		//if (a->m_RestitutionThreshold != b->m_RestitutionThreshold)
+		//	circleJson["restitutionThreshold"] = b->m_RestitutionThreshold;
 
-		if (!circleJson.empty())
-			diff["CircleCollider2D"] = circleJson;
+		//if (!circleJson.empty())
+		//	diff["CircleCollider2D"] = circleJson;
 
 		return diff;
 	}
@@ -276,51 +380,232 @@ namespace NULLENGINE
 	void CircleCollider2DSystem::ViewCircleCollider2DComponent(Entity& entity)
 	{
 		CircleCollider2DComponent& cc2d = entity.Get<CircleCollider2DComponent>();
-		PhysicsSystem* physicsSys =PhysicsSystem::Instance();
+		PhysicsSystem* physicsSys = PhysicsSystem::Instance();
 
-		if (cc2d.m_RuntimeFixture)
+
+		uint8_t& flags = cc2d.componentFlags.m_Flags;
+		// Show collapsible header with enable checkbox and remove button, tied to the Enabled flag
+		auto [open, enabled, remove] = ImGuiH::CollapsingHeaderWithFlagCheckboxAndRemove("CircleCollider2D", flags, ComponentFlags_Enabled);
+
+		if (remove)
+		{
+			NEventManager::Instance()->QueueEvent(std::make_unique<EntityRemoveComponentEvent>(entity.GetID(), Component<CircleCollider2DComponent>::GetID()));
+		}
+
+		if (!open)
+			return;
+
+		if (!enabled)
+			ImGui::BeginDisabled();
+
+		for (uint8_t i = 0; i < cc2d.colliderCount; ++i)
+		{
+			CircleCollider2D& circle = cc2d.colliders[i];
+
+			if (!IsValidRuntimeIndex(circle.runtimeFixtureIndex))
+				continue;
+
+			b2Fixture* fixture = physicsSys->GetActiveFixture(circle.runtimeFixtureIndex);
+
+
+			if (fixture)
+			{
+			
+				auto [open, remove] = ImGuiH::CollapsingHeaderWithRemove("Circle Collider" + std::to_string(i));
+
+				if (remove)
+				{
+					auto* fixture = physicsSys->GetActiveFixture(circle.runtimeFixtureIndex);
+					if (fixture)
+					{
+						// Remove the fixture from the body
+						b2Body* body = physicsSys->GetActiveBody(cc2d.runtimeBodyIndex);
+						if (body)
+						{
+							body->DestroyFixture(fixture);
+						}
+					}
+					// Remove the collider from the component
+					cc2d.colliderCount--;
+					for (uint8_t j = i; j < cc2d.colliderCount; ++j)
+					{
+						cc2d.colliders[j] = cc2d.colliders[j + 1];
+					}
+				}
+
+				if (!open)
+					continue;
+
+				ImGui::PushID(i);
+				ImGui::Text("Collider %d", i + 1);
+				if (ImGui::DragFloat2("Offset", glm::value_ptr(circle.offset), 0.5f))
+				{
+					auto offset = physicsSys->PixelsToMeters(circle.offset.x, circle.offset.y);
+					glm::vec3 childOffset(0.0f);
+					CalculateOffset(childOffset, entity);
+					auto childWorldPositionMeters = PhysicsSystem::PixelsToMeters(childOffset.x, childOffset.y);
+					// Combine the child’s world position and the collider’s local offset
+					b2Vec2 finalOffset(childWorldPositionMeters.x + offset.x,
+						childWorldPositionMeters.y + offset.y);
+					dynamic_cast<b2CircleShape*>(fixture->GetShape())->m_p.Set(finalOffset.x, finalOffset.y);
+				}
+				if (ImGui::DragFloat("Radius", &circle.radius, 0.5f))
+				{
+					auto radius = PhysicsSystem::PixelsToMeters(circle.radius);
+					dynamic_cast<b2CircleShape*>(fixture->GetShape())->m_radius = radius;
+				}
+				if (ImGui::DragFloat("Density", &circle.density, 0.5f))
+					fixture->SetDensity(circle.density);
+				if (ImGui::DragFloat("Friction", &circle.friction, 0.5f, 0, 1.0f))
+					fixture->SetFriction(circle.friction);
+				if (ImGui::DragFloat("Restitution", &circle.restitution, 0.5f))
+					fixture->SetRestitution(circle.restitution);
+				if (ImGui::DragFloat("Restitution Threshold", &circle.restitutionThreshold, 0.5f))
+					fixture->SetRestitutionThreshold(circle.restitutionThreshold);
+				ImGui::PopID();
+
+
+				ImGui::TreePop();
+			}
+		}
+
+		ImVec2 cursorPos = ImGui::GetCursorPos();
+		ImVec2 windowSize = ImGui::GetWindowSize();
+		ImVec2 buttonSize = ImVec2(150, 25);
+		ImVec2 buttonPos = ImVec2(cursorPos.x + (windowSize.x - buttonSize.x) * 0.5f, cursorPos.y);
+		ImGui::SetCursorPos(buttonPos);
+
+		if (ImGui::Button("Add Component", buttonSize))
+		{
+			if (cc2d.colliderCount < MAX_COLLIDERS)
+			{
+				AddCollider(cc2d);
+			}
+			else
+			{
+				ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Maximum number of colliders reached");
+			}
+		}
+		//if (cc2d.m_RuntimeFixture)
+		//{
+
+		//	if (ImGui::DragFloat2("Offset", glm::value_ptr(cc2d.m_Offset), 0.5f))
+		//	{
+		//		auto offset = physicsSys->PixelsToMeters(cc2d.m_Offset.x, cc2d.m_Offset.y);
+
+		//		glm::vec3 childOffset(0.0f);
+
+		//		CalculateOffset(childOffset, entity);
+
+		//		auto childWorldPositionMeters = PhysicsSystem::PixelsToMeters(childOffset.x, childOffset.y);
+
+		//		// Combine the child’s world position and the collider’s local offset
+		//		b2Vec2 finalOffset(childWorldPositionMeters.x + offset.x,
+		//			childWorldPositionMeters.y + offset.y);
+
+		//		dynamic_cast<b2CircleShape*>(cc2d.m_RuntimeFixture->GetShape())->m_p.Set(finalOffset.x, finalOffset.y);
+		//	}
+
+		//	if (ImGui::DragFloat("radius", &cc2d.m_Radius, 0.5f))
+		//	{
+		//		auto radius = PhysicsSystem::PixelsToMeters(cc2d.m_Radius);
+
+		//		dynamic_cast<b2CircleShape*>(cc2d.m_RuntimeFixture->GetShape())->m_radius = radius;
+		//	}
+		//	if (ImGui::DragFloat("Density", &cc2d.m_Density, 0.5f))
+		//		cc2d.m_RuntimeFixture->SetDensity(cc2d.m_Density);
+
+		//	if (ImGui::DragFloat("Friction", &cc2d.m_Friction, 0.5f, 0, 1.0f))
+		//		cc2d.m_RuntimeFixture->SetFriction(cc2d.m_Friction);
+
+		//	if (ImGui::DragFloat("Resitution", &cc2d.m_Restitution, 0.5f))
+		//		cc2d.m_RuntimeFixture->SetRestitution(cc2d.m_Restitution);
+
+		//	if (ImGui::DragFloat("Resitution Threshold", &cc2d.m_RestitutionThreshold, 0.5f))
+		//		cc2d.m_RuntimeFixture->SetRestitutionThreshold(cc2d.m_RestitutionThreshold);
+
+		//}
+		//else
+		//{
+		//	ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Warning: Requires Rigidbody2D component to enable physics");
+		//}
+
+		if (!enabled)
+			ImGui::EndDisabled();
+
+
+		ImGui::TreePop();
+	}
+
+	bool CircleCollider2DSystem::InitializeCollider(EntityID entityID, NRegistry* registry)
+	{
+		if (!registry->HasComponent<CircleCollider2DComponent>(entityID))
+			return false;
+
+		auto* PhysicsSystem = PhysicsSystem::Instance();
+
+		CircleCollider2DComponent& cc2d = registry->GetComponent<CircleCollider2DComponent>(entityID);
+
+		if (!IsValidRuntimeIndex(cc2d.runtimeBodyIndex))
+		{
+			if (registry->HasComponent<Rigidbody2DComponent>(entityID))
+				cc2d.runtimeBodyIndex = registry->GetComponent<Rigidbody2DComponent>(entityID).runtimeBodyIndex;
+			else if (registry->HasComponent<BoxCollider2DComponent>(entityID))
+				cc2d.runtimeBodyIndex = registry->GetComponent<BoxCollider2DComponent>(entityID).runtimeBodyIndex;
+			else
+			{
+				b2BodyDef bodyDef;
+				cc2d.runtimeBodyIndex = PhysicsSystem->AddActiveBody(PhysicsSystem->CreateBody(bodyDef));
+			}
+		}
+
 		{
 
-			if (ImGui::DragFloat2("Offset", glm::value_ptr(cc2d.m_Offset), 0.5f))
+			for (uint8_t i = 0; i < cc2d.colliderCount; ++i)
 			{
-				auto offset = physicsSys->PixelsToMeters(cc2d.m_Offset.x, cc2d.m_Offset.y);
+				CircleCollider2D& circle = cc2d.colliders[i];
 
-				glm::vec3 childOffset(0.0f);
+				auto* body = PhysicsSystem::Instance()->GetActiveBody(cc2d.runtimeBodyIndex);
 
-				CalculateOffset(childOffset, entity);
+				if (!body)
+					return false;
 
-				auto childWorldPositionMeters = PhysicsSystem::PixelsToMeters(childOffset.x, childOffset.y);
 
-				// Combine the child’s world position and the collider’s local offset
-				b2Vec2 finalOffset(childWorldPositionMeters.x + offset.x,
-					childWorldPositionMeters.y + offset.y);
+				/*		b2CircleShape circleShape;
+						circleShape.m_p.Set(PhysicsSystem::PixelsToMeters(circle.offset.x, circle.offset.y));
+						circleShape.m_radius = PhysicsSystem::PixelsToMeters(circle.radius);
+						b2FixtureDef fixtureDef;
+						fixtureDef.shape = &circleShape;
+						fixtureDef.density = circle.density;
+						fixtureDef.friction = circle.friction;
+						fixtureDef.restitution = circle.restitution;
+						fixtureDef.restitutionThreshold = circle.restitutionThreshold;
+						fixtureDef.filter = circle.filter;
+						fixtureIndex = PhysicsSystem::Instance()->AddActiveFixture(body, fixtureDef);*/
 
-				dynamic_cast<b2CircleShape*>(cc2d.m_RuntimeFixture->GetShape())->m_p.Set(finalOffset.x, finalOffset.y);
+				b2CircleShape circleShape;
+
+				auto offset = PhysicsSystem::PixelsToMeters(circle.offset.x, circle.offset.y);
+				auto radius = PhysicsSystem::PixelsToMeters(circle.radius);
+
+
+				circleShape.m_p.Set(offset.x, offset.y);
+				circleShape.m_radius = radius;
+
+				b2FixtureDef fixDef;
+
+				fixDef.shape = &circleShape;
+				fixDef.density = circle.density;
+				fixDef.friction = circle.friction;
+				fixDef.restitution = circle.restitution;
+				fixDef.restitutionThreshold = circle.restitutionThreshold;
+
+				circle.runtimeFixtureIndex = PhysicsSystem->AddActiveFixture(PhysicsSystem->CreateFixture(body, fixDef));
 			}
-
-			if (ImGui::DragFloat("radius", &cc2d.m_Radius, 0.5f))
-			{
-				auto radius = PhysicsSystem::PixelsToMeters(cc2d.m_Radius);
-
-				dynamic_cast<b2CircleShape*>(cc2d.m_RuntimeFixture->GetShape())->m_radius = radius;
-			}
-			if (ImGui::DragFloat("Density", &cc2d.m_Density, 0.5f))
-				cc2d.m_RuntimeFixture->SetDensity(cc2d.m_Density);
-
-			if (ImGui::DragFloat("Friction", &cc2d.m_Friction, 0.5f, 0, 1.0f))
-				cc2d.m_RuntimeFixture->SetFriction(cc2d.m_Friction);
-
-			if (ImGui::DragFloat("Resitution", &cc2d.m_Restitution, 0.5f))
-				cc2d.m_RuntimeFixture->SetRestitution(cc2d.m_Restitution);
-
-			if (ImGui::DragFloat("Resitution Threshold", &cc2d.m_RestitutionThreshold, 0.5f))
-				cc2d.m_RuntimeFixture->SetRestitutionThreshold(cc2d.m_RestitutionThreshold);
-
 		}
-		else
-		{
-			ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Warning: Requires Rigidbody2D component to enable physics");
-		}
+
+
+		return true;
 	}
 
 
@@ -340,12 +625,12 @@ namespace NULLENGINE
 				auto& parentTransform = parent.Get<TransformComponent>();
 				auto& transform = entity.Get<TransformComponent>();
 
-				auto rotation = transform.m_Rotation;
-				auto translation = transform.m_Translation;
+				auto rotation = transform.rotation;
+				auto translation = transform.translation;
 
 				PhysicsSystem::LocalToWorldPos(transform, translation, rotation);
 
-				offset = translation - parentTransform.m_Translation;
+				offset = translation - parentTransform.translation;
 			}
 			else
 			{
@@ -367,18 +652,99 @@ namespace NULLENGINE
 				auto& parentTransform = grandParent.Get<TransformComponent>();
 				auto& transform = entity.Get<TransformComponent>();
 
-				auto rotation = transform.m_Rotation;
-				auto translation = transform.m_Translation;
+				auto rotation = transform.rotation;
+				auto translation = transform.translation;
 
 				PhysicsSystem::LocalToWorldPos(transform, translation, rotation);
 
-				offset = translation - parentTransform.m_Translation;
+				offset = translation - parentTransform.translation;
 			}
 			else
 			{
 				CalculateOffset_rec(offset, entity, grandParent, sceneManager);
 			}
 		}
+	}
+
+
+	bool CircleCollider2DSystem::OnEntityCreated(const EntityCreatedEvent& e)
+	{
+		NEventManager* eventManager = NEventManager::Instance();
+		NRegistry* registry = NRegistry::Instance();
+
+		const auto& entityList = GetSystemEntities();
+
+		if (std::find(entityList.begin(), entityList.end(), e.GetID()) != entityList.end())
+			eventManager->QueueAsync(std::make_unique<InitializeBox2DColliderEvent>(e.GetID()));
+
+
+		return true;
+	}
+
+
+
+	bool CircleCollider2DSystem::OnEntityComponentRemoved(const EntityRemoveComponentEvent& e)
+	{
+		NRegistry* registry = NRegistry::Instance();
+
+
+		// IF WE ARE REMOVING A CIRCLE COLLIDER 2D COMPONENT
+		if (e.GetComponentID() == Component<CircleCollider2DSystem>::GetID())
+		{
+			/*
+					return true;*/
+
+			CircleCollider2DComponent& cc2d = registry->GetComponent<CircleCollider2DComponent>(e.GetID());
+
+
+			// remove all colliders
+			for (uint8_t i = 0; i < cc2d.colliderCount; ++i)
+			{
+				if (IsValidRuntimeIndex(cc2d.colliders[i].runtimeFixtureIndex))
+				{
+					b2Body* body = PhysicsSystem::Instance()->GetActiveBody(cc2d.runtimeBodyIndex);
+					if (body)
+					{
+						PhysicsSystem::Instance()->RemoveActiveFixture(cc2d.colliders[i].runtimeFixtureIndex, body);
+					}
+				}
+			}
+
+			// remove body if no collider or rigidbody left
+			if (!registry->HasComponent<Rigidbody2DComponent>(e.GetID()) && !registry->HasComponent<BoxCollider2DComponent>(e.GetID()))
+				PhysicsSystem::Instance()->RemoveActiveBody(cc2d.runtimeBodyIndex);
+
+
+		}
+
+		return true;
+	}
+
+
+
+	bool CircleCollider2DSystem::OnEntityComponentAdded(const EntityAddComponentEvent& e)
+	{
+		NRegistry* registry = NRegistry::Instance();
+		NEventManager* eventManager = NEventManager::Instance();
+
+		const auto& entityList = GetSystemEntities();
+		if (std::find(entityList.begin(), entityList.end(), e.GetID()) == entityList.end())
+		{
+			// if the entity is not in the system, we need to add it
+			if (e.GetComponentID() == Component<CircleCollider2DComponent>::GetID())
+			{
+				eventManager->QueueAsync(std::make_unique<InitializeBox2DColliderEvent>(e.GetID()));
+			}
+		}
+
+		return true;
+	}
+
+	bool CircleCollider2DSystem::OnInitializeBox2DStart(const InitializeBox2DColliderEvent& e)
+	{
+		NRegistry* registry = NRegistry::Instance();
+
+		return InitializeCollider(e.GetEntityID(), registry);
 	}
 
 }

@@ -57,6 +57,8 @@ namespace NULLENGINE
 	public:
 		static std::tuple<bool, bool, bool> CollapsingHeaderWithCheckboxAndRemove(const std::string& label, bool* enabled);
 
+		static std::tuple<bool, bool> CollapsingHeaderWithRemove(const std::string& label);
+
 		static std::pair<bool, bool> DrawModifierHeader(const char* label, uint32_t& flags, uint32_t flagBit, int id);
 
 		static std::pair<bool, bool> DrawModifierHeader(const char* label, bool* enabled, int id);

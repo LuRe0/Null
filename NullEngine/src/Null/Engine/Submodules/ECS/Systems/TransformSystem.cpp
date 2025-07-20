@@ -74,23 +74,23 @@ namespace NULLENGINE
 		// Retrieve the child's local transform component
 		TransformComponent& childTransform = registry->GetComponent<TransformComponent>(childId);
 
-		if (!childTransform.m_ComponentFlags.IsSet(ComponentFlags_Enabled))
+		if (!childTransform.componentFlags.IsSet(ComponentFlags_Enabled))
 			return;
 
 		// Compute the child's local transform matrix
 		//PhysicsSystem::LocalToWorldPos(childTransform, childTransform.m_Translation, childTransform.m_Rotation, childTransform.m_Scale);
-		glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), childTransform.m_Translation);
-		glm::mat4 rotationMatrix = glm::toMat4(glm::quat(glm::radians(childTransform.m_Rotation)));
-		glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), childTransform.m_Scale);
+		glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), childTransform.translation);
+		glm::mat4 rotationMatrix = glm::toMat4(glm::quat(glm::radians(childTransform.rotation)));
+		glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), childTransform.scale);
 
 		glm::mat4 localTransformMatrix = translationMatrix * rotationMatrix * scaleMatrix;
 
 		// Combine the parent's world transform with the child's local transform
-		childTransform.m_TransformMatrix = parentTransform.m_TransformMatrix * localTransformMatrix;
+		childTransform.transformMatrix = parentTransform.transformMatrix * localTransformMatrix;
 
 		// Mark the child's transform as clean
 
-		childTransform.m_Flags.Set(TransformFlags_DirectManipulation);
+		childTransform.flags.Set(TransformFlags_DirectManipulation);
 
 		// Recursively update the child’s children
 		if (registry->HasComponent<ChildrenComponent>(childId))
@@ -112,26 +112,26 @@ namespace NULLENGINE
 		{
 			TransformComponent& transform = registry->GetComponent<TransformComponent>(entityId);
 
-			if (!transform.m_ComponentFlags.IsSet(ComponentFlags_Enabled))
+			if (!transform.componentFlags.IsSet(ComponentFlags_Enabled))
 				continue;
 
-			if (transform.m_Flags.IsSet(TransformFlags_Dirty))
+			if (transform.flags.IsSet(TransformFlags_Dirty))
 			{
-				if (transform.m_Scale.z == 0.0)
+				if (transform.scale.z == 0.0)
 				{
-					transform.m_Scale.z = 1.0f;
+					transform.scale.z = 1.0f;
 				}
 
 				if (!registry->HasComponent<ParentComponent>(entityId))
 
 				{
-					glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), transform.m_Translation);
+					glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), transform.translation);
 					// Calculate rotation matrix (assuming Euler angles in radians)
-					glm::mat4 rotationMatrix = glm::toMat4(glm::quat(glm::radians(transform.m_Rotation)));
+					glm::mat4 rotationMatrix = glm::toMat4(glm::quat(glm::radians(transform.rotation)));
 
-					glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), transform.m_Scale);
+					glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), transform.scale);
 
-					transform.m_TransformMatrix = translationMatrix * rotationMatrix * scaleMatrix;
+					transform.transformMatrix = translationMatrix * rotationMatrix * scaleMatrix;
 
 				}
 
@@ -151,7 +151,7 @@ namespace NULLENGINE
 					}
 				}
 
-				transform.m_Flags.Clear(TransformFlags_Dirty);
+				transform.flags.Clear(TransformFlags_Dirty);
 
 			}
 		}
@@ -236,9 +236,9 @@ namespace NULLENGINE
 
 		if (!jsonWrapper.Empty())
 		{
-			comp->m_Translation = jsonWrapper.GetVec3("translation", { 0.0f, 0.0f, 0.0f });
-			comp->m_Scale = jsonWrapper.GetVec3("scale", { 1.0f, 1.0f, 1.0f });
-			comp->m_Rotation = jsonWrapper.GetVec3("rotation", { 0.0f, 0.0f, 0.0f });
+			comp->translation = jsonWrapper.GetVec3("translation", { 0.0f, 0.0f, 0.0f });
+			comp->scale = jsonWrapper.GetVec3("scale", { 1.0f, 1.0f, 1.0f });
+			comp->rotation = jsonWrapper.GetVec3("rotation", { 0.0f, 0.0f, 0.0f });
 
 			ComponentFlagSet flags;
 			flags.Set(ComponentFlags_Enabled);
@@ -246,9 +246,9 @@ namespace NULLENGINE
 
 			TransformFlagSet transformFlags;
 			transformFlags.Set(TransformFlags_Dirty);
-			comp->m_Flags = transformFlags;
+			comp->flags = transformFlags;
 		
-			comp->m_ComponentFlags.m_Flags = jsonWrapper.GetUInt8("ComponentFlags", flags.m_Flags);
+			comp->componentFlags.m_Flags = jsonWrapper.GetUInt8("ComponentFlags", flags.m_Flags);
 		}
 
 	}
@@ -261,7 +261,7 @@ namespace NULLENGINE
 
 
 
-		componentFactory->AddOrUpdate<TransformComponent>(id, comp, registry, comp->m_Translation, comp->m_Scale, comp->m_Rotation, comp->m_ComponentFlags, comp->m_Flags, comp->m_TransformMatrix);
+		componentFactory->AddOrUpdate<TransformComponent>(id, comp, registry, comp->translation, comp->scale, comp->rotation, comp->componentFlags, comp->flags, comp->transformMatrix);
 
 	}
 
@@ -271,10 +271,10 @@ namespace NULLENGINE
 
 		auto& transform = *static_cast<const TransformComponent*>(component);
 
-		json["Transform"]["translation"] = { transform.m_Translation.x, transform.m_Translation.y, transform.m_Translation.z };
-		json["Transform"]["scale"] = { transform.m_Scale.x, transform.m_Scale.y, transform.m_Scale.z };
-		json["Transform"]["rotation"] = { transform.m_Rotation.x, transform.m_Rotation.y, transform.m_Rotation.z };
-		json["Transform"]["ComponentFlags"] = transform.m_ComponentFlags.m_Flags;
+		json["Transform"]["translation"] = { transform.translation.x, transform.translation.y, transform.translation.z };
+		json["Transform"]["scale"] = { transform.scale.x, transform.scale.y, transform.scale.z };
+		json["Transform"]["rotation"] = { transform.rotation.x, transform.rotation.y, transform.rotation.z };
+		json["Transform"]["ComponentFlags"] = transform.componentFlags.m_Flags;
 
 		return json;
 	}
@@ -287,17 +287,17 @@ namespace NULLENGINE
 		JSON diff;
 		JSON compJson;
 
-		if (a->m_Translation != b->m_Translation)
-			compJson["translation"] = { b->m_Translation.x, b->m_Translation.y, b->m_Translation.z };
+		if (a->translation != b->translation)
+			compJson["translation"] = { b->translation.x, b->translation.y, b->translation.z };
 
-		if (a->m_Scale != b->m_Scale)
-			compJson["scale"] = { b->m_Scale.x, b->m_Scale.y, b->m_Scale.z };
+		if (a->scale != b->scale)
+			compJson["scale"] = { b->scale.x, b->scale.y, b->scale.z };
 
-		if (a->m_Rotation != b->m_Rotation)
-			compJson["rotation"] = { b->m_Rotation.x, b->m_Rotation.y, b->m_Rotation.z };
+		if (a->rotation != b->rotation)
+			compJson["rotation"] = { b->rotation.x, b->rotation.y, b->rotation.z };
 
-		if (a->m_ComponentFlags.m_Flags != b->m_ComponentFlags.m_Flags)
-			diff["ComponentFlags"] = b->m_ComponentFlags.m_Flags;
+		if (a->componentFlags.m_Flags != b->componentFlags.m_Flags)
+			diff["ComponentFlags"] = b->componentFlags.m_Flags;
 
 		if (!compJson.empty())
 			diff["Transform"] = compJson;
@@ -310,7 +310,7 @@ namespace NULLENGINE
 	{
 		// Access the transform component
 		TransformComponent& transform = entity.Get<TransformComponent>();
-		uint8_t& flags = transform.m_ComponentFlags.m_Flags;
+		uint8_t& flags = transform.componentFlags.m_Flags;
 		// Show collapsible header with enable checkbox and remove button, tied to the Enabled flag
 		auto [open, enabled, remove] = ImGuiH::CollapsingHeaderWithFlagCheckboxAndRemove("Transform", flags, ComponentFlags_Enabled);
 
@@ -326,17 +326,17 @@ namespace NULLENGINE
 			ImGui::BeginDisabled();
 
 		// On drag edits, set the dirty & direct manipulation flags
-		if (ImGui::DragFloat3("Translation", glm::value_ptr(transform.m_Translation), 0.5f))
+		if (ImGui::DragFloat3("Translation", glm::value_ptr(transform.translation), 0.5f))
 		{
 			flags |= TransformFlags_Dirty | TransformFlags_DirectManipulation;
 		}
 
-		if (ImGui::DragFloat3("Rotation", glm::value_ptr(transform.m_Rotation), 0.5f))
+		if (ImGui::DragFloat3("Rotation", glm::value_ptr(transform.rotation), 0.5f))
 		{
 			flags |= TransformFlags_Dirty | TransformFlags_DirectManipulation;
 		}
 
-		if (ImGui::DragFloat3("Scale", glm::value_ptr(transform.m_Scale), 0.5f))
+		if (ImGui::DragFloat3("Scale", glm::value_ptr(transform.scale), 0.5f))
 		{
 			flags |= TransformFlags_Dirty;
 		}
@@ -360,16 +360,16 @@ namespace NULLENGINE
 		auto& parentTransform = parent.Get<TransformComponent>();
 		auto& childTransform = child.Get<TransformComponent>();
 
-		auto rotation = parentTransform.m_Rotation;
-		auto scale = parentTransform.m_Scale;
-		auto translation = parentTransform.m_Translation;
+		auto rotation = parentTransform.rotation;
+		auto scale = parentTransform.scale;
+		auto translation = parentTransform.translation;
 
 		PhysicsSystem::LocalToWorldPos(parentTransform, translation, rotation, scale);
 
-		glm::mat4 inverseParentTransform = glm::inverse(parentTransform.m_TransformMatrix);
+		glm::mat4 inverseParentTransform = glm::inverse(parentTransform.transformMatrix);
 
-		childTransform.m_Translation = glm::vec3((inverseParentTransform * glm::vec4(childTransform.m_Translation, 1.0f)));
-		childTransform.m_Scale = childTransform.m_Scale / scale;
+		childTransform.translation = glm::vec3((inverseParentTransform * glm::vec4(childTransform.translation, 1.0f)));
+		childTransform.scale = childTransform.scale / scale;
 
 		// Extract parent rotation as Euler angles (assume in degrees)
 		glm::vec3 parentRotationEuler = rotation; // Euler angles in degrees
@@ -379,7 +379,7 @@ namespace NULLENGINE
 		glm::quat parentRotation = glm::quat(glm::yawPitchRoll(parentRotationRadians.y, parentRotationRadians.x, parentRotationRadians.z));
 
 		// Convert child rotation from Euler angles (assume in degrees)
-		glm::vec3 childRotationEuler = childTransform.m_Rotation; // Euler angles in degrees
+		glm::vec3 childRotationEuler = childTransform.rotation; // Euler angles in degrees
 		glm::vec3 childRotationRadians = glm::radians(childRotationEuler);
 		glm::quat childRotation = glm::quat(glm::yawPitchRoll(childRotationRadians.y, childRotationRadians.x, childRotationRadians.z));
 
@@ -388,7 +388,7 @@ namespace NULLENGINE
 
 		// Convert local rotation back to Euler angles
 		glm::vec3 localRotationEuler = glm::degrees(glm::eulerAngles(localRotation));
-		childTransform.m_Rotation = localRotationEuler;
+		childTransform.rotation = localRotationEuler;
 
 		return true;
 	}
@@ -403,18 +403,18 @@ namespace NULLENGINE
 		auto& childTransform = child.Get<TransformComponent>();
 
 		// Apply parent's transformation to child's translation
-		childTransform.m_Translation = glm::vec3(parentTransform.m_TransformMatrix * glm::vec4(childTransform.m_Translation, 1.0f));
+		childTransform.translation = glm::vec3(parentTransform.transformMatrix * glm::vec4(childTransform.translation, 1.0f));
 
 		// Scale the child's scale by the parent's scale
-		childTransform.m_Scale = childTransform.m_Scale * parentTransform.m_Scale;
+		childTransform.scale = childTransform.scale * parentTransform.scale;
 
 		// Convert parent rotation to quaternion
-		glm::vec3 parentRotationEuler = parentTransform.m_Rotation;
+		glm::vec3 parentRotationEuler = parentTransform.rotation;
 		glm::vec3 parentRotationRadians = glm::radians(parentRotationEuler);
 		glm::quat parentRotation = glm::quat(glm::yawPitchRoll(parentRotationRadians.y, parentRotationRadians.x, parentRotationRadians.z));
 
 		// Convert child rotation from Euler angles
-		glm::vec3 childRotationEuler = childTransform.m_Rotation;
+		glm::vec3 childRotationEuler = childTransform.rotation;
 		glm::vec3 childRotationRadians = glm::radians(childRotationEuler);
 		glm::quat childRotation = glm::quat(glm::yawPitchRoll(childRotationRadians.y, childRotationRadians.x, childRotationRadians.z));
 
@@ -423,7 +423,7 @@ namespace NULLENGINE
 
 		// Convert world rotation back to Euler angles
 		glm::vec3 worldRotationEuler = glm::degrees(glm::eulerAngles(worldRotation));
-		childTransform.m_Rotation = worldRotationEuler;
+		childTransform.rotation = worldRotationEuler;
 
 		return true;
 	}

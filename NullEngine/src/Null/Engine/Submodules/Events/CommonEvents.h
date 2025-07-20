@@ -544,6 +544,32 @@ namespace NULLENGINE
         const uint32_t m_EntityID;
     };
 
+    class InitializeBox2DColliderEvent : public Event
+    {
+    public:
+        InitializeBox2DColliderEvent(uint32_t eID)
+            : m_EntityID(eID)
+        {
+        }
+
+
+        const uint32_t& GetEntityID() const { return m_EntityID; }
+
+
+        std::string Print() const override
+        {
+            std::stringstream ss;
+            ss << "InitializeBox2DColliderEvent";
+            return ss.str();
+        }
+
+        EVENT_CLASS_TYPE(InitializeBox2DCollider)
+
+    private:
+        const uint32_t m_EntityID;
+    };
+
+
 
     class EntityParentedEvent : public Event
     {

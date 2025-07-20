@@ -42,6 +42,8 @@ namespace NULLENGINE
 
         int GetInt(const std::string& key, int defaultValue = 0) const;
         uint8_t GetUInt8(const std::string& key, uint8_t defaultValue) const;
+        uint16_t GetUint16(const std::string& key, uint16_t defaultValue) const;
+        int16_t GetInt16(const std::string& key, int16_t defaultValue) const;
         float GetFloat(const std::string& key, float defaultValue = 0.0f) const;
         bool GetBool(const std::string& key, bool defaultValue = false) const;
         std::string GetString(const std::string& key, const std::string& defaultValue = "") const;

@@ -73,24 +73,34 @@ namespace NULLENGINE
 
 
 
+	inline bool IsValidRuntimeIndex(uint32_t index)
+	{
+		return index != UINT32_MAX;
+	}
 
-#define DEFINE_FLAG_SET(Name, ...) \
-struct Name                         \
-{                                   \
-    union                           \
-    {                               \
-        struct { __VA_ARGS__ };     \
-        uint8_t m_Flags = 0;        \
-    };                              \
-                                    \
-    void Set(uint8_t mask, bool value = true) { \
-        if (value) m_Flags |= mask;            \
-        else m_Flags &= ~mask;                 \
-    }                                          \
+
+#define DEFINE_FLAG_SET(Name, ...)                        \
+struct Name                                               \
+{                                                         \
+    union                                                 \
+    {                                                     \
+        struct { __VA_ARGS__ };                           \
+        uint8_t m_Flags = 0;                              \
+    };                                                    \
+                                                          \
+    constexpr Name() = default;                           \
+    constexpr explicit Name(uint8_t flags) : m_Flags(flags) {} \
+                                                          \
+    void Set(uint8_t mask, bool value = true)             \
+    {                                                     \
+        if (value) m_Flags |= mask;                       \
+        else m_Flags &= ~mask;                            \
+    }                                                     \
     bool IsSet(uint8_t mask) const { return (m_Flags & mask) != 0; } \
-    void Clear(uint8_t mask) { m_Flags &= ~mask; }                   \
-    void Reset() { m_Flags = 0; }                                     \
+    void Clear(uint8_t mask) { m_Flags &= ~mask; }        \
+    void Reset() { m_Flags = 0; }                         \
 };
+
 
 
 	enum ComponentFlags : uint8_t

@@ -93,7 +93,7 @@ namespace NULLENGINE
 		
 				// Display the filename under the button, centered
 
-				std::filesystem::relative(p.path(), s_AssetsPath);
+				auto val = std::filesystem::relative(p.path(), s_AssetsPath);
 
 				std::string extension = p.path().extension().string();
 

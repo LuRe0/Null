@@ -164,7 +164,7 @@ namespace NULLENGINE
 
 		// position
 		shader.setVec3("u_EmitterOffset", emitter.offset);
-		shader.setVec3("u_ParentPosition", transform.m_Translation);
+		shader.setVec3("u_ParentPosition", transform.translation);
 
 		// physics
 		shader.setFloat("u_EmitterInitialAcceleration", emitter.initialAcceleration);
@@ -383,7 +383,7 @@ namespace NULLENGINE
 					continue;
 
 
-				glm::vec4 worldPosition = transform.m_TransformMatrix * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+				glm::vec4 worldPosition = transform.transformMatrix * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
 				// Transform the world position to camera space
 				glm::vec4 cameraSpacePosition = viewMatrix * worldPosition;

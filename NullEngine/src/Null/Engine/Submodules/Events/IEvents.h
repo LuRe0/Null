@@ -42,7 +42,7 @@ namespace NULLENGINE
 			MouseMove, MouseButtonPress, MouseButtonRelease, MouseButtonHold, MouseScrolled,
 			EntityCreated, EntityLoaded, EntityReady, EntityDestroyed,EntityAddComponent, EntityRemoveComponent,
 			SceneSwitch, SceneLoaded,
-			InitializeBox2D,
+			InitializeBox2D, InitializeBox2DCollider,
 			ScriptCreated, ScriptRemoved, ScriptModified,
 			EngineRunState, EngineEditState, EnginePauseState,
 			EntityParented, EntitySeparated,

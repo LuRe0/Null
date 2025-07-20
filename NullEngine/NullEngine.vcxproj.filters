@@ -107,6 +107,12 @@
     <ClInclude Include="src\Null\Engine\Modules\NAsyncTaskManager.h">
       <Filter>Null\Engine\Modules</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Engine\Modules\NB2BodyManager.h">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Modules\NB2FixtureManager.h">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClInclude>
     <ClInclude Include="src\Null\Engine\Modules\NCameraManager.h">
       <Filter>Null\Engine\Modules</Filter>
     </ClInclude>
@@ -419,6 +425,9 @@
     <ClInclude Include="src\Null\Tools\GLHelper.h">
       <Filter>Null\Tools</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Tools\Handle.h">
+      <Filter>Null\Tools</Filter>
+    </ClInclude>
     <ClInclude Include="src\Null\Tools\ImGuiH.h">
       <Filter>Null\Tools</Filter>
     </ClInclude>
@@ -441,9 +450,6 @@
       <Filter>Null\Tools</Filter>
     </ClInclude>
     <ClInclude Include="src\stdafx.h" />
-    <ClInclude Include="src\Null\Tools\Handle.h" />
-    <ClInclude Include="src\Null\Engine\Modules\NB2FixtureManager.h" />
-    <ClInclude Include="src\Null\Engine\Modules\NB2BodyManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Null\Application.cpp">
@@ -462,6 +468,12 @@
       <Filter>Null\Engine\Modules\Base</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Modules\NAsyncTaskManager.cpp">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Modules\NB2BodyManager.cpp">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Modules\NB2FixtureManager.cpp">
       <Filter>Null\Engine\Modules</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Modules\NCameraManager.cpp">
@@ -692,6 +704,9 @@
     <ClCompile Include="src\Null\Engine\Submodules\Tileset.cpp">
       <Filter>Null\Engine\Submodules</Filter>
     </ClCompile>
+    <ClCompile Include="src\Null\Tools\ArchetypeDefinitions.cpp">
+      <Filter>Null\Tools</Filter>
+    </ClCompile>
     <ClCompile Include="src\Null\Tools\Easing.cpp">
       <Filter>Null\Tools</Filter>
     </ClCompile>
@@ -705,6 +720,9 @@
       <Filter>Null\Tools</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Tools\GLHelper.cpp">
+      <Filter>Null\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Tools\Handle.cpp">
       <Filter>Null\Tools</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Tools\ImGuiH.cpp">
@@ -726,9 +744,5 @@
       <Filter>Null\Tools</Filter>
     </ClCompile>
     <ClCompile Include="src\stdafx.cpp" />
-    <ClCompile Include="src\Null\Tools\ArchetypeDefinitions.cpp" />
-    <ClCompile Include="src\Null\Tools\Handle.cpp" />
-    <ClCompile Include="src\Null\Engine\Modules\NB2FixtureManager.cpp" />
-    <ClCompile Include="src\Null\Engine\Modules\NB2BodyManager.cpp" />
   </ItemGroup>
 </Project>

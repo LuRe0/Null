@@ -486,50 +486,7 @@ namespace NULLENGINE
 				ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Maximum number of colliders reached");
 			}
 		}
-		//if (cc2d.m_RuntimeFixture)
-		//{
-
-		//	if (ImGui::DragFloat2("Offset", glm::value_ptr(cc2d.m_Offset), 0.5f))
-		//	{
-		//		auto offset = physicsSys->PixelsToMeters(cc2d.m_Offset.x, cc2d.m_Offset.y);
-
-		//		glm::vec3 childOffset(0.0f);
-
-		//		CalculateOffset(childOffset, entity);
-
-		//		auto childWorldPositionMeters = PhysicsSystem::PixelsToMeters(childOffset.x, childOffset.y);
-
-		//		// Combine the child’s world position and the collider’s local offset
-		//		b2Vec2 finalOffset(childWorldPositionMeters.x + offset.x,
-		//			childWorldPositionMeters.y + offset.y);
-
-		//		dynamic_cast<b2CircleShape*>(cc2d.m_RuntimeFixture->GetShape())->m_p.Set(finalOffset.x, finalOffset.y);
-		//	}
-
-		//	if (ImGui::DragFloat("radius", &cc2d.m_Radius, 0.5f))
-		//	{
-		//		auto radius = PhysicsSystem::PixelsToMeters(cc2d.m_Radius);
-
-		//		dynamic_cast<b2CircleShape*>(cc2d.m_RuntimeFixture->GetShape())->m_radius = radius;
-		//	}
-		//	if (ImGui::DragFloat("Density", &cc2d.m_Density, 0.5f))
-		//		cc2d.m_RuntimeFixture->SetDensity(cc2d.m_Density);
-
-		//	if (ImGui::DragFloat("Friction", &cc2d.m_Friction, 0.5f, 0, 1.0f))
-		//		cc2d.m_RuntimeFixture->SetFriction(cc2d.m_Friction);
-
-		//	if (ImGui::DragFloat("Resitution", &cc2d.m_Restitution, 0.5f))
-		//		cc2d.m_RuntimeFixture->SetRestitution(cc2d.m_Restitution);
-
-		//	if (ImGui::DragFloat("Resitution Threshold", &cc2d.m_RestitutionThreshold, 0.5f))
-		//		cc2d.m_RuntimeFixture->SetRestitutionThreshold(cc2d.m_RestitutionThreshold);
-
-		//}
-		//else
-		//{
-		//	ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Warning: Requires Rigidbody2D component to enable physics");
-		//}
-
+	
 		if (!enabled)
 			ImGui::EndDisabled();
 
@@ -540,7 +497,7 @@ namespace NULLENGINE
 	bool CircleCollider2DSystem::InitializeCollider(EntityID entityID, NRegistry* registry)
 	{
 		if (!registry->HasComponent<CircleCollider2DComponent>(entityID))
-			return false;
+			return true;
 
 		auto* PhysicsSystem = PhysicsSystem::Instance();
 
@@ -552,36 +509,31 @@ namespace NULLENGINE
 				cc2d.runtimeBodyIndex = registry->GetComponent<Rigidbody2DComponent>(entityID).runtimeBodyIndex;
 			else if (registry->HasComponent<BoxCollider2DComponent>(entityID))
 				cc2d.runtimeBodyIndex = registry->GetComponent<BoxCollider2DComponent>(entityID).runtimeBodyIndex;
-			else
+			// If the body index is still invalid, we have to create a body
+			if (!IsValidRuntimeIndex(cc2d.runtimeBodyIndex))
 			{
 				b2BodyDef bodyDef;
 				cc2d.runtimeBodyIndex = PhysicsSystem->AddActiveBody(PhysicsSystem->CreateBody(bodyDef));
 			}
 		}
 
+		// If the body is not valid, we need to create it
+
 		{
+			auto* body = PhysicsSystem::Instance()->GetActiveBody(cc2d.runtimeBodyIndex);
+
+			NLE_CORE_ASSERT(body, "CircleCollider2DSystem::InitializeCollider: Body is null for entity ID: {0}", entityID);
+
+			body->ResetMassData(); // Reset mass data to ensure correct physics calculations
+
 
 			for (uint8_t i = 0; i < cc2d.colliderCount; ++i)
 			{
 				CircleCollider2D& circle = cc2d.colliders[i];
 
-				auto* body = PhysicsSystem::Instance()->GetActiveBody(cc2d.runtimeBodyIndex);
+				if (IsValidRuntimeIndex(circle.runtimeFixtureIndex))
+					return true; // Already initialized
 
-				if (!body)
-					return false;
-
-
-				/*		b2CircleShape circleShape;
-						circleShape.m_p.Set(PhysicsSystem::PixelsToMeters(circle.offset.x, circle.offset.y));
-						circleShape.m_radius = PhysicsSystem::PixelsToMeters(circle.radius);
-						b2FixtureDef fixtureDef;
-						fixtureDef.shape = &circleShape;
-						fixtureDef.density = circle.density;
-						fixtureDef.friction = circle.friction;
-						fixtureDef.restitution = circle.restitution;
-						fixtureDef.restitutionThreshold = circle.restitutionThreshold;
-						fixtureDef.filter = circle.filter;
-						fixtureIndex = PhysicsSystem::Instance()->AddActiveFixture(body, fixtureDef);*/
 
 				b2CircleShape circleShape;
 

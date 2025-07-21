@@ -88,7 +88,7 @@ namespace NULLENGINE
 	struct BoxCollider2D
 	{
 		glm::vec2 offset = glm::vec2(0.0f);
-		glm::vec2 size = glm::vec2(50.0f); // or "scale", depending on your terminology
+		glm::vec2 scale = glm::vec2(50.0f);
 		float density = 1.0f;
 		float friction = 0.5f;
 		float restitution = 0.0f;

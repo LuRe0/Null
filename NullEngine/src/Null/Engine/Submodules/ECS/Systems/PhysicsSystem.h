@@ -70,6 +70,8 @@ namespace NULLENGINE
 		static const glm::vec2 MetersToPixels(float x, float y);
 		static const glm::vec2 PixelsToMeters(float x, float y);
 
+		static const glm::vec2 PixelsToMeters(const glm::vec2& size);
+
 		static const float MetersToPixels(float meters);
 		static const float PixelsToMeters(float pixels);
 

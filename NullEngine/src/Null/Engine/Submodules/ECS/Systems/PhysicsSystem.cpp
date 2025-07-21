@@ -322,7 +322,7 @@ namespace NULLENGINE
 		ImGui::SameLine();
 		ImGui::SetNextItemWidth(100.0f); // Set the width of the DragFloat
 		ImGui::DragFloat("##Pixels Per Meter", &m_Pixels_Per_Meter, 0.5f, 4, 128);
-
+		ImGui::Checkbox("Simulate Physics", &m_Simulate);
 		ImGui::ColorEdit4("Vector Color", glm::value_ptr(m_Color));
 	}
 
@@ -390,6 +390,15 @@ namespace NULLENGINE
 	{
 		float xMeters = xPixels / m_Pixels_Per_Meter; // Convert pixels to meters
 		float yMeters = yPixels / m_Pixels_Per_Meter; // Convert pixels to meters
+
+		return glm::vec2(xMeters, yMeters);
+	}
+
+
+	const glm::vec2 PhysicsSystem::PixelsToMeters(const glm::vec2& size)
+	{
+		float xMeters = size.x / m_Pixels_Per_Meter; // Convert pixels to meters
+		float yMeters = size.y / m_Pixels_Per_Meter; // Convert pixels to meters
 
 		return glm::vec2(xMeters, yMeters);
 	}
@@ -565,6 +574,10 @@ namespace NULLENGINE
 
 			if (body)
 			{
+
+				ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Body Index %d", rb2d.runtimeBodyIndex);
+
+
 				if (ImGui::Checkbox("Fixed Rotation", &rb2d.fixedRotation))
 					body->SetFixedRotation(rb2d.fixedRotation);
 
@@ -629,9 +642,9 @@ namespace NULLENGINE
 						
 
 							b2MassData md;
-							md.mass = rb2d.mass;
-							md.center = { pos.x, pos.y };
-							body->ResetMassData();
+							md.mass = rb2d.mass > 0.0f ? rb2d.mass : 1.0f; // ensure non-zero mass
+							md.center = b2Vec2(0.0f, 0.0f);
+							md.I = 0.0f; // zero moment of inertia, no rotation
 							body->SetMassData(&md);
 						}
 					}
@@ -1042,43 +1055,51 @@ namespace NULLENGINE
 		Rigidbody2DComponent& rb2d = registry->GetComponent<Rigidbody2DComponent>(entityId);
 		if (!IsValidRuntimeIndex(rb2d.runtimeBodyIndex))
 		{
+			if (registry->HasComponent<CircleCollider2DComponent>(entityId))
+				rb2d.runtimeBodyIndex = registry->GetComponent<Rigidbody2DComponent>(entityId).runtimeBodyIndex;
+			else if (registry->HasComponent<BoxCollider2DComponent>(entityId))
+				rb2d.runtimeBodyIndex = registry->GetComponent<BoxCollider2DComponent>(entityId).runtimeBodyIndex;
 
-
-			glm::vec3 translation = transform.translation;
-			glm::vec3 rotation = transform.rotation;
-
-
-			if (registry->HasComponent<ParentComponent>(entityId))
+			// If the runtime index is still invalid, we need to create a new body
+			if(!IsValidRuntimeIndex(rb2d.runtimeBodyIndex))
 			{
-				auto& parentComp = registry->GetComponent<ParentComponent>(entityId);
+				glm::vec3 translation = transform.translation;
+				glm::vec3 rotation = transform.rotation;
 
-				TransformComponent& parentTransform = registry->GetComponent<TransformComponent>(parentComp.m_Parent);
 
-				if (parentTransform.flags.IsSet(TransformFlags_Dirty))
+				if (registry->HasComponent<ParentComponent>(entityId))
 				{
-					return false;
+					auto& parentComp = registry->GetComponent<ParentComponent>(entityId);
+
+					TransformComponent& parentTransform = registry->GetComponent<TransformComponent>(parentComp.m_Parent);
+
+					if (parentTransform.flags.IsSet(TransformFlags_Dirty))
+					{
+						return false;
+					}
+
+					LocalToWorldPos(transform, translation, rotation);
 				}
 
-				LocalToWorldPos(transform, translation, rotation);
+				auto pos = PixelsToMeters(translation.x, translation.y);
+				auto vel = PixelsToMeters(rb2d.linearVelocity.x, rb2d.linearVelocity.y);
+
+
+				b2BodyDef bodyDef = ToBodyDef(rb2d, pos, vel, rotation.z);
+
+				b2Body* body = m_PhysicsWorld->CreateBody(&bodyDef);
+
+				b2MassData md;
+				md.mass = rb2d.mass > 0.0f ? rb2d.mass : 1.0f; // ensure non-zero mass
+				md.center = b2Vec2(0.0f, 0.0f);
+				md.I = 0.0f; // zero moment of inertia, no rotation
+				body->SetMassData(&md);
+
+				auto& entity = sceneManager->GetCurrentScene()->GetEntity(entityId);
+				body->GetUserData().pointer = entity.GetID();
+
+				rb2d.runtimeBodyIndex = AddActiveBody(body);
 			}
-
-			auto pos = PixelsToMeters(translation.x, translation.y);
-			auto vel = PixelsToMeters(rb2d.linearVelocity.x, rb2d.linearVelocity.y);
-
-
-			b2BodyDef bodyDef = ToBodyDef(rb2d, pos, vel, rotation.z);
-
-			b2Body* body = m_PhysicsWorld->CreateBody(&bodyDef);
-
-			b2MassData md;
-			md.mass = rb2d.mass;
-			md.center = { pos.x, pos.y };
-			body->SetMassData(&md);
-
-			auto& entity = sceneManager->GetCurrentScene()->GetEntity(entityId);
-			body->GetUserData().pointer = entity.GetID();
-
-			rb2d.runtimeBodyIndex = AddActiveBody(body);
 
 		}
 

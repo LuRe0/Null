@@ -328,17 +328,19 @@ namespace NULLENGINE
 		// On drag edits, set the dirty & direct manipulation flags
 		if (ImGui::DragFloat3("Translation", glm::value_ptr(transform.translation), 0.5f))
 		{
-			flags |= TransformFlags_Dirty | TransformFlags_DirectManipulation;
+			transform.flags.Set(TransformFlags_Dirty);
+			transform.flags.Set(TransformFlags_DirectManipulation);
 		}
 
 		if (ImGui::DragFloat3("Rotation", glm::value_ptr(transform.rotation), 0.5f))
 		{
-			flags |= TransformFlags_Dirty | TransformFlags_DirectManipulation;
+			transform.flags.Set(TransformFlags_Dirty);
+			transform.flags.Set(TransformFlags_DirectManipulation);
 		}
 
 		if (ImGui::DragFloat3("Scale", glm::value_ptr(transform.scale), 0.5f))
 		{
-			flags |= TransformFlags_Dirty;
+			transform.flags.Set(TransformFlags_Dirty);
 		}
 
 		if (!enabled)

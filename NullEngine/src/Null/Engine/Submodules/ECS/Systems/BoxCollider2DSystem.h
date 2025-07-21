@@ -67,9 +67,18 @@ namespace NULLENGINE
 		static void CreateBoxCollider2DComponent(void* component, const nlohmann::json& json);
 		static void AddBoxCollider2DComponent(void* component, NRegistry* registry, EntityID id);
 		void ViewBoxCollider2DComponent(Entity& entityID);
+		bool InitializeCollider(EntityID entityID, NRegistry* registry);
 
+
+		bool OnEntityCreated(const EntityCreatedEvent& e);
+		bool OnEntityDestroyed(const EntityDestroyedEvent& e);
+		bool OnEntityComponentRemoved(const EntityRemoveComponentEvent& e);
+		bool OnEntityComponentAdded(const EntityAddComponentEvent& e);
+		bool OnSceneSwitched(const SceneSwitchEvent& e);
+		bool OnInitializeBox2DStart(const InitializeBox2DColliderEvent& e);
 
 		void CalculateOffset(glm::vec3& offset, Entity& entity);
+		void AddCollider(BoxCollider2DComponent& collider, Entity& ent);
 		void CalculateOffset_rec(glm::vec3& offset, Entity& entity, Entity& parent, NSceneManager* sceneManager);
 	};
 

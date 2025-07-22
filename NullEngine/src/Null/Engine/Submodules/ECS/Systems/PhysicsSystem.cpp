@@ -394,6 +394,14 @@ namespace NULLENGINE
 		return glm::vec2(xMeters, yMeters);
 	}
 
+	//const b2Vec2 PhysicsSystem::PixelsToMeters(float xPixels, float yPixels)
+	//{
+	//	float xMeters = xPixels / m_Pixels_Per_Meter; // Convert pixels to meters
+	//	float yMeters = yPixels / m_Pixels_Per_Meter; // Convert pixels to meters
+
+	//	return b2Vec2(xMeters, yMeters);
+	//}
+
 
 	const glm::vec2 PhysicsSystem::PixelsToMeters(const glm::vec2& size)
 	{
@@ -760,6 +768,24 @@ namespace NULLENGINE
 		}
 
 		return index;
+	}
+
+	void PhysicsSystem::UpdateActiveFixture(b2Fixture* fixture, uint32_t index)
+	{
+		if (!IsValidRuntimeIndex(index))
+		{
+			return;
+		}
+
+
+		if (index >= m_ActiveFixtures.size())
+		{
+			NLE_CORE_ERROR("Index out of bounds: {0} (size: {1})", index, m_ActiveFixtures.size());
+			return;
+		}
+
+		m_ActiveFixtures[index] = fixture; // Mark the body as removed
+		//m_FreeBodyIDs.push_back(index); // Add the index to the free list
 	}
 
 	void PhysicsSystem::RemoveActiveBody(uint32_t index)

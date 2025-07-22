@@ -421,7 +421,9 @@ namespace NULLENGINE
 			if (fixture)
 			{
 
-				auto [open, remove] = ImGuiH::CollapsingHeaderWithRemove("Box Collider" + std::to_string(i));
+				uint8_t& cFlags = box.flags.m_Flags;
+
+				auto [open, enabled, remove] = ImGuiH::CollapsingHeaderWithFlagCheckboxAndRemove("Box Collider: " + std::to_string(i), cFlags, FixtureFlags_Enabled);
 
 				if (remove)
 				{
@@ -445,33 +447,65 @@ namespace NULLENGINE
 				if (!open)
 					continue;
 
+
+				if (!enabled)
+					ImGui::BeginDisabled();
+
 				ImGui::PushID(i);
 				//ImGui::Text("Collider %d", i + 1);
 
+
+
+
 				ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Fixture Index %d", box.runtimeFixtureIndex);
+
+
+
+				bool isEnabled = box.flags.IsSet(FixtureFlags_Sensor);
+
+				if (ImGui::Checkbox("Sensor", &isEnabled)) {
+					if (isEnabled)
+						box.flags.Set(FixtureFlags_Sensor);
+					else
+						box.flags.Clear(FixtureFlags_Sensor);
+				}
 
 				auto* shape = dynamic_cast<b2PolygonShape*>(fixture->GetShape());
 				if (shape)
 				{
 					bool changed = false;
+
+					ImGui::PushID("OffsetEdit");
 					changed |= ImGui::DragFloat2("Offset", glm::value_ptr(box.offset), 0.5f);
+					bool finishedOffsetEdit = ImGui::IsItemDeactivatedAfterEdit();
+					ImGui::PopID();
+
+					ImGui::PushID("ScaleEdit");
 					changed |= ImGui::DragFloat2("Scale", glm::value_ptr(box.scale), 0.5f);
+					bool finishedScaleEdit = ImGui::IsItemDeactivatedAfterEdit();
+					ImGui::PopID();
 
-					if (changed)
+					// Only update when editing finishes
+					if (finishedOffsetEdit || finishedScaleEdit)
 					{
-						auto* shape = dynamic_cast<b2PolygonShape*>(fixture->GetShape());
-						if (shape)
-						{
-							auto halfScale = PhysicsSystem::PixelsToMeters(box.scale.x / 2.0f, box.scale.y / 2.0f);
-							auto offset = PhysicsSystem::PixelsToMeters(box.offset.x, box.offset.y);
-							shape->SetAsBox(halfScale.x, halfScale.y, b2Vec2(offset.x, offset.y), 0.0f);
+						// Recreate the fixture here
+						b2Body* body = fixture->GetBody();
 
-							// Recalculate mass and inertia
-							b2Body* body = fixture->GetBody();
-							body->ResetMassData();
-						}
+						body->DestroyFixture(fixture);
+						fixture = nullptr;
+
+						b2PolygonShape newShape;
+						auto halfScale = PhysicsSystem::PixelsToMeters(box.scale.x / 2.0f, box.scale.y / 2.0f);
+						auto offset = PhysicsSystem::PixelsToMeters(box.offset.x, box.offset.y);
+						newShape.SetAsBox(halfScale.x, halfScale.y, b2Vec2(offset.x, offset.y), 0.0f);
+
+						b2FixtureDef fixtureDef;
+						fixtureDef.shape = &newShape;
+						fixtureDef.density = 1.0f; // your value
+						fixture = body->CreateFixture(&fixtureDef);
+
+						physicsSys->UpdateActiveFixture(fixture, box.runtimeFixtureIndex);
 					}
-
 				}
 				else
 				{
@@ -492,6 +526,8 @@ namespace NULLENGINE
 					fixture->SetRestitutionThreshold(box.restitutionThreshold);
 				ImGui::PopID();
 
+				if(!enabled)
+					ImGui::EndDisabled();
 
 				ImGui::TreePop();
 			}
@@ -635,6 +671,7 @@ namespace NULLENGINE
 		fixDef.friction = box.friction;
 		fixDef.restitution = box.restitution;
 		fixDef.restitutionThreshold = box.restitutionThreshold;
+		fixDef.isSensor = box.flags.IsSet(FixtureFlags_Sensor);
 
 		box.runtimeFixtureIndex = PhysicsSystem->AddActiveFixture(PhysicsSystem->CreateFixture(body, fixDef));
 
@@ -702,6 +739,7 @@ namespace NULLENGINE
 				fixDef.friction = box.friction;
 				fixDef.restitution = box.restitution;
 				fixDef.restitutionThreshold = box.restitutionThreshold;
+				fixDef.isSensor = box.flags.IsSet(FixtureFlags_Sensor);
 
 				box.runtimeFixtureIndex = PhysicsSystem->AddActiveFixture(PhysicsSystem->CreateFixture(body, fixDef));
 

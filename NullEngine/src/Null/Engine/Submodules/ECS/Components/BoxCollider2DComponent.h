@@ -78,6 +78,22 @@ namespace NULLENGINE
 
 	constexpr size_t MAX_COLLIDERS = 8;
 
+
+	enum FixtureFlags : uint8_t
+	{
+		FixtureFlags_Sensor = 1 << 0,
+		FixtureFlags_Enabled = 1 << 1,
+	};
+
+
+	DEFINE_FLAG_SET(FixtureFlagSet,
+		uint8_t m_Sensor : 1;
+	uint8_t m_Enabled : 1;
+	uint8_t m_Reserved : 6;
+		);
+
+
+
 	struct CollisionFilter
 	{
 		uint16_t categoryBits = 0x0001;
@@ -94,10 +110,10 @@ namespace NULLENGINE
 		float restitution = 0.0f;
 		float restitutionThreshold = 0.5f;
 		uint32_t runtimeFixtureIndex = UINT32_MAX;
+		FixtureFlagSet flags = FixtureFlagSet(FixtureFlags_Enabled);
 		CollisionFilter filter;
 
 	};
-
 
 	struct CircleCollider2D
 	{
@@ -108,8 +124,8 @@ namespace NULLENGINE
 		float restitution = 0.0f;
 		float restitutionThreshold = 0.5f;
 		uint32_t runtimeFixtureIndex = UINT32_MAX;
+		FixtureFlagSet flags = FixtureFlagSet(FixtureFlags_Enabled);
 		CollisionFilter filter;
-
 	};
 
 

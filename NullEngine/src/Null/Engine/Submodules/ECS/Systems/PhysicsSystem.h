@@ -35,6 +35,7 @@ struct b2Body;
 struct b2Fixture;
 struct b2FixtureDef;
 struct b2BodyDef;
+struct b2Vec2;
 
 namespace NULLENGINE
 {
@@ -69,6 +70,7 @@ namespace NULLENGINE
 
 		static const glm::vec2 MetersToPixels(float x, float y);
 		static const glm::vec2 PixelsToMeters(float x, float y);
+		//static const b2Vec2 PixelsToB2Meters(float x, float y);
 
 		static const glm::vec2 PixelsToMeters(const glm::vec2& size);
 
@@ -81,6 +83,7 @@ namespace NULLENGINE
 
 		size_t AddActiveBody(b2Body* body);	
 		size_t AddActiveFixture(b2Fixture* fixture);
+		void UpdateActiveFixture(b2Fixture* fixture, uint32_t index);
 
 		void RemoveActiveBody(uint32_t index);
 		void RemoveActiveFixture(uint32_t index, b2Body* body);

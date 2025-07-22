@@ -251,6 +251,7 @@ namespace NULLENGINE
 		fixDef.friction = circle.friction;
 		fixDef.restitution = circle.restitution;
 		fixDef.restitutionThreshold = circle.restitutionThreshold;
+		fixDef.isSensor = circle.flags.IsSet(FixtureFlags_Sensor);
 
 		circle.runtimeFixtureIndex = PhysicsSystem->AddActiveFixture(PhysicsSystem->CreateFixture(body, fixDef));
 
@@ -283,6 +284,10 @@ namespace NULLENGINE
 			circle.restitution = entryReader.GetFloat("restitution", 0.0f);
 			circle.restitutionThreshold = entryReader.GetFloat("restitutionThreshold", 0.5f);
 
+			FixtureFlagSet fFlags;
+			fFlags.Set(FixtureFlags_Enabled);
+			circle.flags.m_Flags = jsonWrapper.GetUInt8("fixtureFlags", fFlags.m_Flags);
+
 			const auto& filterJson = entry.contains("filter") ? entry["filter"] : nlohmann::json::object();
 			circle.filter.categoryBits = JsonReader(filterJson).GetUint16("categoryBits", 0x0001);
 			circle.filter.maskBits = JsonReader(filterJson).GetUint16("maskBits", 0xFFFF);
@@ -297,6 +302,7 @@ namespace NULLENGINE
 		flags.Set(ComponentFlags_Serialized);
 
 		comp->componentFlags.m_Flags = jsonWrapper.GetUInt8("ComponentFlags", flags.m_Flags);
+
 	}
 
 
@@ -327,6 +333,7 @@ namespace NULLENGINE
 			colliderJson["friction"] = circle.friction;
 			colliderJson["restitution"] = circle.restitution;
 			colliderJson["restitutionThreshold"] = circle.restitutionThreshold;
+			colliderJson["fixtureFlags"] = circle.flags.m_Flags;
 
 			colliderJson["filter"] = {
 				{ "categoryBits", circle.filter.categoryBits },
@@ -411,7 +418,9 @@ namespace NULLENGINE
 			if (fixture)
 			{
 			
-				auto [open, remove] = ImGuiH::CollapsingHeaderWithRemove("Circle Collider" + std::to_string(i));
+				uint8_t& cFlags = circle.flags.m_Flags;
+
+				auto [open, enabled, remove] = ImGuiH::CollapsingHeaderWithFlagCheckboxAndRemove("Circle Collider" + std::to_string(i), cFlags, FixtureFlags_Enabled);
 
 				if (remove)
 				{
@@ -436,24 +445,66 @@ namespace NULLENGINE
 				if (!open)
 					continue;
 
+
+				if (!enabled)
+					ImGui::BeginDisabled();
+
 				ImGui::PushID(i);
-				ImGui::Text("Collider %d", i + 1);
+				//ImGui::Text("Collider %d", i + 1);
+
+				ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Fixture Index %d", circle.runtimeFixtureIndex);
+
+
+
+				bool isEnabled = circle.flags.IsSet(FixtureFlags_Sensor);
+
+				if (ImGui::Checkbox("Sensor", &isEnabled)) {
+					if (isEnabled)
+						circle.flags.Set(FixtureFlags_Sensor);
+					else
+						circle.flags.Clear(FixtureFlags_Sensor);
+				}
+
+				bool updated = false;
+
+				// Edit offset
+				ImGui::PushID("CircleOffset");
 				if (ImGui::DragFloat2("Offset", glm::value_ptr(circle.offset), 0.5f))
-				{
-					auto offset = physicsSys->PixelsToMeters(circle.offset.x, circle.offset.y);
-					glm::vec3 childOffset(0.0f);
-					CalculateOffset(childOffset, entity);
-					auto childWorldPositionMeters = PhysicsSystem::PixelsToMeters(childOffset.x, childOffset.y);
-					// Combine the child’s world position and the collider’s local offset
-					b2Vec2 finalOffset(childWorldPositionMeters.x + offset.x,
-						childWorldPositionMeters.y + offset.y);
-					dynamic_cast<b2CircleShape*>(fixture->GetShape())->m_p.Set(finalOffset.x, finalOffset.y);
-				}
+					updated |= ImGui::IsItemDeactivatedAfterEdit();
+				ImGui::PopID();
+
+				// Edit radius
+				ImGui::PushID("CircleRadius");
 				if (ImGui::DragFloat("Radius", &circle.radius, 0.5f))
+					updated |= ImGui::IsItemDeactivatedAfterEdit();
+				ImGui::PopID();
+
+				if (updated)
 				{
-					auto radius = PhysicsSystem::PixelsToMeters(circle.radius);
-					dynamic_cast<b2CircleShape*>(fixture->GetShape())->m_radius = radius;
+					// Convert to meters
+					auto offsetMeters = physicsSys->PixelsToMeters(circle.offset.x, circle.offset.y);
+
+					float radiusMeters = PhysicsSystem::PixelsToMeters(circle.radius);
+
+					// Recreate the shape
+					b2Body* body = fixture->GetBody();
+					body->DestroyFixture(fixture);
+					fixture = nullptr;
+
+					b2CircleShape newShape;
+					newShape.m_p = b2Vec2(offsetMeters.x, offsetMeters.y); // local offset from body origin
+					newShape.m_radius = radiusMeters;
+
+					b2FixtureDef fixtureDef;
+					fixtureDef.shape = &newShape;
+					fixtureDef.density = 1.0f; // or whatever your circle uses
+
+					fixture = body->CreateFixture(&fixtureDef);
+
+					physicsSys->UpdateActiveFixture(fixture, circle.runtimeFixtureIndex);
+
 				}
+
 				if (ImGui::DragFloat("Density", &circle.density, 0.5f))
 					fixture->SetDensity(circle.density);
 				if (ImGui::DragFloat("Friction", &circle.friction, 0.5f, 0, 1.0f))
@@ -464,6 +515,9 @@ namespace NULLENGINE
 					fixture->SetRestitutionThreshold(circle.restitutionThreshold);
 				ImGui::PopID();
 
+
+				if (!enabled)
+					ImGui::EndDisabled();
 
 				ImGui::TreePop();
 			}
@@ -524,7 +578,7 @@ namespace NULLENGINE
 
 			NLE_CORE_ASSERT(body, "CircleCollider2DSystem::InitializeCollider: Body is null for entity ID: {0}", entityID);
 
-			body->ResetMassData(); // Reset mass data to ensure correct physics calculations
+			//body->ResetMassData(); // Reset mass data to ensure correct physics calculations
 
 
 			for (uint8_t i = 0; i < cc2d.colliderCount; ++i)
@@ -551,6 +605,7 @@ namespace NULLENGINE
 				fixDef.friction = circle.friction;
 				fixDef.restitution = circle.restitution;
 				fixDef.restitutionThreshold = circle.restitutionThreshold;
+				fixDef.isSensor = circle.flags.IsSet(FixtureFlags_Sensor);
 
 				circle.runtimeFixtureIndex = PhysicsSystem->AddActiveFixture(PhysicsSystem->CreateFixture(body, fixDef));
 			}

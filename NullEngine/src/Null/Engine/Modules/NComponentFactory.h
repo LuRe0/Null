@@ -79,6 +79,8 @@ namespace NULLENGINE
 
 		void AddComponentFromBinary(const std::string& compName, const std::vector<uint8_t>& blob, NRegistry* registry, EntityID id) const;
 
+		void AddNamedComponentFromBinary(const std::string& compName, const uint32_t nameID, const std::vector<uint8_t>& blob, NRegistry* registry, EntityID id) const;
+
 		//BaseComponent& CreateComponent(const std::string& componentName, const nlohmann::json& componentData, NRegistry* registry, EntityID id) const;
 
 		//void CloneComponent(const std::string& componentName, BaseComponent* component, const nlohmann::json& componentData, NRegistry* registry, EntityID id) const;
@@ -122,6 +124,24 @@ namespace NULLENGINE
 			registry->AddComponent<T>(entityID, std::forward<TArgs>(args)...);
 		}
 
+
+		template <typename T, typename ...TArgs>
+		static void AddOrUpdateNamed(EntityID entityID, uint32_t NameID,  T* newComponent, NRegistry* registry, TArgs&& ...args)
+		{
+			if (registry->HasNamedComponent<T>(entityID, NameID))
+			{
+				T& component = registry->GetNamedComponent<T>(entityID, NameID);
+
+				component = *newComponent;
+
+				NLE_CORE_INFO("Successfully Updated {0}, {1} to entity {2}", Component<T>::TypeName(), Component<T>::GetID(), entityID);
+
+				return;
+			}
+
+			registry->AddNamedComponent<T>(entityID, NameID, std::forward<TArgs>(args)...);
+		}
+
 		template<typename ...Args>
 		static auto InvokeSolFunctions(uint32_t componentID, const std::string& func_id, Args&& ...args)
 		{
@@ -139,16 +159,20 @@ namespace NULLENGINE
 			std::function<void(Entity&)> func2,
 			std::function<nlohmann::json(const void*)> func3,
 			void (*func4)(void*, NRegistry* registry, EntityID id),
-			std::function<JSON(const void*, const void*)> func5)
+			std::function<JSON(const void*, const void*)> func5,
+			std::function<void(void*, const uint32_t&)> callback = {})
 		{
 			AddCreateFunction<T>(func);
 			AddViewFunction<T>(func2);
 			AddWriteFunction<T>(func3);
+
 			AddComponentID<T>();
+
 			AddSelfAddFunction<T>(func4);
 			AddDiffFunction<T>(func5);
 			AddLuaFunctions<T>();
 			AddBinarySerialization_POD<T>();
+			AddNamingFunction<T>(callback);
 		}
 
 		std::vector<std::string> GetComponentNames() const
@@ -170,18 +194,33 @@ namespace NULLENGINE
 			NLE_CORE_THROW("Component: {0} is not registered in facoty", name);
 		}
 
+
+
+		uint32_t IsMultiple(const uint32_t& compID) const
+		{
+			auto it = m_ComponentType.find(compID);
+			if (it != m_ComponentType.end()) {
+				return it->second;
+			}
+
+			NLE_CORE_THROW("Component: {0} is not registered in facoty", compID);
+		}
+
 	private:
 		static std::unordered_map<uint32_t, std::function<void(void*, const nlohmann::json&)>> m_ComponentDeserializer;
 		static std::unordered_map<uint32_t, std::function<void(void*, NRegistry*, EntityID)>> m_ComponentAdder;
 		static std::unordered_map<uint32_t, std::function<nlohmann::json(const void*)>> m_ComponentSerializer;
+		static std::unordered_map<uint32_t, std::function<void(void*, const uint32_t&)>> m_NameIDAssigner;
 		// Binary (de)serialization
 		static std::unordered_map<uint32_t, std::function<std::vector<uint8_t>(const void*)>> m_ComponentBinarySerializer;
 		static std::unordered_map<uint32_t, std::function<void* (const std::vector<uint8_t>, size_t)>> m_ComponentBinaryDeserializer;
 		static std::unordered_map<uint32_t, std::function<void* (void)>> m_ComponentCreator;
 		static std::unordered_map<uint32_t, std::function<void(void*)>> m_ComponentDestroyer;
 		static std::unordered_map<uint32_t, std::function<nlohmann::json(const void*, const void*)>> m_ComponentDiffer;
+
 		static std::unordered_map<uint32_t, size_t> m_ComponentTypeSize;
 		static std::unordered_map<uint32_t, uint32_t> m_ComponentNamesToID;
+		static std::unordered_map<uint32_t, bool> m_ComponentType;
 		static std::unordered_map<uint32_t, std::function<void(Entity&)>> m_ComponentInspector;
 		static std::unordered_map<uint32_t, std::unordered_map<uint32_t, std::function<sol::object(Entity&, sol::this_state)>>> m_TypeRegistry;
 
@@ -190,6 +229,7 @@ namespace NULLENGINE
 		{
 			m_ComponentCreator.emplace(Component<T>::GetID(), Create<T>);
 			m_ComponentDestroyer.emplace(Component<T>::GetID(), Destroy<T>);
+			m_ComponentType.emplace(Component<T>::GetID(), Component<T>::AllowMultiple);
 
 			m_ComponentDeserializer[Component<T>::GetID()] = [func](void* component, const nlohmann::json& json) {
 				func(component, json);
@@ -198,6 +238,13 @@ namespace NULLENGINE
 
 			m_ComponentTypeSize[Component<T>::GetID()] = sizeof(T);
 		}
+
+		template <typename T>
+		static void AddNamingFunction(std::function<void(void*, const uint32_t&)> func)
+		{
+			m_NameIDAssigner[Component<T>::GetID()] = func;
+		}
+
 
 		template <typename T>
 		static void AddSelfAddFunction(void (*func)(void*, NRegistry* registry, EntityID id))

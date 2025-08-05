@@ -11,6 +11,8 @@
 //******************************************************************************//
 #include "stdafx.h"
 #include "Input.h"
+#include "NIncludes.h"
+#include "../Submodules/Events/CommonEvents.h"
 
 
 
@@ -34,6 +36,7 @@
 namespace NULLENGINE
 {
 	static glm::vec2 m_MousePos;
+	static glm::vec2 m_EditorMousePos;
 	static std::unordered_map<int, bool> m_KeyState;
 	static std::unordered_map<int, bool> m_PrevKeyState;
 	static std::unordered_map<int, bool> m_KeyRepeatState;
@@ -133,6 +136,13 @@ namespace NULLENGINE
 		return m_MousePos;
 	}
 
+	glm::vec2 Input::GetWorldMouseXY()
+	{
+		glm::vec2 screenPos = NEngine::Instance().GetIsEditorEnabled() ? m_EditorMousePos : m_MousePos;
+
+		return NCameraManager::Instance()->ScreenToWorldPos(screenPos);
+	}
+
 	void Input::RegisterToScripAPI(sol::state& lua)
 	{
 		lua.create_named_table("Input",
@@ -147,12 +157,19 @@ namespace NULLENGINE
 			"MouseHold", &Input::MouseHold,
 			"GetMouseX", &Input::GetMouseX,
 			"GetMouseY", &Input::GetMouseY,
-			"GetMousePosition", &Input::GetMouseXY
+			"GetMousePosition", &Input::GetMouseXY,
+			"GetMouseWorldPosition", &Input::GetWorldMouseXY
 			// Register other static methods here...
 		);
 
 
 		RegisterGLFWKeys(lua);
+	}
+
+	void Input::SetEditorMousePosition(float x, float y)
+	{
+		m_EditorMousePos.x = x;
+		m_EditorMousePos.y = y;
 	}
 
 	void Input::RegisterGLFWKeys(sol::state& lua)

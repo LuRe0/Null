@@ -34,7 +34,7 @@
 constexpr GLuint COLOR_EASE_TEXTURE_UNIT = 5;
 constexpr GLuint SIZE_EASE_TEXTURE_UNIT = 6;
 constexpr GLuint ROTATION_EASE_TEXTURE_UNIT = 7;
-constexpr GLuint Fade_EASE_TEXTURE_UNIT = 8;
+constexpr GLuint FADE_EASE_TEXTURE_UNIT = 8;
 constexpr GLuint SHAPE_TEXTURE_UNIT = 9;
 
 //******************************************************************************//
@@ -46,38 +46,39 @@ namespace NULLENGINE
 
 	void SetShapeUniforms(ComputeShader& shader, const ParticleEmitter& emitter)
 	{
-		switch (emitter.shape)
+		switch (emitter.spawnShapeData.shapeType)
 		{
 		case SpawnShape::POINT:
-			shader.setVec3("u_Point", emitter.point.point);
+			shader.setVec3("u_Point", emitter.spawnShapeData.data.point.point);
 			break;
 
 		case SpawnShape::CIRCLE:
-			shader.setFloat("u_CircleRadius", emitter.circle.radius);
+			shader.setFloat("u_CircleRadius", emitter.spawnShapeData.data.circle.radius);
 			break;
 
 		case SpawnShape::DONUT:
-			shader.setFloat("u_DonutRadius1", emitter.donut.radius1);
-			shader.setFloat("u_DonutRadius2", emitter.donut.radius2);
+			shader.setFloat("u_DonutRadius1", emitter.spawnShapeData.data.donut.innerRadius);
+			shader.setFloat("u_DonutRadius2", emitter.spawnShapeData.data.donut.outerRadius);
 			break;
 
 		case SpawnShape::LINE:
-			shader.setVec3("u_LinePoint1", emitter.line.point1);
-			shader.setVec3("u_LinePoint2", emitter.line.point2);
+			shader.setVec3("u_LinePoint1", emitter.spawnShapeData.data.line.p1);
+			shader.setVec3("u_LinePoint2", emitter.spawnShapeData.data.line.p2);
 			break;
 
 		case SpawnShape::RECT:
-			shader.setVec2("u_RectCenter", emitter.rect.center);
-			shader.setVec2("u_RectExtent", emitter.rect.extent);
+			shader.setVec2("u_RectCenter", emitter.spawnShapeData.data.rect.center);
+			shader.setVec2("u_RectExtent", emitter.spawnShapeData.data.rect.extent);
 			break;
 		case SpawnShape::TEXTURE:
 		{
-			if (emitter.texture.spriteSource)
+			SpriteSource* spriteSource =  NSpriteSourceManager::Instance()->Get(emitter.spawnShapeData.data.texture.spriteID);
+			if (spriteSource)
 			{
-				shader.setTexture("u_SpawnMask", emitter.texture.spriteSource->GetTexture()->GetID(), SHAPE_TEXTURE_UNIT);
-				shader.setVec2("u_MaskWorldSize", emitter.texture.worldSize);
-				shader.setFloat("u_MaskAlphaThreshold", emitter.texture.alphaThreshold);
-				shader.setFloat("u_InvertMask", emitter.texture.invertMask);
+				shader.setTexture("u_SpawnMask", spriteSource->GetTexture()->GetID(), SHAPE_TEXTURE_UNIT);
+				shader.setVec2("u_MaskWorldSize", emitter.spawnShapeData.data.texture.size);
+				shader.setFloat("u_MaskAlphaThreshold", emitter.spawnShapeData.data.texture.alphaThreshold);
+				shader.setFloat("u_InvertMask", emitter.spawnShapeData.data.texture.invertMask);
 			}
 		}
 		}
@@ -107,7 +108,9 @@ namespace NULLENGINE
 		componentFactory->Register<ParticleSystemComponent>(CreateParticleSystemComponent,
 			[this](Entity& id) { this->ViewParticleSystemComponent(id); }, 
 			WriteParticleSystemComponent, 
-			AddParticleSystemComponent, DiffParticleSystemComponent);
+			AddParticleSystemComponent, DiffParticleSystemComponent,
+			nullptr // AssignNameToComponent is not used here, so we pass nullptr
+		);
 
 		m_TotalMaxParticles = 0;
 		m_EmitComputeShader = 0;
@@ -139,14 +142,14 @@ namespace NULLENGINE
 
 		SUBSCRIBE_EVENT(EntityCreatedEvent, &ParticleSystem::OnEntityCreated, eventManager, EventPriority::Low);
 		SUBSCRIBE_EVENT(SceneSwitchEvent, &ParticleSystem::OnSceneSwitched, eventManager, EventPriority::Low);
-		SUBSCRIBE_EVENT(EntityAddComponentEvent, &ParticleSystem::OnEntityComponentAdded, eventManager, EventPriority::High);
+		SUBSCRIBE_EVENT(EntityAddComponentEvent, &ParticleSystem::OnEntityComponentAdded, eventManager, EventPriority::Low);
 		SUBSCRIBE_EVENT(EntityRemoveComponentEvent, &ParticleSystem::OnEntityComponentRemoved, eventManager, EventPriority::High);
 		SUBSCRIBE_EVENT(EntityDestroyedEvent, &ParticleSystem::OnEntityDestroyed, eventManager, EventPriority::High);
 
 		NRegistry* registry = NRegistry::Instance();
 
 
-		ParticleBatchRenderer<Mesh>* batcher = renderer->AddBatcher<ParticleBatchRenderer<Mesh>>("Particle");
+		ParticleBatchRenderer<Mesh>* batcher = renderer->AddBatcher<ParticleBatchRenderer<Mesh>>(STRID("Particle"));
 
 
 		m_Batcher = dynamic_cast<ParticleBatchRenderer<Mesh>*>(batcher);
@@ -208,7 +211,7 @@ namespace NULLENGINE
 
 
 		// shape
-		shader.setInt("u_EmitterShape", static_cast<int>(emitter.shape));
+		shader.setInt("u_EmitterShape", static_cast<int>(emitter.spawnShapeData.shapeType));
 
 		// forces
 		shader.setVec3("u_VortexCenter", emitter.vortexCenter);
@@ -217,8 +220,8 @@ namespace NULLENGINE
 		shader.setVec3("u_WindDirection", (glm::length(emitter.windDirection) > 0.001f) ? glm::normalize(emitter.windDirection) : emitter.windDirection);
 		shader.setFloat("u_WindStrength", emitter.windStrength);
 
-		shader.setVec3("u_AttractorPosition", emitter.AttractorPosition);
-		shader.setFloat("u_AttractionStrength", emitter.AttractionStrength);
+		shader.setVec3("u_AttractorPosition", emitter.attractorPosition);
+		shader.setFloat("u_AttractionStrength", emitter.attractionStrength);
 
 		shader.setVec3("u_SpinCenter", emitter.spinCenter);
 		shader.setFloat("u_SpinSpeed", emitter.spinSpeed);
@@ -241,8 +244,13 @@ namespace NULLENGINE
 			ParticleSystemComponent& particleSystem = registry->GetComponent<ParticleSystemComponent>(entityId);
 			TransformComponent& transform = registry->GetComponent<TransformComponent>(entityId);
 
-			for (ParticleEmitter& emitter : particleSystem.m_Emitters)
+			if (!particleSystem.componentFlags.IsSet(ComponentFlags_Enabled))
+				continue;
+
+			for (size_t i = 0; i < particleSystem.emitterCount; ++i)
 			{
+				ParticleEmitter& emitter = particleSystem.emitters[i];
+
 				if (!emitter.enabled || emitter.finished)
 					continue;
 
@@ -250,11 +258,10 @@ namespace NULLENGINE
 				m_UpdateComputeShader->Bind();
 				m_UpdateComputeShader->setFloat("u_DeltaTime", dt);
 				m_UpdateComputeShader->setInt("u_MaxParticles", emitter.maxParticles);
-				emitter.colorEaseCurve.BindToShader(m_UpdateComputeShader->GetID(), "u_ColorEaseCurve", COLOR_EASE_TEXTURE_UNIT);
-				emitter.sizeEaseCurve.BindToShader(m_UpdateComputeShader->GetID(), "u_SizeEaseCurve", SIZE_EASE_TEXTURE_UNIT);
-				emitter.rotationEaseCurve.BindToShader(m_UpdateComputeShader->GetID(), "u_RotationEaseCurve", ROTATION_EASE_TEXTURE_UNIT);
-				emitter.rotationEaseCurve.BindToShader(m_UpdateComputeShader->GetID(), "u_AlphaEaseCurve", ROTATION_EASE_TEXTURE_UNIT);
-
+				EasingCurveLib::BindToShader(emitter.colorEaseCurve, m_UpdateComputeShader->GetID(), "u_ColorEaseCurve", COLOR_EASE_TEXTURE_UNIT);
+				EasingCurveLib::BindToShader(emitter.fadeEaseCurve, m_UpdateComputeShader->GetID(), "u_AlphaEaseCurve", FADE_EASE_TEXTURE_UNIT);
+				EasingCurveLib::BindToShader(emitter.sizeEaseCurve, m_UpdateComputeShader->GetID(), "u_SizeEaseCurve", SIZE_EASE_TEXTURE_UNIT);
+				EasingCurveLib::BindToShader(emitter.rotationEaseCurve, m_UpdateComputeShader->GetID(), "u_RotationEaseCurve", ROTATION_EASE_TEXTURE_UNIT);
 				SetEmitterUniforms(*m_UpdateComputeShader, emitter, transform);
 
 				m_ParticleSSBO.Bind(0);
@@ -318,16 +325,18 @@ namespace NULLENGINE
 					m_EmitComputeShader->setFloat("u_EmitterInitialRotation", emitter.initialRotation);
 					m_EmitComputeShader->setInt("u_EmitterInitialFrame", emitter.initialFrame);
 
-					if (emitter.spriteSource)
+					SpriteSource* spriteSource = NSpriteSourceManager::Instance()->Get(emitter.spriteSourceID);
+
+					if (spriteSource)
 					{
-						auto* tex = emitter.spriteSource->GetTexture();
+						auto* tex = spriteSource->GetTexture();
 						uint32_t compactID = NEngine::Instance()
-							.Get<NTextureManager>()->GetTextureIndex(emitter.spriteSource->GetName());
+							.Get<NTextureManager>()->GetTextureIndex(spriteSource->GetName());
 
 						m_EmitComputeShader->setInt("u_EmitterTextureIndex",compactID);
 
 
-						m_EmitComputeShader->setVec2("u_Dimensions", emitter.spriteSource->GetSize());
+						m_EmitComputeShader->setVec2("u_Dimensions", spriteSource->GetSize());
 
 					}
 					else
@@ -377,8 +386,12 @@ namespace NULLENGINE
 			ParticleSystemComponent& particleSystem = registry->GetComponent<ParticleSystemComponent>(entityId);
 			TransformComponent& transform = registry->GetComponent<TransformComponent>(entityId);
 
-			for (ParticleEmitter& emitter : particleSystem.m_Emitters)
+			if (!particleSystem.componentFlags.IsSet(ComponentFlags_Enabled))
+				continue;
+
+			for (size_t i = 0; i < particleSystem.emitterCount; ++i)
 			{
+				ParticleEmitter& emitter = particleSystem.emitters[i];
 				if (!emitter.enabled || emitter.finished)
 					continue;
 
@@ -391,9 +404,9 @@ namespace NULLENGINE
 				// The depth is the z-component of the camera space position
 				float depth = cameraSpacePosition.z;
 
-
+				SpriteSource* spriteSource = NSpriteSourceManager::Instance()->Get(emitter.spriteSourceID);
 				//model, mesh, spritesrc, tint, shadername, frameindex, entity
-				renderer->AddRenderCall(RenderCommandTypes::Particles, std::make_unique<ParticleData>(emitter.spriteSource, depth));
+				renderer->AddRenderCall(RenderCommandTypes::Particles, std::make_unique<ParticleData>(spriteSource, depth));
 			}
 		}
 	}
@@ -422,7 +435,7 @@ namespace NULLENGINE
 
 		if (!jsonWrapper.Empty())
 		{
-			comp->m_Name = jsonWrapper.GetString("name", "");
+			comp->nameID = STRID(jsonWrapper.GetString("name", ""));
 
 			if (json.contains("Emitters") && json["Emitters"].is_array())
 			{
@@ -433,7 +446,7 @@ namespace NULLENGINE
 
 					ParticleEmitter emitter;
 
-					emitter.name = emitterJsonWrapper.GetString("name", "");
+					emitter.nameID = STRID(emitterJsonWrapper.GetString("name", ""));
 					emitter.emitterID = emitterJsonWrapper.GetInt("emitterID", 0);
 
 					emitter.offset = emitterJsonWrapper.GetVec3("offset", glm::vec3(0.0f));
@@ -462,9 +475,12 @@ namespace NULLENGINE
 					glm::vec2 dimension = emitterJsonWrapper.GetVec2("dimension", { 1.0f, 1.0f });
 					auto src = emitterJsonWrapper.GetString("texture", "");
 					if (!src.empty())
-						emitter.spriteSource = spritesrcManager->Create(src, static_cast<int>(dimension.x), static_cast<int>(dimension.y));
+					{
+						emitter.spriteSourceID = STRID(src);
+						spritesrcManager->Create(src, static_cast<int>(dimension.x), static_cast<int>(dimension.y));
+					}
 					else
-						emitter.spriteSource = nullptr;
+						emitter.spriteSourceID = 0;
 
 					//size
 					emitter.startSize = emitterJsonWrapper.GetVec2("startSize", glm::vec2(1.0f, 0.0f));
@@ -528,8 +544,8 @@ namespace NULLENGINE
 					emitter.windDirection = emitterJsonWrapper.GetVec3("windDirection", glm::vec3(0.0f));
 					emitter.windStrength = emitterJsonWrapper.GetFloat("windStrength", 0.0f);
 
-					emitter.AttractorPosition = emitterJsonWrapper.GetVec3("attractorPosition", glm::vec3(0.0f));
-					emitter.AttractionStrength = emitterJsonWrapper.GetFloat("attractionStrength", 0.0f);
+					emitter.attractorPosition = emitterJsonWrapper.GetVec3("attractorPosition", glm::vec3(0.0f));
+					emitter.attractionStrength = emitterJsonWrapper.GetFloat("attractionStrength", 0.0f);
 
 					emitter.gravity = emitterJsonWrapper.GetVec3("gravity", glm::vec3(0.0f));
 					emitter.gravityScale = emitterJsonWrapper.GetFloat("gravityScale", 0.0f);
@@ -542,21 +558,16 @@ namespace NULLENGINE
 					emitter.burstCount = emitterJsonWrapper.GetInt("burstCount", 0);
 					emitter.burstCooldown = emitterJsonWrapper.GetFloat("burstCooldown", 0.0f);
 
-					emitter.shape = static_cast<SpawnShape>(emitterJsonWrapper.GetInt("shape", static_cast<int>(SpawnShape::POINT)));
+					emitter.spawnShapeData.shapeType = static_cast<SpawnShape>(emitterJsonWrapper.GetInt("shape", static_cast<int>(SpawnShape::POINT)));
 
-					switch (emitter.shape)
+					switch (emitter.spawnShapeData.shapeType)
 					{
 					case SpawnShape::LINE:
 						if (emitterJsonWrapper.HasData("line"))
 						{
 							auto lineObj = emitterJsonWrapper.GetJSONObject("line");
-							emitter.line.point1.x = lineObj.GetFloat("point1_x", 0.0f);
-							emitter.line.point1.y = lineObj.GetFloat("point1_y", 0.0f);
-							emitter.line.point1.z = lineObj.GetFloat("point1_z", 0.0f);
-
-							emitter.line.point2.x = lineObj.GetFloat("point2_x", 0.0f);
-							emitter.line.point2.y = lineObj.GetFloat("point2_y", 0.0f);
-							emitter.line.point2.z = lineObj.GetFloat("point2_z", 0.0f);
+							emitter.spawnShapeData.data.line.p1 = lineObj.GetVec3("p1", glm::vec3(0.0f));
+							emitter.spawnShapeData.data.line.p2 = lineObj.GetVec3("p2", glm::vec3(0.0f));
 						}
 						break;
 
@@ -564,7 +575,7 @@ namespace NULLENGINE
 						if (emitterJsonWrapper.HasData("circle"))
 						{
 							auto circleObj = emitterJsonWrapper.GetJSONObject("circle");
-							emitter.circle.radius = circleObj.GetFloat("radius", 1.0f);
+							emitter.spawnShapeData.data.circle.radius = circleObj.GetFloat("radius", 1.0f);
 						}
 						break;
 
@@ -572,8 +583,8 @@ namespace NULLENGINE
 						if (emitterJsonWrapper.HasData("donut"))
 						{
 							auto donutObj = emitterJsonWrapper.GetJSONObject("donut");
-							emitter.donut.radius1 = donutObj.GetFloat("radius1", 0.5f);
-							emitter.donut.radius2 = donutObj.GetFloat("radius2", 1.0f);
+							emitter.spawnShapeData.data.donut.innerRadius = donutObj.GetFloat("innerRadius", 0.5f);
+							emitter.spawnShapeData.data.donut.outerRadius = donutObj.GetFloat("outerRadius", 1.0f);
 						}
 						break;
 
@@ -581,9 +592,7 @@ namespace NULLENGINE
 						if (emitterJsonWrapper.HasData("point"))
 						{
 							auto pointObj = emitterJsonWrapper.GetJSONObject("point");
-							emitter.point.point.x = pointObj.GetFloat("x", 0.0f);
-							emitter.point.point.y = pointObj.GetFloat("y", 0.0f);
-							emitter.point.point.z = pointObj.GetFloat("z", 0.0f);
+							emitter.spawnShapeData.data.point.point = pointObj.GetVec3("point", glm::vec3(0.0f));
 						}
 						break;
 
@@ -592,29 +601,33 @@ namespace NULLENGINE
 						{
 							auto rectObj = emitterJsonWrapper.GetJSONObject("rect");
 
-							emitter.rect.center = rectObj.GetVec2("rectCenter", emitter.rect.center);
-							emitter.rect.extent = rectObj.GetVec2("rectExtent", emitter.rect.extent);
+							emitter.spawnShapeData.data.rect.center = rectObj.GetVec2("rectCenter", emitter.spawnShapeData.data.rect.center);
+							emitter.spawnShapeData.data.rect.extent = rectObj.GetVec2("rectExtent", emitter.spawnShapeData.data.rect.extent);
 						}
 						break;
 					case SpawnShape::TEXTURE:
 						if (emitterJsonWrapper.HasData("textureShape"))
 						{
 							auto texureObj = emitterJsonWrapper.GetJSONObject("textureShape");
-							emitter.texture.worldSize = texureObj.GetVec2("worldSize", emitter.texture.worldSize);
-							emitter.texture.alphaThreshold = texureObj.GetFloat("alphaThreshold", 0.1f);
-							emitter.texture.invertMask = texureObj.GetFloat("invertMask", 0.0f);
+							emitter.spawnShapeData.data.texture.size = texureObj.GetVec2("worldSize", emitter.spawnShapeData.data.texture.size);
+							emitter.spawnShapeData.data.texture.alphaThreshold = texureObj.GetFloat("alphaThreshold", 0.1f);
+							emitter.spawnShapeData.data.texture.invertMask = texureObj.GetFloat("invertMask", 0.0f);
 							auto src = texureObj.GetString("shapeTexture", "");
 							if (!src.empty())
-								emitter.texture.spriteSource = spritesrcManager->Create(src, static_cast<int>(dimension.x), static_cast<int>(dimension.y));
+							{
+								emitter.spawnShapeData.data.texture.spriteID = STRID(src);
+
+								spritesrcManager->Create(src, static_cast<int>(dimension.x), static_cast<int>(dimension.y));
+							}
 							else
-								emitter.texture.spriteSource = nullptr;
+								emitter.spawnShapeData.data.texture.spriteID = 0;
 						}
 						break;
 					default:
 						break;
 					}
 
-					comp->m_Emitters.push_back(emitter);
+					comp->emitters[comp->emitterCount++] = emitter;
 				}
 			}
 		}
@@ -631,317 +644,317 @@ namespace NULLENGINE
 		NComponentFactory* componentFactory = NComponentFactory::Instance();
 
 		auto* comp = static_cast<ParticleSystemComponent*>(component);
-		componentFactory->AddOrUpdate<ParticleSystemComponent>(id, comp, registry, comp->m_Name, comp->m_Emitters);
+		componentFactory->AddOrUpdate<ParticleSystemComponent>(id, comp, registry, comp->emitters, comp->nameID, comp->emitterCount);
 	}
 
 	JSON DiffEmitter(const ParticleEmitter& a, const ParticleEmitter& b)
 	{
 		JSON diff;
 
-		if (a.name != b.name)
-			diff["name"] = b.name;
+		//if (a.name != b.name)
+		//	diff["name"] = b.name;
 
-		if (a.emitterID != b.emitterID)
-			diff["emitterID"] = b.emitterID;
+		//if (a.emitterID != b.emitterID)
+		//	diff["emitterID"] = b.emitterID;
 
-		// Texture comparison (handle nullptr)
-		std::string texA = a.spriteSource ? a.spriteSource->GetName() : "";
-		std::string texB = b.spriteSource ? b.spriteSource->GetName() : "";
-		if (texA != texB)
-			diff["texture"] = texB;
+		//// Texture comparison (handle nullptr)
+		//std::string texA = a.spriteSource ? a.spriteSource->GetName() : "";
+		//std::string texB = b.spriteSource ? b.spriteSource->GetName() : "";
+		//if (texA != texB)
+		//	diff["texture"] = texB;
 
-		// Dimension: compare vectors or arrays of int
-		if (a.spriteSource == nullptr && b.spriteSource == nullptr)
-		{
-			// both null => dimension default {1,1}, no diff needed
-		}
-		else if (a.spriteSource == nullptr || b.spriteSource == nullptr)
-		{
-			diff["dimension"] = nlohmann::json::array({ b.spriteSource->GetRows(), b.spriteSource->GetCols() });
-		}
-		else
-		{
-			if (a.spriteSource->GetRows() != b.spriteSource->GetRows() ||
-				a.spriteSource->GetCols() != b.spriteSource->GetCols())
-			{
-				diff["dimension"] = nlohmann::json::array({ b.spriteSource->GetRows(), b.spriteSource->GetCols() });
-			}
-		}
-
-		// Simple vector3 comparisons:
-		if (!Vec3Equal(a.offset, b.offset))
-			diff["offset"] = { b.offset.x, b.offset.y, b.offset.z };
-
-		if (a.emitRate != b.emitRate)
-			diff["emissionRate"] = b.emitRate;
-
-		if (a.minLifetime != b.minLifetime)
-			diff["minLifetime"] = b.minLifetime;
-
-		if (a.maxLifetime != b.maxLifetime)
-			diff["maxLifetime"] = b.maxLifetime;
-
-		if (a.randomizeLifetime != b.randomizeLifetime)
-			diff["randomizeLifetime"] = b.randomizeLifetime;
-
-		if (a.drag != b.drag)
-			diff["drag"] = b.drag;
+		//// Dimension: compare vectors or arrays of int
+		//if (a.spriteSource == nullptr && b.spriteSource == nullptr)
+		//{
+		//	// both null => dimension default {1,1}, no diff needed
+		//}
+		//else if (a.spriteSource == nullptr || b.spriteSource == nullptr)
+		//{
+		//	diff["dimension"] = nlohmann::json::array({ b.spriteSource->GetRows(), b.spriteSource->GetCols() });
+		//}
+		//else
+		//{
+		//	if (a.spriteSource->GetRows() != b.spriteSource->GetRows() ||
+		//		a.spriteSource->GetCols() != b.spriteSource->GetCols())
+		//	{
+		//		diff["dimension"] = nlohmann::json::array({ b.spriteSource->GetRows(), b.spriteSource->GetCols() });
+		//	}
+		//}
+
+		//// Simple vector3 comparisons:
+		//if (!Vec3Equal(a.offset, b.offset))
+		//	diff["offset"] = { b.offset.x, b.offset.y, b.offset.z };
+
+		//if (a.emitRate != b.emitRate)
+		//	diff["emissionRate"] = b.emitRate;
+
+		//if (a.minLifetime != b.minLifetime)
+		//	diff["minLifetime"] = b.minLifetime;
+
+		//if (a.maxLifetime != b.maxLifetime)
+		//	diff["maxLifetime"] = b.maxLifetime;
+
+		//if (a.randomizeLifetime != b.randomizeLifetime)
+		//	diff["randomizeLifetime"] = b.randomizeLifetime;
+
+		//if (a.drag != b.drag)
+		//	diff["drag"] = b.drag;
 
-		if (a.maxParticles != b.maxParticles)
-			diff["maxParticles"] = static_cast<int>(b.maxParticles);
-
-		if (a.bufferOffset != b.bufferOffset)
-			diff["bufferOffset"] = static_cast<int>(b.bufferOffset);
-
-		if (a.flags != b.flags)
-			diff["flags"] = b.flags;
-
-		if (a.enabled != b.enabled)
-			diff["enabled"] = b.enabled;
-
-		if (a.finished != b.finished)
-			diff["finished"] = b.finished;
-
-		// Now many more simple scalar and vector fields:
-
-		// initialVelocity, initialAngularVelocity, initialAcceleration, initialLifetime, initialRotation
-
-		if (a.initialVelocity != b.initialVelocity)
-			diff["initialVelocity"] = b.initialVelocity;
-
-		if (a.initialAngularVelocity != b.initialAngularVelocity)
-			diff["initialAngularVelocity"] = b.initialAngularVelocity;
-
-		if (a.initialAcceleration != b.initialAcceleration)
-			diff["initialAcceleration"] = b.initialAcceleration;
+		//if (a.maxParticles != b.maxParticles)
+		//	diff["maxParticles"] = static_cast<int>(b.maxParticles);
+
+		//if (a.bufferOffset != b.bufferOffset)
+		//	diff["bufferOffset"] = static_cast<int>(b.bufferOffset);
+
+		//if (a.flags != b.flags)
+		//	diff["flags"] = b.flags;
+
+		//if (a.enabled != b.enabled)
+		//	diff["enabled"] = b.enabled;
+
+		//if (a.finished != b.finished)
+		//	diff["finished"] = b.finished;
+
+		//// Now many more simple scalar and vector fields:
+
+		//// initialVelocity, initialAngularVelocity, initialAcceleration, initialLifetime, initialRotation
+
+		//if (a.initialVelocity != b.initialVelocity)
+		//	diff["initialVelocity"] = b.initialVelocity;
+
+		//if (a.initialAngularVelocity != b.initialAngularVelocity)
+		//	diff["initialAngularVelocity"] = b.initialAngularVelocity;
+
+		//if (a.initialAcceleration != b.initialAcceleration)
+		//	diff["initialAcceleration"] = b.initialAcceleration;
 
-		if (a.initialLifetime != b.initialLifetime)
-			diff["initialLifetime"] = b.initialLifetime;
+		//if (a.initialLifetime != b.initialLifetime)
+		//	diff["initialLifetime"] = b.initialLifetime;
 
-		if (a.initialRotation != b.initialRotation)
-			diff["initialRotation"] = b.initialRotation;
+		//if (a.initialRotation != b.initialRotation)
+		//	diff["initialRotation"] = b.initialRotation;
 
-		// initialSize vector2
-		if (a.initialSize.x != b.initialSize.x || a.initialSize.y != b.initialSize.y)
-			diff["initialSize"] = { b.initialSize.x, b.initialSize.y };
+		//// initialSize vector2
+		//if (a.initialSize.x != b.initialSize.x || a.initialSize.y != b.initialSize.y)
+		//	diff["initialSize"] = { b.initialSize.x, b.initialSize.y };
 
-		if (a.initialFrame != b.initialFrame)
-			diff["initialFrame"] = b.initialFrame;
+		//if (a.initialFrame != b.initialFrame)
+		//	diff["initialFrame"] = b.initialFrame;
 
-		// initialColor (RGBA floats)
-		if (a.initialColor != b.initialColor)
-			diff["initialColor"] = { b.initialColor.r, b.initialColor.g, b.initialColor.b, b.initialColor.a };
+		//// initialColor (RGBA floats)
+		//if (a.initialColor != b.initialColor)
+		//	diff["initialColor"] = { b.initialColor.r, b.initialColor.g, b.initialColor.b, b.initialColor.a };
 
-		// startSize & endSize (vec2)
-		if (a.startSize != b.startSize)
-			diff["startSize"] = { b.startSize.x, b.startSize.y };
-		if (a.endSize != b.endSize)
-			diff["endSize"] = { b.endSize.x, b.endSize.y };
+		//// startSize & endSize (vec2)
+		//if (a.startSize != b.startSize)
+		//	diff["startSize"] = { b.startSize.x, b.startSize.y };
+		//if (a.endSize != b.endSize)
+		//	diff["endSize"] = { b.endSize.x, b.endSize.y };
 
-		// Curves: compare type and values arrays
-		if (a.sizeEaseCurve.GetType() != b.sizeEaseCurve.GetType())
-			diff["sizeCurve"]["type"] = b.sizeEaseCurve.GetType();
+		//// Curves: compare type and values arrays
+		//if (a.sizeEaseCurve.GetType() != b.sizeEaseCurve.GetType())
+		//	diff["sizeCurve"]["type"] = b.sizeEaseCurve.GetType();
 
-		if (std::vector<float>(std::begin(a.sizeEaseCurve.values), std::end(a.sizeEaseCurve.values)) !=
-			std::vector<float>(std::begin(b.sizeEaseCurve.values), std::end(b.sizeEaseCurve.values)))
-		{
-			diff["sizeCurve"]["values"] = std::vector<float>(std::begin(b.sizeEaseCurve.values), std::end(b.sizeEaseCurve.values));
-		}
+		//if (std::vector<float>(std::begin(a.sizeEaseCurve.values), std::end(a.sizeEaseCurve.values)) !=
+		//	std::vector<float>(std::begin(b.sizeEaseCurve.values), std::end(b.sizeEaseCurve.values)))
+		//{
+		//	diff["sizeCurve"]["values"] = std::vector<float>(std::begin(b.sizeEaseCurve.values), std::end(b.sizeEaseCurve.values));
+		//}
 
-		// Similarly for colorCurve
-		if (a.colorEaseCurve.GetType() != b.colorEaseCurve.GetType())
-			diff["colorCurve"]["type"] = b.colorEaseCurve.GetType();
+		//// Similarly for colorCurve
+		//if (a.colorEaseCurve.GetType() != b.colorEaseCurve.GetType())
+		//	diff["colorCurve"]["type"] = b.colorEaseCurve.GetType();
 
-		if (std::vector<float>(std::begin(a.colorEaseCurve.values), std::end(a.colorEaseCurve.values)) !=
-			std::vector<float>(std::begin(b.colorEaseCurve.values), std::end(b.colorEaseCurve.values)))
-		{
-			diff["colorCurve"]["values"] = std::vector<float>(std::begin(b.colorEaseCurve.values), std::end(b.colorEaseCurve.values));
-		}
+		//if (std::vector<float>(std::begin(a.colorEaseCurve.values), std::end(a.colorEaseCurve.values)) !=
+		//	std::vector<float>(std::begin(b.colorEaseCurve.values), std::end(b.colorEaseCurve.values)))
+		//{
+		//	diff["colorCurve"]["values"] = std::vector<float>(std::begin(b.colorEaseCurve.values), std::end(b.colorEaseCurve.values));
+		//}
 
-		// startColor & endColor
-		if (a.startColor != b.startColor)
-			diff["startColor"] = { b.startColor.r, b.startColor.g, b.startColor.b, b.startColor.a };
+		//// startColor & endColor
+		//if (a.startColor != b.startColor)
+		//	diff["startColor"] = { b.startColor.r, b.startColor.g, b.startColor.b, b.startColor.a };
 
-		if (a.endColor != b.endColor)
-			diff["endColor"] = { b.endColor.r, b.endColor.g, b.endColor.b, b.endColor.a };
+		//if (a.endColor != b.endColor)
+		//	diff["endColor"] = { b.endColor.r, b.endColor.g, b.endColor.b, b.endColor.a };
 
-		// rotationCurve same pattern as above
-		if (a.rotationEaseCurve.GetType() != b.rotationEaseCurve.GetType())
-			diff["rotationCurve"]["type"] = b.rotationEaseCurve.GetType();
+		//// rotationCurve same pattern as above
+		//if (a.rotationEaseCurve.GetType() != b.rotationEaseCurve.GetType())
+		//	diff["rotationCurve"]["type"] = b.rotationEaseCurve.GetType();
 
-		if (std::vector<float>(std::begin(a.rotationEaseCurve.values), std::end(a.rotationEaseCurve.values)) !=
-			std::vector<float>(std::begin(b.rotationEaseCurve.values), std::end(b.rotationEaseCurve.values)))
-		{
-			diff["rotationCurve"]["values"] = std::vector<float>(std::begin(b.rotationEaseCurve.values), std::end(b.rotationEaseCurve.values));
-		}
+		//if (std::vector<float>(std::begin(a.rotationEaseCurve.values), std::end(a.rotationEaseCurve.values)) !=
+		//	std::vector<float>(std::begin(b.rotationEaseCurve.values), std::end(b.rotationEaseCurve.values)))
+		//{
+		//	diff["rotationCurve"]["values"] = std::vector<float>(std::begin(b.rotationEaseCurve.values), std::end(b.rotationEaseCurve.values));
+		//}
 
-		// startRotation, endRotation
-		if (a.startRotation != b.startRotation)
-			diff["startRotation"] = b.startRotation;
-
-		if (a.endRotation != b.endRotation)
-			diff["endRotation"] = b.endRotation;
-
-		// fadeCurve
-		if (a.fadeEaseCurve.GetType() != b.fadeEaseCurve.GetType())
-			diff["fadeCurve"]["type"] = b.fadeEaseCurve.GetType();
-
-		if (std::vector<float>(std::begin(a.fadeEaseCurve.values), std::end(a.fadeEaseCurve.values)) !=
-			std::vector<float>(std::begin(b.fadeEaseCurve.values), std::end(b.fadeEaseCurve.values)))
-		{
-			diff["fadeCurve"]["values"] = std::vector<float>(std::begin(b.fadeEaseCurve.values), std::end(b.fadeEaseCurve.values));
-		}
-
-		// startFade, endFade
-		if (a.startFade != b.startFade)
-			diff["startFade"] = b.startFade;
-
-		if (a.endFade != b.endFade)
-			diff["endFade"] = b.endFade;
-
-		// vortexCenter (vec3), vortexStrength (float)
-		if (!Vec3Equal(a.vortexCenter, b.vortexCenter))
-			diff["vortexCenter"] = { b.vortexCenter.x, b.vortexCenter.y, b.vortexCenter.z };
-
-		if (a.vortexStrength != b.vortexStrength)
-			diff["vortexStrength"] = b.vortexStrength;
-
-		// windDirection, windStrength
-		if (!Vec3Equal(a.windDirection, b.windDirection))
-			diff["windDirection"] = { b.windDirection.x, b.windDirection.y, b.windDirection.z };
-
-		if (a.windStrength != b.windStrength)
-			diff["windStrength"] = b.windStrength;
-
-		// AttractorPosition, AttractionStrength
-		if (!Vec3Equal(a.AttractorPosition, b.AttractorPosition))
-			diff["attractorPosition"] = { b.AttractorPosition.x, b.AttractorPosition.y, b.AttractorPosition.z };
-
-		if (a.AttractionStrength != b.AttractionStrength)
-			diff["attractionStrength"] = b.AttractionStrength;
-
-		// Animation related fields
-		if (a.animDuration != b.animDuration)
-			diff["animDuration"] = b.animDuration;
-
-		if (a.animFrameCount != b.animFrameCount)
-			diff["animFrameCount"] = b.animFrameCount;
-
-		if (a.loop != b.loop)
-			diff["loop"] = b.loop;
-
-		if (a.playOnce != b.playOnce)
-			diff["playOnce"] = b.playOnce;
-
-		if (a.reverse != b.reverse)
-			diff["reverse"] = b.reverse;
-
-		if (a.pingPong != b.pingPong)
-			diff["pingPong"] = b.pingPong;
-
-		if (a.startOffset != b.startOffset)
-			diff["startOffset"] = b.startOffset;
-
-		// Gravity vector3 and gravityScale
-		if (!Vec3Equal(a.gravity, b.gravity))
-			diff["gravity"] = { b.gravity.x, b.gravity.y, b.gravity.z };
-
-		if (a.gravityScale != b.gravityScale)
-			diff["gravityScale"] = b.gravityScale;
-
-		// Spin center & speed
-		if (!Vec3Equal(a.spinCenter, b.spinCenter))
-			diff["spinCenter"] = { b.spinCenter.x, b.spinCenter.y, b.spinCenter.z };
-
-		if (a.spinSpeed != b.spinSpeed)
-			diff["spinSpeed"] = b.spinSpeed;
-
-		// Burst stuff
-		if (a.useBurst != b.useBurst)
-			diff["useBurst"] = b.useBurst;
-
-		if (a.burstCount != b.burstCount)
-			diff["burstCount"] = b.burstCount;
-
-		if (a.burstCooldown != b.burstCooldown)
-			diff["burstCooldown"] = b.burstCooldown;
-
-		// Shape enum and shape-specific fields:
-		if (a.shape != b.shape)
-		{
-			diff["shape"] = static_cast<int>(b.shape);
-			// Include full new shape details here if you want.
-		}
-		else
-		{
-			// Same shape - compare shape-specific data
-			switch (b.shape)
-			{
-			case SpawnShape::LINE:
-				if (!Vec3Equal(a.line.point1, b.line.point1))
-				{
-					diff["line"]["point1_x"] = b.line.point1.x;
-					diff["line"]["point1_y"] = b.line.point1.y;
-					diff["line"]["point1_z"] = b.line.point1.z;
-				}
-				if (!Vec3Equal(a.line.point2, b.line.point2))
-				{
-					diff["line"]["point2_x"] = b.line.point2.x;
-					diff["line"]["point2_y"] = b.line.point2.y;
-					diff["line"]["point2_z"] = b.line.point2.z;
-				}
-				break;
-
-			case SpawnShape::CIRCLE:
-				if (a.circle.radius != b.circle.radius)
-					diff["circle"]["radius"] = b.circle.radius;
-				break;
-
-			case SpawnShape::DONUT:
-				if (a.donut.radius1 != b.donut.radius1)
-					diff["donut"]["radius1"] = b.donut.radius1;
-				if (a.donut.radius2 != b.donut.radius2)
-					diff["donut"]["radius2"] = b.donut.radius2;
-				break;
-
-			case SpawnShape::POINT:
-				if (!Vec3Equal(a.point.point, b.point.point))
-				{
-					diff["point"]["x"] = b.point.point.x;
-					diff["point"]["y"] = b.point.point.y;
-					diff["point"]["z"] = b.point.point.z;
-				}
-				break;
-
-			case SpawnShape::RECT:
-				if (a.rect.center != b.rect.center)
-					diff["rect"]["rectCenter"] = { b.rect.center.x, b.rect.center.y };
-				if (a.rect.extent != b.rect.extent)
-					diff["rect"]["rectExtent"] = { b.rect.extent.x, b.rect.extent.y };
-				break;
-
-			case SpawnShape::TEXTURE:
-				if (a.texture.worldSize != b.texture.worldSize)
-					diff["textureShape"]["worldSize"] = { b.texture.worldSize.x, b.texture.worldSize.y };
-
-				if (a.texture.alphaThreshold != b.texture.alphaThreshold)
-					diff["textureShape"]["alphaThreshold"] = b.texture.alphaThreshold;
-
-				if (a.texture.invertMask != b.texture.invertMask)
-					diff["textureShape"]["invertMask"] = b.texture.invertMask;
-
-				{
-					std::string texShapeA = a.texture.spriteSource ? a.texture.spriteSource->GetName() : "";
-					std::string texShapeB = b.texture.spriteSource ? b.texture.spriteSource->GetName() : "";
-					if (texShapeA != texShapeB)
-						diff["textureShape"]["shapeTexture"] = texShapeB;
-				}
-				break;
-
-			default:
-				break;
-			}
-		}
+		//// startRotation, endRotation
+		//if (a.startRotation != b.startRotation)
+		//	diff["startRotation"] = b.startRotation;
+
+		//if (a.endRotation != b.endRotation)
+		//	diff["endRotation"] = b.endRotation;
+
+		//// fadeCurve
+		//if (a.fadeEaseCurve.GetType() != b.fadeEaseCurve.GetType())
+		//	diff["fadeCurve"]["type"] = b.fadeEaseCurve.GetType();
+
+		//if (std::vector<float>(std::begin(a.fadeEaseCurve.values), std::end(a.fadeEaseCurve.values)) !=
+		//	std::vector<float>(std::begin(b.fadeEaseCurve.values), std::end(b.fadeEaseCurve.values)))
+		//{
+		//	diff["fadeCurve"]["values"] = std::vector<float>(std::begin(b.fadeEaseCurve.values), std::end(b.fadeEaseCurve.values));
+		//}
+
+		//// startFade, endFade
+		//if (a.startFade != b.startFade)
+		//	diff["startFade"] = b.startFade;
+
+		//if (a.endFade != b.endFade)
+		//	diff["endFade"] = b.endFade;
+
+		//// vortexCenter (vec3), vortexStrength (float)
+		//if (!Vec3Equal(a.vortexCenter, b.vortexCenter))
+		//	diff["vortexCenter"] = { b.vortexCenter.x, b.vortexCenter.y, b.vortexCenter.z };
+
+		//if (a.vortexStrength != b.vortexStrength)
+		//	diff["vortexStrength"] = b.vortexStrength;
+
+		//// windDirection, windStrength
+		//if (!Vec3Equal(a.windDirection, b.windDirection))
+		//	diff["windDirection"] = { b.windDirection.x, b.windDirection.y, b.windDirection.z };
+
+		//if (a.windStrength != b.windStrength)
+		//	diff["windStrength"] = b.windStrength;
+
+		//// AttractorPosition, AttractionStrength
+		//if (!Vec3Equal(a.AttractorPosition, b.AttractorPosition))
+		//	diff["attractorPosition"] = { b.AttractorPosition.x, b.AttractorPosition.y, b.AttractorPosition.z };
+
+		//if (a.AttractionStrength != b.AttractionStrength)
+		//	diff["attractionStrength"] = b.AttractionStrength;
+
+		//// Animation related fields
+		//if (a.animDuration != b.animDuration)
+		//	diff["animDuration"] = b.animDuration;
+
+		//if (a.animFrameCount != b.animFrameCount)
+		//	diff["animFrameCount"] = b.animFrameCount;
+
+		//if (a.loop != b.loop)
+		//	diff["loop"] = b.loop;
+
+		//if (a.playOnce != b.playOnce)
+		//	diff["playOnce"] = b.playOnce;
+
+		//if (a.reverse != b.reverse)
+		//	diff["reverse"] = b.reverse;
+
+		//if (a.pingPong != b.pingPong)
+		//	diff["pingPong"] = b.pingPong;
+
+		//if (a.startOffset != b.startOffset)
+		//	diff["startOffset"] = b.startOffset;
+
+		//// Gravity vector3 and gravityScale
+		//if (!Vec3Equal(a.gravity, b.gravity))
+		//	diff["gravity"] = { b.gravity.x, b.gravity.y, b.gravity.z };
+
+		//if (a.gravityScale != b.gravityScale)
+		//	diff["gravityScale"] = b.gravityScale;
+
+		//// Spin center & speed
+		//if (!Vec3Equal(a.spinCenter, b.spinCenter))
+		//	diff["spinCenter"] = { b.spinCenter.x, b.spinCenter.y, b.spinCenter.z };
+
+		//if (a.spinSpeed != b.spinSpeed)
+		//	diff["spinSpeed"] = b.spinSpeed;
+
+		//// Burst stuff
+		//if (a.useBurst != b.useBurst)
+		//	diff["useBurst"] = b.useBurst;
+
+		//if (a.burstCount != b.burstCount)
+		//	diff["burstCount"] = b.burstCount;
+
+		//if (a.burstCooldown != b.burstCooldown)
+		//	diff["burstCooldown"] = b.burstCooldown;
+
+		//// Shape enum and shape-specific fields:
+		//if (a.shape != b.shape)
+		//{
+		//	diff["shape"] = static_cast<int>(b.shape);
+		//	// Include full new shape details here if you want.
+		//}
+		//else
+		//{
+		//	// Same shape - compare shape-specific data
+		//	switch (b.shape)
+		//	{
+		//	case SpawnShape::LINE:
+		//		if (!Vec3Equal(a.line.point1, b.line.point1))
+		//		{
+		//			diff["line"]["point1_x"] = b.line.point1.x;
+		//			diff["line"]["point1_y"] = b.line.point1.y;
+		//			diff["line"]["point1_z"] = b.line.point1.z;
+		//		}
+		//		if (!Vec3Equal(a.line.point2, b.line.point2))
+		//		{
+		//			diff["line"]["point2_x"] = b.line.point2.x;
+		//			diff["line"]["point2_y"] = b.line.point2.y;
+		//			diff["line"]["point2_z"] = b.line.point2.z;
+		//		}
+		//		break;
+
+		//	case SpawnShape::CIRCLE:
+		//		if (a.circle.radius != b.circle.radius)
+		//			diff["circle"]["radius"] = b.circle.radius;
+		//		break;
+
+		//	case SpawnShape::DONUT:
+		//		if (a.donut.radius1 != b.donut.radius1)
+		//			diff["donut"]["radius1"] = b.donut.radius1;
+		//		if (a.donut.radius2 != b.donut.radius2)
+		//			diff["donut"]["radius2"] = b.donut.radius2;
+		//		break;
+
+		//	case SpawnShape::POINT:
+		//		if (!Vec3Equal(a.point.point, b.point.point))
+		//		{
+		//			diff["point"]["x"] = b.point.point.x;
+		//			diff["point"]["y"] = b.point.point.y;
+		//			diff["point"]["z"] = b.point.point.z;
+		//		}
+		//		break;
+
+		//	case SpawnShape::RECT:
+		//		if (a.rect.center != b.rect.center)
+		//			diff["rect"]["rectCenter"] = { b.rect.center.x, b.rect.center.y };
+		//		if (a.rect.extent != b.rect.extent)
+		//			diff["rect"]["rectExtent"] = { b.rect.extent.x, b.rect.extent.y };
+		//		break;
+
+		//	case SpawnShape::TEXTURE:
+		//		if (a.texture.worldSize != b.texture.worldSize)
+		//			diff["textureShape"]["worldSize"] = { b.texture.worldSize.x, b.texture.worldSize.y };
+
+		//		if (a.texture.alphaThreshold != b.texture.alphaThreshold)
+		//			diff["textureShape"]["alphaThreshold"] = b.texture.alphaThreshold;
+
+		//		if (a.texture.invertMask != b.texture.invertMask)
+		//			diff["textureShape"]["invertMask"] = b.texture.invertMask;
+
+		//		{
+		//			std::string texShapeA = a.texture.spriteSource ? a.texture.spriteSource->GetName() : "";
+		//			std::string texShapeB = b.texture.spriteSource ? b.texture.spriteSource->GetName() : "";
+		//			if (texShapeA != texShapeB)
+		//				diff["textureShape"]["shapeTexture"] = texShapeB;
+		//		}
+		//		break;
+
+		//	default:
+		//		break;
+		//	}
+		//}
 
 		return diff;
 	}
@@ -950,14 +963,19 @@ namespace NULLENGINE
 	{
 		nlohmann::json e;
 
-		e["name"] = emitter.name;
+		e["name"] = STRFROM(emitter.nameID);
 		e["emitterID"] = emitter.emitterID;
 
-		e["texture"] = emitter.spriteSource != nullptr ? emitter.spriteSource->GetName() : "";
-		e["dimension"] = emitter.spriteSource == nullptr
-			? nlohmann::json::array({ 1, 1 })
-			: nlohmann::json::array({ emitter.spriteSource->GetRows(), emitter.spriteSource->GetCols() });
 
+		SpriteSource* spriteSource = NSpriteSourceManager::Instance()->Get(emitter.spriteSourceID);
+		if (spriteSource)
+		{
+
+			e["texture"] = spriteSource->GetName();
+			e["dimension"] = spriteSource == nullptr
+				? nlohmann::json::array({ 1, 1 })
+				: nlohmann::json::array({ spriteSource->GetRows(), spriteSource->GetCols() });
+		}
 		e["offset"] = { emitter.offset.x, emitter.offset.y, emitter.offset.z };
 		e["emissionRate"] = emitter.emitRate;
 		e["minLifetime"] = emitter.minLifetime;
@@ -985,23 +1003,23 @@ namespace NULLENGINE
 
 		e["startSize"] = { emitter.startSize.x, emitter.startSize.y };
 		e["endSize"] = { emitter.endSize.x, emitter.endSize.y };
-		e["sizeCurve"]["type"] = emitter.sizeEaseCurve.GetType();
+		e["sizeCurve"]["type"] = emitter.sizeEaseCurve.type;
 		e["sizeCurve"]["values"] = std::vector<float>(std::begin(emitter.sizeEaseCurve.values), std::end(emitter.sizeEaseCurve.values));
 
 		e["startColor"] = { emitter.startColor.r, emitter.startColor.g, emitter.startColor.b, emitter.startColor.a };
 		e["endColor"] = { emitter.endColor.r, emitter.endColor.g, emitter.endColor.b, emitter.endColor.a };
-		e["colorCurve"]["type"] = emitter.colorEaseCurve.GetType();
+		e["colorCurve"]["type"] = emitter.colorEaseCurve.type;
 		e["colorCurve"]["values"] = std::vector<float>(std::begin(emitter.colorEaseCurve.values), std::end(emitter.colorEaseCurve.values));
 
 		e["startRotation"] = emitter.startRotation;
 		e["endRotation"] = emitter.endRotation;
-		e["rotationCurve"]["type"] = emitter.rotationEaseCurve.GetType();
+		e["rotationCurve"]["type"] = emitter.rotationEaseCurve.type;
 		e["rotationCurve"]["values"] = std::vector<float>(std::begin(emitter.rotationEaseCurve.values), std::end(emitter.rotationEaseCurve.values));
 
 
 		e["startFade"] = emitter.startFade;
 		e["endFade"] = emitter.endFade;
-		e["fadeCurve"]["type"] = emitter.fadeEaseCurve.GetType();
+		e["fadeCurve"]["type"] = emitter.fadeEaseCurve.type;
 		e["fadeCurve"]["values"] = std::vector<float>(std::begin(emitter.fadeEaseCurve.values), std::end(emitter.fadeEaseCurve.values));
 
 		e["vortexCenter"] = { emitter.vortexCenter.x, emitter.vortexCenter.y, emitter.vortexCenter.z };
@@ -1010,8 +1028,8 @@ namespace NULLENGINE
 		e["windDirection"] = { emitter.windDirection.x, emitter.windDirection.y, emitter.windDirection.z };
 		e["windStrength"] = emitter.windStrength;
 
-		e["attractorPosition"] = { emitter.AttractorPosition.x, emitter.AttractorPosition.y, emitter.AttractorPosition.z };
-		e["attractionStrength"] = emitter.AttractionStrength;
+		e["attractorPosition"] = { emitter.attractorPosition.x, emitter.attractorPosition.y, emitter.attractorPosition.z };
+		e["attractionStrength"] = emitter.attractionStrength;
 
 
 		e["animDuration"] = emitter.animDuration;
@@ -1034,45 +1052,38 @@ namespace NULLENGINE
 		e["burstCount"] = emitter.burstCount;
 		e["burstCooldown"] = emitter.burstCooldown;
 
-		e["shape"] = static_cast<int>(emitter.shape);
+		e["shape"] = static_cast<int>(emitter.spawnShapeData.shapeType);
 
 		// Write each shape struct depending on current shape
-		switch (emitter.shape)
+		switch (emitter.spawnShapeData.shapeType)
 		{
 		case SpawnShape::LINE:
-			e["line"]["point1_x"] = emitter.line.point1.x;
-			e["line"]["point1_y"] = emitter.line.point1.y;
-			e["line"]["point1_z"] = emitter.line.point1.z;
-
-			e["line"]["point2_x"] = emitter.line.point2.x;
-			e["line"]["point2_y"] = emitter.line.point2.y;
-			e["line"]["point2_z"] = emitter.line.point2.z;
+			e["line"]["p1"] = { emitter.spawnShapeData.data.line.p1.x, emitter.spawnShapeData.data.line.p1.y, emitter.spawnShapeData.data.line.p1.z };
+			e["line"]["p2"] = { emitter.spawnShapeData.data.line.p2.x, emitter.spawnShapeData.data.line.p2.y, emitter.spawnShapeData.data.line.p2.z };
 			break;
 
 		case SpawnShape::CIRCLE:
-			e["circle"]["radius"] = emitter.circle.radius;
+			e["circle"]["radius"] = emitter.spawnShapeData.data.circle.radius;
 			break;
 
 		case SpawnShape::DONUT:
-			e["donut"]["radius1"] = emitter.donut.radius1;
-			e["donut"]["radius2"] = emitter.donut.radius2;
+			e["donut"]["innerRadius"] = emitter.spawnShapeData.data.donut.innerRadius;
+			e["donut"]["outerRadius"] = emitter.spawnShapeData.data.donut.outerRadius;
 			break;
 
 		case SpawnShape::POINT:
-			e["point"]["x"] = emitter.point.point.x;
-			e["point"]["y"] = emitter.point.point.y;
-			e["point"]["z"] = emitter.point.point.z;
+			e["point"]["point"] = { emitter.spawnShapeData.data.point.point.x, emitter.spawnShapeData.data.point.point.y, emitter.spawnShapeData.data.point.point.z };
 			break;
 
 		case SpawnShape::RECT:
-			e["rect"]["rectCenter"] = { emitter.rect.center.x, emitter.rect.center.y };
-			e["rect"]["rectExtent"] = { emitter.rect.extent.x, emitter.rect.extent.y };
+			e["rect"]["rectCenter"] = { emitter.spawnShapeData.data.rect.center.x, emitter.spawnShapeData.data.rect.center.y };
+			e["rect"]["rectExtent"] = { emitter.spawnShapeData.data.rect.extent.x, emitter.spawnShapeData.data.rect.extent.y };
 			break;
 		case SpawnShape::TEXTURE:
-			e["textureShape"]["worldSize"] = { emitter.texture.worldSize.x, emitter.texture.worldSize.y };
-			e["textureShape"]["alphaThreshold"] = emitter.texture.alphaThreshold;
-			e["textureShape"]["invertMask"] = emitter.texture.invertMask;
-			e["textureShape"]["shapeTexture"] = emitter.texture.spriteSource != nullptr ? emitter.texture.spriteSource->GetName() : "";
+			e["textureShape"]["worldSize"] = { emitter.spawnShapeData.data.texture.size.x, emitter.spawnShapeData.data.texture.size.y };
+			e["textureShape"]["alphaThreshold"] = emitter.spawnShapeData.data.texture.alphaThreshold;
+			e["textureShape"]["invertMask"] = emitter.spawnShapeData.data.texture.invertMask;
+			e["textureShape"]["shapeTexture"] = STRFROM(emitter.spawnShapeData.data.texture.spriteID);
 			break;
 		default:
 			break;
@@ -1089,18 +1100,20 @@ namespace NULLENGINE
 
 		auto& psComp = *static_cast<const ParticleSystemComponent*>(component);
 
+		//if (!psComp.componentFlags.IsSet(ComponentFlags_Serialized))
+		//	return json;
 
-
-		json["ParticleSystem"]["name"] = psComp.m_Name;
+		json["ParticleSystem"]["name"] = STRFROM(psComp.nameID);
 
 		// Emitters array
 		nlohmann::json emittersJson = nlohmann::json::array();
 
-		for (const auto& emitter : psComp.m_Emitters)
+		for (size_t i = 0; i < psComp.emitterCount; ++i)
 		{
+			const auto& emitter = psComp.emitters[i];
 			emittersJson.push_back(SerializeEmitter(emitter));
 		}
-
+		// Add emitters to the main JSON object
 		json["ParticleSystem"]["Emitters"] = emittersJson;
 
 		return json;
@@ -1113,51 +1126,51 @@ namespace NULLENGINE
 		auto* b = static_cast<const ParticleSystemComponent*>(modified);
 
 		JSON diff;
-		JSON psJson;
+		//JSON psJson;
 
-		// Check name
-		if (a->m_Name != b->m_Name)
-			psJson["name"] = b->m_Name;
+		//// Check name
+		//if (a->m_Name != b->m_Name)
+		//	psJson["name"] = b->m_Name;
 
-		// Compare emitters count first
-		if (a->m_Emitters.size() != b->m_Emitters.size())
-		{
-			// Output full emitters array from modified since structure changed
-			nlohmann::json emittersJson = nlohmann::json::array();
+		//// Compare emitters count first
+		//if (a->m_Emitters.size() != b->m_Emitters.size())
+		//{
+		//	// Output full emitters array from modified since structure changed
+		//	nlohmann::json emittersJson = nlohmann::json::array();
 
-			for (const auto& emitter : b->m_Emitters)
-			{
-				emittersJson.push_back(SerializeEmitter(emitter));
-			}
-			psJson["Emitters"] = emittersJson;
-		}
-		else
-		{
-			// Same size, diff each emitter
-			nlohmann::json emittersJson = nlohmann::json::array();
+		//	for (const auto& emitter : b->m_Emitters)
+		//	{
+		//		emittersJson.push_back(SerializeEmitter(emitter));
+		//	}
+		//	psJson["Emitters"] = emittersJson;
+		//}
+		//else
+		//{
+		//	// Same size, diff each emitter
+		//	nlohmann::json emittersJson = nlohmann::json::array();
 
-			bool anyEmitterDiff = false;
-			for (size_t i = 0; i < a->m_Emitters.size(); ++i)
-			{
-				JSON emitterDiff = DiffEmitter(a->m_Emitters[i], b->m_Emitters[i]);
-				if (!emitterDiff.empty())
-				{
-					anyEmitterDiff = true;
-					emittersJson.push_back(emitterDiff);
-				}
-				else
-				{
-					// Could push empty or skip — decide based on your use case
-					emittersJson.push_back(JSON::object());
-				}
-			}
+		//	bool anyEmitterDiff = false;
+		//	for (size_t i = 0; i < a->m_Emitters.size(); ++i)
+		//	{
+		//		JSON emitterDiff = DiffEmitter(a->m_Emitters[i], b->m_Emitters[i]);
+		//		if (!emitterDiff.empty())
+		//		{
+		//			anyEmitterDiff = true;
+		//			emittersJson.push_back(emitterDiff);
+		//		}
+		//		else
+		//		{
+		//			// Could push empty or skip — decide based on your use case
+		//			emittersJson.push_back(JSON::object());
+		//		}
+		//	}
 
-			if (anyEmitterDiff)
-				psJson["Emitters"] = emittersJson;
-		}
+		//	if (anyEmitterDiff)
+		//		psJson["Emitters"] = emittersJson;
+		//}
 
-		if (!psJson.empty())
-			diff["ParticleSystem"] = psJson;
+		//if (!psJson.empty())
+		//	diff["ParticleSystem"] = psJson;
 
 		return diff;
 	}
@@ -1181,7 +1194,7 @@ namespace NULLENGINE
 
 		ImGui::ColorEdit4("Start Color", glm::value_ptr(emitter.startColor));
 		ImGui::ColorEdit4("End Color", glm::value_ptr(emitter.endColor));
-		emitter.colorEaseCurve.DrawEditorUI();
+		EasingCurveLib::DrawEditorUI(emitter.colorEaseCurve, "Color Curve");
 
 		ImGui::PopID();
 
@@ -1227,7 +1240,19 @@ namespace NULLENGINE
 
 		ImGui::Separator();
 
-		ImGui::InputText("Name", &emitter.name);
+		std::string name = STRFROM(emitter.nameID);
+
+		ImGui::InputText("##name", &name);
+
+		if (ImGui::IsItemDeactivatedAfterEdit())
+		{
+			if (name.empty())
+			{
+				name = ("Emitter: " + std::to_string(i));
+			}
+
+			emitter.nameID = STRID(name);
+		}
 
 		ImGui::DragFloat3("Offset", glm::value_ptr(emitter.offset), 0.1f);
 
@@ -1247,19 +1272,20 @@ namespace NULLENGINE
 
 		//ImGui::DragFloat("Burst Count", &emitter.burstCount, 1.0f, 0.0f, 1000.0f);
 
+		SpriteSource* spriteSource = spritesrcManager->Get(emitter.spriteSourceID);
 		
-		if (emitter.spriteSource)
+		if (spriteSource)
 		{
 
-			ImGui::DragInt("Rows", &emitter.spriteSource->Rows(), 0.5f, 1);
-			ImGui::DragInt("Columns", &emitter.spriteSource->Cols(), 0.5f, 1);
+			ImGui::DragInt("Rows", &spriteSource->Rows(), 0.5f, 1);
+			ImGui::DragInt("Columns", &spriteSource->Cols(), 0.5f, 1);
 
-			ImGui::DragInt("Frame Index", reinterpret_cast<int*>(&(emitter.initialFrame)), 1, 0, emitter.spriteSource->GetFrameCount());
+			ImGui::DragInt("Frame Index", reinterpret_cast<int*>(&(emitter.initialFrame)), 1, 0, spriteSource->GetFrameCount());
 
 
-			if (emitter.spriteSource->GetTexture())
+			if (spriteSource->GetTexture())
 			{
-				ImGui::Text("Texture\t"); ImGui::Image((void*)(__int64)emitter.spriteSource->GetTexture()->GetID(), ImVec2(125, 100), { 0, -1 }, { 1, 0 }, ImVec4(1, 1, 1, 1), ImVec4(1, 1, 1, 1));
+				ImGui::Text("Texture\t"); ImGui::Image((void*)(__int64)spriteSource->GetTexture()->GetID(), ImVec2(125, 100), { 0, -1 }, { 1, 0 }, ImVec4(1, 1, 1, 1), ImVec4(1, 1, 1, 1));
 				ImGui::SetCursorPos({ ImGui::GetCursorPos().x, ImGui::GetCursorPos().y - 100 }); // Move the cursor back to the position of the image
 				if (ImGui::InvisibleButton("ImageButton", ImVec2(125, 100)))
 				{
@@ -1281,7 +1307,10 @@ namespace NULLENGINE
 				std::string filename((const char*)payload->Data);
 
 				if (!filename.empty())
-					emitter.spriteSource = spritesrcManager->Has(filename) ? spritesrcManager->Get(filename) : spritesrcManager->Create(filename, 1, 1);
+				{
+					spritesrcManager->Has(filename) ? spritesrcManager->Get(filename) : spritesrcManager->Create(filename, 1, 1);
+					emitter.spriteSourceID = STRID(filename);
+				}
 
 			}
 			ImGui::EndDragDropTarget();
@@ -1298,7 +1327,7 @@ namespace NULLENGINE
 
 			if (ImGui::Selectable("⨯ None"))
 			{
-				emitter.spriteSource = nullptr;
+				emitter.spriteSourceID = 0;
 				ImGui::CloseCurrentPopup();
 			}
 
@@ -1314,7 +1343,8 @@ namespace NULLENGINE
 					ImGui::Text("%s :", name.c_str());
 					if (ImGui::ImageButton((void*)(__int64)texture->GetID(), ImVec2(75, 50), { 0, -1 }, { 1, 0 }))
 					{
-						emitter.spriteSource = spritesrcManager->Has(name) ? spritesrcManager->Get(name) : spritesrcManager->Create(name, 1, 1);
+						spritesrcManager->Has(name) ? spritesrcManager->Get(name) : spritesrcManager->Create(name, 1, 1);
+						emitter.spriteSourceID = STRID(name);
 						ImGui::CloseCurrentPopup();
 					}
 				}
@@ -1341,8 +1371,8 @@ namespace NULLENGINE
 		ImGui::DragFloat("Wind Strength", &emitter.windStrength, 0.1f);
 
 		ImGui::Text("Attractor");
-		ImGui::DragFloat3("Attractor Position", glm::value_ptr(emitter.AttractorPosition), 0.1f);
-		ImGui::DragFloat("Attraction Strength", &emitter.AttractionStrength, 0.1f);
+		ImGui::DragFloat3("Attractor Position", glm::value_ptr(emitter.attractorPosition), 0.1f);
+		ImGui::DragFloat("Attraction Strength", &emitter.attractionStrength, 0.1f);
 
 
 		ImGui::Text("Gravity");
@@ -1363,7 +1393,7 @@ namespace NULLENGINE
 
 		ImGui::DragFloat2("Start Size", glm::value_ptr(emitter.startSize), 0.05f);
 		ImGui::DragFloat2("End Size", glm::value_ptr(emitter.endSize), 0.05f);
-		emitter.sizeEaseCurve.DrawEditorUI();
+		EasingCurveLib::DrawEditorUI(emitter.sizeEaseCurve, "Size Curve");
 
 		ImGui::PopID();
 
@@ -1376,8 +1406,7 @@ namespace NULLENGINE
 
 		ImGui::DragFloat("Start Rotation", &emitter.startRotation, 1.0f);
 		ImGui::DragFloat("End Rotation", &emitter.endRotation, 1.0f);
-
-		emitter.rotationEaseCurve.DrawEditorUI();
+		EasingCurveLib::DrawEditorUI(emitter.rotationEaseCurve, "Rotation Curve");
 
 		ImGui::PopID();
 
@@ -1389,8 +1418,7 @@ namespace NULLENGINE
 
 		ImGui::DragFloat("Start Fade", &emitter.startFade, 0.0f);
 		ImGui::DragFloat("End Fade", &emitter.endFade, 1.0f);
-
-		emitter.rotationEaseCurve.DrawEditorUI();
+		EasingCurveLib::DrawEditorUI(emitter.fadeEaseCurve, "Fade Curve");
 
 		ImGui::PopID();
 
@@ -1427,13 +1455,13 @@ namespace NULLENGINE
 	void ParticleSystem::DrawShapeConfig(ParticleEmitter& emitter, size_t i)
 	{
 		ImGui::PushID(static_cast<int>(i));
-		const char* label = magic_enum::enum_name(emitter.shape).data();
+		const char* label = magic_enum::enum_name(emitter.spawnShapeData.shapeType).data();
 		if (ImGui::BeginCombo("Shape", label)) {
 			for (int s = 0; s < static_cast<int>(SpawnShape::SHAPES); ++s) {
 				auto shape = static_cast<SpawnShape>(s);
-				bool isSelected = (emitter.shape == shape);
+				bool isSelected = (emitter.spawnShapeData.shapeType == shape);
 				if (ImGui::Selectable(magic_enum::enum_name(shape).data(), isSelected)) {
-					emitter.shape = shape;
+					emitter.spawnShapeData.shapeType = shape;
 				}
 				if (isSelected)
 					ImGui::SetItemDefaultFocus();
@@ -1441,28 +1469,28 @@ namespace NULLENGINE
 			ImGui::EndCombo();
 		}
 
-		switch (emitter.shape) {
+		switch (emitter.spawnShapeData.shapeType) {
 		case SpawnShape::LINE:
-			ImGui::DragFloat3("Line Point 1", glm::value_ptr(emitter.line.point1), 0.1f);
-			ImGui::DragFloat3("Line Point 2", glm::value_ptr(emitter.line.point2), 0.1f);
+			ImGui::DragFloat3("Line Point 1", glm::value_ptr(emitter.spawnShapeData.data.line.p1), 0.1f);
+			ImGui::DragFloat3("Line Point 2", glm::value_ptr(emitter.spawnShapeData.data.line.p2), 0.1f);
 			break;
 		case SpawnShape::CIRCLE:
-			ImGui::DragFloat("Radius", &emitter.circle.radius, 0.1f);
+			ImGui::DragFloat("Radius", &emitter.spawnShapeData.data.circle.radius, 0.1f);
 			break;
 		case SpawnShape::DONUT:
-			ImGui::DragFloat("Inner Radius", &emitter.donut.radius1, 0.1f);
-			ImGui::DragFloat("Outer Radius", &emitter.donut.radius2, 0.1f);
+			ImGui::DragFloat("Inner Radius", &emitter.spawnShapeData.data.donut.innerRadius, 0.1f);
+			ImGui::DragFloat("Outer Radius", &emitter.spawnShapeData.data.donut.outerRadius, 0.1f);
 			break;
 		case SpawnShape::RECT:
 		{
-			ImGui::DragFloat2("Center", glm::value_ptr(emitter.rect.center), 0.1f);
-			ImGui::DragFloat2("Extent", glm::value_ptr(emitter.rect.extent), 0.1f);
+			ImGui::DragFloat2("Center", glm::value_ptr(emitter.spawnShapeData.data.rect.center), 0.1f);
+			ImGui::DragFloat2("Extent", glm::value_ptr(emitter.spawnShapeData.data.rect.extent), 0.1f);
 
-			emitter.rect.extent = glm::max(emitter.rect.extent, glm::vec2(0.01f));
+			emitter.spawnShapeData.data.rect.extent = glm::max(emitter.spawnShapeData.data.rect.extent, glm::vec2(0.01f));
 		}
 		break;
 		case SpawnShape::POINT:
-			ImGui::DragFloat3("Point Position", glm::value_ptr(emitter.point.point), 0.1f);
+			ImGui::DragFloat3("Point Position", glm::value_ptr(emitter.spawnShapeData.data.point.point), 0.1f);
 			break;
 		case SpawnShape::TEXTURE:
 		{
@@ -1473,17 +1501,21 @@ namespace NULLENGINE
 
 			ImGui::Text("Spawn Texture:");
 
-			if (emitter.texture.spriteSource && emitter.texture.spriteSource->GetTexture())
+			SpriteSource* spriteSource = spritesrcManager->Get(emitter.spawnShapeData.data.texture.spriteID);
+
+			if (spriteSource && spriteSource->GetTexture())
 			{
-				ImGui::Image(
-					(void*)(intptr_t)emitter.texture.spriteSource->GetTexture()->GetID(),
-					ImVec2(125, 100),
-					ImVec2(0, -1), ImVec2(1, 0)); // flipped UVs for ImGui
 
-				ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 100);
+					ImGui::Image(
+						(void*)(intptr_t)spriteSource->GetTexture()->GetID(),
+						ImVec2(125, 100),
+						ImVec2(0, -1), ImVec2(1, 0)); // flipped UVs for ImGui
 
-				if (ImGui::InvisibleButton("TextureButton", ImVec2(125, 100)))
-					ImGui::OpenPopup(popupName.c_str());
+					ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 100);
+
+					if (ImGui::InvisibleButton("TextureButton", ImVec2(125, 100)))
+						ImGui::OpenPopup(popupName.c_str());
+				
 			}
 			else
 			{
@@ -1491,9 +1523,9 @@ namespace NULLENGINE
 					ImGui::OpenPopup(popupName.c_str());
 			}
 
-			ImGui::DragFloat2("World Size", glm::value_ptr(emitter.texture.worldSize), 0.1f);
-			ImGui::SliderFloat("Invert Mask", &emitter.texture.invertMask, 0.0f, 1.0f);
-			ImGui::DragFloat("Alpha Threshold", &emitter.texture.alphaThreshold, 0.01f, 0.0f, 1.0f);
+			ImGui::DragFloat2("World Size", glm::value_ptr(emitter.spawnShapeData.data.texture.size), 0.1f);
+			ImGui::SliderFloat("Invert Mask", &emitter.spawnShapeData.data.texture.invertMask, 0.0f, 1.0f);
+			ImGui::DragFloat("Alpha Threshold", &emitter.spawnShapeData.data.texture.alphaThreshold, 0.01f, 0.0f, 1.0f);
 			//ImGui::SameLine();
 		/*	if (ImGui::IsItemHovered())
 				ImGui::SetTooltip("Minimum alpha value for spawn mask pixels");*/
@@ -1505,7 +1537,8 @@ namespace NULLENGINE
 					std::string filename((const char*)payload->Data);
 					if (!filename.empty())
 					{
-						emitter.texture.spriteSource = spritesrcManager->Has(filename) ? spritesrcManager->Get(filename) : spritesrcManager->Create(filename, 1, 1);
+						spritesrcManager->Has(filename) ? spritesrcManager->Get(filename) : spritesrcManager->Create(filename, 1, 1);
+						emitter.spawnShapeData.data.texture.spriteID = STRID(filename);
 					}
 				}
 				ImGui::EndDragDropTarget();
@@ -1518,7 +1551,7 @@ namespace NULLENGINE
 
 				if (ImGui::Selectable("⨯ None"))
 				{
-					emitter.texture.spriteSource = nullptr;
+					emitter.spawnShapeData.data.texture.spriteID = 0;
 					ImGui::CloseCurrentPopup();
 				}
 				ImGui::Separator();
@@ -1532,7 +1565,8 @@ namespace NULLENGINE
 						ImGui::Text("%s", name.c_str());
 						if (ImGui::ImageButton((void*)(intptr_t)texture->GetID(), ImVec2(75, 50), ImVec2(0, -1), ImVec2(1, 0))) // flip Y correctly
 						{
-							emitter.texture.spriteSource = spritesrcManager->Has(name) ? spritesrcManager->Get(name) : spritesrcManager->Create(name, 1, 1);
+							spritesrcManager->Has(name) ? spritesrcManager->Get(name) : spritesrcManager->Create(name, 1, 1);
+							emitter.spawnShapeData.data.texture.spriteID = STRID(name);
 							ImGui::CloseCurrentPopup();
 						}
 					}
@@ -1667,15 +1701,51 @@ namespace NULLENGINE
 	void ParticleSystem::ViewParticleSystemComponent(Entity& entity)
 	{
 		ParticleSystemComponent& psComp = entity.Get<ParticleSystemComponent>();
-		ImGui::InputText("System Name", &psComp.m_Name);
+
+
+		uint8_t& flags = psComp.componentFlags.m_Flags;
+		// Show collapsible header with enable checkbox and remove button, tied to the Enabled flag
+		auto [open, enabled, remove] = ImGuiH::CollapsingHeaderWithFlagCheckboxAndRemove("ParticleSystem", flags, ComponentFlags_Enabled);
+
+		if (remove)
+		{
+			NEventManager::Instance()->QueueEvent(std::make_unique<EntityRemoveComponentEvent>(entity.GetID(), Component<ParticleSystemComponent>::GetID()));
+		}
+
+		if (!open)
+			return;
+
+		if (!enabled)
+			ImGui::BeginDisabled();
+
+
+
+		std::string name = STRFROM(psComp.nameID);
+
+		ImGui::InputText("System Name", &name);
+
+		if (ImGui::IsItemDeactivatedAfterEdit())
+		{
+			if (name.empty())
+			{
+				name = "New System";
+			}
+
+			psComp.nameID = STRID(name);
+		}
+
 
 		if (ImGui::Button("Add Emitter"))
 		{
 			size_t startIndex = 0;
-			for (const auto& e : psComp.m_Emitters)
-				startIndex += e.maxParticles;
+			for (size_t i = 0; i < psComp.emitterCount; ++i)
+			{
+				startIndex += psComp.emitters[i].maxParticles;
+			}
 
-			psComp.AddEmitter("NewEmitter", startIndex, 100);
+			psComp.emitters[psComp.emitterCount].startIndex = startIndex;
+
+			++psComp.emitterCount;
 
 			NRegistry* registry = NRegistry::Instance();
 			InitParticleBuffer(GetSystemEntities(), registry);
@@ -1683,30 +1753,24 @@ namespace NULLENGINE
 
 		ImGui::Separator();
 
-		for (size_t i = 0; i < psComp.m_Emitters.size(); ++i)
+		for (size_t i = 0; i < psComp.emitterCount; ++i)
 		{
 
 			ImGui::PushID(static_cast<int>(i));
 
 
-			ParticleEmitter& emitter = psComp.m_Emitters[i];
-			std::string label = "Emitter " + std::to_string(i) + ": " + emitter.name;
-
-			//if (!ImGui::CollapsingHeader(label.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
-			//	continue;
-
-	/*		if (!CollapsingHeaderWithCheckbox(label, &emitter.enabled))
-				continue;*/
+			ParticleEmitter& emitter = psComp.emitters[i];
+			std::string label = "Emitter " + std::to_string(i) + ": " + STRFROM(emitter.nameID);
 
 			{
 
 				auto [opened, enabled, remove] = CollapsingHeaderWithCheckboxAndRemove(label, &emitter.enabled);
 
 
-				ImGui::SameLine();
-				std::string popOut = "Pop Out##" + std::to_string(i);
+				//ImGui::SameLine();
+		/*		std::string popOut = "Pop Out##" + std::to_string(i);
 				if (ImGui::SmallButton(popOut.c_str()))
-					emitter.openInWindow = true;
+					emitter.openInWindow = true;*/
 
 				if (opened)
 				{
@@ -1869,9 +1933,17 @@ namespace NULLENGINE
 
 				if (remove)
 				{
-					psComp.m_Emitters.erase(psComp.m_Emitters.begin() + i);
+					
+					for (size_t j = i; j < psComp.emitterCount; ++j)
+					{
+						psComp.emitters[j] = psComp.emitters[j + 1];
+					}
+
+					psComp.emitterCount--;
+
 					NRegistry* registry = NRegistry::Instance();
 					InitParticleBuffer(GetSystemEntities(), registry);
+
 					--i;
 					if (i < 0)
 						break;
@@ -1880,6 +1952,13 @@ namespace NULLENGINE
 
 
 		}
+
+
+		if (!enabled)
+			ImGui::EndDisabled();
+
+
+		ImGui::TreePop();
 	}
 
 
@@ -1946,7 +2025,7 @@ namespace NULLENGINE
 				InitParticleBuffer(entityList, registry);
 			}
 
-		return false;
+		return true;
 	}
 
 	void ParticleSystem::InitParticleBuffer(const std::vector<EntityID>& entityList, NRegistry* registry)
@@ -1955,8 +2034,9 @@ namespace NULLENGINE
 		for (const auto entityId : entityList)
 		{
 			ParticleSystemComponent& psComp = registry->GetComponent<ParticleSystemComponent>(entityId);
-			for (ParticleEmitter& emitter : psComp.m_Emitters)
+			for (size_t i = 0; i < psComp.emitterCount; i++)
 			{
+				ParticleEmitter& emitter = psComp.emitters[i];
 				emitter.startIndex = totalNeeded;
 				totalNeeded += emitter.maxParticles;
 			}
@@ -1990,8 +2070,9 @@ namespace NULLENGINE
 		size_t totalNeeded = 0;
 
 		ParticleSystemComponent& psComp = registry->GetComponent<ParticleSystemComponent>(entityId);
-		for (ParticleEmitter& emitter : psComp.m_Emitters)
+		for (size_t i = 0; i < psComp.emitterCount; i++)
 		{
+			ParticleEmitter& emitter = psComp.emitters[i];
 			emitter.startIndex = totalNeeded;
 			totalNeeded += emitter.maxParticles;
 		}

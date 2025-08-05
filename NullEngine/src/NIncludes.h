@@ -20,6 +20,7 @@
 #include "Null/Engine/Modules/NShaderManager.h"
 #include "Null/Engine/Modules/NComputeShaderManager.h"
 #include "Null/Engine/Modules/NSpriteSourceManager.h"
+#include "Null/Engine/Modules/NAnimationClipManager.h"
 #include "Null/Engine/Modules/NFramebufferManager.h"
 #include "Null/Engine/Modules/NMeshManager.h"
 #include "Null/Engine/Modules/NRenderer.h"
@@ -65,6 +66,7 @@
 #include "Null/Tools/Trace.h"
 #include "Null/Tools/Random.h"
 #include "Null/Tools/JsonWrapper.h"
+#include "Null/Engine/Submodules/Events/CommonEvents.h"
 
 
 //******************************************************************************//
@@ -81,3 +83,20 @@ using EntityID = uint32_t;
 //******************************************************************************//
 // Private structures													        //
 //******************************************************************************//
+#include "Null/Engine/Submodules/ECS/Components/NameComponent.h"
+#include "Null/Engine/Submodules/ECS/Systems/NameSystem.h"
+#include "Null/Engine/Submodules/ECS/Components/ArchetypeComponent.h"
+#include "Null/Engine/Submodules/ECS/Systems/ArchetypeSystem.h"
+#include "Null/Engine/Submodules/ECS/Components/DestroyedComponent.h"
+#include "Null/Engine/Submodules/ECS/Systems/DestroyedSystem.h"
+#include "Null/Engine/Submodules/ECS/Components/DoNotSerializeComponent.h"
+#include "Null/Engine/Submodules/ECS/Systems/DoNotSerializeSystem.h"
+#include "Null/Engine/Submodules/ECS/Components/CharacterMovementComponent.h"
+#include "Null/Engine/Submodules/ECS/Systems/CharacterMovementSystem.h"
+#include "Null/Engine/Submodules/ECS/Components/SpriteSourceSetComponent.h"
+#include "Null/Engine/Submodules/ECS/Systems/SpriteSourceSetSystem.h"
+#include "Null/Engine/Submodules/ECS/Components/AnimatorComponent.h"
+#include "Null/Engine/Submodules/ECS/Systems/AnimatorSystem.h"
+#include "Null/Engine/Submodules/ECS/Components/AnimationControllerComponent.h"
+#include "Null/Engine/Submodules/ECS/Systems/AnimationControllerSystem.h"
+#include "Null/Engine/Modules/NAnimationGraphManager.h"

@@ -12,6 +12,7 @@
 #include "stdafx.h"
 #include "GLHelper.h"
 #include "glad/glad.h"
+#include "NIncludes.h"
 
 
 

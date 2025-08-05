@@ -14,8 +14,8 @@
 //******************************************************************************//
 #include "Core.h"
 #include "Null/Engine/NEngine.h"
-#include "Null/Engine/Submodules/Layers/Layer.h"
-#include "Null//Engine/Submodules/Graphics/Shader/Shader.h"
+//#include "Null//Engine/Submodules/Graphics/Shader/Shader.h"
+#include "../Null/Engine/Submodules/ECS/Systems/System.h"
 
 //******************************************************************************//
 // Definitions  														        //
@@ -34,6 +34,8 @@ namespace NULLENGINE
 {
 	class NLE_API Application;
 	class NLE_API ImGuiLayer;
+	class NLE_API ILayer;
+	class Event;
 	//class NLE_API Shader;
 
 	class NLE_API Application

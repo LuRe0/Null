@@ -13,6 +13,11 @@
 // Includes																        //
 //******************************************************************************//
 #include "Null/Core.h"
+#include <string>
+#include <unordered_map>
+#include <unordered_set>
+#include <sol/sol.hpp>
+#include "Null/Tools/LuaTypes.h"
 
 
 //******************************************************************************//

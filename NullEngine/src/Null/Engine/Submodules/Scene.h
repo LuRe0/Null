@@ -16,6 +16,7 @@
 #include "Null/Core.h"
 #include "nlohmann/json.hpp"
 #include "Null/Engine/Submodules/ECS/Entities/Entity.h"
+#include "../../Tools/ArchetypeDefinitions.h"
 
 
 using JSON = nlohmann::json;
@@ -49,6 +50,9 @@ namespace NULLENGINE
 	class NLE_API NEntityFactory;
 	class NLE_API NComponentFactory;
 	class NLE_API NEventManager;
+	class EntityLoadedEvent;
+	class NLE_API NRegistry;
+
 
 	class NLE_API Scene
 	{
@@ -107,7 +111,7 @@ namespace NULLENGINE
 		void Serialize(const std::string& name = "");
 
 
-		void SerializeArchetype(const std::string& name, EntityID entityID);
+		void SerializeArchetype(const uint32_t& name, EntityID entityID);
 
 		void SetAsStartScene();
 

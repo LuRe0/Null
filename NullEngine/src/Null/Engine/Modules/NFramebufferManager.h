@@ -15,6 +15,7 @@
 #include "Null/Core.h"
 #include "Null/Engine/Modules/Base/IModule.h"
 #include "Null/Engine/Submodules/Graphics/Buffers/Framebuffer.h"
+#include "Null/Engine/Modules/NResourceManager.h"
 
 
 //******************************************************************************//
@@ -34,6 +35,8 @@
 
 namespace NULLENGINE
 {
+	class WindowResizeEvent;
+
 	class NLE_API NFramebufferManager : public NResourceManager<Framebuffer, NFramebufferManager>
 	{
 	public:

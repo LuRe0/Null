@@ -13,7 +13,10 @@
 // Includes																        //
 //******************************************************************************//
 #include "Null/Core.h"
-
+#include <glm/glm.hpp>
+#include <string>
+#include <vector>
+#include <unordered_map>
 
 //******************************************************************************//
 // Definitions  														        //
@@ -32,6 +35,9 @@
 
 namespace NULLENGINE
 {
+	class Tileset;
+	using EntityID = uint32_t;
+
 	struct NLE_API TileLayer 
     {
 		std::string name;

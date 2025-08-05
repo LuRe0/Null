@@ -1,61 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <Filter Include="Editors">
+      <UniqueIdentifier>{7F6C23B4-EB4B-A24F-F463-2D2660C208B1}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Pannels">
       <UniqueIdentifier>{D6933BFC-4273-BA97-4B8B-456EB7E920F9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Pannels\Base">
+      <UniqueIdentifier>{20C617B6-0C29-A75A-B5AE-DF10A1F072DD}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pannels\SceneEditor">
+      <UniqueIdentifier>{c1b7d116-cd24-4f59-ab83-fdd24e970e95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Editors\Base">
+      <UniqueIdentifier>{5f73a80d-ef64-46a6-b3a1-c743b027fc6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pannels\AnimationClipEditor">
+      <UniqueIdentifier>{ae588d86-68c5-44e9-8b6b-6ae3442a6a66}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Editors\SceneEditor.h">
+      <Filter>Editors</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Pannels\Base\Pannel.h">
+      <Filter>Pannels\Base</Filter>
+    </ClInclude>
     <ClInclude Include="src\Pannels\ComponentInspectorPannel.h">
-      <Filter>Pannels</Filter>
+      <Filter>Pannels\SceneEditor</Filter>
     </ClInclude>
     <ClInclude Include="src\Pannels\ContentBrowserPannel.h">
-      <Filter>Pannels</Filter>
+      <Filter>Pannels\SceneEditor</Filter>
     </ClInclude>
     <ClInclude Include="src\Pannels\EditorConsolePannel.h">
-      <Filter>Pannels</Filter>
+      <Filter>Pannels\SceneEditor</Filter>
     </ClInclude>
     <ClInclude Include="src\Pannels\EditorToolbarPannel.h">
-      <Filter>Pannels</Filter>
+      <Filter>Pannels\SceneEditor</Filter>
     </ClInclude>
     <ClInclude Include="src\Pannels\ModuleStatsPannel.h">
-      <Filter>Pannels</Filter>
+      <Filter>Pannels\SceneEditor</Filter>
     </ClInclude>
     <ClInclude Include="src\Pannels\SceneHierarchyPannel.h">
-      <Filter>Pannels</Filter>
+      <Filter>Pannels\SceneEditor</Filter>
     </ClInclude>
     <ClInclude Include="src\Pannels\ScenePropertyPannel.h">
-      <Filter>Pannels</Filter>
+      <Filter>Pannels\SceneEditor</Filter>
     </ClInclude>
     <ClInclude Include="src\Pannels\TimePannel.h">
-      <Filter>Pannels</Filter>
+      <Filter>Pannels\SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Editors\ImGuiEditor.h">
+      <Filter>Editors\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Editors\AnimationGraphEditor.h">
+      <Filter>Editors</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Pannels\ArchetypeEditorPannel.h">
+      <Filter>Pannels\SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Editors\AnimationClipEditor.h">
+      <Filter>Editors</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Pannels\SpriteSourcePannel.h">
+      <Filter>Pannels\AnimationClipEditor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Editors\SceneEditor.cpp">
+      <Filter>Editors</Filter>
+    </ClCompile>
     <ClCompile Include="src\NullEditor.cpp" />
+    <ClCompile Include="src\Pannels\Base\Pannel.cpp">
+      <Filter>Pannels\Base</Filter>
+    </ClCompile>
     <ClCompile Include="src\Pannels\ComponentInspectorPannel.cpp">
-      <Filter>Pannels</Filter>
+      <Filter>Pannels\SceneEditor</Filter>
     </ClCompile>
     <ClCompile Include="src\Pannels\ContentBrowserPannel.cpp">
-      <Filter>Pannels</Filter>
+      <Filter>Pannels\SceneEditor</Filter>
     </ClCompile>
     <ClCompile Include="src\Pannels\EditorConsolePannel.cpp">
-      <Filter>Pannels</Filter>
+      <Filter>Pannels\SceneEditor</Filter>
     </ClCompile>
     <ClCompile Include="src\Pannels\EditorToolbarPannel.cpp">
-      <Filter>Pannels</Filter>
+      <Filter>Pannels\SceneEditor</Filter>
     </ClCompile>
     <ClCompile Include="src\Pannels\ModuleStatsPannel.cpp">
-      <Filter>Pannels</Filter>
+      <Filter>Pannels\SceneEditor</Filter>
     </ClCompile>
     <ClCompile Include="src\Pannels\SceneHierarchyPannel.cpp">
-      <Filter>Pannels</Filter>
+      <Filter>Pannels\SceneEditor</Filter>
     </ClCompile>
     <ClCompile Include="src\Pannels\ScenePropertyPannel.cpp">
-      <Filter>Pannels</Filter>
+      <Filter>Pannels\SceneEditor</Filter>
     </ClCompile>
     <ClCompile Include="src\Pannels\TimePannel.cpp">
-      <Filter>Pannels</Filter>
+      <Filter>Pannels\SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Editors\ImGuiEditor.cpp">
+      <Filter>Editors\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Editors\AnimationGraphEditor.cpp">
+      <Filter>Editors</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Pannels\ArchetypeEditorPannel.cpp">
+      <Filter>Pannels\SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Editors\AnimationClipEditor.cpp">
+      <Filter>Editors</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Pannels\SpriteSourcePannel.cpp">
+      <Filter>Pannels\AnimationClipEditor</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

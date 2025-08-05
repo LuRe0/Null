@@ -13,8 +13,11 @@
 #include "SceneHierarchyPannel.h"
 #include "Null/Engine/Submodules/Scene.h"
 #include "Null/Tools/FileDialog.h"
-#include "imgui.h"
+//#include "imgui.h"
 #include <misc/cpp/imgui_stdlib.h>
+#include "../Editors/SceneEditor.h"
+#include "NIncludes.h"
+#include "../../../NullEngine/src/Null/Engine/Submodules/ECS/Entities/Entity.h"
 
 //#include "backends/imgui_impl_opengl3.h"
 //#include "backends/imgui_impl_glfw.h"
@@ -81,6 +84,7 @@ namespace NULLENGINE
 		}
 
 
+		static ImGuiTextFilter m_EntityFilter;
 
 		m_EntityFilter.Draw("Search Entity");
 
@@ -92,7 +96,8 @@ namespace NULLENGINE
 			if (entity.Has<ParentComponent>())
 				continue;
 
-			std::string name = entity.GetName(); // or however you get the entity's name
+			
+			const std::string name = STRFROM(entity.Get<NameComponent>().nameID); // or however you get the entity's name
 
 			if (!m_EntityFilter.PassFilter(name.c_str()))
 				continue;
@@ -110,7 +115,7 @@ namespace NULLENGINE
 			ImGui::TextColored(ImVec4(0, 1, 0, 1), id.c_str());
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(0);
-			bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)(entity.GetID()), flags, entity.GetName().c_str());
+			bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)(entity.GetID()), flags, name.c_str());
 
 			if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
 			{
@@ -118,7 +123,7 @@ namespace NULLENGINE
 				{
 
 					ImGui::SetDragDropPayload("ENTITY_TARGET", &entity.m_ID, sizeof(uint32_t));
-					ImGui::Text("Dragging %s", entity.m_Name.c_str());
+					ImGui::Text("Dragging %s", name.c_str());
 				}
 				ImGui::EndDragDropSource();
 			}
@@ -167,9 +172,13 @@ namespace NULLENGINE
 					auto& cComp = entity.Get<ChildrenComponent>();
 					auto& children = cComp.m_Children;
 
+
 					for (const auto& childID : children)
 					{
 						auto& childEntity = m_PannelData->m_Context->GetEntity(childID);
+
+						auto& nComp = childEntity.Get<NameComponent>();
+						const std::string childName = STRFROM(nComp.nameID);
 
 						// Recursive call to draw the child entity and its children
 						DrawEntityNode(childEntity);
@@ -180,7 +189,7 @@ namespace NULLENGINE
 							{
 			
 								ImGui::SetDragDropPayload("ENTITY_CHILD_TARGET", &childEntity.m_ID, sizeof(uint32_t));
-								ImGui::Text("Dragging %s", childEntity.m_Name.c_str());
+								ImGui::Text("Dragging %s", childName.c_str());
 							}
 							ImGui::EndDragDropSource();
 						}
@@ -252,6 +261,10 @@ namespace NULLENGINE
 			flags |= ImGuiTreeNodeFlags_DefaultOpen;
 		}
 
+		auto& nComp = entity.Get<NameComponent>();
+
+		const std::string name = STRFROM(nComp.nameID); // 
+
 		ImVec2 cursorPos = ImGui::GetCursorPos(); // Save the current cursor position
 
 		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 100);
@@ -260,7 +273,7 @@ namespace NULLENGINE
 		ImGui::SameLine();
 
 		ImGui::SetCursorPos(cursorPos);
-		bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)(entity.GetID()), flags, entity.GetName().c_str());
+		bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)(entity.GetID()), flags, name.c_str());
 
 		if (ImGui::IsItemClicked() || ImGui::IsItemClicked(1))
 		{
@@ -272,7 +285,7 @@ namespace NULLENGINE
 			if (m_PannelData->m_SelectedEntity == entity)
 			{
 				ImGui::SetDragDropPayload("ENTITY_CHILD_TARGET", &entity.m_ID, sizeof(uint32_t));
-				ImGui::Text("Dragging %s", entity.m_Name.c_str());
+				ImGui::Text("Dragging %s", name.c_str());
 			}
 			ImGui::EndDragDropSource();
 		}
@@ -342,7 +355,12 @@ namespace NULLENGINE
 		if (!entity.Has<ParentComponent>())
 			entity.Add< ParentComponent>();
 
-		entity.SetParentArchetype(parentEntity.m_Archetype);
+		if (!entity.Has<ArchetypeComponent>())
+			entity.Add<ArchetypeComponent>();
+
+		auto& archetypeComp = entity.Get<ArchetypeComponent>();
+		archetypeComp.parentArchetypeID = parentEntity.Get<ArchetypeComponent>().archetypeID;
+
 
 		auto& pComp = entity.Get<ParentComponent>();
 		pComp.m_Parent = parentEntity.m_ID;
@@ -358,7 +376,8 @@ namespace NULLENGINE
 
 		if (entity.Has<ParentComponent>())
 		{
-			entity.SetParentArchetype("");
+			if(entity.Has<ArchetypeComponent>())
+				entity.Get<ArchetypeComponent>().parentArchetypeID = 0; // Reset archetype ID if needed
 
 			auto& pComp = entity.Get<ParentComponent>();
 
@@ -395,16 +414,21 @@ namespace NULLENGINE
 
 			if (ImGui::MenuItem("Save as new Archetype"))
 			{
-				const std::string& archetype = FileDialog::SaveFile("Null Engine Archetype (*.ent)\0*.ent\0");
-				if (!archetype.empty())
+				const uint32_t& archetype = STRID(FileDialog::SaveFile("Null Engine Archetype (*.ent)\0*.ent\0"));
+				if (archetype)
+				{
 					m_PannelData->m_Context->SerializeArchetype(archetype, m_PannelData->m_SelectedEntity);
+				}
 			}
 
 			if (ImGui::MenuItem("Save Archetype"))
 			{
 				Entity& entity = m_PannelData->m_Context->GetEntity(m_PannelData->m_SelectedEntity);
-				if (!entity.m_Archetype.empty())
-					m_PannelData->m_Context->SerializeArchetype(entity.m_Archetype, m_PannelData->m_SelectedEntity);
+				if (entity.Has<ArchetypeComponent>())
+				{
+					ArchetypeComponent& archetypeComp = entity.Get<ArchetypeComponent>();
+					m_PannelData->m_Context->SerializeArchetype(archetypeComp.archetypeID, m_PannelData->m_SelectedEntity);
+				}
 			}
 
 

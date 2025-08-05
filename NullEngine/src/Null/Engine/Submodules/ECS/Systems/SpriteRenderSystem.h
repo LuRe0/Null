@@ -65,7 +65,6 @@ namespace NULLENGINE
 		static JSON DiffSpriteComponent(const void* base, const void* modified);
 
 		void ViewSpriteComponent(Entity& entityID);
-		void DrawDragDrop(const char* label, uint32_t& nameID, SpriteSource*& source, NTextureManager* texMgr, NSpriteSourceManager* srcMgr);
 	};
 
 }

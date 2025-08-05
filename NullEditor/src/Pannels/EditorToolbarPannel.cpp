@@ -12,12 +12,14 @@
 #include "stdafx.h"
 #include "EditorToolbarPannel.h"
 #include "Null/Engine/Submodules/Scene.h"
-#include "imgui.h"
+//#include "imgui.h"
 #include <misc/cpp/imgui_stdlib.h>
 #include <magic_enum/magic_enum.hpp>
 #include "Null/Tools/ImguiSink.h"
 //#include "backends/imgui_impl_opengl3.h"
 //#include "backends/imgui_impl_glfw.h"
+#include "../Editors/SceneEditor.h"
+#include "NIncludes.h"
 
 //******************************************************************************//
 // Public Variables															    //
@@ -44,119 +46,140 @@ namespace NULLENGINE
 		m_StopButton.Init();
 	}
 
-	void EditorToolbarPannel::OnImGUIRender()
-	{
-		NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
-		NDebugManager* debugManager = NEngine::Instance().Get<NDebugManager>();
-		NFramebufferManager* fbMan = NEngine::Instance().Get<NFramebufferManager>();
+    void EditorToolbarPannel::OnImGUIRender()
+    {
+        NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
+        NDebugManager* debugManager = NEngine::Instance().Get<NDebugManager>();
+        NFramebufferManager* fbMan = NEngine::Instance().Get<NFramebufferManager>();
 
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
-		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
+        // Cleaner window setup
+        ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration |
+            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
+            ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoNav |
+            ImGuiWindowFlags_NoBringToFrontOnFocus;
 
-		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration |
-			ImGuiWindowFlags_NoMove |
-			ImGuiWindowFlags_NoResize |
-			ImGuiWindowFlags_NoScrollbar |
-			ImGuiWindowFlags_NoScrollWithMouse |
-			ImGuiWindowFlags_NoNav |
-			ImGuiWindowFlags_NoTitleBar |
-			ImGuiWindowFlags_NoBringToFrontOnFocus;
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 4));
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 4));
 
-		ImGui::Begin("##UI_Toolbar", nullptr, windowFlags);
+        if (ImGui::Begin("##UI_Toolbar", nullptr, windowFlags))
+        {
+            float availableWidth = ImGui::GetContentRegionAvail().x;
+            float buttonSize = ImGui::GetFrameHeight();
 
-		float size = ImGui::GetWindowHeight() - 32.0f;
+            // Left section: Play/Stop button
+            RenderPlayControls(buttonSize);
 
-		ImGui::SameLine((ImGui::GetContentRegionMax().x * 0.75f));
+            ImGui::SameLine();
 
-		const auto& fbNames = fbMan->GetResourceNames();
+            // Middle section: Debug controls
+            RenderDebugControls(debugManager);
 
+            // Right section: Render settings (right-aligned)
+            float rightSectionWidth = 450.0f; // Approximate width needed
+            ImGui::SameLine(availableWidth - rightSectionWidth);
 
-		ImGui::PushItemWidth(150);
-		if (ImGui::BeginCombo("##RenderTarget", m_Parent->GetRenderTarget().c_str()))
-		{
-			for (const auto& name : fbNames)
-			{
-				bool isSelected = (m_Parent->GetRenderTarget() == name);
-				if (ImGui::Selectable(name.c_str(), isSelected)) {
-					m_Parent->SetRenderTarget(name);
-				}
-				if (isSelected)
-					ImGui::SetItemDefaultFocus();
-			}
-			ImGui::EndCombo();
-		}
-		ImGui::PopItemWidth();
+            RenderRenderSettings(fbMan);
+        }
+        ImGui::End();
 
-		ImGui::SameLine();
+        ImGui::PopStyleVar(2);
+    }
 
+    void EditorToolbarPannel::RenderPlayControls(float buttonSize)
+    {
+        NEventManager* eventManager = NEngine::Instance().Get<NEventManager>();
 
-		ImGui::PushItemWidth(150);
-		// Start the combo
-		if (ImGui::BeginCombo("##Window Mode", m_CurrentMode == MODE_MAXIMIZED ? "Maximized" : "Windowed"))
-		{
-			// Option to set to Maximized
-			if (ImGui::Selectable("Maximized", m_CurrentMode == MODE_MAXIMIZED))
-			{
-				m_CurrentMode = MODE_MAXIMIZED;
-			}
+        // Play/Stop button
+        bool isPlaying = NEngine::Instance().GetEngineState() != IEngine::EDIT;
+        Texture& icon = isPlaying ?
+            *NTextureManager::Instance()->Get("StopButton") :
+            *NTextureManager::Instance()->Get("PlayButton");
 
-			// Option to set to Windowed
-			if (ImGui::Selectable("Windowed", m_CurrentMode == MODE_WINDOWED))
-			{
-				m_CurrentMode = MODE_WINDOWED;
-			}
+        if (ImGui::ImageButton("##PlayStop", (ImTextureID)icon.GetID(), ImVec2(buttonSize, buttonSize)))
+        {
+            if (isPlaying)
+            {
+                // Stop
+                NEngine::Instance().SetEngineState(IEngine::EDIT);
+                eventManager->QueueEvent(std::make_unique<SceneSwitchEvent>(
+                    m_PannelData->m_Context->GetName(),
+                    m_PannelData->m_Context->GetName()));
+                eventManager->QueueEvent(std::make_unique<EngineEditStateEvent>(NEngine::EDIT));
+            }
+            else
+            {
+                // Play
+                m_Parent->SaveSceneImpl();
 
-			ImGui::EndCombo();
-		}
-		ImGui::PopItemWidth();
+                if (m_CurrentMode == MODE_WINDOWED)
+                {
+                    NEngine::Instance().SetEngineState(IEngine::RUN_WINDOWED);
+                    eventManager->QueueEvent(std::make_unique<EngineRunStateEvent>(NEngine::RUN_WINDOWED));
+                    m_Parent->ResetViewportSize();
+                }
+                else
+                {
+                    NEngine::Instance().SetEngineState(IEngine::RUN_MAXIMIZED);
+                    eventManager->QueueEvent(std::make_unique<EngineRunStateEvent>(NEngine::RUN_MAXIMIZED));
+                }
+            }
+        }
 
-		ImGui::SameLine((ImGui::GetContentRegionMax().x * 0.50f) - (size * 0.5f));
+        if (ImGui::IsItemHovered())
+        {
+            ImGui::SetTooltip(isPlaying ? "Stop" : "Play");
+        }
+    }
 
-		ImGui::Text("Show Debug: "); ImGui::SameLine(); ImGui::Checkbox("##showdebug", &debugManager->m_ShowDebug);
+    void EditorToolbarPannel::RenderDebugControls(NDebugManager* debugManager)
+    {
+        // Debug checkbox
+        ImGui::Text("Debug:");
+        ImGui::SameLine();
+        ImGui::Checkbox("##ShowDebug", &debugManager->m_ShowDebug);
 
-		ImGui::SameLine((ImGui::GetContentRegionMax().x * 0.0f) + (size * 0.5f));
+        if (ImGui::IsItemHovered())
+        {
+            ImGui::SetTooltip("Show debug overlays and information");
+        }
+    }
 
-		Texture& icon = NEngine::Instance().GetEngineState() == IEngine::EDIT ? *NTextureManager::Instance()->Get("PlayButton") : *NTextureManager::Instance()->Get("StopButton");
+    void EditorToolbarPannel::RenderRenderSettings(NFramebufferManager* fbMan)
+    {
+        // Window mode dropdown
+        ImGui::Text("Mode:");
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(150);
+        if (ImGui::BeginCombo("##WindowMode", m_CurrentMode == MODE_MAXIMIZED ? "Maximized" : "Windowed"))
+        {
+            if (ImGui::Selectable("Maximized", m_CurrentMode == MODE_MAXIMIZED))
+                m_CurrentMode = MODE_MAXIMIZED;
 
-		if (ImGui::ImageButton((ImTextureID)icon.GetID(), ImVec2(size, size)))
-		{
-			switch (NEngine::Instance().GetEngineState())
-			{
-			case NULLENGINE::IEngine::EDIT:
-			{
-				m_Parent->SaveSceneImpl();
+            if (ImGui::Selectable("Windowed", m_CurrentMode == MODE_WINDOWED))
+                m_CurrentMode = MODE_WINDOWED;
 
-				if (m_CurrentMode == MODE_WINDOWED)
-				{
-					NEngine::Instance().SetEngineState(IEngine::RUN_WINDOWED);
-					eventManager->QueueEvent(std::make_unique<EngineRunStateEvent>(NEngine::RUN_WINDOWED));
-					m_Parent->ResetViewportSize();
-				}
-				else
-				{
-					NEngine::Instance().SetEngineState(IEngine::RUN_MAXIMIZED);
-					eventManager->QueueEvent(std::make_unique<EngineRunStateEvent>(NEngine::RUN_MAXIMIZED));
-				}
+            ImGui::EndCombo();
+        }
 
-				break;
-			}
-			case NULLENGINE::IEngine::PAUSE:
-				break;
-			case NULLENGINE::IEngine::RUN_MAXIMIZED: // Handle maximized state
-			case NULLENGINE::IEngine::RUN_WINDOWED:  // Handle windowed state
-				NEngine::Instance().SetEngineState(IEngine::EDIT);
-				eventManager->QueueEvent(std::make_unique<SceneSwitchEvent>(m_PannelData->m_Context->GetName(), 
-																			m_PannelData->m_Context->GetName()));
-				eventManager->QueueEvent(std::make_unique<EngineEditStateEvent>(NEngine::EDIT));
-				break;
-			case NULLENGINE::IEngine::SIMULATE:
-				break;
-			default:
-				break;
-			}
-		}
+        ImGui::SameLine();
 
-		ImGui::End();
-		ImGui::PopStyleVar(2);
-	}
+        // Render target dropdown
+        ImGui::Text("Target:");
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(150);
+        if (ImGui::BeginCombo("##RenderTarget", m_Parent->GetRenderTarget().c_str()))
+        {
+            const auto& fbNames = fbMan->GetResourceNames();
+            for (const auto& name : fbNames)
+            {
+                bool isSelected = (m_Parent->GetRenderTarget() == name);
+                if (ImGui::Selectable(name.c_str(), isSelected))
+                    m_Parent->SetRenderTarget(name);
+
+                if (isSelected)
+                    ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndCombo();
+        }
+    }
 }

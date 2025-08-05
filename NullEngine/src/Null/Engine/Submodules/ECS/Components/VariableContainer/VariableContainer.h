@@ -47,14 +47,14 @@ namespace NULLENGINE
             data[std::move(key)] = value;
         }
 
-        template <typename T>
-        T& get_value(std::string key) const
-        {
-            if (!data.contains(key))
-                NLE_CORE_ASSERT(false, "Variable {0} not registered", key);
+        //template <typename T>
+        //T& get_value(std::string key) const
+        //{
+        //    if (!data.contains(key))
+        //        NLE_CORE_ASSERT(false, "Variable {0} not registered", key);
 
-            return std::any_cast<T&>(data.at(key));
-        }
+        //    return std::any_cast<T&>(data.at(key));
+        //}
 
     private:
         std::unordered_map<std::string, std::any> data;

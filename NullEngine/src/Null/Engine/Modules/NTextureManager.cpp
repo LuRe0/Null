@@ -78,10 +78,11 @@ namespace NULLENGINE
 
 	void NTextureManager::Unload()
 	{
-		NResourceManager::Unload();
 
 		for (auto& tex : m_ResourceList)
 			tex.second->Shutdown();
+
+		NResourceManager::Unload();
 	}
 
 	void NTextureManager::AddTextureIndex(const std::string& textureName)

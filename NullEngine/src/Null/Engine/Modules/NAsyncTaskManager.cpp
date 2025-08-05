@@ -11,7 +11,8 @@
 //******************************************************************************//
 #include "stdafx.h"
 #include "NAsyncTaskManager.h"
-#include <mutex> // optional if you want thread safety later
+#include <mutex>
+#include "NIncludes.h"
 
 
 //******************************************************************************//

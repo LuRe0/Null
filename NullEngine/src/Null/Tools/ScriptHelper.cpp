@@ -12,7 +12,7 @@
 #include "stdafx.h"
 #include "ScriptHelper.h"
 #include "imgui.h"
-
+#include "NIncludes.h"
 
 
 //******************************************************************************//
@@ -152,6 +152,7 @@ namespace NULLENGINE
 		for (auto& pair : script) {
 			sol::object key = pair.first;
 			sol::table props = pair.second;
+			std::string keyStr = key.as<std::string>();
 
 			sol::object value = props["value"];
 			bool serialize = props["serialize"];
@@ -159,7 +160,6 @@ namespace NULLENGINE
 			if (value.is<sol::function>() || !serialize)
 				continue;
 
-			std::string keyStr = key.as<std::string>();
 			LuaValue currentValue = GetValue(value);
 
 			//auto it = defaults.find(keyStr);

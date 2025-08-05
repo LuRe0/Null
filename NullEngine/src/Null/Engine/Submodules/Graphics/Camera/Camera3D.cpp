@@ -13,7 +13,8 @@
 #include "Camera.h"
 #include "Camera3D.h"
 #include <misc/cpp/imgui_stdlib.h>
-
+#include "../../Events/CommonEvents.h"
+#include "NIncludes.h"
 
 
 
@@ -102,6 +103,24 @@ namespace NULLENGINE
 		m_IsDirty = true;
 	}
 
+	void Camera3D::SetFOV(float fov)
+	{
+		m_FOV = fov;
+		m_IsDirty = true;
+	}
+
+	void Camera3D::SetNearClip(float nC)
+	{
+		m_NearClip = nC;
+		m_IsDirty = true;
+	}
+
+	void Camera3D::SetFarClip(float fC)
+	{
+		m_FarClip = fC;
+		m_IsDirty = true;
+	}
+
 	void Camera3D::SetYaw(float yaw)
 	{
 		m_Yaw = yaw;
@@ -152,6 +171,21 @@ namespace NULLENGINE
 	const float Camera3D::GetZoom() const
 	{
 		return m_Zoom; //to do????
+	}
+
+	const float Camera3D::GetFOV() const
+	{
+		return m_FOV;
+	}
+
+	const float Camera3D::GetNearClip() const
+	{
+		return m_NearClip;
+	}
+
+	const float Camera3D::GetFarClip() const
+	{
+		return m_FarClip;
 	}
 
 	void Camera3D::UpdateFrustum() const

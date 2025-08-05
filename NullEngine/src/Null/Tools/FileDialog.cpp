@@ -14,6 +14,7 @@
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>       //!< GLFW native access for Win32 window
 //#include "Null/Engine/Submodules/Window/NWindow.h" //!< For window handle access
+#include "NIncludes.h"              //!< Common includes for NullEngine
 
 
 namespace NULLENGINE

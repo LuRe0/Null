@@ -46,6 +46,7 @@ namespace NULLENGINE
 	class NEntityFactory;
 	class NComponentFactory;
 	class NEventManager;
+	using EntityID = uint32_t;
 
 	class EntitySerializer
 	{

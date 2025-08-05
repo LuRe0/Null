@@ -25,6 +25,9 @@
             "type": "NCameraManager"
         },
         {
+            "type": "NAnimationGraphManager"
+        },
+        {
             "type": "NShaderManager"
         },
         {
@@ -38,6 +41,9 @@
         },
         {
             "type": "NTextureManager"
+        },
+        {
+            "type": "NAnimationClipManager"
         },
         {
             "type": "NTilesetManager"
@@ -55,16 +61,16 @@
             "type": "NRegistry"
         },
         {
-            "type": "ScriptSystem"            
+            "type": "ScriptSystem"
         },
         {
-            "type": "NSceneManager"            
+            "type": "NSceneManager"
         },
         {
-            "type": "LifetimeSystem"            
+            "type": "LifetimeSystem"
         },
         {
-            "type": "TagSystem"            
+            "type": "TagSystem"
         },
         {
             "type": "CameraSystem"
@@ -92,6 +98,30 @@
         },
         {
             "type": "CircleCollider2DSystem"
+        },
+        {
+            "type": "NameSystem"
+        },
+        {
+            "type": "ArchetypeSystem"
+        },
+        {
+            "type": "DestroyedSystem"
+        },
+        {
+            "type": "DoNotSerializeSystem"
+        },
+        {
+            "type": "CharacterMovementSystem"
+        },
+        {
+            "type": "SpriteSourceSetSystem"
+        },
+        {
+            "type": "AnimatorSystem"
+        },
+        {
+            "type": "AnimationControllerSystem"
         },
         {
             "type": "NRenderer"

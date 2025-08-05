@@ -6,7 +6,7 @@ namespace NULLENGINE
 	struct LifetimeComponent
 	{
 		float timeRemaining = 0.0f;
-		ComponentFlagSet m_ComponentFlags;
+		ComponentFlagSet componentFlags = ComponentFlagSet(ComponentFlags_Enabled | ComponentFlags_Serialized);
 	};
 
 }

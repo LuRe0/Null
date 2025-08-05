@@ -15,7 +15,7 @@
 #include "Null/Engine/Submodules/Graphics/Texture.h"
 #include "Null/Engine/Submodules/Graphics/SpriteSource.h"
 #include "Null/Engine/Submodules/Graphics/Mesh/Mesh.h"
-
+#include "NIncludes.h"
 
 
 
@@ -39,40 +39,10 @@ namespace NULLENGINE
 	{
 	}
 
-	// BaseComponent& Entity::GetComponent(const std::string& componentName)
-	//{
-	//	NComponentFactory* componentFactory = NComponentFactory::Instance();
-	//	auto compID = componentFactory->GetComponentID(componentName);
-	//	return m_Parent->GetComponent(m_ID,compID);
-	//}
-
 	bool Entity::HasComponent(const std::string& componentName) const
 	{
 		NComponentFactory* componentFactory = NComponentFactory::Instance();
 		auto compID = componentFactory->GetComponentID(componentName);
 		return m_Parent->HasComponent(m_ID, compID);
-	}
-
-	void Entity::SetIsDestroyed(bool d)
-	{
-		m_isDestroyed = d;
-	}
-
-	bool Entity::GetIsDestroyed() const
-	{
-		return m_isDestroyed;
-	}
-
-	void Entity::SetName(const std::string& name)
-	{
-		m_Name = name;
-	}
-	void Entity::SetParentArchetype(const std::string& name)
-	{
-		m_ParentArchetype = name;
-	}
-	void Entity::SetArchetype(const std::string& name)
-	{
-		m_Archetype = name;
 	}
 }

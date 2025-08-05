@@ -75,7 +75,7 @@ namespace NULLENGINE
 		{
 			if (!m_ResourceList.contains(STRID(name)))
 			{
-				NLE_CORE_WARN("resource {0} does not exist", name);
+				//NLE_CORE_WARN("resource {0} does not exist", name);
 				return nullptr;
 			}
 
@@ -94,7 +94,7 @@ namespace NULLENGINE
 
 			if (!m_ResourceList.contains(nameID))
 			{
-				NLE_CORE_WARN("resource {0} does not exist", STRFROM(nameID));
+				//NLE_CORE_WARN("resource {0} does not exist", STRFROM(nameID));
 				return nullptr;
 			}
 	
@@ -112,6 +112,21 @@ namespace NULLENGINE
 			if (!m_ResourceList.contains(STRID(name)))
 			{
 				T* resource = new T(name, std::forward<TArgs>(args)...);
+
+				Add(name, resource);
+
+				return resource;
+			}
+
+
+			return m_ResourceList.at(STRID(name));
+		}
+
+		T* CreateRaw(const std::string& name)
+		{
+			if (!m_ResourceList.contains(STRID(name)))
+			{
+				T* resource = new T();
 
 				Add(name, resource);
 

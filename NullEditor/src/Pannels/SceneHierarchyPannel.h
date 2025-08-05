@@ -13,7 +13,8 @@
 // Includes																        //
 //******************************************************************************//
 #include "Null/Core.h"
-#include "Null/Engine/Submodules/Layers/ImGuiLayer.h"
+#include "../Pannels/Base/Pannel.h"
+
 
 //******************************************************************************//
 // Definitions  														        //
@@ -33,8 +34,9 @@
 namespace NULLENGINE
 {
 	class Scene;
+	class Entity;
 
-	class SceneHierarchyPannel : public Pannel
+	class SceneHierarchyPannel : public ScenePannel
 	{
 	public:
 		SceneHierarchyPannel() = default;
@@ -53,7 +55,7 @@ namespace NULLENGINE
 		void SelectedEntityMenuItems(Entity& entity);
 
 
-		ImGuiTextFilter m_EntityFilter;
+		//ImGuiTextFilter m_EntityFilter;
 
 	};
 

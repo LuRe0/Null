@@ -12,7 +12,7 @@
 #include "stdafx.h"
 #include "NRegistry.h"
 #include "Null/Engine/Submodules/Events/IEvents.h"
-
+#include "NIncludes.h"
 
 
 
@@ -71,6 +71,7 @@ namespace NULLENGINE
 
 		SUBSCRIBE_EVENT(EntityDestroyedEvent, &NRegistry::OnEntityDestroyed, eventManager, EventPriority::Low);
 		SUBSCRIBE_EVENT(EntityRemoveComponentEvent, &NRegistry::OnEntityRemoveComponent, eventManager, EventPriority::Low);
+		SUBSCRIBE_EVENT(EntityRemoveNamedComponentEvent, &NRegistry::OnEntityRemoveNamedComponent, eventManager, EventPriority::Low);
 		SUBSCRIBE_EVENT(SceneSwitchEvent, &NRegistry::OnSceneSwitch, eventManager, EventPriority::Medium);
 	}
 
@@ -179,6 +180,14 @@ namespace NULLENGINE
 	bool NRegistry::OnEntityRemoveComponent(const EntityRemoveComponentEvent& e)
 	{
 		RemoveComponent(e.GetID(), e.GetComponentID());
+
+		return true;
+
+	}
+
+	bool NRegistry::OnEntityRemoveNamedComponent(const EntityRemoveNamedComponentEvent& e)
+	{
+		RemoveNamedComponent(e.GetID(), e.GetComponentID(), e.GetNameID());
 
 		return true;
 

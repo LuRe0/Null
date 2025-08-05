@@ -4,7 +4,7 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	NWindow.h
+// File Name:	NAnimationClipManager.h
 // Author(s):	name
 // 
 //------------------------------------------------------------------------------
@@ -14,6 +14,8 @@
 //******************************************************************************//
 #include "Null/Core.h"
 #include "Null/Engine/Modules/Base/IModule.h"
+#include "Null/Engine/Modules/NResourceManager.h"
+#include "Null/Engine/Submodules/Graphics/Texture.h"
 
 
 //******************************************************************************//
@@ -30,28 +32,29 @@
 // Private structures													        //
 //******************************************************************************//
 
-class b2World;
-class b2Body;
 
 namespace NULLENGINE
 {
-	//class NLE_API NB2BodyManager : public NResourceManager<b2Body, NB2BodyManager>
-	//{
-	//public:
+	struct AnimationClip;
+
+	// Specialize for resource
+	class NLE_API NAnimationClipManager : public NResourceManager<AnimationClip, NAnimationClipManager>
+	{
+	public:
 
 
-	//	void Load() override;
-	//	void Init() override;
-	//	void Update(float dt) override;
-	//	void RuntimeUpdate(float dt) override {};
-	//	//void Render() override;
-	//	void RenderLoadScreen();
-	//	void Unload() override;
-	//	void Destroy( b2World* world,const Handle<b2Body>& handle);
-	//	void Shutdown() override;
+		void Load() override;
 
-	//private:
+		void LoadClipFromJson(AnimationClip& clip, const nlohmann::json& json);
 
-	//};
+		void SaveClipToJson(const AnimationClip& clip, nlohmann::json& json);
+
+		void SaveClipToFile(const AnimationClip& clip, const std::string& filepath);
+
+		void SaveAllClips();
+
+		std::vector<AnimationClip*> GetClipsForSpriteSource(uint32_t spriteSourceID);
+
+	};
 
 }

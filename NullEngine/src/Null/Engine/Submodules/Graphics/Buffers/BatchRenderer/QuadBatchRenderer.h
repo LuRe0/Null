@@ -17,9 +17,9 @@ LearnOpenGl license: https://creativecommons.org/licenses/by/4.0/legalcode
 // Includes																        //
 //******************************************************************************//
 #include "Null/Core.h"
-
 #include "BatchRenderer.h"
 #include <Null/Engine/Submodules/Graphics/Buffers/RenderData.h>
+#include "NIncludes.h"
 
 //******************************************************************************//
 // Definitions  														        //

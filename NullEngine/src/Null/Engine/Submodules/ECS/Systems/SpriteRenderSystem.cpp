@@ -18,6 +18,7 @@
 #include <misc/cpp/imgui_stdlib.h>
 #include "../Entities/Entity.h"	
 #include "../../../../Tools/ImGuiH.h"
+#include "NIncludes.h"
 
 //******************************************************************************//
 // Public Variables															    //
@@ -40,7 +41,9 @@ namespace NULLENGINE
 
 		componentFactory->Register<SpriteComponent>(CreateSpriteComponent,
 			[this](Entity& id) { this->ViewSpriteComponent(id); }, WriteSpriteComponent,
-			AddSpriteComponent, DiffSpriteComponent);
+			AddSpriteComponent, DiffSpriteComponent,
+			nullptr // AssignNameToComponent is not used here, so we pass nullptr
+		);
 	}
 
 	void SpriteRenderSystem::Load()
@@ -72,7 +75,7 @@ namespace NULLENGINE
 			TransformComponent& transform = m_Parent->GetComponent<TransformComponent>(entityId);
 			SpriteComponent& sprite = m_Parent->GetComponent<SpriteComponent>(entityId);
 
-			if (!sprite.m_ComponentFlags.IsSet(ComponentFlags_Enabled))
+			if (!sprite.componentFlags.IsSet(ComponentFlags_Enabled))
 				continue;
 
 			//if (!camManager->IsWithinFrustum(transform.m_Translation, (transform.m_Scale/2.0f)))
@@ -87,37 +90,37 @@ namespace NULLENGINE
 			float depth = cameraSpacePosition.z;
 
 
-			Mesh* mesh = sprite.m_MeshNameID ? NMeshManager::Instance()->Get(sprite.m_MeshNameID) : nullptr;
-			SpriteSource* src = sprite.m_SpriteSourceNameID ? NSpriteSourceManager::Instance()->Get(sprite.m_SpriteSourceNameID)  : nullptr;
-			SpriteSource* emissiveSrc = sprite.m_EmissiveSpriteSourceNameID ? NSpriteSourceManager::Instance()->Get(sprite.m_EmissiveSpriteSourceNameID) : nullptr;
+			Mesh* mesh = sprite.meshNameID ? NMeshManager::Instance()->Get(sprite.meshNameID) : nullptr;
+			SpriteSource* src = sprite.spriteSourceNameID ? NSpriteSourceManager::Instance()->Get(sprite.spriteSourceNameID)  : nullptr;
+			SpriteSource* emissiveSrc = sprite.emissiveSpriteSourceNameID ? NSpriteSourceManager::Instance()->Get(sprite.emissiveSpriteSourceNameID) : nullptr;
 
-			if (sprite.m_Color.a < 1.0f)
+			if (sprite.color.a < 1.0f)
 			{
-				renderer->AddRenderCall(RenderCommandTypes::Transparent, std::make_unique<ElementData>(transform.transformMatrix, mesh, src, sprite.m_Color, "",
-					sprite.m_FrameIndex, entityId, sprite.m_Thickness, sprite.m_Fade, RenderData::INSTANCED, -depth));
+				renderer->AddRenderCall(RenderCommandTypes::Transparent, std::make_unique<ElementData>(transform.transformMatrix, mesh, src, sprite.color, "",
+					sprite.frameIndex, entityId, sprite.thickness, sprite.fade, RenderData::INSTANCED, -depth));
 			}
 			else
 			{
-				renderer->AddRenderCall(RenderCommandTypes::Opaque, std::make_unique<ElementData>(transform.transformMatrix, mesh, src, sprite.m_Color, "",
-					sprite.m_FrameIndex, entityId, sprite.m_Thickness, sprite.m_Fade, RenderData::INSTANCED, -depth));
+				renderer->AddRenderCall(RenderCommandTypes::Opaque, std::make_unique<ElementData>(transform.transformMatrix, mesh, src, sprite.color, "",
+					sprite.frameIndex, entityId, sprite.thickness, sprite.fade, RenderData::INSTANCED, -depth));
 			}
 
 
 			SpriteSource* selectedSrc = emissiveSrc != nullptr ? emissiveSrc : src;
-			if (sprite.m_EmissiveStrength > 0.0f)
+			if (sprite.emissiveStrength > 0.0f)
 			{
 				glm::mat4 emissiveTransform = transform.transformMatrix * glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.01f));
-				glm::vec4 emissiveTint = sprite.m_EmissiveColor * sprite.m_EmissiveStrength;
+				glm::vec4 emissiveTint = sprite.emissiveColor * sprite.emissiveStrength;
 				renderer->AddRenderCall(RenderCommandTypes::Emissive, std::make_unique<ElementData>(
 					emissiveTransform,
 					mesh,
 					selectedSrc,
 					emissiveTint,
 					"",
-					sprite.m_FrameIndex,
+					sprite.frameIndex,
 					entityId,
-					sprite.m_Thickness,
-					sprite.m_Fade,
+					sprite.thickness,
+					sprite.fade,
 					RenderData::INSTANCED,
 					-depth));
 			}
@@ -143,51 +146,51 @@ namespace NULLENGINE
 				"Sprite",
 				sol::no_constructor,
 				"type_id", &Component<SpriteComponent>::GetID,
-				"frame_index", sol::readonly(&SpriteComponent::m_FrameIndex),
-				"tint", sol::readonly(&SpriteComponent::m_Color),
-				"emissive_color", sol::readonly(&SpriteComponent::m_EmissiveColor),
-				"emissive_strength", sol::readonly(&SpriteComponent::m_EmissiveStrength),
+				"frame_index", sol::readonly(&SpriteComponent::frameIndex),
+				"tint", sol::readonly(&SpriteComponent::color),
+				"emissive_color", sol::readonly(&SpriteComponent::emissiveColor),
+				"emissive_strength", sol::readonly(&SpriteComponent::emissiveStrength),
 				"get_alpha", sol::overload(
 					[](SpriteComponent& sprite)
 					{
-						return sprite.m_Color.a;
+						return sprite.color.a;
 					}
 				),
 				"set_alpha", sol::overload(
 					[](SpriteComponent& sprite, float a)
 					{
-						sprite.m_Color = glm::vec4(sprite.m_Color.r, sprite.m_Color.g, sprite.m_Color.b, a);
+						sprite.color = glm::vec4(sprite.color.r, sprite.color.g, sprite.color.b, a);
 					}
 				),
 				"set_tint", sol::overload(
 					[](SpriteComponent& sprite, float r, float g, float b, float a)
 					{
-						sprite.m_Color = glm::vec4(r, g, b, a);
+						sprite.color = glm::vec4(r, g, b, a);
 					},
 					[](SpriteComponent& sprite, const glm::vec4& newColor)
 					{
-						sprite.m_Color = newColor;
+						sprite.color = newColor;
 					}
 				),
 				"set_emissive_color", sol::overload(
 					[](SpriteComponent& sprite, float r, float g, float b, float a)
 					{
-						sprite.m_EmissiveColor = glm::vec4(r, g, b, a);
+						sprite.emissiveColor = glm::vec4(r, g, b, a);
 					},
 					[](SpriteComponent& sprite, const glm::vec4& newColor)
 					{
-						sprite.m_EmissiveColor = newColor;
+						sprite.emissiveColor = newColor;
 					}
 				),
 				"set_emissive_strength", sol::overload(
 					[](SpriteComponent& sprite, float s)
 					{
-						sprite.m_EmissiveStrength = s;
+						sprite.emissiveStrength = s;
 					}
 				),
 				"set_frame_index", [](SpriteComponent& sprite, int i)
 				{
-					sprite.m_FrameIndex = i;
+					sprite.frameIndex = i;
 				}
 			);
 	}
@@ -205,23 +208,23 @@ namespace NULLENGINE
 
 		if (!jsonWrapper.Empty())
 		{
-			comp->m_Fade = jsonWrapper.GetFloat("fade", 0.005f);
-			comp->m_Thickness = std::clamp(comp->m_Thickness, 0.02f, jsonWrapper.GetFloat("thickness", 1.0f));
+			comp->fade = jsonWrapper.GetFloat("fade", 0.005f);
+			comp->thickness = std::clamp(comp->thickness, 0.02f, jsonWrapper.GetFloat("thickness", 1.0f));
 
-			comp->m_FrameIndex = jsonWrapper.GetInt("frameindex", 0);
-			comp->m_EmissiveStrength = jsonWrapper.GetFloat("emissiveStrength", 0);
+			comp->frameIndex = jsonWrapper.GetInt("frameindex", 0);
+			comp->emissiveStrength = jsonWrapper.GetFloat("emissiveStrength", 0);
 			glm::vec2 dimension = jsonWrapper.GetVec2("dimension", { 1.0f, 1.0f });
 			auto src = jsonWrapper.GetString("texture", "");
 			if (!src.empty())
 			{
-				comp->m_SpriteSourceNameID = STRID(src);
+				comp->spriteSourceNameID = STRID(src);
 				spritesrcManager->Create(src, static_cast<int>(dimension.x), static_cast<int>(dimension.y));
 			}
 
 			src = jsonWrapper.GetString("emissiveTexture", "");
 			if (!src.empty())
 			{
-				comp->m_EmissiveSpriteSourceNameID = STRID(src);
+				comp->emissiveSpriteSourceNameID = STRID(src);
 				spritesrcManager->Create(src, static_cast<int>(dimension.x), static_cast<int>(dimension.y));
 			}
 
@@ -229,17 +232,17 @@ namespace NULLENGINE
 
 			const std::string& meshName = jsonWrapper.GetString("meshname", "");
 
-			comp->m_MeshNameID = !meshName.empty() ? STRID(meshName) : STRID("Quad");
+			comp->meshNameID = !meshName.empty() ? STRID(meshName) : STRID("Quad");
 
 
-			comp->m_Color = jsonWrapper.GetVec4("tint", { 1.0f, 1.0f, 1.0f, 1.0f });
-			comp->m_EmissiveColor = jsonWrapper.GetVec4("emissiveColor", { 1.0f, 1.0f, 1.0f, 1.0f });
+			comp->color = jsonWrapper.GetVec4("tint", { 1.0f, 1.0f, 1.0f, 1.0f });
+			comp->emissiveColor = jsonWrapper.GetVec4("emissiveColor", { 1.0f, 1.0f, 1.0f, 1.0f });
 
 
 			ComponentFlagSet flags;
 			flags.Set(ComponentFlags_Enabled);
 			flags.Set(ComponentFlags_Serialized);
-			comp->m_ComponentFlags.m_Flags = jsonWrapper.GetUInt8("ComponentFlags", flags.m_Flags);
+			comp->componentFlags.m_Flags = jsonWrapper.GetUInt8("ComponentFlags", flags.m_Flags);
 		}
 
 	}
@@ -251,8 +254,8 @@ namespace NULLENGINE
 		auto* comp = static_cast<SpriteComponent*>(component);
 
 
-		componentFactory->AddOrUpdate<SpriteComponent>(id, comp, registry, comp->m_Color, comp->m_EmissiveColor, comp->m_FrameIndex, comp->m_SpriteSourceNameID,
-			comp->m_EmissiveSpriteSourceNameID, comp->m_MeshNameID, comp->m_EmissiveStrength, comp->m_Thickness, comp->m_Fade, comp->m_ComponentFlags);
+		componentFactory->AddOrUpdate<SpriteComponent>(id, comp, registry, comp->color, comp->emissiveColor, comp->frameIndex, comp->spriteSourceNameID,
+			comp->emissiveSpriteSourceNameID, comp->meshNameID, comp->emissiveStrength, comp->thickness, comp->fade, comp->componentFlags);
 
 	}
 
@@ -262,19 +265,29 @@ namespace NULLENGINE
 
 		auto& sprite = *static_cast<const SpriteComponent*>(component);
 
-		json["Sprite"]["frameindex"] = sprite.m_FrameIndex;
-		json["Sprite"]["texture"] = STRFROM(sprite.m_SpriteSourceNameID);
-		json["Sprite"]["emissiveTexture"] = STRFROM(sprite.m_EmissiveSpriteSourceNameID);
-		json["Sprite"]["dimension"] = sprite.m_SpriteSourceNameID
-			? nlohmann::json::array({ 1, 1 })
-			: nlohmann::json::array({ NSpriteSourceManager::Instance()->Get(sprite.m_SpriteSourceNameID)->GetRows(), NSpriteSourceManager::Instance()->Get(sprite.m_SpriteSourceNameID)->GetCols() });
-		json["Sprite"]["tint"] = { sprite.m_Color.r, sprite.m_Color.g, sprite.m_Color.b, sprite.m_Color.a };
-		json["Sprite"]["emissiveColor"] = { sprite.m_EmissiveColor.r, sprite.m_EmissiveColor.g, sprite.m_EmissiveColor.b, sprite.m_EmissiveColor.a };
-		json["Sprite"]["meshname"] = STRFROM(sprite.m_MeshNameID);
-		json["Sprite"]["fade"] = sprite.m_Fade;
-		json["Sprite"]["emissiveStrength"] = sprite.m_EmissiveStrength;
-		json["Sprite"]["thickness"] = sprite.m_Thickness;
-		json["Sprite"]["ComponentFlags"] = sprite.m_ComponentFlags.m_Flags;
+		if (!sprite.componentFlags.IsSet(ComponentFlags_Serialized))
+			return json;
+
+		json["Sprite"]["frameindex"] = sprite.frameIndex;
+		json["Sprite"]["texture"] = STRFROM(sprite.spriteSourceNameID);
+		json["Sprite"]["emissiveTexture"] = STRFROM(sprite.emissiveSpriteSourceNameID);
+		auto* src = sprite.spriteSourceNameID ? NSpriteSourceManager::Instance()->Get(sprite.spriteSourceNameID) : nullptr;
+		if (src)
+		{
+			json["Sprite"]["dimension"] = nlohmann::json::array({ src->GetRows(), src->GetCols() });
+		}
+		else
+		{
+			json["Sprite"]["dimension"] = nlohmann::json::array({ 1, 1 });
+		}
+
+		json["Sprite"]["tint"] = { sprite.color.r, sprite.color.g, sprite.color.b, sprite.color.a };
+		json["Sprite"]["emissiveColor"] = { sprite.emissiveColor.r, sprite.emissiveColor.g, sprite.emissiveColor.b, sprite.emissiveColor.a };
+		json["Sprite"]["meshname"] = STRFROM(sprite.meshNameID);
+		json["Sprite"]["fade"] = sprite.fade;
+		json["Sprite"]["emissiveStrength"] = sprite.emissiveStrength;
+		json["Sprite"]["thickness"] = sprite.thickness;
+		json["Sprite"]["ComponentFlags"] = sprite.componentFlags.m_Flags;
 
 		return json;
 
@@ -287,23 +300,23 @@ namespace NULLENGINE
 		auto& b = *static_cast<const SpriteComponent*>(modified);
 		auto& a = *static_cast<const SpriteComponent*>(base);
 
-		if (a.m_FrameIndex != b.m_FrameIndex)
-			diff["frameindex"] = b.m_FrameIndex;
+		if (a.frameIndex != b.frameIndex)
+			diff["frameindex"] = b.frameIndex;
 
-		const std::string texA = a.m_SpriteSourceNameID ? STRFROM(a.m_SpriteSourceNameID) : "";
-		const std::string texB = b.m_SpriteSourceNameID ? STRFROM(b.m_SpriteSourceNameID) : "";
+		const std::string texA = a.spriteSourceNameID ? STRFROM(a.spriteSourceNameID) : "";
+		const std::string texB = b.spriteSourceNameID ? STRFROM(b.spriteSourceNameID) : "";
 		if (texA != texB)
 			diff["texture"] = texB;
 
-		const std::string emisTexA = a.m_EmissiveSpriteSourceNameID ? STRFROM(a.m_EmissiveSpriteSourceNameID) : "";
-		const std::string emisTexB = b.m_EmissiveSpriteSourceNameID ? STRFROM(b.m_EmissiveSpriteSourceNameID) : "";
+		const std::string emisTexA = a.emissiveSpriteSourceNameID ? STRFROM(a.emissiveSpriteSourceNameID) : "";
+		const std::string emisTexB = b.emissiveSpriteSourceNameID ? STRFROM(b.emissiveSpriteSourceNameID) : "";
 		if (emisTexA != emisTexB)
 			diff["emissiveTexture"] = emisTexB;
 
-		if (a.m_SpriteSourceNameID && b.m_SpriteSourceNameID)
+		if (a.spriteSourceNameID && b.spriteSourceNameID)
 		{
-			auto* srcA = NSpriteSourceManager::Instance()->Get(a.m_SpriteSourceNameID);
-			auto* srcB = NSpriteSourceManager::Instance()->Get(b.m_SpriteSourceNameID);
+			auto* srcA = NSpriteSourceManager::Instance()->Get(a.spriteSourceNameID);
+			auto* srcB = NSpriteSourceManager::Instance()->Get(b.spriteSourceNameID);
 
 			if (srcA->GetRows() != srcB->GetRows() ||
 				srcA->GetCols() != srcB->GetCols())
@@ -312,29 +325,29 @@ namespace NULLENGINE
 			}
 		}
 
-		if (a.m_Color != b.m_Color)
-			diff["tint"] = { b.m_Color.r, b.m_Color.g, b.m_Color.b, b.m_Color.a };
+		if (a.color != b.color)
+			diff["tint"] = { b.color.r, b.color.g, b.color.b, b.color.a };
 
-		if (a.m_EmissiveColor != b.m_EmissiveColor)
-			diff["emissiveColor"] = { b.m_EmissiveColor.r, b.m_EmissiveColor.g, b.m_EmissiveColor.b, b.m_EmissiveColor.a };
+		if (a.emissiveColor != b.emissiveColor)
+			diff["emissiveColor"] = { b.emissiveColor.r, b.emissiveColor.g, b.emissiveColor.b, b.emissiveColor.a };
 
 
-		const std::string meshA = a.m_MeshNameID ? STRFROM(a.m_MeshNameID) : "";
-		const std::string meshB = b.m_MeshNameID ? STRFROM(a.m_MeshNameID) : "";
+		const std::string meshA = a.meshNameID ? STRFROM(a.meshNameID) : "";
+		const std::string meshB = b.meshNameID ? STRFROM(a.meshNameID) : "";
 		if (meshA != meshB)
 			diff["meshname"] = meshB;
 
-		if (a.m_Fade != b.m_Fade)
-			diff["fade"] = b.m_Fade;
+		if (a.fade != b.fade)
+			diff["fade"] = b.fade;
 
-		if (a.m_EmissiveStrength != b.m_EmissiveStrength)
-			diff["emissiveStrength"] = b.m_EmissiveStrength;
+		if (a.emissiveStrength != b.emissiveStrength)
+			diff["emissiveStrength"] = b.emissiveStrength;
 
-		if (a.m_Thickness != b.m_Thickness)
-			diff["thickness"] = b.m_Thickness;
+		if (a.thickness != b.thickness)
+			diff["thickness"] = b.thickness;
 
-		if (a.m_ComponentFlags.m_Flags != b.m_ComponentFlags.m_Flags)
-			diff["ComponentFlags"] = b.m_ComponentFlags.m_Flags;
+		if (a.componentFlags.m_Flags != b.componentFlags.m_Flags)
+			diff["ComponentFlags"] = b.componentFlags.m_Flags;
 
 		return diff;
 	}
@@ -349,7 +362,7 @@ namespace NULLENGINE
 		NShaderManager* shaderManager = NShaderManager::Instance();
 
 
-		uint8_t& flags = sprite.m_ComponentFlags.m_Flags;
+		uint8_t& flags = sprite.componentFlags.m_Flags;
 
 		auto [open, enabled, remove] = ImGuiH::CollapsingHeaderWithFlagCheckboxAndRemove("Sprite", flags, ComponentFlags_Enabled);
 
@@ -365,15 +378,15 @@ namespace NULLENGINE
 			ImGui::BeginDisabled();
 
 
-		ImGui::DragFloat("Thickness", &sprite.m_Thickness, 0.02f, 0.01f, 1.0f);
+		ImGui::DragFloat("Thickness", &sprite.thickness, 0.02f, 0.01f, 1.0f);
 
-		ImGui::DragFloat("Fade", &sprite.m_Fade, 0.001f, 0);
+		ImGui::DragFloat("Fade", &sprite.fade, 0.001f, 0);
 
 		const auto& meshNames = meshManager->GetResourceNames();
 
-		if (sprite.m_MeshNameID)
+		if (sprite.meshNameID)
 		{
-			const std::string& meshName = STRFROM(sprite.m_MeshNameID);
+			const std::string& meshName = STRFROM(sprite.meshNameID);
 			if (ImGui::BeginCombo("Select Mesh", meshName.c_str()))
 			{
 				for (const auto& name : meshNames)
@@ -381,7 +394,7 @@ namespace NULLENGINE
 					bool isSelected = meshName == name;
 
 					if (ImGui::Selectable(name.c_str(), isSelected)) {
-						sprite.m_MeshNameID = STRID(name);
+						sprite.meshNameID = STRID(name);
 					}
 					if (isSelected) {
 						ImGui::SetItemDefaultFocus(); // Set focus on the selected item
@@ -402,7 +415,7 @@ namespace NULLENGINE
 					bool isSelected = false;
 
 					if (ImGui::Selectable(name.c_str(), isSelected)) {
-						sprite.m_MeshNameID = STRID(name);
+						sprite.meshNameID = STRID(name);
 					}
 					if (isSelected) {
 						ImGui::SetItemDefaultFocus(); // Set focus on the selected item
@@ -419,12 +432,12 @@ namespace NULLENGINE
 		}
 
 
-		auto* spriteSource = sprite.m_SpriteSourceNameID ? spritesrcManager->Get(sprite.m_SpriteSourceNameID) : nullptr;
-		auto* emissiveSpriteSource = sprite.m_EmissiveSpriteSourceNameID ? spritesrcManager->Get(sprite.m_EmissiveSpriteSourceNameID) : nullptr;
+		auto* spriteSource = sprite.spriteSourceNameID ? spritesrcManager->Get(sprite.spriteSourceNameID) : nullptr;
+		auto* emissiveSpriteSource = sprite.emissiveSpriteSourceNameID ? spritesrcManager->Get(sprite.emissiveSpriteSourceNameID) : nullptr;
 
 
-		DrawDragDrop("Main", sprite.m_SpriteSourceNameID, spriteSource, texureManager, spritesrcManager);
-		DrawDragDrop("Emissive", sprite.m_EmissiveSpriteSourceNameID, emissiveSpriteSource, texureManager, spritesrcManager);
+		ImGuiH::DrawDragDrop("Main", sprite.spriteSourceNameID, spriteSource, texureManager, spritesrcManager);
+		ImGuiH::DrawDragDrop("Emissive", sprite.emissiveSpriteSourceNameID, emissiveSpriteSource, texureManager, spritesrcManager);
 
 		if (spriteSource)
 		{
@@ -452,7 +465,7 @@ namespace NULLENGINE
 			}
 
 
-			ImGui::DragInt(std::string(std::string("Frame")).c_str(), reinterpret_cast<int*>(&sprite.m_FrameIndex), 1, 0, spriteSource->GetFrameCount());
+			ImGui::DragInt(std::string(std::string("Frame")).c_str(), reinterpret_cast<int*>(&sprite.frameIndex), 1, 0, spriteSource->GetFrameCount());
 		}
 		else
 		{
@@ -460,11 +473,11 @@ namespace NULLENGINE
 		}
 
 
-		ImGui::ColorEdit4("Tint", glm::value_ptr(sprite.m_Color));
-		ImGui::ColorEdit4("Emissive Color", glm::value_ptr(sprite.m_EmissiveColor));
+		ImGui::ColorEdit4("Tint", glm::value_ptr(sprite.color));
+		ImGui::ColorEdit4("Emissive Color", glm::value_ptr(sprite.emissiveColor));
 
 
-		ImGui::DragFloat("Emissive Strength", &sprite.m_EmissiveStrength, 0.001f, 0);
+		ImGui::DragFloat("Emissive Strength", &sprite.emissiveStrength, 0.001f, 0);
 
 
 		if (!enabled)
@@ -477,74 +490,6 @@ namespace NULLENGINE
 		ImGui::TreePop();
 
 
-	}
-
-	void SpriteRenderSystem::DrawDragDrop(const char* label, uint32_t& nameID, SpriteSource*& source, NTextureManager* texMgr, NSpriteSourceManager* srcMgr)
-	{
-		if (source)
-		{
-			if (source->GetTexture())
-			{
-				ImGui::Text("Texture\t");
-				ImGui::Image((void*)(intptr_t)source->GetTexture()->GetID(), ImVec2(125, 100), { 0, -1 }, { 1, 0 });
-
-				ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 100);
-				std::string btnId = std::string("##ImageButton_") + label;
-				if (ImGui::InvisibleButton(btnId.c_str(), ImVec2(125, 100)))
-				{
-					ImGui::OpenPopup((std::string("TexturePopup_") + label).c_str());
-				}
-			}
-		}
-		else
-		{
-			if (ImGui::Button((std::string("Select ") + label).c_str(), ImVec2(125, 100)))
-			{
-				ImGui::OpenPopup((std::string("TexturePopup_") + label).c_str());
-			}
-		}
-
-		if (ImGui::BeginDragDropTarget())
-		{
-			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("TEXTURE_FILE"))
-			{
-				std::string filename((const char*)payload->Data);
-				if (!filename.empty())
-					source = srcMgr->Has(filename) ? srcMgr->Get(filename) : srcMgr->Create(filename, 1, 1);
-			}
-			ImGui::EndDragDropTarget();
-		}
-
-		if (ImGui::BeginPopup((std::string("TexturePopup_") + label).c_str()))
-		{
-			ImGui::SetNextWindowSize(ImVec2(125, 100), ImGuiCond_FirstUseEver);
-			ImGui::BeginChild((std::string("TextureList_") + label).c_str(), ImVec2(125, 200), true);
-
-			if (ImGui::Selectable("⨯ None"))
-			{
-				source = nullptr;
-				nameID = 0;
-				ImGui::CloseCurrentPopup();
-			}
-
-			for (const auto& name : texMgr->GetResourceNames())
-			{
-				auto texture = texMgr->Get(name);
-				if (texture)
-				{
-					ImGui::Text("%s :", name.c_str());
-					if (ImGui::ImageButton((void*)(intptr_t)texture->GetID(), ImVec2(75, 50), { 0, -1 }, { 1, 0 }))
-					{
-						source = srcMgr->Has(name) ? srcMgr->Get(name) : srcMgr->Create(name, 1, 1);
-						nameID = STRID(name);
-						ImGui::CloseCurrentPopup();
-					}
-				}
-			}
-
-			ImGui::EndChild();
-			ImGui::EndPopup();
-		}
 	}
 
 }

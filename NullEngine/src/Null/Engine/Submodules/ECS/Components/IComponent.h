@@ -42,6 +42,8 @@ namespace NULLENGINE
 	class NLE_API Component : public IComponent
 	{
 	public:
+
+		static constexpr bool AllowMultiple = false; // default is false
 	
 		static uint32_t GetID()
 		{

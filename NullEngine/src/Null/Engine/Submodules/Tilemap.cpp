@@ -20,7 +20,7 @@
 //#include "Null/Engine/Modules/NTilesetManager.h"
 
 
-
+#include "NIncludes.h"
 
 //******************************************************************************//
 // Public Variables															    //
@@ -128,7 +128,7 @@ namespace NULLENGINE
 
         const std::size_t max_tiles = m_MapWidth * m_MapHeight * m_Layers.size();
 
-        TilemapBatchRenderer<DrawInstance, QuadInstanceMesh>* batcher = renderer->AddBatcher<TilemapBatchRenderer<DrawInstance, QuadInstanceMesh>>("Tilemap", max_tiles);
+        TilemapBatchRenderer<DrawInstance, QuadInstanceMesh>* batcher = renderer->AddBatcher<TilemapBatchRenderer<DrawInstance, QuadInstanceMesh>>(STRID("Tilemap"), max_tiles);
 
         for (const auto& layer : m_Layers)
         {

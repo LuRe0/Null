@@ -52,19 +52,19 @@ namespace NULLENGINE
 
     struct SpriteComponent
     {
-        glm::vec4      m_Color = glm::vec4(1.0f);                       // 16 bytes, align 16
-        glm::vec4      m_EmissiveColor = glm::vec4(1.0f);               // 16 bytes, align 16
+        glm::vec4      color = glm::vec4(1.0f);                       // 16 bytes, align 16
+        glm::vec4      emissiveColor = glm::vec4(1.0f);               // 16 bytes, align 16
 
-        uint32_t       m_FrameIndex = 0;                  // 4 bytes
-        uint32_t       m_SpriteSourceNameID = 0;          // 4 bytes
-        uint32_t       m_EmissiveSpriteSourceNameID = 0;  // 4 bytes
-        uint32_t       m_MeshNameID = 0;                   // 4 bytes
+        uint32_t       frameIndex = 0;                  // 4 bytes
+        uint32_t       spriteSourceNameID = 0;          // 4 bytes
+        uint32_t       emissiveSpriteSourceNameID = 0;  // 4 bytes
+        uint32_t       meshNameID = 0;                   // 4 bytes
 
-        float          m_EmissiveStrength = 0.0f;             // 4 bytes
-        float          m_Thickness = 1.0f;                     // 4 bytes
-        float          m_Fade = 0.005f;                          // 4 bytes
+        float          emissiveStrength = 0.0f;             // 4 bytes
+        float          thickness = 1.0f;                     // 4 bytes
+        float          fade = 0.005f;                          // 4 bytes
 
-        ComponentFlagSet  m_ComponentFlags;                         // 1 byte
+        ComponentFlagSet  componentFlags = ComponentFlagSet(ComponentFlags_Enabled | ComponentFlags_Serialized);                         // 1 byte
     };
 
 

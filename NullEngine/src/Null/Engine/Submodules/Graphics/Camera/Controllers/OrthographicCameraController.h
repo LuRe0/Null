@@ -33,6 +33,9 @@
 namespace NULLENGINE
 {
     class NLE_API Camera2D;
+	class MouseScrolledEvent;
+	class MouseMoveEvent;
+	class NLE_API Camera;
 
     class NLE_API OrthographicCameraController : public CameraController
     {

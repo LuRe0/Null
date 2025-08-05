@@ -104,13 +104,10 @@
     <ClInclude Include="src\Null\Engine\Modules\Base\IModule.h">
       <Filter>Null\Engine\Modules\Base</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Engine\Modules\NAnimationClipManager.h">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClInclude>
     <ClInclude Include="src\Null\Engine\Modules\NAsyncTaskManager.h">
-      <Filter>Null\Engine\Modules</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Null\Engine\Modules\NB2BodyManager.h">
-      <Filter>Null\Engine\Modules</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Null\Engine\Modules\NB2FixtureManager.h">
       <Filter>Null\Engine\Modules</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Modules\NCameraManager.h">
@@ -158,6 +155,9 @@
     <ClInclude Include="src\Null\Engine\Modules\NSpriteSourceManager.h">
       <Filter>Null\Engine\Modules</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Engine\Modules\NAnimationGraphManager.h">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClInclude>
     <ClInclude Include="src\Null\Engine\Modules\NStringIDManager.h">
       <Filter>Null\Engine\Modules</Filter>
     </ClInclude>
@@ -182,16 +182,37 @@
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\AnimationComponent.h">
       <Filter>Null\Engine\Submodules\ECS\Components</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\AnimationControllerComponent.h">
+      <Filter>Null\Engine\Submodules\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\AnimatorComponent.h">
+      <Filter>Null\Engine\Submodules\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\ArchetypeComponent.h">
+      <Filter>Null\Engine\Submodules\ECS\Components</Filter>
+    </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\BoxCollider2DComponent.h">
       <Filter>Null\Engine\Submodules\ECS\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\CameraComponent.h">
       <Filter>Null\Engine\Submodules\ECS\Components</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\CharacterMovementComponent.h">
+      <Filter>Null\Engine\Submodules\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\DestroyedComponent.h">
+      <Filter>Null\Engine\Submodules\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\DoNotSerializeComponent.h">
+      <Filter>Null\Engine\Submodules\ECS\Components</Filter>
+    </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\IComponent.h">
       <Filter>Null\Engine\Submodules\ECS\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\LifetimeComponent.h">
+      <Filter>Null\Engine\Submodules\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\NameComponent.h">
       <Filter>Null\Engine\Submodules\ECS\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\Parent-ChildComponents.h">
@@ -207,6 +228,9 @@
       <Filter>Null\Engine\Submodules\ECS\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\SpriteComponent.h">
+      <Filter>Null\Engine\Submodules\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\SpriteSourceSetComponent.h">
       <Filter>Null\Engine\Submodules\ECS\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\TagComponent.h">
@@ -227,7 +251,16 @@
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Helpers\ComponentSignature.h">
       <Filter>Null\Engine\Submodules\ECS\Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\AnimationControllerSystem.h">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\AnimationSystem.h">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\AnimatorSystem.h">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\ArchetypeSystem.h">
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\BoxCollider2DSystem.h">
@@ -239,10 +272,22 @@
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\CameraSystem.h">
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\CharacterMovementSystem.h">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\CircleCollider2DSystem.h">
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\DestroyedSystem.h">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\DoNotSerializeSystem.h">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\LifetimeSystem.h">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\NameSystem.h">
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\ParticleSystem.h">
@@ -255,6 +300,9 @@
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\SpriteRenderSystem.h">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\SpriteSourceSetSystem.h">
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Systems\System.h">
@@ -398,6 +446,9 @@
     <ClInclude Include="src\Null\Engine\Submodules\Scene.h">
       <Filter>Null\Engine\Submodules</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\AnimationGraph.h">
+      <Filter>Null\Engine\Submodules</Filter>
+    </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\Tilemap.h">
       <Filter>Null\Engine\Submodules</Filter>
     </ClInclude>
@@ -425,6 +476,9 @@
     <ClInclude Include="src\Null\Tools\GLHelper.h">
       <Filter>Null\Tools</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Tools\GLMHelper.h">
+      <Filter>Null\Tools</Filter>
+    </ClInclude>
     <ClInclude Include="src\Null\Tools\Handle.h">
       <Filter>Null\Tools</Filter>
     </ClInclude>
@@ -435,6 +489,9 @@
       <Filter>Null\Tools</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Tools\JsonWrapper.h">
+      <Filter>Null\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Tools\LuaTypes.h">
       <Filter>Null\Tools</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Tools\NRegistryView.h">
@@ -467,13 +524,10 @@
     <ClCompile Include="src\Null\Engine\Modules\Base\IModule.cpp">
       <Filter>Null\Engine\Modules\Base</Filter>
     </ClCompile>
+    <ClCompile Include="src\Null\Engine\Modules\NAnimationClipManager.cpp">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClCompile>
     <ClCompile Include="src\Null\Engine\Modules\NAsyncTaskManager.cpp">
-      <Filter>Null\Engine\Modules</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Null\Engine\Modules\NB2BodyManager.cpp">
-      <Filter>Null\Engine\Modules</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Null\Engine\Modules\NB2FixtureManager.cpp">
       <Filter>Null\Engine\Modules</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Modules\NCameraManager.cpp">
@@ -521,6 +575,9 @@
     <ClCompile Include="src\Null\Engine\Modules\NSpriteSourceManager.cpp">
       <Filter>Null\Engine\Modules</Filter>
     </ClCompile>
+    <ClCompile Include="src\Null\Engine\Modules\NAnimationGraphManager.cpp">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClCompile>
     <ClCompile Include="src\Null\Engine\Modules\NStringIDManager.cpp">
       <Filter>Null\Engine\Modules</Filter>
     </ClCompile>
@@ -554,7 +611,16 @@
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Helpers\ComponentSignature.cpp">
       <Filter>Null\Engine\Submodules\ECS\Helpers</Filter>
     </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\AnimationControllerSystem.cpp">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\AnimationSystem.cpp">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\AnimatorSystem.cpp">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\ArchetypeSystem.cpp">
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\BoxCollider2DSystem.cpp">
@@ -563,10 +629,22 @@
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\CameraSystem.cpp">
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\CharacterMovementSystem.cpp">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\CircleCollider2DSystem.cpp">
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\DestroyedSystem.cpp">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\DoNotSerializeSystem.cpp">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\LifetimeSystem.cpp">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\NameSystem.cpp">
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\ParticleSystem.cpp">
@@ -579,6 +657,9 @@
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\SpriteRenderSystem.cpp">
+      <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\SpriteSourceSetSystem.cpp">
       <Filter>Null\Engine\Submodules\ECS\Systems</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Systems\System.cpp">
@@ -692,10 +773,10 @@
     <ClCompile Include="src\Null\Engine\Submodules\Layers\Layer.cpp">
       <Filter>Null\Engine\Submodules\Layers</Filter>
     </ClCompile>
-    <ClCompile Include="src\Null\Engine\Submodules\Scene - Copy.cpp">
+    <ClCompile Include="src\Null\Engine\Submodules\Scene.cpp">
       <Filter>Null\Engine\Submodules</Filter>
     </ClCompile>
-    <ClCompile Include="src\Null\Engine\Submodules\Scene.cpp">
+    <ClCompile Include="src\Null\Engine\Submodules\AnimationGraph.cpp">
       <Filter>Null\Engine\Submodules</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\Tilemap.cpp">
@@ -720,6 +801,9 @@
       <Filter>Null\Tools</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Tools\GLHelper.cpp">
+      <Filter>Null\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Tools\GLMHelper.cpp">
       <Filter>Null\Tools</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Tools\Handle.cpp">

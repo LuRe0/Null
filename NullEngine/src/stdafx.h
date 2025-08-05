@@ -34,6 +34,7 @@
 #include <typeinfo>
 #include <typeindex>
 #include <cstdint>
+#include <limits>
 #include <filesystem>
 #include <iomanip>
 #include <utility> // For std::forward
@@ -41,7 +42,8 @@
 #include <cstdio>
 #include <unordered_map>
 #include <glm/glm.hpp>
-#include "NIncludes.h"
+#include <nlohmann/json.hpp>
+//#include "NIncludes.h"
 
 
 #define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
@@ -55,13 +57,23 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-
 #ifdef NLE_PLATFORM_WINDOWS
+#define NOMINMAX
 #include <Windows.h>
-#include <windows.h>
 #endif // NLE_PLATFORM_WINDOWS
-
 using JSON = nlohmann::json;
+
+
+#include "imgui.h"
+#include "misc/cpp/imgui_stdlib.h"
+
+// Include Box2D headers
+//#include <box2d/box2d.h>
+//#include <box2d/b2_world.h>
+//#include <box2d/b2_body.h>
+//#include <box2d/b2_fixture.h>
+//#include <box2d/b2_polygon_shape.h>
+//#include <box2d/b2_circle_shape.h>
 
 
 //******************************************************************************//

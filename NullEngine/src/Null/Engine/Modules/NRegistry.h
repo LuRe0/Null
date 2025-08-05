@@ -48,6 +48,10 @@ Code adapted from https://courses.pikuma.com/courses/take/2dgameengine/lessons/1
 namespace NULLENGINE
 {
 
+	class EntityRemoveComponentEvent;
+	class EntityRemoveNamedComponentEvent;
+	class EntityDestroyedEvent;
+	class SceneSwitchEvent;
 
 	class NLE_API NRegistry : public ModuleBase<NRegistry>
 	{
@@ -126,6 +130,30 @@ namespace NULLENGINE
 
 		}
 
+		template <typename T, typename ...TArgs>
+		void AddNamedComponent(EntityID entityID, const uint32_t& nameID, TArgs&& ...args)
+		{
+			NLE_CORE_ASSERT(Component<T>::AllowMultiple, "AddNamedComponent called on a component that does not allow multiples");
+
+			const auto componentID = Component<T>::GetID();
+
+			if (componentID > m_ComponentManagers.size())
+				m_ComponentManagers.resize(componentID);
+
+			if (!m_ComponentManagers[componentID - 1])
+				m_ComponentManagers[componentID - 1] = std::make_unique<MultiComponentManager<T>>();
+
+			auto* manager = dynamic_cast<MultiComponentManager<T>*>(m_ComponentManagers[componentID - 1].get());
+			if (manager)
+			{
+				manager->Add(entityID, nameID, std::forward<TArgs>(args)...);
+				NLE_CORE_INFO("Added named {0} ({1}) to entity {2}", Component<T>::TypeName(), nameID, entityID);
+
+				m_EntityComponentSignatures[m_EntityToIndexMap[entityID]].set(componentID);
+			}
+		}
+
+
 		template<typename... Components>
 		auto View(EntityID id)
 		{
@@ -177,6 +205,28 @@ namespace NULLENGINE
 		}
 
 
+		template <typename T>
+		void RemoveNamedComponent(EntityID entityID, uint32_t nameID)
+		{
+			const auto componentID = Component<T>::GetID();
+
+			auto* manager = dynamic_cast<MultiComponentManager<T>*>(m_ComponentManagers[componentID - 1].get());
+			if (manager)
+			{
+				manager->RemoveNamed(entityID, nameID);
+
+				// Update signature based on whether any remain
+				bool hasAny = manager->HasComponents(entityID);
+				m_EntityComponentSignatures[m_EntityToIndexMap[entityID]].set(componentID, hasAny);
+
+				NLE_CORE_INFO("Removed named component {0} ({1}) from entity {2}", Component<T>::TypeName(), nameID, entityID);
+				return;
+			}
+
+			NLE_CORE_WARN("Failed to locate multi-component manager for {0}", Component<T>::TypeName());
+		}
+
+
 		void RemoveComponent(EntityID entityID, uint32_t componentID)
 		{
 
@@ -202,6 +252,35 @@ namespace NULLENGINE
 			NLE_CORE_WARN("Failed to locate appropriate manager");
 		}
 
+		void RemoveNamedComponent(EntityID entityID, uint32_t componentID, uint32_t nameID)
+		{
+
+			if (HasNamedComponent(entityID, componentID, nameID))
+			{
+				IComponentManager* newManager = m_ComponentManagers[componentID - 1].get();
+				if (newManager)
+				{
+					IMultiComponentManager* manager = dynamic_cast<IMultiComponentManager*>(newManager);
+					manager->RemoveNamed(entityID, nameID);
+
+					bool hasAny = manager->HasComponents(entityID);
+					m_EntityComponentSignatures[m_EntityToIndexMap[entityID]].set(componentID, hasAny);
+
+					NLE_CORE_INFO("Succesfully removed {0}, from entity {1}", componentID, entityID);
+					return;
+				}
+			}
+			else
+			{
+				NLE_CORE_WARN("Attempted to remove {0}, which entity {1} does not possess!", componentID, entityID);
+			}
+
+
+
+			NLE_CORE_WARN("Failed to locate appropriate manager");
+		}
+
+
 
 		template <typename T>
 		bool HasComponent(EntityID entityID) const
@@ -213,6 +292,43 @@ namespace NULLENGINE
 		}
 
 
+		template <typename T>
+		bool HasNamedComponent(EntityID entityID, uint32_t NameID) const
+		{
+			NLE_CORE_ASSERT(Component<T>::AllowMultiple, "AddNamedComponent called on a component that does not allow multiples");
+
+			const auto index = m_EntityToIndexMap.at(entityID);
+			const Signature& signature = m_EntityComponentSignatures.at(index);
+
+			if (signature.test(Component<T>::GetID()))
+			{
+
+				const auto componentID = Component<T>::GetID();
+
+				if (componentID > m_ComponentManagers.size())
+					return false;
+
+				if (!m_ComponentManagers[componentID - 1])
+					return false;
+
+				auto* manager = dynamic_cast<MultiComponentManager<T>*>(m_ComponentManagers[componentID - 1].get());
+				if (manager)
+				{
+					return manager->HasComponent(entityID, NameID);
+				}
+				else
+				{
+					NLE_CORE_WARN("Failed to locate multi-component manager for {0}", Component<T>::TypeName());
+					return false;
+				}
+
+			}
+
+			return false;
+		}
+
+
+
 		bool HasComponent(EntityID entityID, uint32_t componentID) const
 		{
 			const auto index = m_EntityToIndexMap.at(entityID);
@@ -221,29 +337,70 @@ namespace NULLENGINE
 			return signature.test(componentID);
 		}
 
-		//BaseComponent& GetComponent(EntityID entityID, uint32_t componentID)
-		//{
-		//	if (HasComponent(entityID, componentID))
-		//	{
-		//		IComponentManager* newManager = m_ComponentManagers[componentID - 1].get();
-		//		if (newManager)
-		//		{
-		//			BaseComponent& component = newManager->Get(entityID);
 
-		//			//NLE_CORE_INFO("Succesfully Retrieved {0}, {1} from entity {2}", Component<T>::TypeName(), componentID, entityID);
 
-		//			return component;
-		//		}
-		//	}
-		//	else
-		//	{
-		//		NLE_CORE_ERROR("Attempted to retrieve {0} which entity {1} does not possess!", componentID, entityID);
-		//		assert(false);
-		//	}
+		bool HasNamedComponent(EntityID entityID, uint32_t componentID, uint32_t nameID) const
+		{
 
-		//	NLE_CORE_THROW("Attempted to retrieve {0} which entity {1} does not possess!", componentID, entityID);
-		//}
+			if (HasComponent(entityID, componentID))
+			{
+				IComponentManager* newManager = m_ComponentManagers[componentID - 1].get();
+				if (newManager)
+				{
+					IMultiComponentManager* manager = dynamic_cast<IMultiComponentManager*>(newManager);
 
+					return manager->HasNamed(entityID, nameID);
+				}
+				else
+				{
+					return false;
+				}
+			}
+
+
+			return false;
+		}
+
+		void* GetComponent(EntityID entityID, uint32_t componentID)
+		{
+			if (HasComponent(entityID, componentID))
+			{
+				IComponentManager* newManager = m_ComponentManagers[componentID - 1].get();
+				if (newManager)
+				{
+					void* component = dynamic_cast<ISingleComponentManager*>(newManager)->GetRaw(entityID);
+					return component;
+				}
+			}
+			else
+			{
+				NLE_CORE_ERROR("Attempted to retrieve {0} which entity {1} does not possess!", componentID, entityID);
+				assert(false);
+			}
+
+			NLE_CORE_THROW("Attempted to retrieve {0} which entity {1} does not possess!", componentID, entityID);
+		}
+
+
+		std::vector<void*> GetNamedComponents(EntityID entityID, uint32_t componentID)
+		{
+			if (HasComponent(entityID, componentID))
+			{
+				IComponentManager* newManager = m_ComponentManagers[componentID - 1].get();
+				if (newManager)
+				{
+					std::vector<void*> components = dynamic_cast<IMultiComponentManager*>(newManager)->GetAllRaw(entityID);
+					return components;
+				}
+			}
+			else
+			{
+				NLE_CORE_ERROR("Attempted to retrieve {0} which entity {1} does not possess!", componentID, entityID);
+				assert(false);
+			}
+
+			NLE_CORE_THROW("Attempted to retrieve {0} which entity {1} does not possess!", componentID, entityID);
+		}
 
 		//BaseComponent& GetComponent(EntityID entityID, const std::string& component);
 
@@ -271,6 +428,37 @@ namespace NULLENGINE
 			}
 
 			NLE_CORE_THROW("Attempted to retrieve {0} which entity {1} does not possess!", componentID, entityID);
+		}
+
+		template <typename T>
+		T& GetNamedComponent(EntityID entityID, uint32_t nameID)
+		{
+			static_assert(Component<T>::AllowMultiple, "GetNamedComponent only works for multi-instance components.");
+
+			const auto componentID = Component<T>::GetID();
+
+			auto* manager = dynamic_cast<MultiComponentManager<T>*>(m_ComponentManagers[componentID - 1].get());
+			if (!manager)
+				NLE_CORE_THROW("MultiComponentManager missing for component ID {0}", componentID);
+
+			if (!manager->HasComponent(entityID, nameID))
+				NLE_CORE_THROW("Entity {0} does not have named component {1}", entityID, nameID);
+
+			return manager->Get(entityID, nameID);
+		}
+
+		template <typename T>
+		std::vector<std::reference_wrapper<T>> GetNamedComponents(EntityID entityID)
+		{
+			static_assert(Component<T>::AllowMultiple, "Only works for multi-instance components.");
+
+			const auto componentID = Component<T>::GetID();
+
+			auto* manager = dynamic_cast<MultiComponentManager<T>*>(m_ComponentManagers[componentID - 1].get());
+			if (!manager)
+				return std::vector<std::reference_wrapper<T>>();
+
+			return manager->GetAll(entityID);
 		}
 
 
@@ -350,6 +538,7 @@ namespace NULLENGINE
 
 		bool OnEntityDestroyed(const EntityDestroyedEvent& e);
 		bool OnEntityRemoveComponent(const EntityRemoveComponentEvent& e);
+		bool OnEntityRemoveNamedComponent(const EntityRemoveNamedComponentEvent& e);
 		bool OnSceneSwitch(const SceneSwitchEvent& e);
 
 

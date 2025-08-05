@@ -13,7 +13,8 @@
 // Includes																        //
 //******************************************************************************//
 #include "Null/Core.h"
-#include "Null/Engine/Submodules/Layers/ImGuiLayer.h"
+#include "../Pannels/Base/Pannel.h"
+
 #include "Null/Engine/Submodules/Graphics/Texture.h"
 #include "spdlog/sinks/base_sink.h"
 #include "spdlog/spdlog.h"
@@ -36,17 +37,22 @@
 namespace NULLENGINE
 {
 	class Scene;
+	class NDebugManager;
+	class NFramebufferManager;
 
 
 
 
-	class EditorToolbarPannel : public Pannel
+	class EditorToolbarPannel : public ScenePannel
 	{
 	public:
 		EditorToolbarPannel();
 		~EditorToolbarPannel() =  default;
 
 		void OnImGUIRender();
+		void RenderPlayControls(float buttonSize);
+		void RenderDebugControls(NDebugManager* debugManager);
+		void RenderRenderSettings(NFramebufferManager* fbMan);
 	private:
 		enum WindowMode
 		{

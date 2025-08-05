@@ -12,7 +12,7 @@
 #include "stdafx.h"
 #include "CameraController.h"
 #include "PerspectiveCameraController.h"
-
+#include "NIncludes.h"
 
 
 

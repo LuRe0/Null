@@ -40,7 +40,7 @@ namespace NULLENGINE
 			WindowResize, WindowClose, WindowFocus, WindowLostFocus,
 			KeyPress, KeyRelease, KeyHold, KeyTyped,
 			MouseMove, MouseButtonPress, MouseButtonRelease, MouseButtonHold, MouseScrolled,
-			EntityCreated, EntityLoaded, EntityReady, EntityDestroyed,EntityAddComponent, EntityRemoveComponent,
+			EntityCreated, EntityLoaded, EntityReady, EntityDestroyed,EntityAddComponent, EntityRemoveComponent, EntityRemoveNamedComponent,
 			SceneSwitch, SceneLoaded,
 			InitializeBox2D, InitializeBox2DCollider,
 			ScriptCreated, ScriptRemoved, ScriptModified,

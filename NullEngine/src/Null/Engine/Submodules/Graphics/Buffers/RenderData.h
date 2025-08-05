@@ -35,6 +35,7 @@ namespace NULLENGINE
     class Mesh;
     class InstanceMesh;
     class SpriteSource;
+	using EntityID = uint32_t;
 
     struct RenderData
     {
@@ -110,20 +111,20 @@ namespace NULLENGINE
         }
     };
 
-    struct InstanceData : public RenderData
-    {
-        const std::vector<DrawInstance> instances;
+    //struct InstanceData : public RenderData
+    //{
+    //    const std::vector<DrawInstance> instances;
 
 
-        // Default constructor
-        InstanceData() = default;
+    //    // Default constructor
+    //    InstanceData() = default;
 
-        // Constructor that takes a vector of Instance
-        InstanceData(const std::vector<DrawInstance>& instances) : instances(instances)
-        {
-            m_Type = RenderType::ELEMENT;
-        }
-    };
+    //    // Constructor that takes a vector of Instance
+    //    InstanceData(const std::vector<DrawInstance>& instances) : instances(instances)
+    //    {
+    //        m_Type = RenderType::ELEMENT;
+    //    }
+    //};
 
     struct IRenderQueue {
         virtual ~IRenderQueue() = default;

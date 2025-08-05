@@ -17,6 +17,7 @@ LearnOpenGl license: https://creativecommons.org/licenses/by/4.0/legalcode
 // Includes																        //
 //******************************************************************************//
 #include "Null/Core.h"
+#include "NIncludes.h"
 
 
 //******************************************************************************//

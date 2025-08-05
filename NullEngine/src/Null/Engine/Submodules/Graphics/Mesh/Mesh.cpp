@@ -16,6 +16,8 @@
 #include "Null/Engine/Submodules/Graphics/Shader/Shader.h"
 #include "Null/Engine/Submodules/Graphics/SpriteSource.h"
 #include "magic_enum/magic_enum.hpp"
+#include "NIncludes.h"
+
 using JSON = nlohmann::json;
 
 

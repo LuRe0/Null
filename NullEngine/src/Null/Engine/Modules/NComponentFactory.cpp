@@ -25,6 +25,7 @@
 namespace NULLENGINE
 {
 	NLE_API std::unordered_map<uint32_t, std::function<void(void*, const nlohmann::json&)>> NComponentFactory::m_ComponentDeserializer;
+	NLE_API std::unordered_map<uint32_t, std::function<void(void*, const uint32_t&)>> NComponentFactory::m_NameIDAssigner;
 	NLE_API std::unordered_map<uint32_t, std::function<void(void*, NRegistry*, EntityID)>> NComponentFactory::m_ComponentAdder;
 	NLE_API std::unordered_map<uint32_t, std::function<nlohmann::json(const void*)>> NComponentFactory::m_ComponentSerializer;
 	NLE_API std::unordered_map<uint32_t, size_t> NComponentFactory::m_ComponentTypeSize;
@@ -33,6 +34,8 @@ namespace NULLENGINE
 	NLE_API std::unordered_map<uint32_t, std::function<void* ()>> NComponentFactory::m_ComponentCreator;
 	NLE_API std::unordered_map<uint32_t, std::function<void (void*)>> NComponentFactory::m_ComponentDestroyer;
 	NLE_API std::unordered_map<uint32_t, uint32_t> NComponentFactory::m_ComponentNamesToID;
+	NLE_API std::unordered_map<uint32_t, bool> NComponentFactory::m_ComponentType;
+
 	NLE_API std::unordered_map<uint32_t, std::function<void(Entity&)>> NComponentFactory::m_ComponentInspector;
 	NLE_API std::unordered_map<uint32_t, std::function<JSON(const void*, const void*)>> NComponentFactory::m_ComponentDiffer;
 
@@ -242,6 +245,63 @@ namespace NULLENGINE
 	{
 		AddComponentFromBinary(m_ComponentNamesToID[STRID(compName)], blob, registry, id);
 	}
+
+	void NComponentFactory::AddNamedComponentFromBinary(const std::string& compName, const uint32_t nameID, const std::vector<uint8_t>& blob, NRegistry* registry, EntityID id) const
+	{
+		uint32_t compID = m_ComponentNamesToID[STRID(compName)];
+
+
+		auto adderIt = m_ComponentAdder.find(compID);
+		auto sizeIt = m_ComponentTypeSize.find(compID);
+
+		if (adderIt == m_ComponentAdder.end())
+		{
+			NLE_CORE_WARN("No component adder found for component ID {}", STRFROM(compID));
+			return;
+		}
+
+		if (sizeIt == m_ComponentTypeSize.end())
+		{
+			NLE_CORE_WARN("No type size registered for component ID {}", STRFROM(compID));
+			return;
+		}
+
+		size_t expectedSize = sizeIt->second;
+
+		if (blob.size() != expectedSize)
+		{
+			NLE_CORE_WARN("Blob size mismatch for component ID {}: expected {}, got {}", STRFROM(compID), expectedSize, blob.size());
+			return;
+		}
+
+
+		auto binDeserializeIt = m_ComponentBinaryDeserializer.find(compID);
+		if (binDeserializeIt != m_ComponentBinaryDeserializer.end())
+		{
+			void* component = binDeserializeIt->second(blob, expectedSize);
+
+			auto nameAssigner = m_NameIDAssigner.find(compID);
+			if (nameAssigner != m_NameIDAssigner.end())
+			{
+				nameAssigner->second(component, nameID);
+
+				//m_ComponentDestroyer[compID](component);
+
+
+			}
+
+			adderIt->second(component, registry, id);
+
+			m_ComponentDestroyer[compID](component);
+
+
+		}
+		else
+		{
+			NLE_CORE_THROW("No deserializer found for component: {0}", STRFROM(compID));
+		}
+	}
+
 
 
 	//void NComponentFactory::AddComponentFromBinary(uint32_t compNameID, const std::vector<uint8_t>& blob, NRegistry* registry, EntityID id) const

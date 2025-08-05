@@ -18,6 +18,7 @@
 #include "../../../Modules/NRegistry.h"
 #include "../../../Modules/NSceneManager.h"
 #include "../../../Modules/NEventManager.h"
+#include "../../Events/CommonEvents.h"
 #include "../Helpers/ComponentSignature.h"
 #include "../../Scene.h"
 //******************************************************************************//
@@ -151,7 +152,7 @@ namespace NULLENGINE
 
 
 		SUBSCRIBE_EVENT(EntityCreatedEvent, &ISystem<Derived>::OnEntityCreate, eventManager, EventPriority::High);
-		SUBSCRIBE_EVENT(EntityAddComponentEvent, &ISystem<Derived>::OnEntityCreate, eventManager, EventPriority::Low);
+		SUBSCRIBE_EVENT(EntityAddComponentEvent, &ISystem<Derived>::OnEntityCreate, eventManager, EventPriority::Medium);
 		SUBSCRIBE_EVENT(EntityRemoveComponentEvent, &ISystem<Derived>::OnEntityComponentRemoved, eventManager, EventPriority::Low);
 		SUBSCRIBE_EVENT(EntityDestroyedEvent, &ISystem<Derived>::OnEntityDestroyed, eventManager, EventPriority::Low);
 		SUBSCRIBE_EVENT(SceneSwitchEvent, &ISystem<Derived>::OnSceneSwitch, eventManager, EventPriority::Medium);

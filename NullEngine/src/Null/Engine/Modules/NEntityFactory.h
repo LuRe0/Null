@@ -36,6 +36,11 @@ namespace NULLENGINE
 {
 
 	class Entity;
+	class NComponentFactory;
+	class NRegistry;
+	using EntityID = uint32_t;
+
+
 
 	class NLE_API NEntityFactory : public ModuleBase<NEntityFactory>
 	{

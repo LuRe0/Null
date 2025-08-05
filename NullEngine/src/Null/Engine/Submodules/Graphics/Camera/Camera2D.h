@@ -35,6 +35,8 @@
 
 namespace NULLENGINE
 {
+	class WindowResizeEvent;
+
     class Camera2D : public Camera {
     public:
         Camera2D(int windowWidth, int windowHeight, float zoom = 1.0f, float rotation = 0);

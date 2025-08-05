@@ -150,9 +150,12 @@ project "Sandbox"
     {
         "NLE_PLATFORM_WINDOWS"
     }
+    dependson { "Box2D" }  -- Add this line
     links 
     {
-        "NullEngine"
+        "NullEngine",
+        "Box2D"
+
     }
 
     filter "system.windows"
@@ -182,7 +185,8 @@ project "NullEditor"
 
     links 
     {
-        "NullEngine"
+        "NullEngine",
+        "Box2D"
     }
     files
     {

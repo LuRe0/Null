@@ -16,6 +16,13 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "imgui.h"
 #include <misc/cpp/imgui_stdlib.h>
+#include <box2d/box2d.h>
+#include <box2d/b2_world.h>
+#include <box2d/b2_body.h>
+#include <box2d/b2_contact.h>
+#include <box2d/b2_polygon_shape.h>
+#include <box2d/b2_circle_shape.h>
+#include <box2d/b2_fixture.h>
 #include <box2d/b2_fixture.h>
 #include <box2d/b2_polygon_shape.h>
 #include <box2d/b2_circle_shape.h>
@@ -27,7 +34,7 @@
 #include "../../../Modules/NSceneManager.h"
 #include "../../Scene.h"
 #include "../../../../Tools/ImGuiH.h"
-
+#include "NIncludes.h"
 //******************************************************************************//
 // Public Variables															    //
 //******************************************************************************//
@@ -51,7 +58,9 @@ namespace NULLENGINE
 		componentFactory->Register<CircleCollider2DComponent>(CreateCircleCollider2DComponent,
 			[this](Entity& id) { this->ViewCircleCollider2DComponent(id); },
 			WriteCircleCollider2DComponent,
-			AddCircleCollider2DComponent, DiffCircleCollider2DComponent);
+			AddCircleCollider2DComponent, DiffCircleCollider2DComponent,
+			nullptr // AssignNameToComponent is not used here, so we pass nullptr
+		);
 	}
 
 	void CircleCollider2DSystem::Load()
@@ -320,6 +329,9 @@ namespace NULLENGINE
 		nlohmann::json json;
 		auto& comp = *static_cast<const CircleCollider2DComponent*>(component);
 
+		if (!comp.componentFlags.IsSet(ComponentFlags_Serialized))
+			return json;
+
 		json["CircleCollider2D"]["colliders"] = nlohmann::json::array();
 
 		for (uint8_t i = 0; i < comp.colliderCount; ++i)
@@ -556,6 +568,7 @@ namespace NULLENGINE
 		auto* PhysicsSystem = PhysicsSystem::Instance();
 
 		CircleCollider2DComponent& cc2d = registry->GetComponent<CircleCollider2DComponent>(entityID);
+		TransformComponent& transform = registry->GetComponent<TransformComponent>(entityID);
 
 		if (!IsValidRuntimeIndex(cc2d.runtimeBodyIndex))
 		{
@@ -567,6 +580,8 @@ namespace NULLENGINE
 			if (!IsValidRuntimeIndex(cc2d.runtimeBodyIndex))
 			{
 				b2BodyDef bodyDef;
+				auto pos = PhysicsSystem::PixelsToMeters(transform.translation.x, transform.translation.y);
+				bodyDef.position.Set(pos.x, pos.y);
 				cc2d.runtimeBodyIndex = PhysicsSystem->AddActiveBody(PhysicsSystem->CreateBody(bodyDef));
 			}
 		}

@@ -19,11 +19,11 @@ namespace NULLENGINE
 
 	struct TransformComponent
 	{
-		glm::vec3 translation;
-		glm::vec3 scale;
-		glm::vec3 rotation;
-		ComponentFlagSet componentFlags;
-		TransformFlagSet flags;
+		glm::vec3 translation = glm::vec3(0.0f);
+		glm::vec3 scale = glm::vec3(50.0f, 50.0f, 1.0f);
+		glm::vec3 rotation = glm::vec3(0.0f);
+		ComponentFlagSet componentFlags = ComponentFlagSet(ComponentFlags_Enabled | ComponentFlags_Serialized);
+		TransformFlagSet flags = TransformFlagSet(TransformFlags_Dirty);
 		glm::mat4 transformMatrix;
 	};
 

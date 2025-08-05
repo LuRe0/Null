@@ -22,6 +22,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NullEngine", "NullEngine\NullEngine.vcxproj", "{36F0117C-22A8-53C9-8BAF-2C257786EEB9}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sandbox", "Sandbox\Sandbox.vcxproj", "{F4C124E3-60A1-A37E-69B9-2E55D5170AE0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A434E80C-1049-10BE-D9CA-B31D459E0CEF} = {A434E80C-1049-10BE-D9CA-B31D459E0CEF}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

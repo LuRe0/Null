@@ -15,9 +15,11 @@
 #include <nlohmann/json.hpp>
 #include "Null/Engine/Submodules/Scene.h"
 #include "Null/Engine/Submodules/Events/IEvents.h"
+#include "NIncludes.h"
+
 //#include "Null/Engine/Submodules/Scene.h"
 
-using JSON = nlohmann::json;
+//using JSON = nlohmann::json;
 
 //******************************************************************************//
 // Public Variables															    //
@@ -110,11 +112,19 @@ namespace NULLENGINE
 
 			if (entityData.contains("components"))
 			{
+				//for (const auto& [compName, compData] : entityData["components"].items())
+				//{
+				//	const auto& component = componentFactory->CreateComponent(compName + "Component", compData);
+				//	entDef.components[STRID(compName + "Component")] = component;
+				//}
+
 				for (const auto& [compName, compData] : entityData["components"].items())
 				{
-					const auto& component = componentFactory->CreateComponent(compName + "Component", compData);
-					entDef.components[STRID(compName + "Component")] = component;
+					std::string baseType = compName.substr(0, compName.find(':'));
+					auto component = componentFactory->CreateComponent(baseType + "Component", compData);
+					entDef.components[STRID(compName)] = component;
 				}
+
 			}
 
 			if (entityData.contains("children"))
@@ -135,6 +145,11 @@ namespace NULLENGINE
 		m_SceneDefinitions[sceneName] = std::move(def);
 	}
 
+	bool NSceneManager::HasSceneDefinition(const std::string& sceneName) const
+	{
+		return m_SceneDefinitions.contains(sceneName);
+	}
+
 	EntityDefinition NSceneManager::ParseEntityDefinition(const JSON& entityJson)
 	{
 		auto* componentFactory = NComponentFactory::Instance();
@@ -144,11 +159,25 @@ namespace NULLENGINE
 
 		if (entityJson.contains("components"))
 		{
+			//for (const auto& [compName, compData] : entityJson["components"].items())
+			//{
+			//	const auto& component = componentFactory->CreateComponent(compName + "Component", compData);
+			//	entDef.components[STRID(compName + "Component")] = component;
+			//}
+
 			for (const auto& [compName, compData] : entityJson["components"].items())
 			{
-				const auto& component = componentFactory->CreateComponent(compName + "Component", compData);
-				entDef.components[STRID(compName + "Component")] = component;
+				// Split name into base type and optional instance name
+				std::string baseType = compName.substr(0, compName.find(':'));
+				std::string fullComponentType = baseType + "Component";
+
+				// Construct the actual instance (using just base type)
+				auto component = componentFactory->CreateComponent(fullComponentType, compData);
+
+				// Store using the original component name (including instance name), not full type
+				entDef.components[STRID(compName)] = component;
 			}
+
 		}
 
 		if (entityJson.contains("children"))

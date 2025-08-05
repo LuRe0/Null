@@ -1,4 +1,4 @@
-
+﻿
 //------------------------------------------------------------------------------
 //
 // File Name:	ImGuiH.cpp
@@ -11,6 +11,7 @@
 //******************************************************************************//
 #include "stdafx.h"
 #include "ImGuiH.h"
+#include "NIncludes.h"
 
 
 
@@ -230,4 +231,99 @@ namespace NULLENGINE
 
 		return { open, enabled, remove };
 	}
+	bool ImGuiH::CollapsingHeader(const std::string& label)
+	{
+
+		ImGuiTreeNodeFlags treeFlags =
+			ImGuiTreeNodeFlags_DefaultOpen |
+			ImGuiTreeNodeFlags_Framed |
+			ImGuiTreeNodeFlags_AllowItemOverlap |
+			ImGuiTreeNodeFlags_OpenOnArrow |
+			ImGuiTreeNodeFlags_FramePadding |
+			ImGuiTreeNodeFlags_OpenOnDoubleClick |
+			ImGuiTreeNodeFlags_SpanAvailWidth;
+
+		float lineHeight = ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2.0f;
+		ImVec2 contentRegion = ImGui::GetContentRegionAvail();
+		ImVec2 cursorPos = ImGui::GetCursorScreenPos();
+
+		ImGui::PushID(label.c_str());
+
+		bool open = ImGui::TreeNodeEx(label.c_str(), treeFlags);
+
+		ImGui::PopID();
+
+		//if (!enabled) t;
+
+		return { open };
+	}
+
+	void ImGuiH::DrawDragDrop(const char* label, uint32_t& nameID, SpriteSource*& source, NTextureManager* texMgr, NSpriteSourceManager* srcMgr)
+	{
+		if (source)
+		{
+			if (source->GetTexture())
+			{
+				ImGui::Text("Texture\t");
+				ImGui::Image((void*)(intptr_t)source->GetTexture()->GetID(), ImVec2(125, 100), { 0, -1 }, { 1, 0 });
+
+				ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 100);
+				std::string btnId = std::string("##ImageButton_") + label;
+				if (ImGui::InvisibleButton(btnId.c_str(), ImVec2(125, 100)))
+				{
+					ImGui::OpenPopup((std::string("TexturePopup_") + label).c_str());
+				}
+			}
+		}
+		else
+		{
+			if (ImGui::Button((std::string("Select ") + label).c_str(), ImVec2(125, 100)))
+			{
+				ImGui::OpenPopup((std::string("TexturePopup_") + label).c_str());
+			}
+		}
+
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("TEXTURE_FILE"))
+			{
+				std::string filename((const char*)payload->Data);
+				if (!filename.empty())
+					source = srcMgr->Has(filename) ? srcMgr->Get(filename) : srcMgr->Create(filename, 1, 1);
+			}
+			ImGui::EndDragDropTarget();
+		}
+
+		if (ImGui::BeginPopup((std::string("TexturePopup_") + label).c_str()))
+		{
+			ImGui::SetNextWindowSize(ImVec2(125, 100), ImGuiCond_FirstUseEver);
+			ImGui::BeginChild((std::string("TextureList_") + label).c_str(), ImVec2(125, 200), true);
+
+			if (ImGui::Selectable("⨯ None"))
+			{
+				source = nullptr;
+				nameID = 0;
+				ImGui::CloseCurrentPopup();
+			}
+
+			for (const auto& name : texMgr->GetResourceNames())
+			{
+				auto texture = texMgr->Get(name);
+				if (texture)
+				{
+					ImGui::Text("%s :", name.c_str());
+					if (ImGui::ImageButton((void*)(intptr_t)texture->GetID(), ImVec2(75, 50), { 0, -1 }, { 1, 0 }))
+					{
+						source = srcMgr->Has(name) ? srcMgr->Get(name) : srcMgr->Create(name, 1, 1);
+						nameID = STRID(name);
+						ImGui::CloseCurrentPopup();
+					}
+				}
+			}
+
+			ImGui::EndChild();
+			ImGui::EndPopup();
+		}
+	}
+
 }

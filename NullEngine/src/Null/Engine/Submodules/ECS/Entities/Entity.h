@@ -15,6 +15,8 @@
 #include "Null/Core.h"
 #include "nlohmann/json.hpp"
 #include "Null/Engine/Modules/NRegistry.h"
+#include <vector>
+#include <functional>
 
 //******************************************************************************//
 // Definitions  														        //
@@ -36,6 +38,7 @@ using EntityID = uint32_t;
 namespace NULLENGINE
 {
 	class NLE_API NRegistry;
+	struct NLE_API DestroyedComponent;
 
 	class NLE_API Entity
 	{
@@ -55,11 +58,19 @@ namespace NULLENGINE
 			return m_Parent->GetComponent<T>(m_ID);
 		}
 
+
 		template <typename T>
+
+		T& Get(uint32_t id)
+		{
+			return m_Parent->GetNamedComponent<T>(m_ID, id);
+		}
+
+	/*	template <typename T>
 		T& GetFromEntity(EntityID id) 
 		{
 			return m_Parent->GetComponent<T>(id);
-		}
+		}*/
 
 		/// <summary>
 		/// Checks if entity posseses component
@@ -78,16 +89,10 @@ namespace NULLENGINE
 			m_Parent->RemoveComponent<T>(m_ID);
 		}
 
-		template <typename T, typename ...TArgs>
-		void Add(TArgs&& ...args)
-		{
-			m_Parent->AddComponent<T>(m_ID, std::forward<TArgs>(args)...);
-		}
-
 		template <typename T>
-		void Remove()
+		void Remove(uint32_t id) const
 		{
-			m_Parent->RemoveComponent<T>(m_ID);
+			m_Parent->RemoveNamedComponent<T>(m_ID, id);
 		}
 
 		template <typename T>
@@ -96,30 +101,43 @@ namespace NULLENGINE
 			return m_Parent->HasComponent<T>(id);
 		}
 
-		BaseComponent& GetComponent(const std::string& componentName);
+		template <typename T>
+		T& GetFromEntity(EntityID id)
+		{
+			return m_Parent->GetComponent<T>(id);
+		}
 
+
+		template <typename T, typename ...TArgs>
+		void Add(TArgs&& ...args)
+		{
+			m_Parent->AddComponent<T>(m_ID, std::forward<TArgs>(args)...);
+		}
+
+		template <typename T>
+		std::vector<std::reference_wrapper<T>> GetAll()
+		{
+			return m_Parent->GetNamedComponents<T>(m_ID);
+		}
+
+		operator bool() const { return IsValid(); }
+
+
+		template <typename T>
+		T* TryGet()
+		{
+			return Has<T>() ? &Get<T>() : nullptr;
+		}
 
 
 		bool HasComponent(const std::string& componentName) const;
 
-		void SetIsDestroyed(bool d);
-
-		bool GetIsDestroyed() const;
-
-		void SetName(const std::string& name);
-
-		void SetParentArchetype(const std::string& name);
-
-		void SetArchetype(const std::string& name);
-
-		std::string GetName() const { return m_Name; };
-		std::string GetParentName() const { return m_ParentArchetype; };
 
 		EntityID GetID() const { return m_ID; }
 
 		bool IsValid() const
 		{
-			return m_ID > 0 && !m_isDestroyed;
+			return m_ID > 0 && !Has<DestroyedComponent>();
 		}
 
 		bool operator==(EntityID id) const
@@ -128,17 +146,9 @@ namespace NULLENGINE
 		}
 
 
-		std::string m_Name = "";
-
-		std::string m_Archetype = "";
-		
-		std::string m_ParentArchetype = "";
-
 		EntityID m_ID = -1;
 
 		NRegistry* m_Parent = nullptr;
-
-		bool m_isDestroyed = false;
 
 		friend class SceneHierarchyPannel;
 		friend class ComponentInspectorPannel;

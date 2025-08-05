@@ -57,6 +57,15 @@ namespace NULLENGINE
 		
 		void RegisterToScripAPI(sol::state& lua) override;
 
+		static void PlayAnimation(Entity entity, int frameCount, float frameDuration, bool isLooping, unsigned int frameOffset, bool playReverse, bool pingPong, bool preserveFrame);
+
+		static void PlayAnimation(Entity entity, int frameCount, float frameDuration, bool isLooping,
+			unsigned int frameOffset = 0, bool playReverse = false, bool pingPong = false);
+
+		static void SwitchAnimation(Entity entity, int frameCount, float frameDuration, bool isLooping,
+			unsigned int frameOffset = 0, bool playReverse = false, bool pingPong = false);
+
+
 	private:
 
 		static void CreateAnimationComponent(void* component, const nlohmann::json& json);

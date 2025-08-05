@@ -14,8 +14,11 @@
 //******************************************************************************//
 #include "Null/Core.h"
 #include "Null/Engine/Modules/Base/IModule.h"
-
-
+#include <limits>
+#include <cstdint>
+#include <unordered_map>
+#include <vector>
+#include <string>
 //******************************************************************************//
 // Definitions  														        //
 //******************************************************************************//

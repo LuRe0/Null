@@ -29,6 +29,7 @@
 #include "Null/Engine/Submodules/ECS/Entities/Entity.h"
 #include "../../Scene.h"
 #include "../../../../Tools/ImGuiH.h"
+#include "NIncludes.h"
 //******************************************************************************//
 // Public Variables															    //
 //******************************************************************************//
@@ -110,7 +111,9 @@ namespace NULLENGINE
 
 		componentFactory->Register<Rigidbody2DComponent>(CreateRigidbody2DComponent,
 			[this](Entity& id) { this->ViewRigidbody2DComponent(id); }, WriteRigidbody2DComponent,
-			AddRigidbody2DComponent, DiffRigidbody2DComponent);
+			AddRigidbody2DComponent, DiffRigidbody2DComponent,
+			nullptr // AssignNameToComponent is not used here, so we pass nullptr
+		);
 	}
 	void PhysicsSystem::Load()
 	{
@@ -218,8 +221,10 @@ namespace NULLENGINE
 				auto newPos = MetersToPixels(position.x, position.y);
 
 				auto linearVel = body->GetLinearVelocity();
+				auto angularSpeed = body->GetAngularVelocity();
 
 				rb2d.linearVelocity = MetersToPixels(linearVel.x, linearVel.y);
+				rb2d.angularVelocity = MetersToPixels(angularSpeed);
 
 				transform.translation.x = newPos.x;
 				transform.translation.y = newPos.y;
@@ -503,6 +508,9 @@ namespace NULLENGINE
 
 		const auto& rb = *static_cast<const Rigidbody2DComponent*>(component);
 
+		if (!rb.componentFlags.IsSet(ComponentFlags_Serialized))
+			return json;
+
 		nlohmann::json& out = json["Rigidbody2D"];
 
 		out["type"] = rb.type;
@@ -652,7 +660,8 @@ namespace NULLENGINE
 							b2MassData md;
 							md.mass = rb2d.mass > 0.0f ? rb2d.mass : 1.0f; // ensure non-zero mass
 							md.center = b2Vec2(0.0f, 0.0f);
-							md.I = 0.0f; // zero moment of inertia, no rotation
+							float averageRadius = PixelsToMeters((transform.scale.x + transform.scale.y) * 0.5f);
+							md.I = md.mass * 0.5f * averageRadius * averageRadius;
 							body->SetMassData(&md);
 						}
 					}
@@ -810,7 +819,7 @@ namespace NULLENGINE
 			return;
 		}
 
-		m_PhysicsWorld->DestroyBody(m_ActiveBodies[index]); // Destroy the Box2D body	
+		//m_PhysicsWorld->DestroyBody(m_ActiveBodies[index]); // Destroy the Box2D body	
 
 		m_ActiveBodies[index] = nullptr; // Mark the body as removed
 		m_FreeBodyIDs.push_back(index); // Add the index to the free list
@@ -842,7 +851,7 @@ namespace NULLENGINE
 
 
 
-		body->DestroyFixture(m_ActiveFixtures[index]); // Destroy the Box2D fixture	
+		//body->DestroyFixture(m_ActiveFixtures[index]); // Destroy the Box2D fixture	
 
 		m_ActiveFixtures[index] = nullptr; // Mark the body as removed
 		m_FreeFixtureIDs.push_back(index); // Add the index to the free list
@@ -896,11 +905,19 @@ namespace NULLENGINE
 
 	b2Body* PhysicsSystem::CreateBody(const b2BodyDef& bodyDef)
 	{
+		if (!m_PhysicsWorld) {
+			// Handle error - world not initialized
+			return nullptr;
+		}
 		return m_PhysicsWorld->CreateBody(&bodyDef);
 	}
 
 	b2Fixture* PhysicsSystem::CreateFixture(b2Body* body, const b2FixtureDef& fixtureDef)
 	{
+		if (!body) {
+			// Handle error - invalid body
+			return nullptr;
+		}
 		return body->CreateFixture(&fixtureDef);
 	}
 
@@ -1118,7 +1135,8 @@ namespace NULLENGINE
 				b2MassData md;
 				md.mass = rb2d.mass > 0.0f ? rb2d.mass : 1.0f; // ensure non-zero mass
 				md.center = b2Vec2(0.0f, 0.0f);
-				md.I = 0.0f; // zero moment of inertia, no rotation
+				float averageRadius = PixelsToMeters((transform.scale.x + transform.scale.y) * 0.5f);
+				md.I = md.mass * 0.5f * averageRadius * averageRadius;
 				body->SetMassData(&md);
 
 				auto& entity = sceneManager->GetCurrentScene()->GetEntity(entityId);

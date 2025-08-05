@@ -21,6 +21,7 @@
 #include "Null/Engine/Submodules/Graphics/Buffers/EBO.h"
 #include "Null/Engine/Submodules/Graphics/Texture.h"
 #include "Null/Engine/Submodules/Graphics/Mesh/Mesh.h"
+#include "Null/Engine/Submodules/Layers/Layer.h"
 
 
 
@@ -45,11 +46,13 @@ namespace NULLENGINE
 		AddCreateFunction<NWindow>([&engine, this]() { engine.Add<NULLENGINE::NWindow>(m_ApplicationName, 1280, 720); });
 		AddCreateFunction<NEventManager>([&engine]() { engine.Add<NULLENGINE::NEventManager>(); });
 		AddCreateFunction<NCameraManager>([&engine]() { engine.Add<NULLENGINE::NCameraManager>(); });
+		AddCreateFunction<NAnimationGraphManager>([&engine]() { engine.Add<NAnimationGraphManager>(); });
 		AddCreateFunction<NShaderManager>([&engine]() { engine.Add<NULLENGINE::NShaderManager>(); });
 		AddCreateFunction<NComputeShaderManager>([&engine]() { engine.Add<NULLENGINE::NComputeShaderManager>(); });
 		AddCreateFunction<NMeshManager>([&engine]() { engine.Add<NULLENGINE::NMeshManager>(); });
 		AddCreateFunction<NStringIDManager>([&engine]() { engine.Add<NULLENGINE::NStringIDManager>(); });
 		AddCreateFunction<NSpriteSourceManager>([&engine]() { engine.Add<NULLENGINE::NSpriteSourceManager>(); });
+		AddCreateFunction<NAnimationClipManager>([&engine]() { engine.Add<NULLENGINE::NAnimationClipManager>(); });
 		AddCreateFunction<NTextureManager>([&engine]() { engine.Add<NULLENGINE::NTextureManager>(); });
 		AddCreateFunction<NTilesetManager>([&engine]() { engine.Add<NULLENGINE::NTilesetManager>(); });
 		AddCreateFunction<NRegistry>([&engine]() { engine.Add<NULLENGINE::NRegistry>(); });
@@ -73,6 +76,14 @@ namespace NULLENGINE
 		AddCreateFunction<NScriptingInterface>([&engine]() { engine.Add<NULLENGINE::NScriptingInterface>(); });
 		AddCreateFunction<CameraSystem>([&engine]() { engine.Add<NULLENGINE::CameraSystem>(); });
 		AddCreateFunction<ParticleSystem>([&engine]() { engine.Add<NULLENGINE::ParticleSystem>(); });
+		AddCreateFunction<NameSystem>([&engine]() { engine.Add<NULLENGINE::NameSystem>(); });
+		AddCreateFunction<ArchetypeSystem>([&engine]() { engine.Add<NULLENGINE::ArchetypeSystem>(); });
+		AddCreateFunction<DestroyedSystem>([&engine]() { engine.Add<NULLENGINE::DestroyedSystem>(); });
+		AddCreateFunction<DoNotSerializeSystem>([&engine]() { engine.Add<NULLENGINE::DoNotSerializeSystem>(); });
+		AddCreateFunction<CharacterMovementSystem>([&engine]() { engine.Add<NULLENGINE::CharacterMovementSystem>(); });
+		AddCreateFunction<SpriteSourceSetSystem>([&engine]() { engine.Add<NULLENGINE::SpriteSourceSetSystem>(); });
+		AddCreateFunction<AnimatorSystem>([&engine]() { engine.Add<NULLENGINE::AnimatorSystem>(); });
+		AddCreateFunction<AnimationControllerSystem>([&engine]() { engine.Add<NULLENGINE::AnimationControllerSystem>(); });
 		AddCreateFunction<NFramebufferManager>([&engine]() { engine.Add<NULLENGINE::NFramebufferManager>(); });
 
 		m_NullEngine = &engine;
@@ -101,6 +112,7 @@ namespace NULLENGINE
 		for (auto& sysJson : j["modules"]) {
 
 			std::string type = sysJson["type"];
+
 
 			m_Createfunctions.at(type)();
 		}

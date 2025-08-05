@@ -31,9 +31,13 @@ Batch Rendering Code adapted from https://www.youtube.com/watch?v=biGF6oLxgtQ&li
 #include "Null/Engine/Submodules/Graphics/Buffers/BatchRenderer/CircleBatchRenderer.h"
 #include "Null/Engine/Submodules/Graphics/Buffers/BatchRenderer/LineBatchRenderer.h"
 #include "Null/Engine/Submodules/Graphics/Buffers/BatchRenderer/ParticleBatchRenderer.h"
+#include <Null/Engine/Submodules/Graphics/Buffers/BatchRenderer/BatchRenderer.h>
+
+
 #include "imgui.h"
 #include "magic_enum/magic_enum.hpp"
 #include <sol/sol.hpp>
+#include "NIncludes.h"
 
 using JSON = nlohmann::json;
 
@@ -257,7 +261,7 @@ namespace NULLENGINE
 
 		shader->Bind();
 
-		Camera* camera = NCameraManager::Instance()->GetCamera<Camera2D>("Default2D");
+		Camera* camera = NCameraManager::Instance()->GetCamera<Camera2D>(STRID("Default2D"));
 		Camera* currentCamera = NCameraManager::Instance()->GetCurrentCamera();
 		glm::mat4 projection = camera->GetProjectionMatrix();
 		glm::vec2 dims = pass.framebuffer->GetSize();

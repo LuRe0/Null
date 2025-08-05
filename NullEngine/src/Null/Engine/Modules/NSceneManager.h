@@ -40,7 +40,7 @@ namespace NULLENGINE
 
 
 	class NLE_API Scene;
-
+	class SceneSwitchEvent;
 
 	class NLE_API NSceneManager : public ModuleBase<NSceneManager>
 	{

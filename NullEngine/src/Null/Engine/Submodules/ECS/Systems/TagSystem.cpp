@@ -16,6 +16,7 @@
 #include <magic_enum/magic_enum.hpp>
 
 #include "../Entities/Entity.h"
+#include "NIncludes.h"
 
 
 
@@ -33,15 +34,6 @@ namespace NULLENGINE
 {
 	TagSystem::TagSystem()
 	{
-		Require<TagComponent>();
-
-		NComponentFactory* componentFactory = NComponentFactory::Instance();
-
-		componentFactory->Register<TagComponent>(CreateTagComponent,
-			[this](Entity& id) { this->ViewTagComponent(id); },
-			WriteTagComponent,
-			AddTagComponent, DiffTagComponent);
-
 		m_tags = {
 			// Entity Type / Role Tags
 			STRID("Player"),
@@ -85,19 +77,6 @@ namespace NULLENGINE
 
 	void TagSystem::Update(float dt)
 	{
-		NRegistry* registry = NRegistry::Instance();
-
-		for (const auto entityId : GetSystemEntities())
-		{
-			TagComponent& tagComp = registry->GetComponent<TagComponent>(entityId);
-
-			for (size_t i = 0; i < tagComp.m_TagCount; i++)
-			{
-				auto tag = tagComp.m_TagIDs[i];
-				if (!m_tags.contains(tag))
-					m_tags.insert(tag);
-			}
-		}
 	}
 
 	void TagSystem::RuntimeUpdate(float dt)
@@ -132,8 +111,8 @@ namespace NULLENGINE
 
 			// lambda has_tag to check if tag exists
 			"has_tag", [](TagComponent& tagComp, const std::string& tag) {
-				for (uint8_t i = 0; i < tagComp.m_TagCount; ++i)
-					if (tagComp.m_TagIDs[i] == STRID(tag))
+				for (uint8_t i = 0; i < tagComp.tagCount; ++i)
+					if (tagComp.tagIDs[i] == STRID(tag))
 						return true;
 				return false;
 			}
@@ -153,7 +132,7 @@ namespace NULLENGINE
 		auto* comp = static_cast<TagComponent*>(component);
 		JsonReader jsonWrapper(json);
 
-		comp->m_TagCount = 0; // clear any previous data
+		comp->tagCount = 0; // clear any previous data
 
 		if (!jsonWrapper.Empty())
 		{
@@ -161,16 +140,16 @@ namespace NULLENGINE
 
 			for (const auto& tag : tagsVec)
 			{
-				if (comp->m_TagCount >= TagComponent::MaxTags)
+				if (comp->tagCount >= TagComponent::MaxTags)
 					break;
 
 				uint32_t tagID = STRID(tag);
 
 				// Avoid duplicates
 				bool duplicate = false;
-				for (uint8_t i = 0; i < comp->m_TagCount; ++i)
+				for (uint8_t i = 0; i < comp->tagCount; ++i)
 				{
-					if (comp->m_TagIDs[i] == tagID)
+					if (comp->tagIDs[i] == tagID)
 					{
 						duplicate = true;
 						break;
@@ -179,7 +158,7 @@ namespace NULLENGINE
 				if (duplicate)
 					continue;
 
-				comp->m_TagIDs[comp->m_TagCount++] = tagID;
+				comp->tagIDs[comp->tagCount++] = tagID;
 			}
 
 
@@ -188,7 +167,7 @@ namespace NULLENGINE
 			flags.Set(ComponentFlags_Enabled);
 			flags.Set(ComponentFlags_Serialized);
 
-			comp->m_ComponentFlags.m_Flags = jsonWrapper.GetUInt8("ComponentFlags", flags.m_Flags);
+			comp->componentFlags.m_Flags = jsonWrapper.GetUInt8("ComponentFlags", flags.m_Flags);
 		
 		}
 	}
@@ -200,7 +179,7 @@ namespace NULLENGINE
 
 		auto* comp = static_cast<TagComponent*>(component);
 
-		componentFactory->AddOrUpdate<TagComponent>(id, comp, registry, comp->m_TagIDs, comp->m_TagCount, comp->m_ComponentFlags);
+		componentFactory->AddOrUpdate<TagComponent>(id, comp, registry, comp->tagIDs, comp->tagCount, comp->componentFlags);
 
 	}
 
@@ -209,15 +188,18 @@ namespace NULLENGINE
 		nlohmann::json json;
 		const auto& tagComp = *static_cast<const TagComponent*>(component);
 
+		if (!tagComp.componentFlags.IsSet(ComponentFlags_Serialized))
+			return json;
+
 		json["Tag"]["tags"] = nlohmann::json::array();
 
-		for (uint8_t i = 0; i < tagComp.m_TagCount; ++i)
+		for (uint8_t i = 0; i < tagComp.tagCount; ++i)
 		{
-			const uint32_t tagID = tagComp.m_TagIDs[i];
+			const uint32_t tagID = tagComp.tagIDs[i];
 			const std::string tagName = STRFROM(tagID); // resolve hash to name
 			json["Tag"]["tags"].push_back(tagName);
 		}
-		json["Tag"]["ComponentFlags"] = tagComp.m_ComponentFlags.m_Flags;
+		json["Tag"]["ComponentFlags"] = tagComp.componentFlags.m_Flags;
 
 		return json;
 	}
@@ -230,26 +212,26 @@ namespace NULLENGINE
 		auto& b = *static_cast<const TagComponent*>(modified);
 
 
-		if (a.m_ComponentFlags.m_Flags != b.m_ComponentFlags.m_Flags)
-			diff["ComponentFlags"] = b.m_ComponentFlags.m_Flags;
+		if (a.componentFlags.m_Flags != b.componentFlags.m_Flags)
+			diff["ComponentFlags"] = b.componentFlags.m_Flags;
 
-		if (a.m_TagCount != b.m_TagCount)
+		if (a.tagCount != b.tagCount)
 		{
 			diff["tags"] = nlohmann::json::array();
-			for (uint8_t i = 0; i < b.m_TagCount; ++i)
+			for (uint8_t i = 0; i < b.tagCount; ++i)
 			{
-				diff["tags"].push_back(STRFROM(b.m_TagIDs[i]));
+				diff["tags"].push_back(STRFROM(b.tagIDs[i]));
 			}
 		}
 		else
 		{
 			bool anyDifference = false;
-			for (uint8_t i = 0; i < b.m_TagCount; ++i)
+			for (uint8_t i = 0; i < b.tagCount; ++i)
 			{
 				bool found = false;
-				for (uint8_t j = 0; j < a.m_TagCount; ++j)
+				for (uint8_t j = 0; j < a.tagCount; ++j)
 				{
-					if (a.m_TagIDs[j] == b.m_TagIDs[i])
+					if (a.tagIDs[j] == b.tagIDs[i])
 					{
 						found = true;
 						break;
@@ -265,9 +247,9 @@ namespace NULLENGINE
 			if (anyDifference)
 			{
 				diff["tags"] = nlohmann::json::array();
-				for (uint8_t i = 0; i < b.m_TagCount; ++i)
+				for (uint8_t i = 0; i < b.tagCount; ++i)
 				{
-					diff["tags"].push_back(STRFROM(b.m_TagIDs[i]));
+					diff["tags"].push_back(STRFROM(b.tagIDs[i]));
 				}
 			}
 		}
@@ -288,9 +270,9 @@ namespace NULLENGINE
 
 		std::vector<uint32_t> tagsToRemove;
 
-		for (uint8_t i = 0; i < tagComp.m_TagCount; ++i)
+		for (uint8_t i = 0; i < tagComp.tagCount; ++i)
 		{
-			const uint32_t tagID = tagComp.m_TagIDs[i];
+			const uint32_t tagID = tagComp.tagIDs[i];
 			const std::string tagName = STRFROM(tagID);
 
 			ImGui::PushID(tagID);
@@ -305,15 +287,15 @@ namespace NULLENGINE
 
 		for (uint32_t removeID : tagsToRemove)
 		{
-			for (uint8_t i = 0; i < tagComp.m_TagCount; ++i)
+			for (uint8_t i = 0; i < tagComp.tagCount; ++i)
 			{
-				if (tagComp.m_TagIDs[i] == removeID)
+				if (tagComp.tagIDs[i] == removeID)
 				{
 					// Shift down
-					for (uint8_t j = i; j < tagComp.m_TagCount - 1; ++j)
-						tagComp.m_TagIDs[j] = tagComp.m_TagIDs[j + 1];
+					for (uint8_t j = i; j < tagComp.tagCount - 1; ++j)
+						tagComp.tagIDs[j] = tagComp.tagIDs[j + 1];
 
-					--tagComp.m_TagCount;
+					--tagComp.tagCount;
 					break;
 				}
 			}
@@ -331,19 +313,19 @@ namespace NULLENGINE
 		ImGui::SameLine();
 		if (ImGui::Button("Add##text"))
 		{
-			if (strlen(newTagBuffer) > 0 && tagComp.m_TagCount < TagComponent::MaxTags)
+			if (strlen(newTagBuffer) > 0 && tagComp.tagCount < TagComponent::MaxTags)
 			{
 				uint32_t tagID = STRID(newTagBuffer);
 
 				// Check for duplicates
 				bool exists = false;
-				for (uint8_t i = 0; i < tagComp.m_TagCount; ++i)
-					if (tagComp.m_TagIDs[i] == tagID)
+				for (uint8_t i = 0; i < tagComp.tagCount; ++i)
+					if (tagComp.tagIDs[i] == tagID)
 						exists = true;
 
 				if (!exists)
 				{
-					tagComp.m_TagIDs[tagComp.m_TagCount++] = tagID;
+					tagComp.tagIDs[tagComp.tagCount++] = tagID;
 					m_tags.insert(STRID(std::string(newTagBuffer))); // update tag pool
 				}
 
@@ -368,18 +350,18 @@ namespace NULLENGINE
 			ImGui::Combo("Available Tags", &selected, tagNames.data(), static_cast<int>(tagNames.size()));
 			ImGui::PopItemWidth();
 			ImGui::SameLine();
-			if (ImGui::Button("Add##dropdown") && selected >= 0 && tagComp.m_TagCount < TagComponent::MaxTags)
+			if (ImGui::Button("Add##dropdown") && selected >= 0 && tagComp.tagCount < TagComponent::MaxTags)
 			{
 				uint32_t tagID = STRID(tagNames[selected]);
 
 				// Check for duplicates
 				bool exists = false;
-				for (uint8_t i = 0; i < tagComp.m_TagCount; ++i)
-					if (tagComp.m_TagIDs[i] == tagID)
+				for (uint8_t i = 0; i < tagComp.tagCount; ++i)
+					if (tagComp.tagIDs[i] == tagID)
 						exists = true;
 
 				if (!exists)
-					tagComp.m_TagIDs[tagComp.m_TagCount++] = tagID;
+					tagComp.tagIDs[tagComp.tagCount++] = tagID;
 			}
 		}
 

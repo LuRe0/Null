@@ -13,7 +13,8 @@
 // Includes																        //
 //******************************************************************************//
 #include "Null/Core.h"
-#include "Null/Engine/Submodules/Layers/ImGuiLayer.h"
+#include "../Pannels/Base/Pannel.h"
+
 
 //******************************************************************************//
 // Definitions  														        //
@@ -34,7 +35,7 @@ namespace NULLENGINE
 {
 	class Scene;
 
-	class ContentBrowserPannel : public Pannel
+	class ContentBrowserPannel : public ScenePannel
 	{
 	public:
 		ContentBrowserPannel();

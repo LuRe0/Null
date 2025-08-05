@@ -13,7 +13,7 @@
 // Includes																        //
 //******************************************************************************//
 #include "Null/Core.h"
-#include "Null/Engine/Submodules/Layers/ImGuiLayer.h"
+#include "../Pannels/Base/Pannel.h"
 
 //******************************************************************************//
 // Definitions  														        //
@@ -34,7 +34,7 @@ namespace NULLENGINE
 {
 	class Scene;
 
-	class ComponentInspectorPannel : public Pannel
+	class ComponentInspectorPannel : public ScenePannel
 	{
 	public:
 		ComponentInspectorPannel() = default;
@@ -45,6 +45,11 @@ namespace NULLENGINE
 
 		ComponentInspectorPannel(ComponentInspectorPannel const&) = delete;
 		ComponentInspectorPannel& operator=(ComponentInspectorPannel const&) = delete;
+
+
+		bool m_ShowCreationMenu = false;
+
+		std::string m_ScriptName = "New Script";
 	};
 
 }

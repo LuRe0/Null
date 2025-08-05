@@ -30,9 +30,9 @@
 // Private structures													        //
 //******************************************************************************//
 
-struct b2World;
-struct b2Body;
-struct b2Fixture;
+class b2World;
+class b2Body;
+class b2Fixture;
 struct b2FixtureDef;
 struct b2BodyDef;
 struct b2Vec2;

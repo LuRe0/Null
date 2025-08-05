@@ -16,6 +16,7 @@
 #include "nlohmann/json.hpp"
 #include "NSceneManager.h"
 #include "../Submodules/Scene.h"
+#include <NIncludes.h>
 
 
 
@@ -361,7 +362,7 @@ namespace NULLENGINE
     {
         lua.new_usertype<Entity>("Entity",
             sol::no_constructor,
-            sol::meta_function::to_string, [](Entity& e) { return "Entity: " + std::to_string(e.m_ID) + ", " + e.m_Name; },
+            sol::meta_function::to_string, [](Entity& e) { return "Entity: " + std::to_string(e.m_ID) + ", " + STRFROM(e.Get<NameComponent>().nameID); },
             sol::call_constructor, sol::constructors<Entity&>(),
             "get_component", [](Entity& entity, const sol::table& comp, sol::this_state s) -> sol::object
             {
@@ -400,20 +401,17 @@ namespace NULLENGINE
             },
             "destroy", [](Entity& entity)
             {
-                NSceneManager* sceneManager = NSceneManager::Instance();
-
-                if (sceneManager->GetCurrentScene()->HasEntity(entity.m_ID))
-                    sceneManager->GetCurrentScene()->GetEntity(entity.m_ID).m_isDestroyed = true;
+                entity.Add<DestroyedComponent>();
             },
             "is_destroyed", [](Entity& entity)
             {
-                NSceneManager* sceneManager = NSceneManager::Instance();
-
-                return !sceneManager->GetCurrentScene()->HasEntity(entity.m_ID) || entity.m_isDestroyed;
+				return entity.Has<DestroyedComponent>();
             },
-        	"id", &Entity::m_ID,
-        	"name", &Entity::m_Name
-  
+            "name", [](Entity& entity)
+            {
+                return STRFROM(entity.Get<NameComponent>().nameID);
+            },
+        	"id", &Entity::m_ID  
         );
 
     }

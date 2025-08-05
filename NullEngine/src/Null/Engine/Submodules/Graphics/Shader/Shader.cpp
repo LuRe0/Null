@@ -1,5 +1,3 @@
-#include "Shader.h"
-
 //------------------------------------------------------------------------------
 //
 // File Name:	Shader.cpp
@@ -14,6 +12,7 @@
 #include "Shader.h"
 #include "glad/glad.h"
 #include "glm/glm.hpp"
+#include "NIncludes.h"
 
 
 

@@ -12,8 +12,11 @@
 #include "stdafx.h"
 #include "ComponentInspectorPannel.h"
 #include "Null/Engine/Submodules/Scene.h"
-#include "imgui.h"
+//#include "imgui.h"
 #include <misc/cpp/imgui_stdlib.h>
+#include "../Editors/SceneEditor.h"
+#include "NIncludes.h"
+
 
 //#include "backends/imgui_impl_opengl3.h"
 //#include "backends/imgui_impl_glfw.h"
@@ -53,13 +56,19 @@ namespace NULLENGINE
 			Entity& selectedEntity = m_PannelData->m_Context->GetEntity(m_PannelData->m_SelectedEntity);
 
 			ImGui::Text("Entity Name: "); ImGui::SameLine();
+			auto& nameComp = selectedEntity.Get<NameComponent>();
+			std::string name = STRFROM(nameComp.nameID);
 
-			if (ImGui::InputText("##name", &selectedEntity.m_Name))
+			ImGui::InputText("##name", &name);
+
+			if(ImGui::IsItemDeactivatedAfterEdit())
 			{
-				if (selectedEntity.GetName().empty())
+				if (name.empty())
 				{
-					selectedEntity.SetName("Entity" + std::to_string(selectedEntity.GetID()));
+					name = ("Entity" + std::to_string(selectedEntity.GetID()));
 				}
+
+				nameComp.nameID = STRID(name);
 			}
 		}
 
@@ -147,6 +156,9 @@ namespace NULLENGINE
 
 				for (const auto& name : componentsNames)
 				{
+					if (name == "ScriptComponent")
+						continue;
+
 					auto id = factory->GetComponentID(name);
 					if (!registry->HasComponent(m_PannelData->m_SelectedEntity, id))
 					{
@@ -162,8 +174,100 @@ namespace NULLENGINE
 					}
 				}
 
+
+
+				const auto& names = NScriptingInterface::Instance()->GetScriptNames();
+				if (ImGui::BeginMenu("Add Script"))
+				{
+
+					static ImGuiTextFilter filter;
+
+					filter.Draw("##searchbarBehAdd");
+
+					ImGui::Separator();
+
+					std::vector<std::string> scriptNames;
+
+					auto scripts = registry->GetNamedComponents<ScriptComponent>(m_PannelData->m_SelectedEntity);
+
+					for (ScriptComponent& scriptComponent : scripts)
+					{
+						scriptNames.push_back(STRFROM(scriptComponent.nameID));
+					}
+
+
+					for (auto name : names)
+					{
+					
+						if (std::find(scriptNames.begin(), scriptNames.end(), name) == scriptNames.end())
+							if (filter.PassFilter(name.c_str()))
+							{
+								if (ImGui::MenuItem(name.c_str()))
+								{
+									// Handle adding script component here
+									eventManager->QueueEvent(std::make_unique<EntityAddComponentEvent>(m_PannelData->m_SelectedEntity, Component<ScriptComponent>::GetID()));
+
+									// For example, create and add script component similar to other components
+									const auto& bin = factory->CreateComponent("ScriptComponent", JSON());
+									factory->AddNamedComponentFromBinary("ScriptComponent", STRID(name), bin, registry, m_PannelData->m_SelectedEntity);
+
+									eventManager->QueueEvent(std::make_unique<ScriptCreatedEvent>(m_PannelData->m_SelectedEntity, name));
+								}
+							}
+					}
+
+
+					if (ImGui::MenuItem("New Script"))
+					{
+						m_ShowCreationMenu = true;
+					}
+					ImGui::EndMenu();
+
+				}
+
 				ImGui::EndPopup();
+
 			}
+		}
+
+		// This opens the modal if the flag was set
+		if (m_ShowCreationMenu)
+		{
+			ImGui::OpenPopup("New Script Name");
+		}
+
+		// This is the actual modal window
+		if (ImGui::BeginPopupModal("New Script Name", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+		{
+			ImGui::Text("Enter the script name:");
+			ImGui::InputText("##scriptname", &m_ScriptName);
+
+			if (ImGui::Button("Create", ImVec2(120, 0)))
+			{
+				m_ShowCreationMenu = false; // Reset flag
+				ImGui::CloseCurrentPopup();
+
+				NScriptingInterface::Instance()->CreateScript(m_ScriptName);
+
+				// Handle adding script component here
+				eventManager->QueueEvent(std::make_unique<EntityAddComponentEvent>(m_PannelData->m_SelectedEntity, Component<ScriptComponent>::GetID()));
+
+				// For example, create and add script component similar to other components
+				const auto& bin = factory->CreateComponent("ScriptComponent", JSON());
+				factory->AddNamedComponentFromBinary("ScriptComponent", STRID(m_ScriptName), bin, registry, m_PannelData->m_SelectedEntity);
+
+				eventManager->QueueEvent(std::make_unique<ScriptCreatedEvent>(m_PannelData->m_SelectedEntity, m_ScriptName));
+
+				m_ScriptName = "New Script";
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Cancel", ImVec2(120, 0)))
+			{
+				m_ShowCreationMenu = false;
+				m_ScriptName = "New Script";
+				ImGui::CloseCurrentPopup();
+			}
+			ImGui::EndPopup();
 		}
 
 		ImGui::End();

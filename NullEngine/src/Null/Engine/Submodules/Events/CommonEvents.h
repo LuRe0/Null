@@ -12,10 +12,9 @@
 //******************************************************************************//
 // Includes																        //
 //******************************************************************************//
-#include "stdafx.h"
 #include "Null/Core.h"
 #include "IEvents.h"
-//#include "Null/Engine/Submodules/ECS/Entities/Entity.h"
+#include "../../Base/IEngine.h"
 
 //******************************************************************************//
 // Definitions  														        //
@@ -326,6 +325,8 @@ namespace NULLENGINE
         EVENT_CLASS_TYPE(EntityAddComponent)
     };
 
+
+
     class EntityRemoveComponentEvent : public EntityModifiedEvent {
     public:
         EntityRemoveComponentEvent(uint32_t id, uint32_t compID) : EntityModifiedEvent(id, compID) {}
@@ -336,6 +337,22 @@ namespace NULLENGINE
             return ss.str();
         }
         EVENT_CLASS_TYPE(EntityRemoveComponent)
+    };
+
+    class EntityRemoveNamedComponentEvent : public EntityModifiedEvent {
+    public:
+        EntityRemoveNamedComponentEvent(uint32_t id, uint32_t compID, uint32_t nameID) : EntityModifiedEvent(id, compID), m_ID(nameID) {}
+        std::string Print() const override
+        {
+            std::stringstream ss;
+            ss << "EntityRemoveNamedComponentEvent: ID=" << m_EntityID;
+            return ss.str();
+        }
+        EVENT_CLASS_TYPE(EntityRemoveNamedComponent)
+
+			uint32_t GetNameID() const { return m_ID; }
+        protected:
+            uint32_t m_ID;
     };
 
     class SceneSwitchEvent : public Event {

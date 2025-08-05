@@ -50,29 +50,42 @@ namespace NULLENGINE
 		AnimationFlags_IsLooping = 1 << 1,
 		AnimationFlags_IsPingPong = 1 << 2,
 		AnimationFlags_IsDone = 1 << 3,
-		AnimationFlags_IsReversed = 1 << 4,
+		AnimationFlags_PreserveFrame = 1 << 4,
+		AnimationFlags_IsReversed = 1 << 5,
 		// 3 bits left for future use
 	};
 
 	DEFINE_FLAG_SET(AnimationFlagSet,
-		uint8_t m_IsRunning : 1;
-		uint8_t m_IsLooping : 1;
-		uint8_t m_IsPingPong : 1;
-		uint8_t m_IsDone : 1;
-		uint8_t m_IsReversed : 1;
-		uint8_t m_Reserved : 3;
+		uint8_t isRunning : 1;
+		uint8_t isLooping : 1;
+		uint8_t isPingPong : 1;
+		uint8_t isDone : 1;
+		uint8_t isReversed : 1;
+		uint8_t preserveFrame : 1;
+		uint8_t reserved : 2;
 		);
 
 	struct AnimationComponent
 	{
-		uint32_t       m_FrameIndex = 0;
-		uint32_t       m_FrameCount = 0;
-		uint32_t       m_FrameOffset = 0;
-		float          m_FrameDelay = 0.0f;
-		float          m_FrameDuration = 0.0f;
+		uint32_t       frameIndex = 0;
+		uint32_t       frameCount = 0;
+		uint32_t       frameOffset = 0;
+		float          frameDelay = 0.0f;
+		float          frameDuration = 0.0f;
 
-		ComponentFlagSet m_ComponentFlags;
-		AnimationFlagSet m_Flags;
+		ComponentFlagSet componentFlags = ComponentFlagSet(ComponentFlags_Enabled | ComponentFlags_Serialized);
+		AnimationFlagSet flags = AnimationFlagSet(AnimationFlags_IsLooping);
 	};
 
+
+	struct AnimationClip
+	{
+		// Data that maps directly to AnimationComponent
+		uint32_t nameID = 0;
+		uint32_t spriteSheetID = 0;
+		uint32_t startingFrame = 0;
+		uint32_t frameCount = 1;
+		float frameDuration = 0.1f;
+		AnimationFlagSet flags = AnimationFlagSet(AnimationFlags_IsLooping | AnimationFlags_PreserveFrame);
+	};
 }

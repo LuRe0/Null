@@ -27,6 +27,8 @@
 #include "../../../Modules/NSceneManager.h"
 #include "../../Scene.h"
 #include "../../../../Tools/ImGuiH.h"
+#include "NIncludes.h"
+
 //******************************************************************************//
 // Public Variables															    //
 //******************************************************************************//
@@ -177,52 +179,65 @@ namespace NULLENGINE
 
 	void TransformSystem::RegisterToScripAPI(sol::state& lua)
 	{
-		//lua.new_usertype<TransformComponent>
-		//	(
-		//		"Transform",
-		//		sol::no_constructor,
-		//		"type_id", &Component<TransformComponent>::GetID,
-		//		"translation", sol::readonly(&TransformComponent::m_Translation),
-		//		"scale", sol::readonly(&TransformComponent::m_Scale),
-		//		"rotation", sol::readonly(&TransformComponent::m_Rotation),
-		//		"set_translation",
-		//		sol::overload(
-		//			[](TransformComponent& transform, float x, float y, float z)
-		//			{
-		//				transform.m_Translation = glm::vec3(x, y, z);
-		//				transform.m_Dirty = transform.m_DirectManipulation = true;
-		//			},
-		//			[](TransformComponent& transform, glm::vec3 newPos)
-		//			{
-		//				transform.m_Translation = newPos;
-		//				transform.m_Dirty = transform.m_DirectManipulation = true;
-		//			}
-		//		),
-		//		"set_scale", sol::overload(
-		//			[](TransformComponent& transform, float x, float y, float z)
-		//			{
-		//				transform.m_Scale = glm::vec3(x, y, z);
-		//				transform.m_Dirty = true;
-		//			},
-		//			[](TransformComponent& transform, glm::vec3 newScale)
-		//			{
-		//				transform.m_Scale = newScale;
-		//				transform.m_Dirty = true;
-		//			}
-		//		),
-		//		"set_rotation", sol::overload(
-		//			[](TransformComponent& transform, float x, float y, float z)
-		//			{
-		//				transform.m_Rotation = glm::vec3(x, y, z);
-		//				transform.m_Dirty = transform.m_DirectManipulation = true;
-		//			},
-		//			[](TransformComponent& transform, glm::vec3 newRot)
-		//			{
-		//				transform.m_Rotation = newRot;
-		//				transform.m_Dirty = transform.m_DirectManipulation = true;
-		//			}
-		//		)
-		//	);
+
+		auto get_forward = [](const TransformComponent& transform) -> glm::vec3 {
+			float angleRad = glm::radians(transform.rotation.z); // Only Z matters in 2D
+			return glm::vec3(std::cos(angleRad), std::sin(angleRad), 0.0f); // 2D forward in XY
+			};
+
+		auto get_right = [](const TransformComponent& transform) -> glm::vec3 {
+			float angleRad = glm::radians(transform.rotation.z);
+			return glm::vec3(std::sin(angleRad), -std::cos(angleRad), 0.0f); // 2D right = rotated 90°
+			};
+
+		lua.new_usertype<TransformComponent>
+			(
+				"Transform",
+				sol::no_constructor,
+				"type_id", &Component<TransformComponent>::GetID,
+				"translation", sol::readonly(&TransformComponent::translation),
+				"scale", sol::readonly(&TransformComponent::scale),
+				"rotation", sol::readonly(&TransformComponent::rotation),
+				"forward", sol::property(get_forward),
+				"right", sol::property(get_right),
+				"set_translation",
+				sol::overload(
+					[](TransformComponent& transform, float x, float y, float z)
+					{
+						transform.translation = glm::vec3(x, y, z);
+						transform.flags.Set(TransformFlags_Dirty | TransformFlags_DirectManipulation);
+					},
+					[](TransformComponent& transform, const glm::vec3& newPos)
+					{
+						transform.translation = newPos;
+						transform.flags.Set(TransformFlags_Dirty | TransformFlags_DirectManipulation);
+					}
+				),
+				"set_scale", sol::overload(
+					[](TransformComponent& transform, float x, float y, float z)
+					{
+						transform.scale = glm::vec3(x, y, z);
+						transform.flags.Set(TransformFlags_Dirty);
+					},
+					[](TransformComponent& transform, glm::vec3 newScale)
+					{
+						transform.scale = newScale;
+						transform.flags.Set(TransformFlags_Dirty);
+					}
+				),
+				"set_rotation", sol::overload(
+					[](TransformComponent& transform, float x, float y, float z)
+					{
+						transform.rotation = glm::vec3(x, y, z);
+						transform.flags.Set(TransformFlags_Dirty | TransformFlags_DirectManipulation);
+					},
+					[](TransformComponent& transform, glm::vec3 newRot)
+					{
+						transform.rotation = newRot;
+						transform.flags.Set(TransformFlags_Dirty | TransformFlags_DirectManipulation);
+					}
+				)
+			);
 	}
 
 
@@ -270,6 +285,9 @@ namespace NULLENGINE
 		nlohmann::json json;
 
 		auto& transform = *static_cast<const TransformComponent*>(component);
+
+		if (!transform.componentFlags.IsSet(ComponentFlags_Serialized))
+			return json;
 
 		json["Transform"]["translation"] = { transform.translation.x, transform.translation.y, transform.translation.z };
 		json["Transform"]["scale"] = { transform.scale.x, transform.scale.y, transform.scale.z };

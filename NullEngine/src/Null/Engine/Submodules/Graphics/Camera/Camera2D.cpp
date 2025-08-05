@@ -12,8 +12,8 @@
 #include "stdafx.h"
 #include "Camera2D.h"
 #include <misc/cpp/imgui_stdlib.h>
-
-
+#include "NIncludes.h"
+#include "../../Events/CommonEvents.h"
 
 
 //******************************************************************************//

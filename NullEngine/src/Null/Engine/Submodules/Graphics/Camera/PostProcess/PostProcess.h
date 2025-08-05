@@ -30,10 +30,10 @@
 //******************************************************************************//
 
 
+using JSON = nlohmann::json;
 
 namespace NULLENGINE
 {
-    using JSON = nlohmann::json;
 
     struct NLE_API PostProcess
     {

@@ -15,7 +15,6 @@
 #include "Null/Core.h"
 #include "Null/Engine/Modules/Base/IModule.h"
 
-
 //******************************************************************************//
 // Definitions  														        //
 //******************************************************************************//
@@ -33,7 +32,14 @@
 
 namespace NULLENGINE
 {
+	class KeyEvent;
+	class Event;
+	class MouseButtonEvent;
+	class MouseMoveEvent;
+	class SceneSwitchEvent;
+
 	//! Wrapper class for delta Input
+
 	class NLE_API Input
 	{
 	public:
@@ -68,10 +74,11 @@ namespace NULLENGINE
 		static float GetMouseY();
 
 		static glm::vec2 GetMouseXY();
+		static glm::vec2 GetWorldMouseXY();
 
 		static void RegisterToScripAPI(sol::state& lua);
 
-
+		static void SetEditorMousePosition(float x, float y);
 
 
 		//void SetKeyState(int key, int action);

@@ -13,7 +13,8 @@
 // Includes																        //
 //******************************************************************************//
 #include "Null/Core.h"
-#include "Null/Engine/Submodules/Layers/ImGuiLayer.h"
+#include "../Pannels/Base/Pannel.h"
+
 #include "spdlog/sinks/base_sink.h"
 #include "spdlog/spdlog.h"
 
@@ -39,7 +40,7 @@ namespace NULLENGINE
 
 
 
-	class EditorConsolePannel : public Pannel
+	class EditorConsolePannel : public ScenePannel
 	{
 	public:
 		EditorConsolePannel() = default;

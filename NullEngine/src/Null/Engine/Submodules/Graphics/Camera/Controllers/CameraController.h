@@ -40,6 +40,8 @@ const float MAXSCALE = 10.0f;
 namespace NULLENGINE
 {
     
+	class Camera;
+
     class NLE_API CameraController 
     {
     public:

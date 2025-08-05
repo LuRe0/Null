@@ -12,10 +12,12 @@
 #include "stdafx.h"
 #include "ContentBrowserPannel.h"
 #include "Null/Engine/Submodules/Scene.h"
-#include "imgui.h"
+//#include "imgui.h"
 #include <misc/cpp/imgui_stdlib.h>
 #include <magic_enum/magic_enum.hpp>
 #include <shellapi.h>
+#include "../Editors/SceneEditor.h"
+#include "NIncludes.h"
 
 
 //******************************************************************************//

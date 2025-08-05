@@ -11,6 +11,7 @@
 //******************************************************************************//
 #include "stdafx.h"
 #include "ArchetypeDefinitions.h"
+#include "NIncludes.h"
 
 
 

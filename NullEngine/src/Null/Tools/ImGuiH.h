@@ -33,23 +33,9 @@
 namespace NULLENGINE
 {
 
-	struct ScopedTree
-	{
-		bool open = false;
-
-		ScopedTree(const char* label, ImGuiTreeNodeFlags flags)
-		{
-			open = ImGui::TreeNodeEx(label, flags);
-		}
-
-		~ScopedTree()
-		{
-			if (open)
-				ImGui::TreePop();
-		}
-
-		operator bool() const { return open; }
-	};
+	class NTextureManager;
+	class NSpriteSourceManager;
+	class SpriteSource;
 
 
 	static class NLE_API ImGuiH
@@ -65,18 +51,22 @@ namespace NULLENGINE
 
 		static std::pair<bool, bool> DrawTopLevelHeader(const char* label, bool* enabled, int id);
 
-		static std::tuple<bool, bool, bool> CollapsingHeaderWithFlagCheckboxAndRemove(const std::string& label, uint8_t& flags, uint32_t flagBit);
+		static void DrawDragDrop(const char* label, uint32_t& nameID, SpriteSource*& source, NTextureManager* texMgr, NSpriteSourceManager* srcMgr);
 
-		template<typename Func>
-		static void DrawModifierSection(const char* label, bool* enabled, int id, Func drawContents)
-		{
-			if (auto [open, enabledFlag] = ImGuiH::DrawModifierHeader(label, enabled, id); open)
-			{
-				if (enabledFlag)
-					drawContents();
-				ImGui::TreePop();
-			}
-		}
+
+		static std::tuple<bool, bool, bool> CollapsingHeaderWithFlagCheckboxAndRemove(const std::string& label, uint8_t& flags, uint32_t flagBit);
+		static bool CollapsingHeader(const std::string& label);
+
+		//template<typename Func>
+		//static void DrawModifierSection(const char* label, bool* enabled, int id, Func drawContents)
+		//{
+		//	if (auto [open, enabledFlag] = ImGuiH::DrawModifierHeader(label, enabled, id); open)
+		//	{
+		//		if (enabledFlag)
+		//			drawContents();
+		//		ImGui::TreePop();
+		//	}
+		//}
 	};
 
 }

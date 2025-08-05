@@ -16,6 +16,9 @@
 #include "spdlog/spdlog.h"
 #include "ImguiSink.h"
 #include <memory>
+#include <string>
+#include <stdexcept>
+#include <sol/sol.hpp>
 
 //******************************************************************************//
 // Definitions  														        //
@@ -28,7 +31,10 @@
 //******************************************************************************//
 
 //******************************************************************************//
-// Private structures													        //
+// Private structures		
+using namespace sol;
+
+
 namespace NULLENGINE
 {
 	class NLE_API Trace

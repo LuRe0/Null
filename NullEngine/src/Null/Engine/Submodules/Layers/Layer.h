@@ -32,6 +32,9 @@
 
 namespace NULLENGINE
 {
+	// Forward declarations
+	class Event;
+
 	class NLE_API ILayer
 	{
 	public:

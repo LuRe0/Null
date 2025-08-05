@@ -12,9 +12,12 @@
 #include "stdafx.h"
 #include "ScenePropertyPannel.h"
 #include "Null/Engine/Submodules/Scene.h"
-#include "imgui.h"
+//#include "imgui.h"
 #include <misc/cpp/imgui_stdlib.h>
 #include <magic_enum/magic_enum.hpp>
+#include "../Editors/SceneEditor.h"
+#include "../../../NullEngine/src/Null/Engine/Submodules/Graphics/Camera/Controllers/CameraController.h"
+#include "../../../NullEngine/src/Null/Engine/Submodules/Graphics/Camera/Camera.h"
 
 //#include "backends/imgui_impl_opengl3.h"
 //#include "backends/imgui_impl_glfw.h"

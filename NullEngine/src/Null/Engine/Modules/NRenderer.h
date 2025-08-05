@@ -14,10 +14,8 @@
 //******************************************************************************//
 #include "Null/Core.h"
 #include "Null/Engine/Modules/Base/IModule.h"
-#include "Null/Engine/Submodules/Events/IEvents.h"
 #include "Null/Engine/Submodules/Graphics/Buffers/Framebuffer.h"
 #include <Null/Engine/Submodules/Graphics/Buffers/RenderData.h>
-#include <Null/Engine/Submodules/Graphics/Buffers/BatchRenderer/BatchRenderer.h>
 #include <Null/Engine/Submodules/Graphics/Buffers/RenderPass.h>
 #include <setjmp.h>
 
@@ -39,6 +37,8 @@
 namespace NULLENGINE
 {
 	class Shader;
+	class BatchRenderer;
+	class WindowResizeEvent;
 
 	//class NLE_API Scene;
 
@@ -89,15 +89,15 @@ namespace NULLENGINE
 		bool HasRenderImGui() const override { return true; }
 
 
-		Framebuffer& GetFramebuffer(const std::string& buffer);
+		//Framebuffer& GetFramebuffer(const std::string& buffer);
 
 		void ResizeFramebuffer(unsigned int width, unsigned int height);
 
 		template<typename TBatcher>
-		TBatcher* AddBatcher(const std::string& name, std::size_t count);
+		TBatcher* AddBatcher(const uint32_t& name, std::size_t count);
 
 		template<typename TBatcher>
-		TBatcher* AddBatcher(const std::string& name);
+		TBatcher* AddBatcher(const uint32_t& name);
 
 		void ClearRender();
 		void ClearRender_Params(float r = 0.10f, float g = 0.10f, float b = 0.10f, float a = 1.0f);
@@ -173,20 +173,20 @@ namespace NULLENGINE
 	};
 
 	template<typename TBatcher>
-	inline TBatcher* NRenderer::AddBatcher(const std::string& name, std::size_t count)
+	inline TBatcher* NRenderer::AddBatcher(const uint32_t& name, std::size_t count)
 	{
-		if(!m_Batchers.contains(STRID(name)))
-			m_Batchers.emplace(STRID(name), std::make_unique<TBatcher>(count));
+		if(!m_Batchers.contains((name)))
+			m_Batchers.emplace((name), std::make_unique<TBatcher>(count));
 
-		return dynamic_cast<TBatcher*>(m_Batchers[STRID(name)].get());
+		return dynamic_cast<TBatcher*>(m_Batchers[(name)].get());
 	}
 
 	template<typename TBatcher>
-	inline TBatcher* NRenderer::AddBatcher(const std::string& name)
+	inline TBatcher* NRenderer::AddBatcher(const uint32_t& name)
 	{
-		if (!m_Batchers.contains(STRID(name)))
-			m_Batchers.emplace(STRID(name), std::make_unique<TBatcher>());
+		if (!m_Batchers.contains((name)))
+			m_Batchers.emplace((name), std::make_unique<TBatcher>());
 
-		return dynamic_cast<TBatcher*>(m_Batchers[STRID(name)].get());
+		return dynamic_cast<TBatcher*>(m_Batchers[(name)].get());
 	}
 }

@@ -16,6 +16,7 @@
 #include "Null/Engine/Submodules/ECS/Entities/Entity.h"
 #include "FileWatch.hpp"
 #include <shellapi.h>
+#include "NIncludes.h"
 
 using JSON = nlohmann::json;
 

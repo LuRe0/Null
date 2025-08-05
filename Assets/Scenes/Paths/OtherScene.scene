@@ -1,328 +1,71 @@
 {
     "entities": [
         {
-            "archetype": "Player",
             "components": {
-                "BoxCollider2D": {
-                    "density": 1.0,
-                    "friction": 0.699999988079071,
-                    "offset": [
-                        0.0,
-                        0.0
-                    ],
-                    "restitution": 0.0,
-                    "restitutionThreshold": 5.599999904632568,
-                    "scale": [
-                        50.0,
-                        50.0
-                    ]
-                },
-                "Rigidbody2D": {
-                    "angularDamping": 0.0,
-                    "angularVelocity": 0.0,
-                    "fixedRotation": false,
-                    "gravityScale": 1.0,
-                    "linearDamping": 0.0,
-                    "linearVelocity": [
-                        0.0,
-                        0.0
-                    ],
-                    "type": 2
-                },
-                "Sprite": {
-                    "dimension": [
-                        1,
-                        1
-                    ],
-                    "fade": 0.004999999888241291,
-                    "frameindex": 0,
-                    "meshname": "Quad",
-                    "shadername": "default",
-                    "texture": "titlesquished",
-                    "thickness": 1.0,
-                    "tint": [
-                        1.0,
-                        1.0,
-                        1.0,
-                        1.0
-                    ]
-                },
-                "Transform": {
-                    "rotation": [
-                        0.0,
-                        0.0,
-                        0.0020139466505497694
-                    ],
-                    "scale": [
-                        50.0,
-                        50.0,
-                        1.0
-                    ],
-                    "translation": [
-                        7.0589375495910645,
-                        152.4718475341797,
-                        0.0
-                    ]
-                }
-            },
-            "name": "Player"
-        },
-        {
-            "archetype": "Baguette",
-            "components": {
-                "Animation": {
-                    "frameCount": 6,
-                    "frameDuration": 0.05000000074505806,
-                    "loop": true,
-                    "pingPong": false,
-                    "reverse": false,
-                    "run": true,
-                    "startFrame": 0
+                "Archetype": {
+                    "ComponentFlags": 3,
+                    "archetype": "",
+                    "parentArchetype": ""
                 },
                 "BoxCollider2D": {
-                    "density": 1.0,
-                    "friction": 0.699999988079071,
-                    "offset": [
-                        0.0,
-                        0.0
-                    ],
-                    "restitution": 0.0,
-                    "restitutionThreshold": 5.599999904632568,
-                    "scale": [
-                        50.0,
-                        50.0
+                    "ComponentFlags": 3,
+                    "colliders": [
+                        {
+                            "density": 1.0,
+                            "filter": {
+                                "categoryBits": 1,
+                                "groupIndex": 0,
+                                "maskBits": 65535
+                            },
+                            "friction": 0.5,
+                            "offset": [
+                                0.0,
+                                0.0
+                            ],
+                            "restitution": 0.0,
+                            "restitutionThreshold": 0.5,
+                            "size": [
+                                50.0,
+                                50.0
+                            ]
+                        }
                     ]
                 },
-                "Rigidbody2D": {
-                    "angularDamping": 0.0,
-                    "angularVelocity": 0.0,
-                    "fixedRotation": false,
-                    "gravityScale": 1.0,
-                    "linearDamping": 0.0,
-                    "linearVelocity": [
-                        0.0,
-                        0.0
-                    ],
-                    "type": 2
-                },
-                "Sprite": {
-                    "dimension": [
-                        2,
-                        3
-                    ],
-                    "fade": 0.004999999888241291,
-                    "frameindex": 2,
-                    "meshname": "Quad",
-                    "shadername": "default",
-                    "texture": "baguetteIdle",
-                    "thickness": 1.0,
-                    "tint": [
-                        1.0,
-                        1.0,
-                        1.0,
-                        1.0
-                    ]
-                },
-                "Transform": {
-                    "rotation": [
-                        0.0,
-                        0.0,
-                        -0.18561485409736633
-                    ],
-                    "scale": [
-                        50.0,
-                        50.0,
-                        1.0
-                    ],
-                    "translation": [
-                        -148.65145874023438,
-                        109.89430236816406,
-                        0.0
-                    ]
-                }
-            },
-            "name": "Baguette (Clone)"
-        },
-        {
-            "archetype": "Rune",
-            "components": {
-                "Animation": {
-                    "frameCount": 8,
-                    "frameDuration": 0.05000000074505806,
-                    "loop": true,
-                    "pingPong": false,
-                    "reverse": false,
-                    "run": true,
-                    "startFrame": 0
-                },
-                "BoxCollider2D": {
-                    "density": 1.0,
-                    "friction": 0.699999988079071,
-                    "offset": [
-                        0.0,
-                        0.0
-                    ],
-                    "restitution": 0.0,
-                    "restitutionThreshold": 5.599999904632568,
-                    "scale": [
-                        50.0,
-                        50.0
-                    ]
-                },
-                "Rigidbody2D": {
-                    "angularDamping": 0.0,
-                    "angularVelocity": 0.0,
-                    "fixedRotation": false,
-                    "gravityScale": 1.0,
-                    "linearDamping": 0.0,
-                    "linearVelocity": [
-                        0.0,
-                        0.0
-                    ],
-                    "type": 2
-                },
-                "Sprite": {
-                    "dimension": [
-                        3,
-                        3
-                    ],
-                    "fade": 0.004999999888241291,
-                    "frameindex": 4,
-                    "meshname": "Quad",
-                    "shadername": "default",
-                    "texture": "rune",
-                    "thickness": 1.0,
-                    "tint": [
-                        1.0,
-                        1.0,
-                        1.0,
-                        1.0
-                    ]
-                },
-                "Transform": {
-                    "rotation": [
-                        0.0,
-                        0.0,
-                        3.118503400401096e-06
-                    ],
-                    "scale": [
-                        50.0,
-                        50.0,
-                        1.0
-                    ],
-                    "translation": [
-                        0.654895007610321,
-                        101.27977752685547,
-                        0.0
-                    ]
-                }
-            },
-            "name": "Rune (Clone)"
-        },
-        {
-            "archetype": "Player",
-            "components": {
-                "BoxCollider2D": {
-                    "density": 1.0,
-                    "friction": 0.699999988079071,
-                    "offset": [
-                        0.0,
-                        0.0
-                    ],
-                    "restitution": 0.30000001192092896,
-                    "restitutionThreshold": 10.0,
-                    "scale": [
-                        50.0,
-                        50.0
-                    ]
-                },
-                "Rigidbody2D": {
-                    "angularDamping": 0.0,
-                    "angularVelocity": 0.0,
-                    "fixedRotation": false,
-                    "gravityScale": 1.0,
-                    "linearDamping": 0.0,
-                    "linearVelocity": [
-                        0.0,
-                        0.0
-                    ],
-                    "type": 2
-                },
-                "Sprite": {
-                    "dimension": [
-                        1,
-                        1
-                    ],
-                    "fade": 0.004999999888241291,
-                    "frameindex": 0,
-                    "meshname": "Quad",
-                    "shadername": "default",
-                    "texture": "titlesquished",
-                    "thickness": 1.0,
-                    "tint": [
-                        1.0,
-                        1.0,
-                        1.0,
-                        1.0
-                    ]
-                },
-                "Transform": {
-                    "rotation": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "scale": [
-                        50.0,
-                        50.0,
-                        1.0
-                    ],
-                    "translation": [
-                        150.0,
-                        101.27993774414063,
-                        0.0
-                    ]
-                }
-            },
-            "name": "Player2"
-        },
-        {
-            "components": {
-                "BoxCollider2D": {
-                    "density": 1.5,
-                    "friction": 0.699999988079071,
-                    "offset": [
-                        0.0,
-                        0.0
-                    ],
-                    "restitution": 0.0,
-                    "restitutionThreshold": 0.6000000238418579,
-                    "scale": [
-                        250.0,
-                        150.0
-                    ]
+                "Name": {
+                    "ComponentFlags": 3,
+                    "name": "Player3"
                 },
                 "Rigidbody2D": {
                     "angularDamping": 0.0,
                     "angularVelocity": 0.0,
                     "fixedRotation": true,
+                    "flags": 3,
                     "gravityScale": 1.0,
                     "linearDamping": 0.0,
                     "linearVelocity": [
                         0.0,
                         0.0
                     ],
+                    "mass": 1.0,
                     "type": 0
                 },
                 "Sprite": {
+                    "ComponentFlags": 3,
                     "dimension": [
                         1,
                         1
                     ],
+                    "emissiveColor": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "emissiveStrength": 0.0,
+                    "emissiveTexture": "",
                     "fade": 0.004999999888241291,
                     "frameindex": 0,
                     "meshname": "Quad",
-                    "shadername": "default",
                     "texture": "debugRect",
                     "thickness": 1.0,
                     "tint": [
@@ -333,6 +76,7 @@
                     ]
                 },
                 "Transform": {
+                    "ComponentFlags": 3,
                     "rotation": [
                         0.0,
                         0.0,
@@ -349,46 +93,468 @@
                         0.0
                     ]
                 }
-            },
-            "name": "Player3"
+            }
         },
         {
             "components": {
+                "Archetype": {
+                    "ComponentFlags": 3,
+                    "archetype": "Player",
+                    "parentArchetype": ""
+                },
                 "BoxCollider2D": {
-                    "density": 1.0,
-                    "friction": 0.699999988079071,
-                    "offset": [
-                        0.0,
-                        0.0
-                    ],
-                    "restitution": 0.10000000149011612,
-                    "restitutionThreshold": 5.599999904632568,
-                    "scale": [
-                        15.0,
-                        15.0
+                    "ComponentFlags": 3,
+                    "colliders": [
+                        {
+                            "density": 1.0,
+                            "filter": {
+                                "categoryBits": 1,
+                                "groupIndex": 0,
+                                "maskBits": 65535
+                            },
+                            "friction": 0.5,
+                            "offset": [
+                                0.0,
+                                0.0
+                            ],
+                            "restitution": 0.0,
+                            "restitutionThreshold": 0.5,
+                            "size": [
+                                50.0,
+                                50.0
+                            ]
+                        }
                     ]
+                },
+                "Name": {
+                    "ComponentFlags": 3,
+                    "name": "Player"
                 },
                 "Rigidbody2D": {
                     "angularDamping": 0.0,
                     "angularVelocity": 0.0,
                     "fixedRotation": false,
+                    "flags": 3,
                     "gravityScale": 1.0,
                     "linearDamping": 0.0,
                     "linearVelocity": [
                         0.0,
                         0.0
                     ],
+                    "mass": 1.0,
                     "type": 2
                 },
                 "Sprite": {
+                    "ComponentFlags": 3,
                     "dimension": [
                         1,
                         1
                     ],
+                    "emissiveColor": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "emissiveStrength": 0.0,
+                    "emissiveTexture": "",
+                    "fade": 0.004999999888241291,
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "texture": "titlesquished",
+                    "thickness": 1.0,
+                    "tint": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "ComponentFlags": 3,
+                    "rotation": [
+                        0.0,
+                        0.0,
+                        0.0020139466505497694
+                    ],
+                    "scale": [
+                        50.0,
+                        50.0,
+                        1.0
+                    ],
+                    "translation": [
+                        7.0589375495910645,
+                        152.4718475341797,
+                        0.0
+                    ]
+                }
+            }
+        },
+        {
+            "components": {
+                "Animation": {
+                    "AnimationFlags": 0,
+                    "ComponentFlags": 3,
+                    "frameCount": 6,
+                    "frameDuration": 0.05000000074505806,
+                    "startFrame": 0
+                },
+                "Archetype": {
+                    "ComponentFlags": 3,
+                    "archetype": "Baguette",
+                    "parentArchetype": ""
+                },
+                "BoxCollider2D": {
+                    "ComponentFlags": 3,
+                    "colliders": [
+                        {
+                            "density": 1.0,
+                            "filter": {
+                                "categoryBits": 1,
+                                "groupIndex": 0,
+                                "maskBits": 65535
+                            },
+                            "friction": 0.5,
+                            "offset": [
+                                0.0,
+                                0.0
+                            ],
+                            "restitution": 0.0,
+                            "restitutionThreshold": 0.5,
+                            "size": [
+                                50.0,
+                                50.0
+                            ]
+                        }
+                    ]
+                },
+                "Name": {
+                    "ComponentFlags": 3,
+                    "name": "Baguette (Clone)"
+                },
+                "Rigidbody2D": {
+                    "angularDamping": 0.0,
+                    "angularVelocity": 0.0,
+                    "fixedRotation": false,
+                    "flags": 3,
+                    "gravityScale": 1.0,
+                    "linearDamping": 0.0,
+                    "linearVelocity": [
+                        0.0,
+                        0.0
+                    ],
+                    "mass": 1.0,
+                    "type": 2
+                },
+                "Sprite": {
+                    "ComponentFlags": 3,
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "emissiveColor": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "emissiveStrength": 0.0,
+                    "emissiveTexture": "",
+                    "fade": 0.004999999888241291,
+                    "frameindex": 2,
+                    "meshname": "Quad",
+                    "texture": "baguetteIdle",
+                    "thickness": 1.0,
+                    "tint": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "ComponentFlags": 3,
+                    "rotation": [
+                        0.0,
+                        0.0,
+                        -0.18561485409736633
+                    ],
+                    "scale": [
+                        50.0,
+                        50.0,
+                        1.0
+                    ],
+                    "translation": [
+                        -148.65145874023438,
+                        109.89430236816406,
+                        0.0
+                    ]
+                }
+            }
+        },
+        {
+            "components": {
+                "Animation": {
+                    "AnimationFlags": 0,
+                    "ComponentFlags": 3,
+                    "frameCount": 8,
+                    "frameDuration": 0.05000000074505806,
+                    "startFrame": 0
+                },
+                "Archetype": {
+                    "ComponentFlags": 3,
+                    "archetype": "Rune",
+                    "parentArchetype": ""
+                },
+                "BoxCollider2D": {
+                    "ComponentFlags": 3,
+                    "colliders": [
+                        {
+                            "density": 1.0,
+                            "filter": {
+                                "categoryBits": 1,
+                                "groupIndex": 0,
+                                "maskBits": 65535
+                            },
+                            "friction": 0.5,
+                            "offset": [
+                                0.0,
+                                0.0
+                            ],
+                            "restitution": 0.0,
+                            "restitutionThreshold": 0.5,
+                            "size": [
+                                50.0,
+                                50.0
+                            ]
+                        }
+                    ]
+                },
+                "Name": {
+                    "ComponentFlags": 3,
+                    "name": "Rune (Clone)"
+                },
+                "Rigidbody2D": {
+                    "angularDamping": 0.0,
+                    "angularVelocity": 0.0,
+                    "fixedRotation": false,
+                    "flags": 3,
+                    "gravityScale": 1.0,
+                    "linearDamping": 0.0,
+                    "linearVelocity": [
+                        0.0,
+                        0.0
+                    ],
+                    "mass": 1.0,
+                    "type": 2
+                },
+                "Sprite": {
+                    "ComponentFlags": 3,
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "emissiveColor": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "emissiveStrength": 0.0,
+                    "emissiveTexture": "",
+                    "fade": 0.004999999888241291,
+                    "frameindex": 4,
+                    "meshname": "Quad",
+                    "texture": "rune",
+                    "thickness": 1.0,
+                    "tint": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "ComponentFlags": 3,
+                    "rotation": [
+                        0.0,
+                        0.0,
+                        3.118503400401096e-06
+                    ],
+                    "scale": [
+                        50.0,
+                        50.0,
+                        1.0
+                    ],
+                    "translation": [
+                        0.654895007610321,
+                        101.27977752685547,
+                        0.0
+                    ]
+                }
+            }
+        },
+        {
+            "components": {
+                "Archetype": {
+                    "ComponentFlags": 3,
+                    "archetype": "Player",
+                    "parentArchetype": ""
+                },
+                "BoxCollider2D": {
+                    "ComponentFlags": 3,
+                    "colliders": [
+                        {
+                            "density": 1.0,
+                            "filter": {
+                                "categoryBits": 1,
+                                "groupIndex": 0,
+                                "maskBits": 65535
+                            },
+                            "friction": 0.5,
+                            "offset": [
+                                0.0,
+                                0.0
+                            ],
+                            "restitution": 0.0,
+                            "restitutionThreshold": 0.5,
+                            "size": [
+                                50.0,
+                                50.0
+                            ]
+                        }
+                    ]
+                },
+                "Name": {
+                    "ComponentFlags": 3,
+                    "name": "Player2"
+                },
+                "Rigidbody2D": {
+                    "angularDamping": 0.0,
+                    "angularVelocity": 0.0,
+                    "fixedRotation": false,
+                    "flags": 3,
+                    "gravityScale": 1.0,
+                    "linearDamping": 0.0,
+                    "linearVelocity": [
+                        0.0,
+                        0.0
+                    ],
+                    "mass": 1.0,
+                    "type": 2
+                },
+                "Sprite": {
+                    "ComponentFlags": 3,
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "emissiveColor": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "emissiveStrength": 0.0,
+                    "emissiveTexture": "",
+                    "fade": 0.004999999888241291,
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "texture": "titlesquished",
+                    "thickness": 1.0,
+                    "tint": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "ComponentFlags": 3,
+                    "rotation": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        50.0,
+                        50.0,
+                        1.0
+                    ],
+                    "translation": [
+                        150.0,
+                        101.27993774414063,
+                        0.0
+                    ]
+                }
+            }
+        },
+        {
+            "components": {
+                "Archetype": {
+                    "ComponentFlags": 3,
+                    "archetype": "",
+                    "parentArchetype": ""
+                },
+                "BoxCollider2D": {
+                    "ComponentFlags": 3,
+                    "colliders": [
+                        {
+                            "density": 1.0,
+                            "filter": {
+                                "categoryBits": 1,
+                                "groupIndex": 0,
+                                "maskBits": 65535
+                            },
+                            "friction": 0.5,
+                            "offset": [
+                                0.0,
+                                0.0
+                            ],
+                            "restitution": 0.0,
+                            "restitutionThreshold": 0.5,
+                            "size": [
+                                50.0,
+                                50.0
+                            ]
+                        }
+                    ]
+                },
+                "Name": {
+                    "ComponentFlags": 3,
+                    "name": "Player4"
+                },
+                "Rigidbody2D": {
+                    "angularDamping": 0.0,
+                    "angularVelocity": 0.0,
+                    "fixedRotation": false,
+                    "flags": 3,
+                    "gravityScale": 1.0,
+                    "linearDamping": 0.0,
+                    "linearVelocity": [
+                        0.0,
+                        0.0
+                    ],
+                    "mass": 1.0,
+                    "type": 2
+                },
+                "Sprite": {
+                    "ComponentFlags": 3,
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "emissiveColor": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "emissiveStrength": 0.0,
+                    "emissiveTexture": "",
                     "fade": 0.004999999888241291,
                     "frameindex": 0,
                     "meshname": "Cube",
-                    "shadername": "default",
                     "texture": "ChargeParticle",
                     "thickness": 1.0,
                     "tint": [
@@ -399,6 +565,7 @@
                     ]
                 },
                 "Transform": {
+                    "ComponentFlags": 3,
                     "rotation": [
                         0.0,
                         0.0,
@@ -415,56 +582,81 @@
                         0.0
                     ]
                 }
-            },
-            "name": "Player4"
+            }
         },
         {
-            "archetype": "Rune",
             "components": {
                 "Animation": {
+                    "AnimationFlags": 0,
+                    "ComponentFlags": 3,
                     "frameCount": 8,
                     "frameDuration": 0.05000000074505806,
-                    "loop": true,
-                    "pingPong": false,
-                    "reverse": false,
-                    "run": true,
                     "startFrame": 0
                 },
+                "Archetype": {
+                    "ComponentFlags": 3,
+                    "archetype": "Rune",
+                    "parentArchetype": ""
+                },
                 "BoxCollider2D": {
-                    "density": 1.0,
-                    "friction": 0.699999988079071,
-                    "offset": [
-                        0.0,
-                        0.0
-                    ],
-                    "restitution": 0.0,
-                    "restitutionThreshold": 5.599999904632568,
-                    "scale": [
-                        50.0,
-                        50.0
+                    "ComponentFlags": 3,
+                    "colliders": [
+                        {
+                            "density": 1.0,
+                            "filter": {
+                                "categoryBits": 1,
+                                "groupIndex": 0,
+                                "maskBits": 65535
+                            },
+                            "friction": 0.5,
+                            "offset": [
+                                0.0,
+                                0.0
+                            ],
+                            "restitution": 0.0,
+                            "restitutionThreshold": 0.5,
+                            "size": [
+                                50.0,
+                                50.0
+                            ]
+                        }
                     ]
+                },
+                "Name": {
+                    "ComponentFlags": 3,
+                    "name": "Rune (Clone"
                 },
                 "Rigidbody2D": {
                     "angularDamping": 0.0,
                     "angularVelocity": 0.0,
                     "fixedRotation": false,
+                    "flags": 3,
                     "gravityScale": 1.0,
                     "linearDamping": 0.0,
                     "linearVelocity": [
                         0.0,
                         0.0
                     ],
+                    "mass": 1.0,
                     "type": 2
                 },
                 "Sprite": {
+                    "ComponentFlags": 3,
                     "dimension": [
-                        3,
-                        3
+                        1,
+                        1
                     ],
+                    "emissiveColor": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "emissiveStrength": 0.0,
+                    "emissiveTexture": "",
                     "fade": 0.004999999888241291,
                     "frameindex": 4,
                     "meshname": "Quad",
-                    "shadername": "default",
                     "texture": "rune",
                     "thickness": 1.0,
                     "tint": [
@@ -475,6 +667,7 @@
                     ]
                 },
                 "Transform": {
+                    "ComponentFlags": 3,
                     "rotation": [
                         0.0,
                         0.0,
@@ -491,56 +684,81 @@
                         0.0
                     ]
                 }
-            },
-            "name": "Rune (Clone"
+            }
         },
         {
-            "archetype": "Rune",
             "components": {
                 "Animation": {
+                    "AnimationFlags": 0,
+                    "ComponentFlags": 3,
                     "frameCount": 8,
                     "frameDuration": 0.05000000074505806,
-                    "loop": true,
-                    "pingPong": false,
-                    "reverse": false,
-                    "run": true,
                     "startFrame": 0
                 },
+                "Archetype": {
+                    "ComponentFlags": 3,
+                    "archetype": "Rune",
+                    "parentArchetype": ""
+                },
                 "BoxCollider2D": {
-                    "density": 1.0,
-                    "friction": 0.699999988079071,
-                    "offset": [
-                        0.0,
-                        0.0
-                    ],
-                    "restitution": 0.0,
-                    "restitutionThreshold": 5.599999904632568,
-                    "scale": [
-                        50.0,
-                        50.0
+                    "ComponentFlags": 3,
+                    "colliders": [
+                        {
+                            "density": 1.0,
+                            "filter": {
+                                "categoryBits": 1,
+                                "groupIndex": 0,
+                                "maskBits": 65535
+                            },
+                            "friction": 0.5,
+                            "offset": [
+                                0.0,
+                                0.0
+                            ],
+                            "restitution": 0.0,
+                            "restitutionThreshold": 0.5,
+                            "size": [
+                                50.0,
+                                50.0
+                            ]
+                        }
                     ]
+                },
+                "Name": {
+                    "ComponentFlags": 3,
+                    "name": "Rune (Clone_1"
                 },
                 "Rigidbody2D": {
                     "angularDamping": 0.0,
                     "angularVelocity": 0.0,
                     "fixedRotation": false,
+                    "flags": 3,
                     "gravityScale": 1.0,
                     "linearDamping": 0.0,
                     "linearVelocity": [
                         0.0,
                         0.0
                     ],
+                    "mass": 1.0,
                     "type": 2
                 },
                 "Sprite": {
+                    "ComponentFlags": 3,
                     "dimension": [
-                        3,
-                        3
+                        1,
+                        1
                     ],
+                    "emissiveColor": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "emissiveStrength": 0.0,
+                    "emissiveTexture": "",
                     "fade": 0.004999999888241291,
                     "frameindex": 5,
                     "meshname": "Quad",
-                    "shadername": "default",
                     "texture": "rune",
                     "thickness": 1.0,
                     "tint": [
@@ -551,6 +769,7 @@
                     ]
                 },
                 "Transform": {
+                    "ComponentFlags": 3,
                     "rotation": [
                         0.0,
                         0.0,
@@ -567,12 +786,21 @@
                         0.0
                     ]
                 }
-            },
-            "name": "Rune (Clone"
+            }
         },
         {
             "components": {
+                "Archetype": {
+                    "ComponentFlags": 3,
+                    "archetype": "",
+                    "parentArchetype": ""
+                },
+                "Name": {
+                    "ComponentFlags": 3,
+                    "name": "New Entiy"
+                },
                 "Transform": {
+                    "ComponentFlags": 3,
                     "rotation": [
                         0.0,
                         0.0,
@@ -589,8 +817,7 @@
                         0.0
                     ]
                 }
-            },
-            "name": "New Entiy"
+            }
         }
     ]
 }

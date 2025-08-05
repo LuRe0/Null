@@ -33,7 +33,18 @@
 
 namespace NULLENGINE
 {
-	struct SpriteComponent;
+	struct BoxCollider2DComponent;
+	struct Rigidbody2DComponent;
+	struct TransformComponent;
+	class NRegistry;
+	class NSceneManager;
+	class Entity;
+	class EntityCreatedEvent;
+	class EntityDestroyedEvent;
+	class EntityRemoveComponentEvent;
+	class EntityAddComponentEvent;
+	class InitializeBox2DColliderEvent;
+
 	class NLE_API BoxCollider2DSystem : public ISystem<BoxCollider2DSystem>
 	{
 	public:

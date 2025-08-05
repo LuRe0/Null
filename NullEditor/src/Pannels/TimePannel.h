@@ -13,7 +13,7 @@
 // Includes																        //
 //******************************************************************************//
 #include "Null/Core.h"
-#include "Null/Engine/Submodules/Layers/ImGuiLayer.h"
+#include "Base/Pannel.h"
 
 //******************************************************************************//
 // Definitions  														        //
@@ -34,7 +34,7 @@ namespace NULLENGINE
 {
 	class Scene;
 
-	class TimePannel : public Pannel
+	class TimePannel : public ScenePannel
 	{
 	public:
 		TimePannel() = default;

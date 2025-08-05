@@ -75,6 +75,8 @@ namespace NULLENGINE
 
 
 		std::set<uint32_t> m_tags;
+
+		//std::array<>
 	};
 
 }

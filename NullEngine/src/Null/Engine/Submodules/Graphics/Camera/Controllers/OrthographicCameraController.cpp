@@ -12,8 +12,7 @@
 #include "stdafx.h"
 #include "CameraController.h"
 #include "OrthographicCameraController.h"
-
-
+#include "NIncludes.h"
 
 
 //******************************************************************************//

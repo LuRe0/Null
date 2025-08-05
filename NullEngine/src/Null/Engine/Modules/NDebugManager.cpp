@@ -11,7 +11,7 @@
 //******************************************************************************//
 #include "stdafx.h"
 #include "NDebugManager.h"
-
+#include "NIncludes.h"
 
 
 

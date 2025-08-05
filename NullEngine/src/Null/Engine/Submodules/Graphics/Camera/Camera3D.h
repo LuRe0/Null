@@ -14,7 +14,7 @@
 //******************************************************************************//
 #include "Null/Core.h"
 #include "Camera.h"
-
+#include <glm/glm.hpp>
 //******************************************************************************//
 // Definitions  														        //
 //******************************************************************************//
@@ -40,6 +40,8 @@ const float FOV = 45.0f;
 
 namespace NULLENGINE
 {
+	class WindowResizeEvent;
+
     class Camera3D : public Camera {
     public:
         // constructor with vectors
@@ -58,6 +60,9 @@ namespace NULLENGINE
         void SetUp(const glm::vec3& up);
         void SetRight(const glm::vec3& right);
         void SetZoom(float zoom);
+        void SetFOV(float fov);
+        void SetNearClip(float nC);
+        void SetFarClip(float fC);
         void SetYaw(float yaw);
         void SetPitch(float pitch);
         // returns the view matrix calculated using Euler Angles and the LookAt Matrix
@@ -71,6 +76,9 @@ namespace NULLENGINE
         const float GetPitch() const;
         const float GetYaw() const;
         const float GetZoom() const;
+        const float GetFOV() const;
+        const float GetNearClip() const;
+        const float GetFarClip() const;
 
         bool IsWithinFrustum(const glm::vec3& center, const glm::vec3& halfExtents) const;
 

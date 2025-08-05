@@ -15,8 +15,7 @@
 #include "Null/Core.h"
 #include "Null/Engine/Modules/Base/IModule.h"
 //#include "Null/Engine/Submodules/Graphics/Camera/Camera.h"
-#include "Null/Engine/Submodules/Graphics/Camera/Camera2D.h"
-#include "Null/Engine/Submodules/Graphics/Camera/Camera3D.h"
+
 
 
 //******************************************************************************//
@@ -36,6 +35,15 @@
 
 namespace NULLENGINE
 {
+    class Camera;
+	class Camera2D;
+	class Camera3D;
+
+    class sol::state;
+    // Forward declarations for events
+    class EngineEditStateEvent;
+	class EnginePauseStateEvent;
+
 	class NLE_API NCameraManager : public ModuleBase<NCameraManager>
 	{
 	public:
@@ -52,19 +60,19 @@ namespace NULLENGINE
 		void Shutdown() override;
 
         template <typename T, typename... Args>
-        T* AddCamera(const std::string& name, Args&&... args) {
+        T* AddCamera(const uint32_t& name, Args&&... args) {
             static_assert(std::is_base_of<Camera, T>::value, "T must be derived from Camera");
 
             if constexpr (std::is_same<T, Camera2D>::value) {
                 auto camera = std::make_unique<T>(std::forward<Args>(args)...);
                 T* cameraPtr = camera.get();
-                m_Cameras2D[STRID(name)] = std::move(camera);
+                m_Cameras2D[(name)] = std::move(camera);
                 return cameraPtr;
             }
             else if constexpr (std::is_same<T, Camera3D>::value) {
                 auto camera = std::make_unique<T>(std::forward<Args>(args)...);
                 T* cameraPtr = camera.get();
-                m_Cameras3D[STRID(name)] = std::move(camera);
+                m_Cameras3D[(name)] = std::move(camera);
                 return cameraPtr;
             }
 
@@ -72,15 +80,15 @@ namespace NULLENGINE
         }
 
         template <typename T>
-        T* GetCamera(const std::string& name) {
+        T* GetCamera(const uint32_t& name) {
             if constexpr (std::is_same<T, Camera2D>::value) {
-                auto it = m_Cameras2D.find(STRID(name));
+                auto it = m_Cameras2D.find((name));
                 if (it != m_Cameras2D.end()) {
                     return dynamic_cast<T*>(it->second.get());
                 }
             }
             else if constexpr (std::is_same<T, Camera3D>::value) {
-                auto it = m_Cameras3D.find(STRID(name));
+                auto it = m_Cameras3D.find((name));
                 if (it != m_Cameras3D.end()) {
                     return dynamic_cast<T*>(it->second.get());
                 }
@@ -91,35 +99,10 @@ namespace NULLENGINE
 
 
 
-        Camera* GetCamera(const std::string& name) 
-        {
-            auto it2D = m_Cameras2D.find(STRID(name));
-            if (it2D != m_Cameras2D.end()) {
-                return dynamic_cast<Camera*>(it2D->second.get());
-            }
+        Camera* GetCamera(const std::string& name);
+  
+        Camera* GetCamera(const uint32_t nameID);
 
-            auto it3D = m_Cameras3D.find(STRID(name));
-            if (it3D != m_Cameras3D.end()) {
-                return dynamic_cast<Camera*>(it3D->second.get());
-            }
-
-            return nullptr;
-        }
-
-        Camera* GetCamera(const uint32_t nameID)
-        {
-            auto it2D = m_Cameras2D.find(nameID);
-            if (it2D != m_Cameras2D.end()) {
-                return dynamic_cast<Camera*>(it2D->second.get());
-            }
-
-            auto it3D = m_Cameras3D.find(nameID);
-            if (it3D != m_Cameras3D.end()) {
-                return dynamic_cast<Camera*>(it3D->second.get());
-            }
-
-            return nullptr;
-        }
 
 
 
@@ -134,35 +117,18 @@ namespace NULLENGINE
 
         Camera* GetCurrentCamera();
 
-        std::vector<std::string> Get2DCameraNames() const 
-        {
-            std::vector<std::string> names;
-            names.reserve(m_Cameras2D.size());
-          
-            for (const auto& [id, cam] : m_Cameras2D) 
-            {
-                names.push_back(STRFROM(id));
-            }
+        std::vector<std::string> Get2DCameraNames() const;
 
-            return names;
-        }
-
-        std::vector<std::string> Get3DCameraNames() const 
-        {
-            std::vector<std::string> names;
-            names.reserve(m_Cameras3D.size());
-
-            for (const auto& [id, cam] : m_Cameras3D)
-            {
-                names.push_back(STRFROM(id));
-            }
-
-            return names;
-        }
+        std::vector<std::string> Get3DCameraNames() const;
 
         bool IsWithinFrustum(const glm::vec3& center, const glm::vec3& halfExtents)  const;
 
         void ResizeCameras(float width, float height);
+
+
+        glm::vec3 ScreenToWorldPos(const glm::vec2& screenPos);
+        glm::vec2 WorldToScreenPos(const glm::vec3& worldPos);
+
 	private:
 		std::unordered_map<uint32_t, std::unique_ptr<Camera2D>> m_Cameras2D;
 		std::unordered_map<uint32_t, std::unique_ptr<Camera3D>> m_Cameras3D;

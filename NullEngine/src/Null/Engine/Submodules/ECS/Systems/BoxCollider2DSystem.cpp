@@ -16,6 +16,13 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "imgui.h"
 #include <misc/cpp/imgui_stdlib.h>
+#include <box2d/box2d.h>
+#include <box2d/b2_world.h>
+#include <box2d/b2_body.h>
+#include <box2d/b2_contact.h>
+#include <box2d/b2_polygon_shape.h>
+#include <box2d/b2_circle_shape.h>
+#include <box2d/b2_fixture.h>
 #include <box2d/b2_polygon_shape.h>
 #include <box2d/b2_fixture.h>
 #include <glm/gtc/matrix_transform.hpp>
@@ -24,6 +31,7 @@
 #include "../Entities/Entity.h"
 #include "../../Scene.h"
 #include "../../../../Tools/ImGuiH.h"
+#include "NIncludes.h"
 //******************************************************************************//
 // Public Variables															    //
 //******************************************************************************//
@@ -45,7 +53,9 @@ namespace NULLENGINE
 
 		componentFactory->Register<BoxCollider2DComponent>(CreateBoxCollider2DComponent,
 			[this](Entity& id) { this->ViewBoxCollider2DComponent(id); },
-			WriteBoxCollider2DComponent, AddBoxCollider2DComponent, DiffBoxCollider2DComponent);
+			WriteBoxCollider2DComponent, AddBoxCollider2DComponent, DiffBoxCollider2DComponent,
+			nullptr // AssignNameToComponent is not used here, so we pass nullptr
+		);
 
 	}
 
@@ -169,7 +179,7 @@ namespace NULLENGINE
 							0, entityId, 0.05f, 0.005f, RenderData::INSTANCED)*/
 							//model, mesh, spritesrc, tint, shadername, frameindex, entity
 				renderer->AddRenderCall(RenderCommandTypes::Debug, std::make_unique<ElementData>(matrix, meshManager->Get("Quad"), nullptr, m_Color, "", 0,
-					entityId, m_Thickness, 0.005f, RenderData::INSTANCED, -depth));
+					entityId, m_Thickness, 0.005f, RenderData::INSTANCED, depth));
 
 			}
 		}
@@ -317,6 +327,10 @@ namespace NULLENGINE
 	{
 		nlohmann::json json;
 		auto& comp = *static_cast<const BoxCollider2DComponent*>(component);
+
+
+		if (!comp.componentFlags.IsSet(ComponentFlags_Serialized))
+			return json;
 
 		json["BoxCollider2D"]["colliders"] = nlohmann::json::array();
 
@@ -687,18 +701,22 @@ namespace NULLENGINE
 		auto* PhysicsSystem = PhysicsSystem::Instance();
 
 		BoxCollider2DComponent& bc2d = registry->GetComponent<BoxCollider2DComponent>(entityID);
+		TransformComponent& transform = registry->GetComponent<TransformComponent>(entityID);
 
 		if (!IsValidRuntimeIndex(bc2d.runtimeBodyIndex))
 		{
 			if (registry->HasComponent<Rigidbody2DComponent>(entityID))
 				bc2d.runtimeBodyIndex = registry->GetComponent<Rigidbody2DComponent>(entityID).runtimeBodyIndex;
-			else if (registry->HasComponent<BoxCollider2DComponent>(entityID))
-				bc2d.runtimeBodyIndex = registry->GetComponent<BoxCollider2DComponent>(entityID).runtimeBodyIndex;
+			else if (registry->HasComponent<CircleCollider2DComponent>(entityID))
+				bc2d.runtimeBodyIndex = registry->GetComponent<CircleCollider2DComponent>(entityID).runtimeBodyIndex;
 
 			// If the body index is still invalid, we have to create a body
 			if (!IsValidRuntimeIndex(bc2d.runtimeBodyIndex))
 			{
 				b2BodyDef bodyDef;
+				auto pos = PhysicsSystem::PixelsToMeters(transform.translation.x, transform.translation.y);
+				bodyDef.position.Set(pos.x, pos.y);
+
 				bc2d.runtimeBodyIndex = PhysicsSystem->AddActiveBody(PhysicsSystem->CreateBody(bodyDef));
 			}
 		}
@@ -745,7 +763,7 @@ namespace NULLENGINE
 
 			}
 
-			body->ResetMassData(); // Reset mass data to ensure correct physics calculations
+			//body->ResetMassData(); // Reset mass data to ensure correct physics calculations
 
 		}
 

@@ -33,43 +33,31 @@ namespace NULLENGINE
 
 
 
-    enum class SpawnShape { LINE, CIRCLE, DONUT, RECT, POINT, TEXTURE, SHAPES };
+    enum class SpawnShape : uint32_t { LINE, CIRCLE, DONUT, RECT, POINT, TEXTURE, SHAPES };
 
-    struct lineEmit
+    struct LineEmit { glm::vec3 p1, p2; };
+    struct CircleEmit { float radius; };
+    struct DonutEmit { float innerRadius, outerRadius; };
+    struct PointEmit { glm::vec3 point; };
+    struct RectEmit { glm::vec2 center, extent; };
+    struct TextureEmit { uint32_t spriteID; glm::vec2 size; float alphaThreshold; float invertMask; };
+
+    union ShapeData
     {
-        glm::vec3 point1 = glm::vec3(0.0f);
-        glm::vec3 point2 = glm::vec3(0.0f);
+        LineEmit line;
+        CircleEmit circle;
+        DonutEmit donut;
+        PointEmit point;
+        RectEmit rect;
+        TextureEmit texture;
     };
 
-    struct circleEmit
+    struct SpawnShapeData
     {
-        float radius = 50.0f;
+        SpawnShape shapeType = SpawnShape::POINT;
+        ShapeData  data;
     };
 
-    struct donutEmit
-    {
-        float radius1 = 10.0f;
-        float radius2 = 50.0f;
-    };
-
-    struct pointEmit
-    {
-        glm::vec3 point = glm::vec3(0.0f);
-    };
-
-    struct rectEmit
-    {
-        glm::vec2 center = glm::vec2(0.0f);
-        glm::vec2 extent = glm::vec2(50.0f, 50.0f); // half width/height
-    };
-
-    struct textureEmit
-    {
-        SpriteSource* spriteSource = nullptr;
-        glm::vec2 worldSize = glm::vec2(100.0f);
-        float alphaThreshold = 0.5f;
-        float invertMask = 0.0f;
-    };
 
     //Particle flags need to match glsl ones
 
@@ -94,153 +82,127 @@ namespace NULLENGINE
 
     struct ParticleEmitter
     {
-        ParticleEmitter() = default;
-
-
-        // Identification
-        std::string name;
+        // ─── Identification ─────────────────────────────────────────────────────────
+        uint32_t nameID;
         uint32_t emitterID = 0;
+        uint32_t spriteSourceID;
+        uint32_t bufferOffset = 0;
+        bool enabled = true;
+        bool followParent = false;
+        bool openInWindow = false;
 
-        SpriteSource* spriteSource = nullptr;
-
-        // Particle Pool
-        unsigned int maxParticles = 1000;   
+        // ─── Pooling Info ───────────────────────────────────────────────────────────
+        unsigned int maxParticles = 1000;
         unsigned int startIndex = 0;
 
-        uint32_t bufferOffset = 0;
-
-        bool enabled = true;
-
-        // Emitter Lifecycle
+        // ─── Emission ───────────────────────────────────────────────────────────────
         float emitRate = 10.0f;
         int emitCount = 0;
-        float emitAccumulator = 10.0f;
-
-
+        float emitAccumulator = 0.0f;
         bool finished = false;
 
-        // Particle Lifetime
+        // ─── Lifetime ───────────────────────────────────────────────────────────────
         float minLifetime = 5.0f;
         float maxLifetime = 5.0f;
         bool randomizeLifetime = false;
 
-
-
-        // Initial State
+        // ─── Initial Properties ─────────────────────────────────────────────────────
         glm::vec3 offset = glm::vec3(0.0f);
+        float initialLifetime = 1.0f;
         float initialVelocity = 100.0f;
         float initialAngularVelocity = 100.0f;
         float initialAcceleration = 100.0f;
-        float initialLifetime = 1.0f;
+        float initialRotation = 0.0f;
+        int initialFrame = 0;
         glm::vec2 initialSize = glm::vec2(50.0f);
         glm::vec4 initialColor = glm::vec4(1.0f);
-        float initialRotation = 0.0f;  // ← optional
-        int initialFrame = 0;
-
-
         float drag = 0.001f;
 
-        //vortex
+        // ─── Forces ─────────────────────────────────────────────────────────────────
         glm::vec3 vortexCenter = glm::vec3(0.0f);
         float vortexStrength = 1.0f;
 
-        //wind
-        glm::vec3 windDirection = glm::vec3(0.0f); // normalized
+        glm::vec3 windDirection = glm::vec3(0.0f);
         float windStrength = 1.0f;
 
-        //attractor
-        glm::vec3 AttractorPosition = glm::vec3(0.0f);
-        float AttractionStrength = 1.0f;;
+        glm::vec3 attractorPosition = glm::vec3(0.0f);
+        float attractionStrength = 1.0f;
 
-        //gravity
         glm::vec3 gravity = glm::vec3(0.0f);
         float gravityScale = 1.0f;
 
         glm::vec3 spinCenter = glm::vec3(0.0f);
         float spinSpeed = 1.0f;
 
-        // size
+        // ─── Visual Transitions ─────────────────────────────────────────────────────
         glm::vec2 startSize = glm::vec2(50.0f);
         glm::vec2 endSize = glm::vec2(1.0f, 0.0f);
         EasingCurve sizeEaseCurve;
 
-
-        //color
         glm::vec4 startColor = glm::vec4(1.0f);
         glm::vec4 endColor = glm::vec4(1.0f, 1.0f, 1.0f, 0.0f);
         EasingCurve colorEaseCurve;
 
-        // Rotation
         float startRotation = 0.0f;
         float endRotation = 0.0f;
         EasingCurve rotationEaseCurve;
 
-
-        //fade
         float startFade = 0.0f;
         float endFade = 1.0f;
         EasingCurve fadeEaseCurve;
 
-        //Animation
+        // ─── Animation ──────────────────────────────────────────────────────────────
         float animDuration = 1.0f;
-        float startOffset = 0.0f; 
+        float startOffset = 0.0f;
         int animFrameCount = 9;
         bool loop = true;
         bool playOnce = false;
         bool reverse = false;
         bool pingPong = false;
 
-        // Spawn Shape
-        SpawnShape shape = SpawnShape::POINT;
-        //emitter shape
-        lineEmit line;
-        circleEmit circle;
-        donutEmit donut;
-        pointEmit point;
-        rectEmit rect;
-        textureEmit texture;
+        // ─── Spawn Shape ────────────────────────────────────────────────────────────
+        SpawnShapeData spawnShapeData;
 
-        bool followParent;
-        bool openInWindow;
+        // ─── Burst ──────────────────────────────────────────────────────────────────
+        bool useBurst = false;
+        int burstCount = 0;
+        float burstCooldown = 0.0f;
+        int burstsRemaining = 0;
+        float burstTimer = 0.0f;
+        bool bursting = false;
 
-
-        // Burst
-        bool useBurst = false;                
-        int burstCount = 0;                   
-        float burstCooldown = 0.0f;           
-        int burstsRemaining = 0;              
-        float burstTimer = 0.0f;              
-        bool bursting = false;                
-
-
-        // Flags
+        // ─── Flags ──────────────────────────────────────────────────────────────────
         uint32_t flags = PARTICLE_FLAG_NONE;
-
-
-        ParticleEmitter(const std::string& n, size_t start, size_t count, uint32_t id = 0)
-            : name(n), startIndex(start), maxParticles(count), emitterID(id), spriteSource(nullptr)
-        {
-        }
     };
 
 
+    //struct ParticleSystemComponent : public BaseComponent
+    //{
+    //    std::string m_Name;
+    //    std::vector<ParticleEmitter> m_Emitters;
 
-    struct ParticleSystemComponent : public BaseComponent
+    //    ParticleSystemComponent(const std::string& inName = "DefaultSystem", const  std::vector<ParticleEmitter>& inEmitters = std::vector<ParticleEmitter>())
+    //        : m_Name(inName)
+    //        , m_Emitters(inEmitters)
+    //    {}
+
+    //    void AddEmitter(const std::string& emitterName, size_t particleStart, size_t particleCount)
+    //    {
+    //        m_Emitters.emplace_back(emitterName, particleStart, particleCount);
+    //    }
+
+    //    const std::string Name() const { return Component<ParticleSystemComponent>::TypeName(); }
+    //    const uint32_t ID() const { return Component<ParticleSystemComponent>::GetID(); }
+    //};
+
+
+    constexpr size_t MaxEmittersPerSystem = 8;
+
+    struct ParticleSystemComponent
     {
-        std::string m_Name;
-        std::vector<ParticleEmitter> m_Emitters;
-
-        ParticleSystemComponent(const std::string& inName = "DefaultSystem", const  std::vector<ParticleEmitter>& inEmitters = std::vector<ParticleEmitter>())
-            : m_Name(inName)
-            , m_Emitters(inEmitters)
-        {}
-
-        void AddEmitter(const std::string& emitterName, size_t particleStart, size_t particleCount)
-        {
-            m_Emitters.emplace_back(emitterName, particleStart, particleCount);
-        }
-
-        const std::string Name() const { return Component<ParticleSystemComponent>::TypeName(); }
-        const uint32_t ID() const { return Component<ParticleSystemComponent>::GetID(); }
+        std::array<ParticleEmitter, MaxEmittersPerSystem> emitters;
+        uint32_t nameID;           // Stable ID for identifying system name type
+        uint32_t emitterCount = 0;
+        ComponentFlagSet componentFlags = ComponentFlagSet(ComponentFlags_Enabled | ComponentFlags_Serialized);
     };
 }

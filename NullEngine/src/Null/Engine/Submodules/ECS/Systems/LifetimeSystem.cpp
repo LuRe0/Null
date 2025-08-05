@@ -20,6 +20,7 @@
 
 #include "../../../../Tools/ImGuiH.h"
 
+#include "NIncludes.h"
 
 //******************************************************************************//
 // Public Variables															    //
@@ -42,7 +43,9 @@ namespace NULLENGINE
 		componentFactory->Register<LifetimeComponent>(CreateLifetimeComponent,
 			[this](Entity& id) { this->ViewLifetimeComponent(id); },
 			WriteLifetimeComponent, 
-			AddLifetimeComponent, DiffLifetimeComponent);
+			AddLifetimeComponent, DiffLifetimeComponent,
+			nullptr // AssignNameToComponent is not used here, so we pass nullptr
+		);
 
 	}
 
@@ -78,10 +81,10 @@ namespace NULLENGINE
 
 			if (LifetimeComp.timeRemaining <= 0.0f) 
 			{
-				NSceneManager* scMan = NSceneManager::Instance();
-				Scene* sc = scMan->GetCurrentScene();
-				if(sc->HasEntity(entityId))
-					sc->GetEntity(entityId).m_isDestroyed = true;
+				if(registry->HasComponent<DestroyedComponent>(entityId))
+					continue; // Entity already marked as destroyed
+				// If the entity is not already marked as destroyed, we mark it now
+				registry->AddComponent<DestroyedComponent>(entityId);
 			}
 		}
 	}
@@ -129,7 +132,7 @@ namespace NULLENGINE
 			ComponentFlagSet flags;
 			flags.Set(ComponentFlags_Enabled);
 			flags.Set(ComponentFlags_Serialized);
-			comp->m_ComponentFlags.m_Flags = jsonWrapper.GetUInt8("ComponentFlags", flags.m_Flags);
+			comp->componentFlags.m_Flags = jsonWrapper.GetUInt8("ComponentFlags", flags.m_Flags);
 
 		}
 
@@ -149,8 +152,12 @@ namespace NULLENGINE
 		nlohmann::json json;
 
 		auto& comp = *static_cast<const LifetimeComponent*>(component);
+
+		if (!comp.componentFlags.IsSet(ComponentFlags_Serialized))
+			return json;
+
 		json["Lifetime"]["timeRemaining"] = comp.timeRemaining;
-		json["Lifetime"]["ComponentFlags"] = comp.m_ComponentFlags.m_Flags;
+		json["Lifetime"]["ComponentFlags"] = comp.componentFlags.m_Flags;
 
 
 		return json;
@@ -168,8 +175,8 @@ namespace NULLENGINE
 			lifetimeJson["timeRemaining"] = b->timeRemaining;
 
 
-		if (a->m_ComponentFlags.m_Flags != b->m_ComponentFlags.m_Flags)
-			diff["ComponentFlags"] = b->m_ComponentFlags.m_Flags;
+		if (a->componentFlags.m_Flags != b->componentFlags.m_Flags)
+			diff["ComponentFlags"] = b->componentFlags.m_Flags;
 
 		if (!lifetimeJson.empty())
 			diff["Lifetime"] = lifetimeJson;
@@ -188,7 +195,7 @@ namespace NULLENGINE
 		auto& LifetimeComp = entity.Get<LifetimeComponent>();
 
 
-		uint8_t& flags = LifetimeComp.m_ComponentFlags.m_Flags;
+		uint8_t& flags = LifetimeComp.componentFlags.m_Flags;
 		// Show collapsible header with enable checkbox and remove button, tied to the Enabled flag
 		auto [open, enabled, remove] = ImGuiH::CollapsingHeaderWithFlagCheckboxAndRemove("Transform", flags, ComponentFlags_Enabled);
 

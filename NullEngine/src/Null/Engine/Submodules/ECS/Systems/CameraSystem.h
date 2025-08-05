@@ -74,12 +74,14 @@ namespace NULLENGINE
 
 		void UpdateCameraShake(float dt);
 
+		void ResetCameraStates();
+
 		void ViewCameraComponent(Entity& entity);
 
 		bool m_ShowCreationMenu = false;
 		bool m_Preview = false;
 		std::string m_CameraName = "New Camera";
-		Camera::CameraType m_CameraType = Camera::ORTHOGRAPHIC;
+		unsigned int m_CameraType = 0;
 		size_t m_MainCameraCount = 0;
 
 

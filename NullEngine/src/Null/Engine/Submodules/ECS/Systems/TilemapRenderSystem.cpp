@@ -17,6 +17,7 @@
 #include "imgui.h"
 #include <misc/cpp/imgui_stdlib.h>
 #include "Null/Engine/Submodules/Events/IEvents.h"
+#include "NIncludes.h"
 
 
 //******************************************************************************//
@@ -116,6 +117,9 @@ namespace NULLENGINE
 		nlohmann::json json;
 
 		auto& tilemap = *static_cast<const TilemapComponent*>(component);
+
+		//if (!tilemap.componentFlags.IsSet(ComponentFlags_Serialized))
+		//	return json;
 
 		json["Tilemap"]["name"] = tilemap.m_Name;
 		json["Tilemap"]["path"] = tilemap.m_PathName;

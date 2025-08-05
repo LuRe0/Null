@@ -12,7 +12,7 @@
 //******************************************************************************//
 // Includes																        //
 //******************************************************************************//
-#include "stdafx.h"
+//#include "stdafx.h"
 #include "Null/Core.h"
 #include "Null/Engine/Base/IEngine.h"
 #include <sol/sol.hpp>  // Include Sol header where sol::state is defined

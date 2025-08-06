@@ -4,7 +4,7 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	NStub.h
+// File Name:	ClipPropertiesPannel.h
 // Author(s):	name
 // 
 //------------------------------------------------------------------------------
@@ -13,7 +13,7 @@
 // Includes																        //
 //******************************************************************************//
 #include "Null/Core.h"
-
+#include "Base/Pannel.h"
 
 //******************************************************************************//
 // Definitions  														        //
@@ -32,49 +32,27 @@
 
 namespace NULLENGINE
 {
-	class SceneEditor;
-	class AnimationClip;
-	class AnimationClipEditor;
 	class Scene;
-	using EntityID = uint32_t;
+	struct AnimationFlagSet;
 
-  
+	class ClipPropertiesPannel : public AnimationPannel
+	{
+	public:
+		ClipPropertiesPannel() = default;
+		~ClipPropertiesPannel() = default;
 
-    struct PannelData
-    {
-        EntityID m_SelectedEntity = 0;
-        Scene* m_Context = nullptr;
-    };
+		void OnImGUIRender();
+	private:
+		ClipPropertiesPannel(ClipPropertiesPannel const&) = delete;
+		ClipPropertiesPannel& operator=(ClipPropertiesPannel const&) = delete;
 
-    struct AnimationPannelData
-    {
-        uint32_t selectedSpriteSourceID = 0;
-        int startFrame = 0;
-        int endFrame = 0;
-        bool isPlaying = false;
-        float playbackTime = 0.0f;
-        bool hasUnsavedChanges = false;
-    };
+		char m_ClipNameBuffer[256] = "NewClip";
+		float m_FrameDuration = 0.1f;
+		bool m_IsLooping = true;
+		bool m_PreserveFrame = true;
+		bool m_PingPong = true;
+		bool m_Reversed = true;
 
-    template<typename DataType, typename ParentType>
-    class NLE_API Pannel
-    {
-    public:
-        Pannel() = default;
-        virtual ~Pannel() = default;
-
-        void SetPannelData(DataType& data) { m_PannelData = &data; }
-        void SetPannelParent(ParentType* parent) { m_Parent = parent; }
-        virtual void OnImGUIRender() = 0;
-
-    protected:
-        DataType* m_PannelData = nullptr;
-        ParentType* m_Parent = nullptr;
-    };
-
-    // Usage:
-    using ScenePannel = Pannel<PannelData, SceneEditor>;
-    using AnimationPannel = Pannel<AnimationPannelData, AnimationClipEditor>;
-
+	};
 
 }

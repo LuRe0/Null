@@ -17,6 +17,7 @@
 #include "Null/Engine/Submodules/Layers/Layer.h"
 #include <glm/glm.hpp>
 #include "../Pannels/Base/Pannel.h"
+#include <memory>
 
 //******************************************************************************//
 // Definitions  														        //

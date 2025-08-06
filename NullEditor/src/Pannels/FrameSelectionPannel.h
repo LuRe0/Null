@@ -4,7 +4,7 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	NStub.h
+// File Name:	FrameSelectionPannel.h
 // Author(s):	name
 // 
 //------------------------------------------------------------------------------
@@ -13,8 +13,8 @@
 // Includes																        //
 //******************************************************************************//
 #include "Null/Core.h"
-
-
+#include "Base/Pannel.h"
+#include <glm/glm.hpp>
 //******************************************************************************//
 // Definitions  														        //
 //******************************************************************************//
@@ -32,49 +32,28 @@
 
 namespace NULLENGINE
 {
-	class SceneEditor;
-	class AnimationClip;
-	class AnimationClipEditor;
 	class Scene;
-	using EntityID = uint32_t;
+	class SpriteSource;
 
-  
+	class FrameSelectionPannel : public AnimationPannel
+	{
+	public:
+		FrameSelectionPannel() = default;
+		~FrameSelectionPannel() = default;
 
-    struct PannelData
-    {
-        EntityID m_SelectedEntity = 0;
-        Scene* m_Context = nullptr;
-    };
+		void OnImGUIRender();
+		void DrawSpriteGrid(SpriteSource* spriteSource);
+	private:
+		void HandleSelection();
+		FrameSelectionPannel(FrameSelectionPannel const&) = delete;
+		FrameSelectionPannel& operator=(FrameSelectionPannel const&) = delete;
 
-    struct AnimationPannelData
-    {
-        uint32_t selectedSpriteSourceID = 0;
-        int startFrame = 0;
-        int endFrame = 0;
-        bool isPlaying = false;
-        float playbackTime = 0.0f;
-        bool hasUnsavedChanges = false;
-    };
-
-    template<typename DataType, typename ParentType>
-    class NLE_API Pannel
-    {
-    public:
-        Pannel() = default;
-        virtual ~Pannel() = default;
-
-        void SetPannelData(DataType& data) { m_PannelData = &data; }
-        void SetPannelParent(ParentType* parent) { m_Parent = parent; }
-        virtual void OnImGUIRender() = 0;
-
-    protected:
-        DataType* m_PannelData = nullptr;
-        ParentType* m_Parent = nullptr;
-    };
-
-    // Usage:
-    using ScenePannel = Pannel<PannelData, SceneEditor>;
-    using AnimationPannel = Pannel<AnimationPannelData, AnimationClipEditor>;
-
+		glm::ivec2 m_GridSize = { 1, 1 };        
+		glm::ivec2 m_CellSize = { 32, 32 };      
+		int m_SelectedStartFrame = -1;
+		int m_SelectedEndFrame = -1;
+		float m_MaxDisplaySize = 640.0f;
+		bool m_IsSelecting = false;
+	};
 
 }

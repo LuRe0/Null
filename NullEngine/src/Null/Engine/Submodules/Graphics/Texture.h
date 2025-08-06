@@ -17,7 +17,7 @@ LearnOpenGl license: https://creativecommons.org/licenses/by/4.0/legalcode
 // Includes																        //
 //******************************************************************************//
 #include "Null/Core.h"
-
+#include <glm/glm.hpp>
 
 //******************************************************************************//
 // Definitions  														        //
@@ -46,7 +46,7 @@ namespace NULLENGINE
 		void BindUnit(uint32_t slot) const ;
 		void Unbind() const;
 
-
+		glm::ivec2 GetSize() { return glm::ivec2(m_Width, m_Height); }
 
 		/**
  * @brief Initializes the Texture.

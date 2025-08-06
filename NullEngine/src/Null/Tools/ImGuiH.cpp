@@ -296,8 +296,8 @@ namespace NULLENGINE
 
 		if (ImGui::BeginPopup((std::string("TexturePopup_") + label).c_str()))
 		{
-			ImGui::SetNextWindowSize(ImVec2(125, 100), ImGuiCond_FirstUseEver);
-			ImGui::BeginChild((std::string("TextureList_") + label).c_str(), ImVec2(125, 200), true);
+			ImGui::SetNextWindowSize(ImVec2(250, 650), ImGuiCond_FirstUseEver);
+			ImGui::BeginChild((std::string("TextureList_") + label).c_str(), ImVec2(250, 600), true);
 
 			if (ImGui::Selectable("⨯ None"))
 			{
@@ -306,13 +306,19 @@ namespace NULLENGINE
 				ImGui::CloseCurrentPopup();
 			}
 
+			static ImGuiTextFilter textureFilter;
+			textureFilter.Draw("##TextureFilter", 250);
+
 			for (const auto& name : texMgr->GetResourceNames())
 			{
+				if (!textureFilter.PassFilter(name.c_str()))
+					continue;
+
 				auto texture = texMgr->Get(name);
 				if (texture)
 				{
 					ImGui::Text("%s :", name.c_str());
-					if (ImGui::ImageButton((void*)(intptr_t)texture->GetID(), ImVec2(75, 50), { 0, -1 }, { 1, 0 }))
+					if (ImGui::ImageButton((void*)(intptr_t)texture->GetID(), ImVec2(150, 100), { 0, -1 }, { 1, 0 }))
 					{
 						source = srcMgr->Has(name) ? srcMgr->Get(name) : srcMgr->Create(name, 1, 1);
 						nameID = STRID(name);

@@ -136,10 +136,12 @@
     <ClInclude Include="src\Editors\SceneEditor.h" />
     <ClInclude Include="src\Pannels\ArchetypeEditorPannel.h" />
     <ClInclude Include="src\Pannels\Base\Pannel.h" />
+    <ClInclude Include="src\Pannels\ClipPropertiesPannel.h" />
     <ClInclude Include="src\Pannels\ComponentInspectorPannel.h" />
     <ClInclude Include="src\Pannels\ContentBrowserPannel.h" />
     <ClInclude Include="src\Pannels\EditorConsolePannel.h" />
     <ClInclude Include="src\Pannels\EditorToolbarPannel.h" />
+    <ClInclude Include="src\Pannels\FrameSelectionPannel.h" />
     <ClInclude Include="src\Pannels\ModuleStatsPannel.h" />
     <ClInclude Include="src\Pannels\SceneHierarchyPannel.h" />
     <ClInclude Include="src\Pannels\ScenePropertyPannel.h" />
@@ -154,10 +156,12 @@
     <ClCompile Include="src\NullEditor.cpp" />
     <ClCompile Include="src\Pannels\ArchetypeEditorPannel.cpp" />
     <ClCompile Include="src\Pannels\Base\Pannel.cpp" />
+    <ClCompile Include="src\Pannels\ClipPropertiesPannel.cpp" />
     <ClCompile Include="src\Pannels\ComponentInspectorPannel.cpp" />
     <ClCompile Include="src\Pannels\ContentBrowserPannel.cpp" />
     <ClCompile Include="src\Pannels\EditorConsolePannel.cpp" />
     <ClCompile Include="src\Pannels\EditorToolbarPannel.cpp" />
+    <ClCompile Include="src\Pannels\FrameSelectionPannel.cpp" />
     <ClCompile Include="src\Pannels\ModuleStatsPannel.cpp" />
     <ClCompile Include="src\Pannels\SceneHierarchyPannel.cpp" />
     <ClCompile Include="src\Pannels\ScenePropertyPannel.cpp" />

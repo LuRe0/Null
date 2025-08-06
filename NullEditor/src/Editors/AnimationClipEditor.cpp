@@ -34,7 +34,9 @@
 #include "Null/Engine/Submodules/Graphics/Camera/Controllers/OrthographicCameraController.h"
 #include "Null/Engine/Submodules/Graphics/Camera/Controllers/PerspectiveCameraController.h"
 
-#include "../Pannels/SceneHierarchyPannel.h"
+#include "../Pannels/SpriteSourcePannel.h"
+#include "../Pannels/FrameSelectionPannel.h"
+#include "../Pannels/ClipPropertiesPannel.h"
 #include "NIncludes.h"
 
 
@@ -57,26 +59,16 @@ namespace NULLENGINE
 
 	void AnimationClipEditor::OnAttach()
 	{
-		//auto pannel = std::make_unique<SceneHierarchyPannel>();
-		//auto pannel2 = std::make_unique<ComponentInspectorPannel>();
-		//auto pannel3 = std::make_unique<ScenePropertyPannel>();
-		//auto pannel4 = std::make_unique<ContentBrowserPannel>();
-		//auto pannel5 = std::make_unique<ModuleStatsPannel>();
-		//auto pannel6 = std::make_unique<EditorConsolePannel>();
-		//auto pannel7 = std::make_unique<EditorToolbarPannel>();
-		//auto pannel8 = std::make_unique<TimePannel>();
+		auto pannel = std::make_unique<SpriteSourcePannel>();
+		auto pannel1 = std::make_unique<FrameSelectionPannel>();
+		auto pannel2 = std::make_unique<ClipPropertiesPannel>();
 
-		//AddPannel(std::move(pannel));
-		//AddPannel(std::move(pannel2));
-		//AddPannel(std::move(pannel3));
-		//AddPannel(std::move(pannel4));
-		//AddPannel(std::move(pannel5));
-		//AddPannel(std::move(pannel6));
-		//AddPannel(std::move(pannel7));
-		//AddPannel(std::move(pannel8));
+		AddPannel(std::move(pannel));
+		AddPannel(std::move(pannel1));
+		AddPannel(std::move(pannel2));
 
-		//SetPannelData(m_PannelData);
-		//SetPannelParent();
+		SetPannelData(m_PannelData);
+		SetPannelParent();
 
 
 		NEventManager* eventManager = NEventManager::Instance();
@@ -154,6 +146,17 @@ namespace NULLENGINE
 	void AnimationClipEditor::AddPannel(std::unique_ptr<AnimationPannel>&& pannel)
 	{
 		m_Pannels.push_back(std::move(pannel));
+	}
+
+	void AnimationClipEditor::SetPannelData(const AnimationPannelData& data)
+	{
+		for (auto& pannel : m_Pannels)
+			pannel.get()->SetPannelData(m_PannelData);
+	}
+	void AnimationClipEditor::SetPannelParent()
+	{
+		for (auto& pannel : m_Pannels)
+			pannel.get()->SetPannelParent(this);
 	}
 
 	void AnimationClipEditor::OnRender()

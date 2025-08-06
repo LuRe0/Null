@@ -66,6 +66,12 @@
     <ClInclude Include="src\Pannels\SpriteSourcePannel.h">
       <Filter>Pannels\AnimationClipEditor</Filter>
     </ClInclude>
+    <ClInclude Include="src\Pannels\FrameSelectionPannel.h">
+      <Filter>Pannels\AnimationClipEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Pannels\ClipPropertiesPannel.h">
+      <Filter>Pannels\AnimationClipEditor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Editors\SceneEditor.cpp">
@@ -112,6 +118,12 @@
       <Filter>Editors</Filter>
     </ClCompile>
     <ClCompile Include="src\Pannels\SpriteSourcePannel.cpp">
+      <Filter>Pannels\AnimationClipEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Pannels\FrameSelectionPannel.cpp">
+      <Filter>Pannels\AnimationClipEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Pannels\ClipPropertiesPannel.cpp">
       <Filter>Pannels\AnimationClipEditor</Filter>
     </ClCompile>
   </ItemGroup>

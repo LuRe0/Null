@@ -42,7 +42,7 @@ namespace NULLENGINE
     class PerspectiveCameraController;
     class CameraController;
     class AnimationClipEditor;
-    class PannelData;
+    class AnimationPannelData;
     //class Pannel;
     class KeyPressEvent;
     class Event;
@@ -63,18 +63,18 @@ namespace NULLENGINE
         void OnEvent(const Event& e) override;
         void AddPannel(std::unique_ptr<AnimationPannel>&& pannel);
 
+        void SetPannelData(const AnimationPannelData& data);
+        void SetPannelParent();
+
         // Scene-specific methods
     private:
-        uint32_t m_SelectedSpriteSourceID = 0;
         std::vector<std::unique_ptr<AnimationPannel>> m_Pannels;
+        AnimationPannelData m_PannelData;
 
         //AnimationClip m_CurrentClip;
         //std::vector<AnimationClip> m_ClipLibrary;
 
-        // Grid state
-        glm::ivec2 m_GridSize = { 1, 1 };
-        glm::ivec2 m_SelectedFrameStart = { 0, 0 };
-        glm::ivec2 m_SelectedFrameEnd = { 0, 0 };
+
 
         //PannelData m_PannelData;
         void KeyboardShortcuts();

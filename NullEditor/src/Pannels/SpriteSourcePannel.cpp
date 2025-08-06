@@ -40,10 +40,10 @@ namespace NULLENGINE
 	void SpriteSourcePannel::OnImGUIRender()
 	{
 		NSpriteSourceManager* srcManager = NSpriteSourceManager::Instance();
-		auto sources = srcManager->GetResourceNames();
+		auto* src = srcManager->Get(m_PannelData->selectedSpriteSourceID);
 		ImGui::Begin("Sprite Source Hierarchy");
 
-		/*ImGuiH::DrawDragDrop("Sprite Source Selector", "Some Name", NTextureManager::Instance(), NSpriteSourceManager::Instance());*/
+		ImGuiH::DrawDragDrop("Sprite Source Selector", m_PannelData->selectedSpriteSourceID, src, NTextureManager::Instance(), NSpriteSourceManager::Instance());
 
 		ImGui::End();
 	}

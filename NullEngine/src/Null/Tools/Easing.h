@@ -111,17 +111,17 @@ namespace NULLENGINE
 
         static float EaseInSine(float x)
         {
-            return 1 - std::cos((x * PI) / 2);
+            return 1 - std::cosf((x * PI) / 2);
         }
 
         static float EaseOutSine(float x)
         {
-            return std::sin((x * PI) / 2);
+            return std::sinf((x * PI) / 2);
         }
 
         static float EaseInOutSine(float x)
         {
-            return -(std::cos(PI * x) - 1) / 2;
+            return -(std::cosf(PI * x) - 1) / 2;
         }
 
         static float EaseInQuad(float x)
@@ -136,7 +136,7 @@ namespace NULLENGINE
 
         static float EaseInOutQuad(float x)
         {
-            return x < 0.5f ? 2 * x * x : 1 - std::pow(-2 * x + 2, 2) / 2;
+            return x < 0.5f ? 2 * x * x : 1 - std::powf(-2 * x + 2, 2) / 2;
         }
 
         static float EaseInCubic(float x)
@@ -146,12 +146,12 @@ namespace NULLENGINE
 
         static float EaseOutCubic(float x)
         {
-            return 1 - std::pow(1 - x, 3);
+            return 1 - std::powf(1 - x, 3);
         }
 
         static float EaseInOutCubic(float x)
         {
-            return x < 0.5f ? 4 * x * x * x : 1 - std::pow(-2 * x + 2, 3) / 2;
+            return x < 0.5f ? 4 * x * x * x : 1 - std::powf(-2 * x + 2, 3) / 2;
         }
 
         static float EaseInQuart(float x)
@@ -161,12 +161,12 @@ namespace NULLENGINE
 
         static float EaseOutQuart(float x)
         {
-            return 1 - std::pow(1 - x, 4);
+            return 1 - std::powf(1 - x, 4);
         }
 
         static float EaseInOutQuart(float x)
         {
-            return x < 0.5f ? 8 * x * x * x * x : 1 - std::pow(-2 * x + 2, 4) / 2;
+            return x < 0.5f ? 8 * x * x * x * x : 1 - std::powf(-2 * x + 2, 4) / 2;
         }
 
         static float EaseInQuint(float x)
@@ -176,46 +176,46 @@ namespace NULLENGINE
 
         static float EaseOutQuint(float x)
         {
-            return 1 - std::pow(1 - x, 5);
+            return 1 - std::powf(1 - x, 5);
         }
 
         static float EaseInOutQuint(float x)
         {
-            return x < 0.5f ? 16 * x * x * x * x * x : 1 - std::pow(-2 * x + 2, 5) / 2;
+            return x < 0.5f ? 16 * x * x * x * x * x : 1 - std::powf(-2 * x + 2, 5) / 2;
         }
 
         static float EaseInExpo(float x)
         {
-            return x == 0 ? 0 : std::pow(2, 10 * x - 10);
+            return x == 0 ? 0 : std::powf(2, 10 * x - 10);
         }
 
         static float EaseOutExpo(float x)
         {
-            return x == 1 ? 1 : 1 - std::pow(2, -10 * x);
+            return x == 1 ? 1 : 1 - std::powf(2, -10 * x);
         }
 
         static float EaseInOutExpo(float x)
         {
             if (x == 0) return 0;
             if (x == 1) return 1;
-            return x < 0.5f ? std::pow(2, 20 * x - 10) / 2 : (2 - std::pow(2, -20 * x + 10)) / 2;
+            return x < 0.5f ? std::powf(2, 20 * x - 10) / 2 : (2 - std::powf(2, -20 * x + 10)) / 2;
         }
 
         static float EaseInCirc(float x)
         {
-            return 1 - std::sqrt(1 - x * x);
+            return 1 - std::sqrtf(1 - x * x);
         }
 
         static float EaseOutCirc(float x)
         {
-            return std::sqrt(1 - (x - 1) * (x - 1));
+            return std::sqrtf(1 - (x - 1) * (x - 1));
         }
 
         static float EaseInOutCirc(float x)
         {
             return x < 0.5f
-                ? (1 - std::sqrt(1 - 4 * x * x)) / 2
-                : (std::sqrt(1 - std::pow(-2 * x + 2, 2)) + 1) / 2;
+                ? (1 - std::sqrtf(1 - 4 * x * x)) / 2
+                : (std::sqrtf(1 - std::powf(-2 * x + 2, 2)) + 1) / 2;
         }
 
         static float EaseInBack(float x)
@@ -254,7 +254,7 @@ namespace NULLENGINE
             constexpr float c4 = (2 * PI) / 3;
             if (x == 0) return 0;
             if (x == 1) return 1;
-            return -std::pow(2, 10 * x - 10) * std::sin((x * 10 - 10.75f) * c4);
+            return -std::powf(2, 10 * x - 10) * std::sinf((x * 10 - 10.75f) * c4);
         }
 
         static float EaseOutElastic(float x)
@@ -262,7 +262,7 @@ namespace NULLENGINE
             constexpr float c4 = (2 * PI) / 3;
             if (x == 0) return 0;
             if (x == 1) return 1;
-            return std::pow(2, -10 * x) * std::sin((x * 10 - 0.75f) * c4) + 1;
+            return std::powf(2, -10 * x) * std::sinf((x * 10 - 0.75f) * c4) + 1;
         }
 
         static float EaseInOutElastic(float x)
@@ -271,9 +271,9 @@ namespace NULLENGINE
             if (x == 0) return 0;
             if (x == 1) return 1;
             if (x < 0.5f)
-                return -(std::pow(2, 20 * x - 10) * std::sin((20 * x - 11.125f) * c5)) / 2;
+                return -(std::powf(2, 20 * x - 10) * std::sinf((20 * x - 11.125f) * c5)) / 2;
             else
-                return (std::pow(2, -20 * x + 10) * std::sin((20 * x - 11.125f) * c5)) / 2 + 1;
+                return (std::powf(2, -20 * x + 10) * std::sinf((20 * x - 11.125f) * c5)) / 2 + 1;
         }
 
         static float EaseInBounce(float x)

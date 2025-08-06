@@ -451,7 +451,7 @@
                     "fade": 0.004999999888241291,
                     "frameindex": 0,
                     "meshname": "Quad",
-                    "texture": "DigiPen_RED",
+                    "texture": "titlesquished",
                     "thickness": 1.0,
                     "tint": [
                         1.0,

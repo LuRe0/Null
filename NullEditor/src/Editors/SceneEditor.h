@@ -15,7 +15,7 @@
 #include "Null/Core.h"
 #include "ImGuiEditor.h"
 #include "Null/Engine/Submodules/Layers/Layer.h"
-
+#include <memory>
 #include <glm/glm.hpp>
 
 //******************************************************************************//

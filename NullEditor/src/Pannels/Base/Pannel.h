@@ -13,7 +13,8 @@
 // Includes																        //
 //******************************************************************************//
 #include "Null/Core.h"
-
+#include "../../../../NullEngine/src/Null/Engine/Submodules/ECS/Components/AnimationComponent.h"
+#include <glm/glm.hpp>
 
 //******************************************************************************//
 // Definitions  														        //
@@ -33,7 +34,7 @@
 namespace NULLENGINE
 {
 	class SceneEditor;
-	class AnimationClip;
+	//class AnimationClip;
 	class AnimationClipEditor;
 	class Scene;
 	using EntityID = uint32_t;
@@ -49,11 +50,25 @@ namespace NULLENGINE
     struct AnimationPannelData
     {
         uint32_t selectedSpriteSourceID = 0;
-        int startFrame = 0;
-        int endFrame = 0;
+        glm::ivec2 m_GridSize = { 1, 1 };
+        glm::ivec2 m_CellSize = { 32, 32 };
+
+        // The actual clip being edited
+        AnimationClip workingClip;
+
+        // UI state
         bool isPlaying = false;
-        float playbackTime = 0.0f;
+        float animLength = 0.50f;
         bool hasUnsavedChanges = false;
+
+        void UpdateClipFromSelection(int startFrame, int endFrame)
+        {
+            workingClip.startingFrame = startFrame;
+            workingClip.frameCount = startFrame >= 0 ? (endFrame - startFrame) + 1 : 0;
+            workingClip.frameDuration = animLength / (float)workingClip.frameCount;
+            workingClip.spriteSheetID = selectedSpriteSourceID;
+            hasUnsavedChanges = true;
+        }
     };
 
     template<typename DataType, typename ParentType>

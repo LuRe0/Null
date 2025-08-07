@@ -258,26 +258,32 @@ namespace NULLENGINE
 		return { open };
 	}
 
-	void ImGuiH::DrawDragDrop(const char* label, uint32_t& nameID, SpriteSource*& source, NTextureManager* texMgr, NSpriteSourceManager* srcMgr)
+	void ImGuiH::DrawDragDrop(const char* label, uint32_t& nameID, SpriteSource*& source, NTextureManager* texMgr, NSpriteSourceManager* srcMgr, float scale)
 	{
+		ImGui::Text("Texture\t");
+		
+
+		ImVec2 displaySize = { 125 * scale, 100 * scale };
+
 		if (source)
 		{
 			if (source->GetTexture())
 			{
-				ImGui::Text("Texture\t");
-				ImGui::Image((void*)(intptr_t)source->GetTexture()->GetID(), ImVec2(125, 100), { 0, -1 }, { 1, 0 });
-
-				ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 100);
 				std::string btnId = std::string("##ImageButton_") + label;
-				if (ImGui::InvisibleButton(btnId.c_str(), ImVec2(125, 100)))
+				ImVec4 bgColor = ImGui::GetStyleColorVec4(ImGuiCol_Button);
+				ImVec4 tintColor = ImVec4(1, 1, 1, 1);
+				if (ImGui::ImageButton(btnId.c_str(), (ImTextureID)(intptr_t)source->GetTexture()->GetID(), displaySize, { 0, -1 }, { 1, 0 }, bgColor, tintColor))
 				{
 					ImGui::OpenPopup((std::string("TexturePopup_") + label).c_str());
 				}
+
+				if (ImGui::IsItemHovered())
+					ImGui::SetTooltip("Click to change texture");
 			}
 		}
 		else
 		{
-			if (ImGui::Button((std::string("Select ") + label).c_str(), ImVec2(125, 100)))
+			if (ImGui::Button((std::string("Select ") + label).c_str(), displaySize))
 			{
 				ImGui::OpenPopup((std::string("TexturePopup_") + label).c_str());
 			}
@@ -299,6 +305,11 @@ namespace NULLENGINE
 			ImGui::SetNextWindowSize(ImVec2(250, 650), ImGuiCond_FirstUseEver);
 			ImGui::BeginChild((std::string("TextureList_") + label).c_str(), ImVec2(250, 600), true);
 
+
+
+			static ImGuiTextFilter textureFilter;
+			textureFilter.Draw("##TextureFilter", 250);
+
 			if (ImGui::Selectable("⨯ None"))
 			{
 				source = nullptr;
@@ -306,8 +317,8 @@ namespace NULLENGINE
 				ImGui::CloseCurrentPopup();
 			}
 
-			static ImGuiTextFilter textureFilter;
-			textureFilter.Draw("##TextureFilter", 250);
+			ImVec4 bgColor = ImGui::GetStyleColorVec4(ImGuiCol_Button);
+			ImVec4 tintColor = ImVec4(1, 1, 1, 1);
 
 			for (const auto& name : texMgr->GetResourceNames())
 			{
@@ -318,12 +329,14 @@ namespace NULLENGINE
 				if (texture)
 				{
 					ImGui::Text("%s :", name.c_str());
-					if (ImGui::ImageButton((void*)(intptr_t)texture->GetID(), ImVec2(150, 100), { 0, -1 }, { 1, 0 }))
+					if (ImGui::ImageButton((void*)(intptr_t)texture->GetID(), ImVec2(150, 100), { 0, -1 }, { 1, 0 }, -1, bgColor, tintColor))
 					{
 						source = srcMgr->Has(name) ? srcMgr->Get(name) : srcMgr->Create(name, 1, 1);
 						nameID = STRID(name);
 						ImGui::CloseCurrentPopup();
 					}
+					if (ImGui::IsItemHovered())
+						ImGui::SetTooltip("Click to select \"%s\"", name.c_str());
 				}
 			}
 

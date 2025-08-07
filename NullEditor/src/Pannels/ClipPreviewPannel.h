@@ -4,7 +4,7 @@
 
 //------------------------------------------------------------------------------
 //
-// File Name:	NAnimationClipManager.h
+// File Name:	ClipPreviewPannel.h
 // Author(s):	name
 // 
 //------------------------------------------------------------------------------
@@ -13,10 +13,7 @@
 // Includes																        //
 //******************************************************************************//
 #include "Null/Core.h"
-#include "Null/Engine/Modules/Base/IModule.h"
-#include "Null/Engine/Modules/NResourceManager.h"
-#include "Null/Engine/Submodules/Graphics/Texture.h"
-
+#include "Base/Pannel.h"
 
 //******************************************************************************//
 // Definitions  														        //
@@ -35,26 +32,25 @@
 
 namespace NULLENGINE
 {
-	struct AnimationClip;
+	class Scene;
+	class SpriteSource;
 
-	// Specialize for resource
-	class NLE_API NAnimationClipManager : public NResourceManager<AnimationClip, NAnimationClipManager>
+	class ClipPreviewPannel : public AnimationPannel
 	{
 	public:
+		ClipPreviewPannel() = default;
+		~ClipPreviewPannel() = default;
 
+		void OnImGUIRender();
+		void RenderAnimationClipPreview(AnimationPannelData& animData, SpriteSource* spriteSource);
+		int GetCurrentAnimationFrame(const AnimationClip& clip, float playbackTime);
+		float GetAnimationProgress(const AnimationClip& clip, float playbackTime);
+		float GetTotalAnimationDuration(const AnimationClip& clip);
+	private:
+		ClipPreviewPannel(ClipPreviewPannel const&) = delete;
+		ClipPreviewPannel& operator=(ClipPreviewPannel const&) = delete;
 
-		void Load() override;
-
-		void LoadClipFromJson(AnimationClip& clip, const nlohmann::json& json);
-
-		void SaveClipToJson(const AnimationClip& clip, nlohmann::json& json);
-
-		void SaveClipToFile(const AnimationClip& clip);
-
-		void SaveAllClips();
-
-		std::vector<AnimationClip*> GetClipsForSpriteSource(uint32_t spriteSourceID);
-
+		float m_PlaybackTime = 0;
 	};
 
 }

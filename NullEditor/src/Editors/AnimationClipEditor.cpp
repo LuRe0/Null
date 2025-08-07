@@ -37,6 +37,7 @@
 #include "../Pannels/SpriteSourcePannel.h"
 #include "../Pannels/FrameSelectionPannel.h"
 #include "../Pannels/ClipPropertiesPannel.h"
+#include "../Pannels/ClipPreviewPannel.h"
 #include "NIncludes.h"
 
 
@@ -62,10 +63,12 @@ namespace NULLENGINE
 		auto pannel = std::make_unique<SpriteSourcePannel>();
 		auto pannel1 = std::make_unique<FrameSelectionPannel>();
 		auto pannel2 = std::make_unique<ClipPropertiesPannel>();
+		auto pannel3 = std::make_unique<ClipPreviewPannel>();
 
 		AddPannel(std::move(pannel));
 		AddPannel(std::move(pannel1));
 		AddPannel(std::move(pannel2));
+		AddPannel(std::move(pannel3));
 
 		SetPannelData(m_PannelData);
 		SetPannelParent();

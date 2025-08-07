@@ -52,7 +52,7 @@ namespace NULLENGINE
 		glm::ivec2 m_CellSize = { 32, 32 };      
 		int m_SelectedStartFrame = -1;
 		int m_SelectedEndFrame = -1;
-		float m_MaxDisplaySize = 640.0f;
+		float m_MaxDisplaySize = 512.0f;
 		bool m_IsSelecting = false;
 	};
 

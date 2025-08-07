@@ -47,13 +47,14 @@ namespace NULLENGINE
 
         // Grid configuration
         ImGui::Text("Grid Configuration:");
-        ImGui::InputInt2("Grid Size (Rows, Cols)", &m_GridSize.x);
-        ImGui::InputInt2("Cell Size (W, H)", &m_CellSize.x);
+
+        ImGui::InputInt2("Grid Size (Rows, Cols)", &m_PannelData->m_GridSize.x);
+        ImGui::InputInt2("Cell Size (W, H)", & m_PannelData->m_CellSize.x);
         ImGui::InputFloat("Display Size", &m_MaxDisplaySize);
   
 
-        m_GridSize = glm::max(m_GridSize, glm::ivec2(1, 1));
-        m_CellSize = glm::max(m_CellSize, glm::ivec2(1, 1));
+        m_PannelData->m_GridSize = glm::max(m_PannelData->m_GridSize, glm::ivec2(1, 1));
+         m_PannelData->m_CellSize = glm::max( m_PannelData->m_CellSize, glm::ivec2(1, 1));
 
         ImGui::Separator();
 
@@ -64,9 +65,6 @@ namespace NULLENGINE
         if (spriteSource && spriteSource->GetTexture())
         {
             DrawSpriteGrid(spriteSource);
-
-            //ImGui::Text("YA TAH");
-
         }
         else
         {
@@ -84,14 +82,14 @@ namespace NULLENGINE
 
         //getting texture size by dividing by spritesource data
         ImVec2 textureSize = { (float)size.x, (float)size.y};
-        m_CellSize = glm::ivec2(size.x / m_GridSize.y, size.y / m_GridSize.x);
+         m_PannelData->m_CellSize = glm::ivec2(size.x / m_PannelData->m_GridSize.y, size.y / m_PannelData->m_GridSize.x);
         // Calculate display size (scale down if too big)
         float maxDisplaySize = m_MaxDisplaySize;
         float scale = std::min(maxDisplaySize / textureSize.x, maxDisplaySize / textureSize.y);
         //scale = std::min(scale, 1.0f); // Don't scale up
 
         ImVec2 displaySize = { textureSize.x * scale, textureSize.y * scale };
-        ImVec2 cellDisplaySize = { m_CellSize.x * scale, m_CellSize.y * scale };
+        ImVec2 cellDisplaySize = {  m_PannelData->m_CellSize.x * scale,  m_PannelData->m_CellSize.y * scale };
 
         ImDrawList* drawList = ImGui::GetWindowDrawList();
         ImVec2 canvasPos = ImGui::GetCursorScreenPos();
@@ -111,11 +109,11 @@ namespace NULLENGINE
             int gridY = (int)(localPos.y / cellDisplaySize.y);
 
             // Clamp to valid range
-            gridX = std::clamp(gridX, 0, m_GridSize.y); // cols
-            gridY = std::clamp(gridY, 0, m_GridSize.x); // rows
+            gridX = std::clamp(gridX, 0, m_PannelData->m_GridSize.y); // cols
+            gridY = std::clamp(gridY, 0, m_PannelData->m_GridSize.x); // rows
 
 
-            int frameIndex = gridY * m_GridSize.y + gridX;
+            int frameIndex = gridY * m_PannelData->m_GridSize.y + gridX;
 
             if (ImGui::IsMouseClicked(0) && !m_IsSelecting)
             {
@@ -148,12 +146,12 @@ namespace NULLENGINE
 
         // Draw grid lines
         ImU32 gridColor = IM_COL32(255, 255, 255, 100);
-        for (int row = 0; row <= m_GridSize.x; ++row)
+        for (int row = 0; row <= m_PannelData->m_GridSize.x; ++row)
         {
             float y = canvasPos.y + row * cellDisplaySize.y;
             drawList->AddLine({ canvasPos.x, y }, { canvasPos.x + displaySize.x, y }, gridColor);
         }
-        for (int col = 0; col <= m_GridSize.y; ++col)
+        for (int col = 0; col <= m_PannelData->m_GridSize.y; ++col)
         {
             float x = canvasPos.x + col * cellDisplaySize.x;
             drawList->AddLine({ x, canvasPos.y }, { x, canvasPos.y + displaySize.y }, gridColor);
@@ -171,11 +169,11 @@ namespace NULLENGINE
             // Highlight each frame in the contiguous sequence
             for (int frame = startFrame; frame <= endFrame; ++frame)
             {
-                int row = frame / m_GridSize.y;
-                int col = frame % m_GridSize.y;
+                int row = frame / m_PannelData->m_GridSize.y;
+                int col = frame % m_PannelData->m_GridSize.y;
 
                 // Skip if frame is outside grid bounds
-                if (row >= m_GridSize.x || col >= m_GridSize.y) continue;
+                if (row >= m_PannelData->m_GridSize.x || col >= m_PannelData->m_GridSize.y) continue;
 
                 ImVec2 rectMin = {
                     canvasPos.x + col * cellDisplaySize.x,
@@ -200,14 +198,15 @@ namespace NULLENGINE
 
             ImGui::Text("Selection: Start Frame %d, Count %d", std::min(startFrame, endFrame), frameCount);
 
-            m_PannelData->startFrame = startFrame;
-            m_PannelData->endFrame = endFrame;
+            m_PannelData->UpdateClipFromSelection(startFrame, endFrame);
         }
 
 
         if (ImGui::Button("Clear Selection"))
         {
-            m_SelectedStartFrame = m_SelectedEndFrame = -1;
+            m_SelectedStartFrame = -1; m_SelectedEndFrame = -1;
+
+            m_PannelData->UpdateClipFromSelection(m_SelectedStartFrame, m_SelectedEndFrame);
         }
     }
     void FrameSelectionPannel::HandleSelection()

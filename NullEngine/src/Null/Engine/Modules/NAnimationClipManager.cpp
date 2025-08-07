@@ -30,7 +30,7 @@ namespace NULLENGINE
 {
     void NAnimationClipManager::Load()
     {
-        std::string folderPath = "../Assets/animations";
+        std::string folderPath = "../Assets/Animations";
 
         if (!std::filesystem::exists(folderPath))
         {
@@ -83,13 +83,7 @@ namespace NULLENGINE
         // Handle flags
         if (json.contains("flags"))
         {
-            clip.flags.m_Flags = 0;
-            for (const auto& flagName : json["flags"])
-            {
-                std::string flag = flagName.get<std::string>();
-                if (flag == "IsLooping") clip.flags.Set(AnimationFlags_IsLooping);
-                if (flag == "PreserveFrame") clip.flags.Set(AnimationFlags_PreserveFrame);
-            }
+            clip.flags.m_Flags = static_cast<uint8_t>(json.value("flags", 0));
         }
     }
 
@@ -101,22 +95,17 @@ namespace NULLENGINE
         json["startingFrame"] = clip.startingFrame;
         json["frameCount"] = clip.frameCount;
         json["frameDuration"] = clip.frameDuration;
-
-        // Save flags as array of strings
-        std::vector<std::string> flagNames;
-        if (clip.flags.IsSet(AnimationFlags_IsLooping)) flagNames.push_back("IsLooping");
-        if (clip.flags.IsSet(AnimationFlags_PreserveFrame)) flagNames.push_back("PreserveFrame");
-        // Add other flags...
-
-        json["flags"] = flagNames;
+        json["flags"] = clip.flags.m_Flags;
     }
 
-    void NAnimationClipManager::SaveClipToFile(const AnimationClip& clip, const std::string& filepath)
+    void NAnimationClipManager::SaveClipToFile(const AnimationClip& clip)
     {
+        std::string filePath = std::string("../Assets/Animations/") + STRFROM(clip.nameID) + std::string(".json");
+
         nlohmann::json json;
         SaveClipToJson(clip, json);
 
-        std::ofstream file(filepath);
+        std::ofstream file(filePath);
         if (file.is_open())
         {
             file << json.dump(4); // Pretty print with 4-space indent
@@ -133,7 +122,7 @@ namespace NULLENGINE
         {
             std::string filename = STRFROM(nameID) + ".anim";
             std::string filepath = folderPath + "/" + filename;
-            SaveClipToFile(*clip, filepath);
+            SaveClipToFile(*clip);
         }
     }
 

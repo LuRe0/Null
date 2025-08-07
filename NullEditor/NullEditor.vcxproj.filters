@@ -72,6 +72,9 @@
     <ClInclude Include="src\Pannels\ClipPropertiesPannel.h">
       <Filter>Pannels\AnimationClipEditor</Filter>
     </ClInclude>
+    <ClInclude Include="src\Pannels\ClipPreviewPannel.h">
+      <Filter>Pannels\AnimationClipEditor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Editors\SceneEditor.cpp">
@@ -124,6 +127,9 @@
       <Filter>Pannels\AnimationClipEditor</Filter>
     </ClCompile>
     <ClCompile Include="src\Pannels\ClipPropertiesPannel.cpp">
+      <Filter>Pannels\AnimationClipEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Pannels\ClipPreviewPannel.cpp">
       <Filter>Pannels\AnimationClipEditor</Filter>
     </ClCompile>
   </ItemGroup>

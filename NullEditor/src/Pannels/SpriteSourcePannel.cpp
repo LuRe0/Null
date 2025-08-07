@@ -43,7 +43,7 @@ namespace NULLENGINE
 		auto* src = srcManager->Get(m_PannelData->selectedSpriteSourceID);
 		ImGui::Begin("Sprite Source Hierarchy");
 
-		ImGuiH::DrawDragDrop("Sprite Source Selector", m_PannelData->selectedSpriteSourceID, src, NTextureManager::Instance(), NSpriteSourceManager::Instance());
+		ImGuiH::DrawDragDrop("Sprite Source Selector", m_PannelData->selectedSpriteSourceID, src, NTextureManager::Instance(), NSpriteSourceManager::Instance(), 1.250f);
 
 		ImGui::End();
 	}

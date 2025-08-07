@@ -1,0 +1,11 @@
+{
+    "flags": [
+        "IsLooping",
+        "PreserveFrame"
+    ],
+    "frameCount": 9,
+    "frameDuration": 0.0555555559694767,
+    "name": "NewClip",
+    "spriteSheetID": "chr_lightning_anim",
+    "startingFrame": 0
+}

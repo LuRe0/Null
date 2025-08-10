@@ -47,7 +47,7 @@ namespace NULLENGINE
 	void ContentBrowserPannel::OnImGUIRender()
 	{
 		auto* textureManager = NTextureManager::Instance();
-		ImGui::Begin("Content Browser");
+		ImGui::Begin(("Content Browser##" + std::to_string(m_ID)).c_str());
 
 		if (m_CurrentDirectory != s_AssetsPath)
 		{
@@ -114,6 +114,10 @@ namespace NULLENGINE
 				{
 					tex = textureManager->Get("Scene_Icon_");
 				}
+				else if (IsImageFile(extension))
+				{
+					tex = textureManager->Get(stem);
+				}
 				else
 				{
 					if (p.is_directory())
@@ -127,57 +131,42 @@ namespace NULLENGINE
 				}
 
 
-				ImTextureID imageTexture = (ImTextureID)tex->GetID();
+				//ImTextureID imageTexture = (ImTextureID)tex->GetID();
 
 				// Display the ImageButton with some size (e.g., 64x64)
-				ImGui::ImageButton(imageTexture, ImVec2(64, 64));
+				ImTextureID imageTexture = (ImTextureID)tex->GetID();
 
+				if (ImGui::ImageButton(imageTexture, ImVec2(64, 64)))
+				{
+					// Normal click handling here if needed
+				}
 
+				// DRAG HANDLER — no other ImGui items before this
+				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+				{
+					if (extension == ".ent")
+						ImGui::SetDragDropPayload("ENTITY_FILE", stem.c_str(), stem.size() + 1);
+					else if (extension == ".scene")
+						ImGui::SetDragDropPayload("SCENE_FILE", stem.c_str(), stem.size() + 1);
+					else if (extension == ".anim")
+						ImGui::SetDragDropPayload("ANIM_MONTAGE_FILE", stem.c_str(), stem.size() + 1);
+					else if (IsImageFile(extension))
+						ImGui::SetDragDropPayload("TEXTURE_FILE", stem.c_str(), stem.size() + 1);
 
+					ImGui::Text("Dragging %s", filename.c_str());
+					ImGui::EndDragDropSource();
+				}
+
+				// NOW safe to do other stuff
 				if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 				{
 					if (p.is_directory())
-					{
 						m_CurrentDirectory /= filename;
-					}
 					else
-					{
-
-						std::string fileP = std::filesystem::absolute(p.path()).string();
-						ShellExecuteA(0, 0, fileP.c_str(), 0, 0, SW_SHOW);
-					}
+						ShellExecuteA(0, 0, std::filesystem::absolute(p.path()).string().c_str(), 0, 0, SW_SHOW);
 				}
 
 				ImGui::TextWrapped("%s", filename.c_str());
-
-
-				if (extension == ".ent")
-				{
-					if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
-					{
-						ImGui::SetDragDropPayload("ENTITY_FILE", stem.c_str(), stem.size() + 1);
-						ImGui::Text("Dragging %s", filename.c_str());
-						ImGui::EndDragDropSource();
-					}
-				}
-				else if (extension == ".scene")
-				{
-					if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
-					{
-						ImGui::SetDragDropPayload("SCENE_FILE", stem.c_str(), stem.size() + 1);
-						ImGui::Text("Dragging %s", filename.c_str());
-						ImGui::EndDragDropSource();
-					}
-				}
-				else if (IsImageFile(extension))
-				{
-					if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
-					{
-						ImGui::SetDragDropPayload("TEXTURE_FILE", stem.c_str(), stem.size() + 1);
-						ImGui::Text("Dragging %s", filename.c_str());
-						ImGui::EndDragDropSource();
-					}
-				}
 
 
 				ImGui::PopID();

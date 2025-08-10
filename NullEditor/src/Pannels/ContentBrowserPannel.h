@@ -35,7 +35,7 @@ namespace NULLENGINE
 {
 	class Scene;
 
-	class ContentBrowserPannel : public ScenePannel
+	class ContentBrowserPannel : public GenericPannel
 	{
 	public:
 		ContentBrowserPannel();

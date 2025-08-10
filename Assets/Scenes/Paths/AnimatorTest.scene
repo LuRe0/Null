@@ -1,0 +1,235 @@
+{
+    "entities": [
+        {
+            "archetype": "",
+            "components": {
+                "Animation": {
+                    "AnimationFlags": 2,
+                    "ComponentFlags": 3,
+                    "frameCount": 0,
+                    "frameDuration": 0.0,
+                    "startFrame": 0
+                },
+                "Animator": {
+                    "AnimatorFlags": 0,
+                    "ComponentFlags": 3,
+                    "playRate": 1.0
+                },
+                "Archetype": {
+                    "ComponentFlags": 3,
+                    "archetype": "",
+                    "parentArchetype": ""
+                },
+                "BoxCollider2D": {
+                    "ComponentFlags": 3,
+                    "colliders": [
+                        {
+                            "density": 1.0,
+                            "filter": {
+                                "categoryBits": 1,
+                                "groupIndex": 0,
+                                "maskBits": 65535
+                            },
+                            "friction": 0.5,
+                            "offset": [
+                                0.0,
+                                0.0
+                            ],
+                            "restitution": 0.0,
+                            "restitutionThreshold": 0.5,
+                            "size": [
+                                32.0,
+                                64.0
+                            ]
+                        }
+                    ]
+                },
+                "Camera": {
+                    "ComponentFlags": 3,
+                    "fov": 60.0,
+                    "mainCamera": true,
+                    "name": "Platformer_Camera",
+                    "position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "postprocess": {
+                        "BloomIntensity": 0.800000011920929,
+                        "BloomThreshold": 1.0,
+                        "ChromaticOffset": 1.5,
+                        "Enabled": true,
+                        "GrainAmount": 0.20000000298023224,
+                        "GrayscaleAmount": 1.0,
+                        "TintColor": [
+                            1.0,
+                            0.699999988079071,
+                            0.699999988079071,
+                            1.0
+                        ],
+                        "TintStrength": 0.5,
+                        "UseBloom": true,
+                        "UseChromatic": false,
+                        "UseGrain": false,
+                        "UseGrayscale": false,
+                        "UseTint": false,
+                        "UseVignette": false,
+                        "VignetteIntensity": 0.5,
+                        "VignetteRadius": 0.75
+                    },
+                    "rotation": 0.0,
+                    "type": "Camera2D",
+                    "zoom": 0.25
+                },
+                "Name": {
+                    "componentFlags": 3,
+                    "name": "Player"
+                },
+                "Rigidbody2D": {
+                    "angularDamping": 0.0,
+                    "angularVelocity": 0.0,
+                    "fixedRotation": false,
+                    "flags": 3,
+                    "gravityScale": 1.0,
+                    "linearDamping": 0.0,
+                    "linearVelocity": [
+                        0.0,
+                        0.0
+                    ],
+                    "mass": 0.0,
+                    "type": 2
+                },
+                "Sprite": {
+                    "ComponentFlags": 3,
+                    "dimension": [
+                        9,
+                        10
+                    ],
+                    "emissiveColor": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "emissiveStrength": 0.0,
+                    "emissiveTexture": "",
+                    "fade": 0.004999999888241291,
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "texture": "chr_lightning_anim",
+                    "thickness": 1.0,
+                    "tint": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "ComponentFlags": 3,
+                    "rotation": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        64.0,
+                        64.0,
+                        1.0
+                    ],
+                    "translation": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Player",
+            "parentArchetype": ""
+        },
+        {
+            "archetype": "",
+            "components": {
+                "Archetype": {
+                    "ComponentFlags": 3,
+                    "archetype": "",
+                    "parentArchetype": ""
+                },
+                "BoxCollider2D": {
+                    "ComponentFlags": 3,
+                    "colliders": [
+                        {
+                            "density": 1.0,
+                            "filter": {
+                                "categoryBits": 1,
+                                "groupIndex": 0,
+                                "maskBits": 65535
+                            },
+                            "friction": 0.5,
+                            "offset": [
+                                0.0,
+                                0.0
+                            ],
+                            "restitution": 0.0,
+                            "restitutionThreshold": 0.5,
+                            "size": [
+                                10000.0,
+                                50.0
+                            ]
+                        }
+                    ]
+                },
+                "Name": {
+                    "componentFlags": 3,
+                    "name": "Floor"
+                },
+                "Sprite": {
+                    "ComponentFlags": 3,
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "emissiveColor": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "emissiveStrength": 0.0,
+                    "emissiveTexture": "",
+                    "fade": 0.004999999888241291,
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "texture": "",
+                    "thickness": 1.0,
+                    "tint": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "ComponentFlags": 3,
+                    "rotation": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        10000.0,
+                        50.0,
+                        1.0
+                    ],
+                    "translation": [
+                        0.0,
+                        -68.81997680664063,
+                        0.0
+                    ]
+                }
+            },
+            "name": "Floor",
+            "parentArchetype": ""
+        }
+    ]
+}

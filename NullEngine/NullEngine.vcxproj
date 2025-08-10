@@ -140,6 +140,8 @@
     <ClInclude Include="src\Null\Engine\Misc\Time.h" />
     <ClInclude Include="src\Null\Engine\Modules\Base\IModule.h" />
     <ClInclude Include="src\Null\Engine\Modules\NAnimationClipManager.h" />
+    <ClInclude Include="src\Null\Engine\Modules\NAnimationEventManager.h" />
+    <ClInclude Include="src\Null\Engine\Modules\NAnimationGraphManager.h" />
     <ClInclude Include="src\Null\Engine\Modules\NAsyncTaskManager.h" />
     <ClInclude Include="src\Null\Engine\Modules\NCameraManager.h" />
     <ClInclude Include="src\Null\Engine\Modules\NComponentFactory.h" />
@@ -156,13 +158,14 @@
     <ClInclude Include="src\Null\Engine\Modules\NScriptingInterface.h" />
     <ClInclude Include="src\Null\Engine\Modules\NShaderManager.h" />
     <ClInclude Include="src\Null\Engine\Modules\NSpriteSourceManager.h" />
-    <ClInclude Include="src\Null\Engine\Modules\NAnimationGraphManager.h" />
     <ClInclude Include="src\Null\Engine\Modules\NStringIDManager.h" />
     <ClInclude Include="src\Null\Engine\Modules\NTextureManager.h" />
     <ClInclude Include="src\Null\Engine\Modules\NThreadPool.h" />
     <ClInclude Include="src\Null\Engine\Modules\NTilesetManager.h" />
     <ClInclude Include="src\Null\Engine\Modules\NWindow.h" />
     <ClInclude Include="src\Null\Engine\NEngine.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Animation\AnimationEvent.h" />
+    <ClInclude Include="src\Null\Engine\Submodules\Animation\AnimationGraph.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ComponentManager.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\AnimationComponent.h" />
     <ClInclude Include="src\Null\Engine\Submodules\ECS\Components\AnimationControllerComponent.h" />
@@ -253,7 +256,6 @@
     <ClInclude Include="src\Null\Engine\Submodules\Layers\ImGuiLayer.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Layers\Layer.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Scene.h" />
-    <ClInclude Include="src\Null\Engine\Submodules\AnimationGraph.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Tilemap.h" />
     <ClInclude Include="src\Null\Engine\Submodules\Tileset.h" />
     <ClInclude Include="src\Null\EntryPoint.h" />
@@ -282,6 +284,8 @@
     <ClCompile Include="src\Null\Engine\Misc\Time.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\Base\IModule.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NAnimationClipManager.cpp" />
+    <ClCompile Include="src\Null\Engine\Modules\NAnimationEventManager.cpp" />
+    <ClCompile Include="src\Null\Engine\Modules\NAnimationGraphManager.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NAsyncTaskManager.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NCameraManager.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NComponentFactory.cpp" />
@@ -298,14 +302,16 @@
     <ClCompile Include="src\Null\Engine\Modules\NScriptingInterface.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NShaderManager.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NSpriteSourceManager.cpp" />
-    <ClCompile Include="src\Null\Engine\Modules\NAnimationGraphManager.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NStringIDManager.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NTextureManager.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NThreadPool.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NTilesetManager.cpp" />
     <ClCompile Include="src\Null\Engine\Modules\NWindow.cpp" />
     <ClCompile Include="src\Null\Engine\NEngine.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\Animation\AnimationEvent.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\Animation\AnimationGraph.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\ComponentManager.cpp" />
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Components\AnimationComponent.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Components\IComponent.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Components\VariableContainer\VariableContainer.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Entities\Entity.cpp" />
@@ -365,7 +371,6 @@
     <ClCompile Include="src\Null\Engine\Submodules\Layers\ImGuiLayer.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Layers\Layer.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Scene.cpp" />
-    <ClCompile Include="src\Null\Engine\Submodules\AnimationGraph.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Tilemap.cpp" />
     <ClCompile Include="src\Null\Engine\Submodules\Tileset.cpp" />
     <ClCompile Include="src\Null\Tools\ArchetypeDefinitions.cpp" />

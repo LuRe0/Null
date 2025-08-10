@@ -13,6 +13,7 @@
 #include "NAnimationClipManager.h"
 #include "Null/Engine/Submodules/ECS/Systems/PhysicsSystem.h"
 #include "Null/Engine/Submodules/Graphics/Shader/Shader.h"
+#include "../../Tools/JsonWrapper.h"
 #include <NIncludes.h>
 
 
@@ -64,6 +65,10 @@ namespace NULLENGINE
 
     void NAnimationClipManager::LoadClipFromJson(AnimationClip& clip, const nlohmann::json& json)
     {
+        NSpriteSourceManager* spritesrcManager = NSpriteSourceManager::Instance();
+
+        JsonReader jsonWrapper(json);
+
         if (json.contains("name"))
         {
             std::string name = json["name"];
@@ -78,29 +83,63 @@ namespace NULLENGINE
 
         clip.startingFrame = json.value("startingFrame", 0);
         clip.frameCount = json.value("frameCount", 1);
-        clip.frameDuration = json.value("frameDuration", 0.1f);
+        clip.animationLength = json.value("animationLength", 0.1f);
 
         // Handle flags
         if (json.contains("flags"))
         {
             clip.flags.m_Flags = static_cast<uint8_t>(json.value("flags", 0));
         }
+
+        glm::ivec2 dimension = jsonWrapper.GetVec2("dimension", { 1, 1 });
+        auto src = jsonWrapper.GetString("spriteSheetID", "");
+        if (!src.empty())
+        {
+            clip.spriteSheetID = STRID(src);
+            spritesrcManager->Create(src, static_cast<int>(dimension.x), static_cast<int>(dimension.y));
+        }
     }
 
 
-    void NAnimationClipManager::SaveClipToJson(const AnimationClip& clip, nlohmann::json& json)
+    void NAnimationClipManager::SaveClipToJson(const AnimationClip& clip, nlohmann::json& json, int row, int col)
     {
+
         json["name"] = STRFROM(clip.nameID);
         json["spriteSheetID"] = STRFROM(clip.spriteSheetID);
         json["startingFrame"] = clip.startingFrame;
         json["frameCount"] = clip.frameCount;
-        json["frameDuration"] = clip.frameDuration;
+        json["animationLength"] = clip.animationLength;
         json["flags"] = clip.flags.m_Flags;
+
+        auto* src = clip.spriteSheetID ? NSpriteSourceManager::Instance()->Get(clip.spriteSheetID) : nullptr;
+        if (src)
+        {
+            json["dimension"] = nlohmann::json::array({ src->GetRows(), src->GetCols() });
+        }
+        else
+        {
+            json["dimension"] = nlohmann::json::array({ 1, 1 });
+        }
+
+        if (!Has(clip.nameID))
+        {
+			const std::string& name = STRFROM(clip.nameID);
+			AnimationClip* newClip = CreateRaw(name);
+			*newClip = clip; // Copy the clip data to the new clip
+        }
+        else
+        {
+            AnimationClip* existingClip = Get(clip.nameID);
+            if (existingClip)
+            {
+                *existingClip = clip; // Update existing clip
+            }
+		}
     }
 
-    void NAnimationClipManager::SaveClipToFile(const AnimationClip& clip)
+    void NAnimationClipManager::SaveClipToFile(const AnimationClip& clip, int row, int col)
     {
-        std::string filePath = std::string("../Assets/Animations/") + STRFROM(clip.nameID) + std::string(".json");
+        std::string filePath = std::string("../Assets/Animations/") + STRFROM(clip.nameID) + std::string(".anim");
 
         nlohmann::json json;
         SaveClipToJson(clip, json);

@@ -27,6 +27,17 @@
 
 namespace NULLENGINE
 {
+    void ImGuiEditor::AddGenericPannel(std::unique_ptr<GenericPannel>&& pannel)
+    {
+        m_GenericPannels.push_back(std::move(pannel));
+    }
+    void ImGuiEditor::OnRender()
+    {
+        for (auto& pannel : m_GenericPannels)
+        {
+            pannel->OnImGUIRender();
+        }
+	}
     bool ImGuiEditor::BeginEditorWindow(ImGuiWindowFlags extra_flags)
     {
         // Create fullscreen invisible window for this editor

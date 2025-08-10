@@ -41,7 +41,7 @@ namespace NULLENGINE
 	class PerspectiveCameraController;
 	class CameraController;
 	class SceneEditor;
-	class PannelData;
+	class ScenePannelData;
 	//class ScenePannel;
 	class KeyPressEvent;
 	class Event;
@@ -64,7 +64,12 @@ namespace NULLENGINE
 		bool HandleKeyboardShortcuts(const KeyPressEvent& e) override;
 		void OnEvent(const Event& e) override;
 		void AddPannel(std::unique_ptr<ScenePannel>&& pannel);
+		void SaveChanges() override;
 
+		void Reset() override
+		{
+			m_PannelData = ScenePannelData();
+		}
 		// Scene-specific methods
 		//void AddPannel(std::unique_ptr<Pannel>&& pannel);
 		void SetCamera(int type);
@@ -72,7 +77,7 @@ namespace NULLENGINE
 		CameraController* GetCameraController() { return m_CameraController; }
 		Camera* GetCurrentCamera();
 
-		void SetPannelData(const PannelData& data);
+		void SetPannelData(const ScenePannelData& data);
 		void SetPannelParent();
 
 
@@ -88,7 +93,7 @@ namespace NULLENGINE
 
 	private:
 		// Your existing scene-specific members
-		PannelData m_PannelData;
+		ScenePannelData m_PannelData;
 		std::unique_ptr<OrthographicCameraController> m_CameraController2D;
 		std::unique_ptr<PerspectiveCameraController> m_CameraController3D;
 		std::vector<std::unique_ptr<ScenePannel>> m_Pannels;

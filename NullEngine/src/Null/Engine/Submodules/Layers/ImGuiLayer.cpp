@@ -1,4 +1,4 @@
-
+﻿
 //------------------------------------------------------------------------------
 //
 // File Name:	ImGuiLayer.cpp
@@ -29,6 +29,7 @@
 #include "../../../../../../NullEditor/src/Editors/ImGuiEditor.h"
 #include "../../../../../../NullEditor/src/Editors/SceneEditor.h"
 #include "../../../../../../NullEditor/src/Editors/AnimationClipEditor.h"
+#include "../../../../../../NullEditor/src/Editors/AnimationMontageEditor.h"
 #include "NIncludes.h"
 //******************************************************************************//
 // Public Variables															    //
@@ -85,6 +86,7 @@ namespace NULLENGINE
 
 		AddEditor(std::make_unique<SceneEditor>());
 		AddEditor(std::make_unique<AnimationClipEditor>());
+		AddEditor(std::make_unique<AnimationMontageEditor>());
 	}
 	void ImGuiLayer::OnUpdate(float dt)
 	{
@@ -115,16 +117,9 @@ namespace NULLENGINE
 		if(!m_CurrentEditor)
 			return;
 
-		switch (m_CurrentEditor->GetType())
-		{
-		case EditorType::SCENE:
-		{
-			m_CurrentEditor->RenderMenuBar();
-		}
-		break;
-		default:
-			break;
-		}
+		ImGui::SetWindowFontScale(1.250f);
+		m_CurrentEditor->RenderMenuBar();
+		ImGui::SetWindowFontScale(1.0f);
 	}
 
 	//void ImGuiLayer::OnImGUIRender()
@@ -218,6 +213,10 @@ namespace NULLENGINE
 							editor->SetShouldSelect(false); // Reset the flag
 						}
 
+						if (editor->HasUnsavedChanges())
+							flags |= ImGuiTabItemFlags_UnsavedDocument;
+
+						bool tabJustClosed = false;
 						if (ImGui::BeginTabItem(editor->GetName().c_str(), &tabOpen, flags))
 						{
 							m_CurrentEditor = editor.get(); // Track active editor for context menu
@@ -235,12 +234,46 @@ namespace NULLENGINE
 						// If user closed tab, close editor
 						if (!tabOpen)
 							editor->Hide();
+
+						if (!tabOpen && editor->HasUnsavedChanges())
+						{
+							// Ask confirmation
+							if (ImGui::BeginPopupModal("Unsaved Changes?", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+							{
+								ImGui::Text("You have unsaved changes. Save before closing?");
+								if (ImGui::Button("Yes"))
+								{
+									editor->SaveChanges();
+
+									ImGui::CloseCurrentPopup();
+								}
+								ImGui::SameLine();
+								if (ImGui::Button("No"))
+								{
+									// Close without saving
+									ImGui::CloseCurrentPopup();
+								}
+								ImGui::SameLine();
+								if (ImGui::Button("Cancel"))
+								{
+									// Cancel close → reopen tab
+									tabOpen = true;
+									ImGui::CloseCurrentPopup();
+								}
+								ImGui::EndPopup();
+							}
+							else
+							{
+								// Open modal this frame
+								ImGui::OpenPopup("Unsaved Changes?");
+							}
+						}
 					}
 				}
-				ImGui::EndTabBar();
+					ImGui::EndTabBar();
 			}
+			ImGui::End();
 		}
-		ImGui::End();
 	}
 
 	//void ImGuiLayer::OnImGUIRender()

@@ -258,8 +258,11 @@ namespace NULLENGINE
 		return { open };
 	}
 
-	void ImGuiH::DrawDragDrop(const char* label, uint32_t& nameID, SpriteSource*& source, NTextureManager* texMgr, NSpriteSourceManager* srcMgr, float scale)
+	bool ImGuiH::DrawDragDrop(const char* label, uint32_t& nameID, SpriteSource*& source, NTextureManager* texMgr, NSpriteSourceManager* srcMgr, float scale)
 	{
+
+		bool modified = false;
+
 		ImGui::Text("Texture\t");
 		
 
@@ -295,7 +298,10 @@ namespace NULLENGINE
 			{
 				std::string filename((const char*)payload->Data);
 				if (!filename.empty())
+				{
 					source = srcMgr->Has(filename) ? srcMgr->Get(filename) : srcMgr->Create(filename, 1, 1);
+					modified = true;
+				}
 			}
 			ImGui::EndDragDropTarget();
 		}
@@ -314,6 +320,7 @@ namespace NULLENGINE
 			{
 				source = nullptr;
 				nameID = 0;
+				modified = true;
 				ImGui::CloseCurrentPopup();
 			}
 
@@ -333,6 +340,7 @@ namespace NULLENGINE
 					{
 						source = srcMgr->Has(name) ? srcMgr->Get(name) : srcMgr->Create(name, 1, 1);
 						nameID = STRID(name);
+						modified = true;
 						ImGui::CloseCurrentPopup();
 					}
 					if (ImGui::IsItemHovered())
@@ -343,6 +351,8 @@ namespace NULLENGINE
 			ImGui::EndChild();
 			ImGui::EndPopup();
 		}
+
+		return modified;
 	}
 
 }

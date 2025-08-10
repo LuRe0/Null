@@ -22,6 +22,9 @@
     <Filter Include="Null\Engine\Submodules">
       <UniqueIdentifier>{57920A45-438C-3397-2CF9-C9A718929903}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Null\Engine\Submodules\Animation">
+      <UniqueIdentifier>{06643F39-F2B4-2A7B-1B19-193D07C9BDE4}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Null\Engine\Submodules\ECS">
       <UniqueIdentifier>{21DA4412-0DEA-F0E2-76A3-550162D2DF7B}</UniqueIdentifier>
     </Filter>
@@ -107,6 +110,12 @@
     <ClInclude Include="src\Null\Engine\Modules\NAnimationClipManager.h">
       <Filter>Null\Engine\Modules</Filter>
     </ClInclude>
+    <ClInclude Include="src\Null\Engine\Modules\NAnimationEventManager.h">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Modules\NAnimationGraphManager.h">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClInclude>
     <ClInclude Include="src\Null\Engine\Modules\NAsyncTaskManager.h">
       <Filter>Null\Engine\Modules</Filter>
     </ClInclude>
@@ -155,9 +164,6 @@
     <ClInclude Include="src\Null\Engine\Modules\NSpriteSourceManager.h">
       <Filter>Null\Engine\Modules</Filter>
     </ClInclude>
-    <ClInclude Include="src\Null\Engine\Modules\NAnimationGraphManager.h">
-      <Filter>Null\Engine\Modules</Filter>
-    </ClInclude>
     <ClInclude Include="src\Null\Engine\Modules\NStringIDManager.h">
       <Filter>Null\Engine\Modules</Filter>
     </ClInclude>
@@ -175,6 +181,12 @@
     </ClInclude>
     <ClInclude Include="src\Null\Engine\NEngine.h">
       <Filter>Null\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Animation\AnimationEvent.h">
+      <Filter>Null\Engine\Submodules\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Null\Engine\Submodules\Animation\AnimationGraph.h">
+      <Filter>Null\Engine\Submodules\Animation</Filter>
     </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\ComponentManager.h">
       <Filter>Null\Engine\Submodules</Filter>
@@ -446,9 +458,6 @@
     <ClInclude Include="src\Null\Engine\Submodules\Scene.h">
       <Filter>Null\Engine\Submodules</Filter>
     </ClInclude>
-    <ClInclude Include="src\Null\Engine\Submodules\AnimationGraph.h">
-      <Filter>Null\Engine\Submodules</Filter>
-    </ClInclude>
     <ClInclude Include="src\Null\Engine\Submodules\Tilemap.h">
       <Filter>Null\Engine\Submodules</Filter>
     </ClInclude>
@@ -527,6 +536,12 @@
     <ClCompile Include="src\Null\Engine\Modules\NAnimationClipManager.cpp">
       <Filter>Null\Engine\Modules</Filter>
     </ClCompile>
+    <ClCompile Include="src\Null\Engine\Modules\NAnimationEventManager.cpp">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Modules\NAnimationGraphManager.cpp">
+      <Filter>Null\Engine\Modules</Filter>
+    </ClCompile>
     <ClCompile Include="src\Null\Engine\Modules\NAsyncTaskManager.cpp">
       <Filter>Null\Engine\Modules</Filter>
     </ClCompile>
@@ -575,9 +590,6 @@
     <ClCompile Include="src\Null\Engine\Modules\NSpriteSourceManager.cpp">
       <Filter>Null\Engine\Modules</Filter>
     </ClCompile>
-    <ClCompile Include="src\Null\Engine\Modules\NAnimationGraphManager.cpp">
-      <Filter>Null\Engine\Modules</Filter>
-    </ClCompile>
     <ClCompile Include="src\Null\Engine\Modules\NStringIDManager.cpp">
       <Filter>Null\Engine\Modules</Filter>
     </ClCompile>
@@ -596,8 +608,17 @@
     <ClCompile Include="src\Null\Engine\NEngine.cpp">
       <Filter>Null\Engine</Filter>
     </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Animation\AnimationEvent.cpp">
+      <Filter>Null\Engine\Submodules\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\Animation\AnimationGraph.cpp">
+      <Filter>Null\Engine\Submodules\Animation</Filter>
+    </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\ComponentManager.cpp">
       <Filter>Null\Engine\Submodules</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Null\Engine\Submodules\ECS\Components\AnimationComponent.cpp">
+      <Filter>Null\Engine\Submodules\ECS\Components</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\ECS\Components\IComponent.cpp">
       <Filter>Null\Engine\Submodules\ECS\Components</Filter>
@@ -774,9 +795,6 @@
       <Filter>Null\Engine\Submodules\Layers</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\Scene.cpp">
-      <Filter>Null\Engine\Submodules</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Null\Engine\Submodules\AnimationGraph.cpp">
       <Filter>Null\Engine\Submodules</Filter>
     </ClCompile>
     <ClCompile Include="src\Null\Engine\Submodules\Tilemap.cpp">

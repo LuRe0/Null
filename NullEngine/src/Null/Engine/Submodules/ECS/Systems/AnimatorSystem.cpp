@@ -82,8 +82,8 @@ namespace NULLENGINE
 	{
 		// Register Lua bindings here
 		lua.new_usertype<AnimatorComponent>("AnimatorComponent",
-			"currentClipID", &AnimatorComponent::currentClipID,
-			"frameSpeedModifier", &AnimatorComponent::frameSpeedModifier
+			//"currentClipID", &AnimatorComponent::currentClipID,
+			"playRate", &AnimatorComponent::playRate
 		);
 	}
 
@@ -95,12 +95,12 @@ namespace NULLENGINE
 
 		if (!jsonWrapper.Empty())
 		{
-			comp->currentClipID = STRID(jsonWrapper.GetString("currentClip", ""));
-			comp->frameSpeedModifier = jsonWrapper.GetFloat("frameSpeedModifier", 1.0f);
+			//comp->currentClipID = STRID(jsonWrapper.GetString("currentClip", ""));
+			comp->playRate = jsonWrapper.GetFloat("playRate", 1.0f);
 
 			comp->componentFlags.m_Flags = jsonWrapper.GetUInt8("ComponentFlags", comp->componentFlags.m_Flags);
 
-			comp->flags.m_Flags = jsonWrapper.GetUInt8("AnimatorFlags", 0);
+			comp->flags.m_Flags = jsonWrapper.GetUInt8("AnimatorFlags", comp->flags.m_Flags);
 		}
 	}
 
@@ -113,7 +113,7 @@ namespace NULLENGINE
 
 
 
-		componentFactory->AddOrUpdate<AnimatorComponent>(id, comp, registry, comp->currentClipID, comp->lastClipID, comp->frameSpeedModifier, comp->flags, comp->componentFlags);
+		componentFactory->AddOrUpdate<AnimatorComponent>(id, comp, registry, comp->currentClipID, comp->lastClipID, comp->playRate, comp->flags, comp->componentFlags);
 
 	}
 
@@ -123,6 +123,10 @@ namespace NULLENGINE
 
 		auto& comp = *static_cast<const AnimatorComponent*>(component);
 
+
+		json["Animator"]["playRate"] = comp.playRate;
+		json["Animator"]["AnimatorFlags"] = comp.flags.m_Flags;
+		json["Animator"]["ComponentFlags"] = comp.componentFlags.m_Flags;
 
 
 		return json;
@@ -166,7 +170,7 @@ namespace NULLENGINE
 
 		AnimationSystem::PlayAnimation(entity,
 			clip->frameCount,
-			clip->frameDuration * animator.frameSpeedModifier,
+			clip->animationLength/clip->frameCount * animator.playRate,
 			clip->flags.IsSet(AnimationFlags_IsLooping),
 			clip->startingFrame,
 			clip->flags.IsSet(AnimationFlags_IsReversed),
@@ -207,10 +211,18 @@ namespace NULLENGINE
 			ImGui::BeginDisabled();
 
 		// Current clip ID
-		ImGui::Text("Current Clip ID: %s", STRFROM(component.currentClipID));
+		std::string clipName = STRFROM(component.currentClipID);
+		if (clipName.empty())
+		{
+			ImGui::TextColored({1,0,0,1},"No clip selected");
+		}
+		else
+		{
+			ImGui::Text("Current Clip: %s", clipName.c_str());
+		}
 
 		// Frame speed modifier
-		ImGui::SliderFloat("Frame Speed Modifier", &component.frameSpeedModifier, 0.1f, 3.0f);
+		ImGui::SliderFloat("Play Rate", &component.playRate, 0.1f, 3.0f);
 
 		// In ViewAnimatorComponent:
 
@@ -255,6 +267,11 @@ namespace NULLENGINE
 					if (isSelected)
 						ImGui::SetItemDefaultFocus();
 				}
+				if (ImGui::Selectable("None", currentSelection < 0))
+				{
+					// Clear selection
+					component.currentClipID = 0;
+				}
 				ImGui::EndCombo();
 			}
 		}
@@ -265,6 +282,11 @@ namespace NULLENGINE
 
 		if (!enabled)
 			ImGui::EndDisabled();
+
+
+		if (!entity.Has<AnimationComponent>())
+			ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Warning: Requires a Animation component");
+
 
 		ImGui::TreePop();
 	}

@@ -77,15 +77,26 @@ namespace NULLENGINE
 		AnimationFlagSet flags = AnimationFlagSet(AnimationFlags_IsLooping);
 	};
 
+	struct EventPlacement {
+		uint32_t eventAssetID = 0;  // 0 = unused slot
+		uint32_t frame = 0;
+		uint32_t endFrame = 0;      // if endFrame == frame -> instant event
+		// if endFrame > frame  -> window event
+	};
 
 	struct AnimationClip
 	{
+		// notify events
+		std::array<EventPlacement, 32> eventPlacements;
+		uint32_t eventCount = 0;
+
 		// Data that maps directly to AnimationComponent
 		uint32_t nameID = 0;
 		uint32_t spriteSheetID = 0;
 		uint32_t startingFrame = 0;
 		uint32_t frameCount = 1;
-		float frameDuration = 0.1f;
+		float animationLength = 0.1f;
+		float playRate = 1.0f; // Speed multiplier for playback
 		AnimationFlagSet flags = AnimationFlagSet(AnimationFlags_IsLooping | AnimationFlags_PreserveFrame);
 	};
 }

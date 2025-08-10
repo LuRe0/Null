@@ -47,9 +47,9 @@ namespace NULLENGINE
 
 		void LoadClipFromJson(AnimationClip& clip, const nlohmann::json& json);
 
-		void SaveClipToJson(const AnimationClip& clip, nlohmann::json& json);
+		void SaveClipToJson(const AnimationClip& clip, nlohmann::json& json, int row = 1, int col = 1);
 
-		void SaveClipToFile(const AnimationClip& clip);
+		void SaveClipToFile(const AnimationClip& clip, int row = 1, int col = 1);
 
 		void SaveAllClips();
 

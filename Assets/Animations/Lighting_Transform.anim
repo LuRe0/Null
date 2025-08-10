@@ -1,0 +1,12 @@
+{
+    "animationLength": 0.0714285746216774,
+    "dimension": [
+        9,
+        10
+    ],
+    "flags": 18,
+    "frameCount": 14,
+    "name": "Lighting_Transform",
+    "spriteSheetID": "chr_lightning_anim",
+    "startingFrame": 62
+}

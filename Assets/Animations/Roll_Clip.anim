@@ -1,0 +1,12 @@
+{
+    "animationLength": 1.5,
+    "dimension": [
+        9,
+        10
+    ],
+    "flags": 18,
+    "frameCount": 22,
+    "name": "Roll_Clip",
+    "spriteSheetID": "chr_lightning_anim",
+    "startingFrame": 36
+}

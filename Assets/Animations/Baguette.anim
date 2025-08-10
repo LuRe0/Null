@@ -1,0 +1,12 @@
+{
+    "animationLength": 0.5,
+    "dimension": [
+        2,
+        3
+    ],
+    "flags": 18,
+    "frameCount": 6,
+    "name": "Baguette",
+    "spriteSheetID": "baguetteIdle",
+    "startingFrame": 0
+}

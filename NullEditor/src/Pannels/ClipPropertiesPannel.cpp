@@ -17,6 +17,7 @@
 #include <magic_enum/magic_enum.hpp>
 #include "../Editors/SceneEditor.h"
 #include "../../../NullEngine/src/Null/Tools/ImGuiH.h"
+#include "../editors/AnimationClipEditor.h"
 #include "NIncludes.h"
 
 //#include "backends/imgui_impl_opengl3.h"
@@ -49,95 +50,121 @@ namespace NULLENGINE
 
 			// Clip Name
 			ImGui::Text("Clip Name:");
-			ImGui::InputText("##ClipName", m_ClipNameBuffer, sizeof(m_ClipNameBuffer));
-			if (strlen(m_ClipNameBuffer) > 0) {
-				clip.nameID = STRID(m_ClipNameBuffer);
-				m_PannelData->hasUnsavedChanges = true;
+			if(ImGui::InputText("##ClipName", m_ClipNameBuffer, sizeof(m_ClipNameBuffer)))\
+			{
+				if (strlen(m_ClipNameBuffer) > 0) {
+					clip.nameID = STRID(m_ClipNameBuffer);
+					m_Parent->SetDirty(true);
+				}
 			}
+
+			ImGui::Dummy({ 0,10 });
+
 			ImGui::Separator();
+
+			ImGui::Dummy({ 0,10 });
+
 
 			// Frame Duration
-			ImGui::Text("Timing:");
-			if (ImGui::InputFloat("Anim Length", &m_PannelData->animLength, 0.01f, 0.1f, "%.3f"))
+	
+			ImGui::CollapsingHeader("Animation Settings", ImGuiTreeNodeFlags_DefaultOpen);
 			{
-				clip.frameDuration = std::max(0.001f, clip.frameDuration);
-				m_PannelData->hasUnsavedChanges = true;
+				if (ImGui::InputFloat("Anim Length", &m_PannelData->animLength, 0.01f, 0.1f, "%.3f"))
+				{
+					m_PannelData->animLength = std::max(0.001f, m_PannelData->animLength);
+					m_Parent->SetDirty(true);
+				}
 			}
+			clip.animationLength = m_PannelData->animLength;
+
+
+			ImGui::Dummy({ 0,10 });
+
 			ImGui::Separator();
+
+			ImGui::Dummy({ 0,10 });
 
 			// Animation Flags
-			ImGui::Text("Flags:");
-
-			bool isLooping = clip.flags.IsSet(AnimationFlags_IsLooping);
-			if (ImGui::Checkbox("Loop", &isLooping))
+			ImGui::CollapsingHeader("Animation F;ags", ImGuiTreeNodeFlags_DefaultOpen);
 			{
-				clip.flags.Set(AnimationFlags_IsLooping, isLooping);
 
-				m_PannelData->hasUnsavedChanges = true;
+				bool isLooping = clip.flags.IsSet(AnimationFlags_IsLooping);
+				if (ImGui::Checkbox("Loop", &isLooping))
+				{
+					clip.flags.Set(AnimationFlags_IsLooping, isLooping);
+
+					m_Parent->SetDirty(true);
+				}
+
+				bool isReversed = clip.flags.IsSet(AnimationFlags_IsReversed);  // Assuming you have this flag
+				if (ImGui::Checkbox("Reverse", &isReversed))
+				{
+					clip.flags.Set(AnimationFlags_IsReversed, isReversed);
+
+					m_Parent->SetDirty(true);
+				}
+
+				bool isPingPong = clip.flags.IsSet(AnimationFlags_IsPingPong);  // Assuming you have this flag
+				if (ImGui::Checkbox("Ping-Pong", &isPingPong))
+				{
+					clip.flags.Set(AnimationFlags_IsPingPong, isPingPong);
+
+					m_Parent->SetDirty(true);
+				}
+
+				bool preserveFrame = clip.flags.IsSet(AnimationFlags_PreserveFrame);
+				if (ImGui::Checkbox("Preserve Frame", &preserveFrame))
+				{
+					clip.flags.Set(AnimationFlags_PreserveFrame, preserveFrame);
+
+					m_Parent->SetDirty(true);
+				}
 			}
 
-			bool isReversed = clip.flags.IsSet(AnimationFlags_IsReversed);  // Assuming you have this flag
-			if (ImGui::Checkbox("Reverse", &isReversed))
-			{
-				clip.flags.Set(AnimationFlags_IsReversed, isReversed);
-
-				m_PannelData->hasUnsavedChanges = true;
-			}
-
-			bool isPingPong = clip.flags.IsSet(AnimationFlags_IsPingPong);  // Assuming you have this flag
-			if (ImGui::Checkbox("Ping-Pong", &isPingPong))
-			{
-				clip.flags.Set(AnimationFlags_IsPingPong, isPingPong);
-
-				m_PannelData->hasUnsavedChanges = true;
-			}
-
-			bool preserveFrame = clip.flags.IsSet(AnimationFlags_PreserveFrame);
-			if (ImGui::Checkbox("Preserve Frame", &preserveFrame))
-			{
-				clip.flags.Set(AnimationFlags_PreserveFrame, preserveFrame);
-
-				m_PannelData->hasUnsavedChanges = true;
-			}
-
+			ImGui::Dummy({ 0,10 });
 			ImGui::Separator();
+			ImGui::Dummy({ 0,10 });
 
-			// Display clip info (derived from working clip)
-			int endFrame = clip.startingFrame + clip.frameCount - 1;
-			ImGui::SetWindowFontScale(1.250f);
-			ImGui::Text("Selected Frames: %d - %d", clip.startingFrame, endFrame);
-			ImGui::Text("Frame Count: %d", clip.frameCount);
-			ImGui::Text("Total Duration: %.3f seconds", clip.frameCount * clip.frameDuration);
+			//ImGui::CollapsingHeader("Montage Preview", ImGuiTreeNodeFlags_DefaultOpen);
+			//{
+			//	// Display clip info (derived from working clip)
+			//	int endFrame = clip.startingFrame + clip.frameCount - 1;
 
-			// Preview the AnimationClip struct
-			ImGui::Separator();
-			ImGui::Text("Preview AnimationClip:");
-			ImGui::Text("nameID: %u (from \"%s\")", clip.nameID, m_ClipNameBuffer);
-			ImGui::Text("spriteSheetID: %u (from \"%s\")", clip.spriteSheetID, STRFROM(clip.spriteSheetID).c_str());
-			ImGui::Text("startingFrame: %d", clip.startingFrame);
-			ImGui::Text("frameCount: %d", clip.frameCount);
-			ImGui::Text("frameDuration: %.3f", clip.frameDuration);
+			//	ImGui::TextColored({1,1,0,1}, "Selected Frames: %d - %d", clip.startingFrame, endFrame);
+			//	ImGui::TextColored({1,1,0,1}, "Frame Count: %d", clip.frameCount);
+			//	ImGui::TextColored({1,1,0,1}, "Total Duration: %.3f seconds", clip.animationLength);
+			//	ImGui::TextColored({1,1,0,1}, "nameID: %u (from \"%s\")", clip.nameID, m_ClipNameBuffer);
+			//	ImGui::TextColored({1,1,0,1}, "spriteSheetID: %u (from \"%s\")", clip.spriteSheetID, STRFROM(clip.spriteSheetID).c_str());
+			//	ImGui::TextColored({1,1,0,1}, "startingFrame: %d", clip.startingFrame);
+			//	ImGui::TextColored({1,1,0,1}, "frameCount: %d", clip.frameCount);
+			//	ImGui::TextColored({1,1,0,1}, "frameDuration: %.3f", clip.animationLength / clip.frameCount);
 
-			// Display flags in a readable way
-			ImGui::Text("Flags:");
-			ImGui::BulletText("Loop: %s", (clip.flags.IsSet(AnimationFlags_IsLooping)) ? "true" : "false");
-			ImGui::BulletText("Ping-Pong: %s", (clip.flags.IsSet(AnimationFlags_IsPingPong)) ? "true" : "false");
-			ImGui::BulletText("Reversed: %s", (clip.flags.IsSet(AnimationFlags_IsReversed)) ? "true" : "false");
-			ImGui::BulletText("Preserve Frame: %s", (clip.flags.IsSet(AnimationFlags_PreserveFrame)) ? "true" : "false");
+			//	// Display flags in a readable way
+			//	ImGui::TextColored({ 1,1,0,1 }, "Animation Flags:");
+			//	ImGui::BulletText("Loop: %s", (clip.flags.IsSet(AnimationFlags_IsLooping)) ? "true" : "false");
+			//	ImGui::BulletText("Ping-Pong: %s", (clip.flags.IsSet(AnimationFlags_IsPingPong)) ? "true" : "false");
+			//	ImGui::BulletText("Reversed: %s", (clip.flags.IsSet(AnimationFlags_IsReversed)) ? "true" : "false");
+			//	ImGui::BulletText("Preserve Frame: %s", (clip.flags.IsSet(AnimationFlags_PreserveFrame)) ? "true" : "false");
 
-			ImGui::SetWindowFontScale(1.0f);
-			ImGui::Separator();
+			//}
+
+			//ImGui::Dummy({ 0,10 });
+
+			//ImGui::Separator();
+
+			//ImGui::Dummy({ 0,10 });
+
 
 			// Save button with validation
 			bool canSave = strlen(m_ClipNameBuffer) > 0 && clip.frameCount > 0;
-			if (!canSave) {
+			if (!canSave) 
+			{
 				ImGui::BeginDisabled();
 			}
 
 			if (ImGui::Button("Create & Save Clip", ImVec2(-1, 0)))
 			{
-				NAnimationClipManager::Instance()->SaveClipToFile(clip);
-				m_PannelData->hasUnsavedChanges = false;
+				m_Parent->SaveChanges();
 				ImGui::TextColored(ImVec4(0, 1, 0, 1), "Clip saved successfully!");
 			}
 
@@ -146,16 +173,6 @@ namespace NULLENGINE
 				ImGui::EndDisabled();
 				if (strlen(m_ClipNameBuffer) == 0) {
 					ImGui::TextColored(ImVec4(1, 0.5f, 0, 1), "Enter a clip name to save");
-				}
-			}
-
-			// Show unsaved changes indicator
-			if (m_PannelData->hasUnsavedChanges)
-			{
-				ImGui::SameLine();
-				ImGui::TextColored(ImVec4(1, 1, 0, 1), "*");
-				if (ImGui::IsItemHovered()) {
-					ImGui::SetTooltip("Unsaved changes");
 				}
 			}
 		}

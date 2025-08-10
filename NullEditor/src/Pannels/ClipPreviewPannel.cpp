@@ -62,6 +62,9 @@ namespace NULLENGINE
         glm::ivec2 textureSize = texture->GetSize();
         auto& clip = animData.workingClip;
 
+
+		const float frameDuration = clip.animationLength / clip.frameCount;
+
         //check for having frames selected, although it is nevet zero because of the +1 will need to fix that
         if (clip.frameCount == 0) 
         {
@@ -81,7 +84,7 @@ namespace NULLENGINE
             if (isPingPong)
             {
                 // Ping-pong: play forward then backward
-                float totalDuration = (clip.frameCount * 2 - 2) * clip.frameDuration; // -2 because first/last frame aren't repeated
+                float totalDuration = (clip.frameCount * 2 - 2) * frameDuration; // -2 because first/last frame aren't repeated
 
                 //i dont like that it overwrites my playback time
                 if (m_PlaybackTime >= totalDuration)
@@ -99,7 +102,7 @@ namespace NULLENGINE
             else
             {
                 // Normal linear playback
-                float totalDuration = clip.frameCount * clip.frameDuration;
+                float totalDuration = clip.animationLength;
 
                 if (m_PlaybackTime >= totalDuration)
                 {
@@ -195,7 +198,7 @@ namespace NULLENGINE
         }
         ImGui::Text("%s", stateText.c_str());
 
-        ImGui::Text("Time: %.3fs / %.3fs", animData.animLength,
+        ImGui::Text("Time: %.3fs / %.3fs", frameDuration,
             GetTotalAnimationDuration(clip));
     }
 
@@ -204,18 +207,19 @@ namespace NULLENGINE
     {
         bool isReversed = clip.flags.IsSet(AnimationFlags_IsReversed);
         bool isPingPong = clip.flags.IsSet(AnimationFlags_IsPingPong);
+        const float frameDuration = clip.animationLength / clip.frameCount;
 
 
         if (isPingPong)
         {
             // Ping-pong logic
-            float halfCycleDuration = (clip.frameCount - 1) * clip.frameDuration;
+            float halfCycleDuration = (clip.frameCount - 1) * frameDuration;
             float cycleTime = fmod(playbackTime, halfCycleDuration * 2);
 
             if (cycleTime <= halfCycleDuration)
             {
                 // Forward phase
-                int frameOffset = (int)(cycleTime / clip.frameDuration);
+                int frameOffset = (int)(cycleTime / frameDuration);
                 frameOffset = std::min(frameOffset, (int)clip.frameCount - 1);
                 return isReversed ?
                     clip.startingFrame + clip.frameCount - 1 - frameOffset :
@@ -225,7 +229,7 @@ namespace NULLENGINE
             {
                 // Backward phase
                 float backwardTime = cycleTime - halfCycleDuration;
-                int frameOffset = (int)(backwardTime / clip.frameDuration);
+                int frameOffset = (int)(backwardTime / frameDuration);
                 frameOffset = std::min(frameOffset, (int)clip.frameCount - 1);
                 return isReversed ?
                     clip.startingFrame + frameOffset :
@@ -235,7 +239,7 @@ namespace NULLENGINE
         else
         {
             // Normal linear playback
-            int frameOffset = (int)(playbackTime / clip.frameDuration);
+            int frameOffset = (int)(playbackTime / frameDuration);
             frameOffset = frameOffset % clip.frameCount;
 
             return isReversed ?
@@ -257,12 +261,13 @@ namespace NULLENGINE
     float ClipPreviewPannel::GetTotalAnimationDuration(const AnimationClip& clip)
     {
         bool isPingPong = clip.flags.IsSet(AnimationFlags_IsPingPong);
+        const float frameDuration = clip.animationLength / clip.frameCount;
 
         if (isPingPong) {
-            return (clip.frameCount * 2 - 2) * clip.frameDuration;
+            return (clip.frameCount * 2 - 2) * frameDuration;
         }
         else {
-            return clip.frameCount * clip.frameDuration;
+            return clip.animationLength;
         }
     }
 }

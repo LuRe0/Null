@@ -48,7 +48,7 @@ namespace NULLENGINE
         // Grid configuration
         ImGui::Text("Grid Configuration:");
 
-        ImGui::InputInt2("Grid Size (Rows, Cols)", &m_PannelData->m_GridSize.x);
+        if(ImGui::InputInt2("Grid Size (Rows, Cols)", &m_PannelData->m_GridSize.x))
         ImGui::InputInt2("Cell Size (W, H)", & m_PannelData->m_CellSize.x);
         ImGui::InputFloat("Display Size", &m_MaxDisplaySize);
   
@@ -76,6 +76,9 @@ namespace NULLENGINE
 
     void FrameSelectionPannel::DrawSpriteGrid(SpriteSource* spriteSource)
     {
+        spriteSource->Rows() = m_PannelData->m_GridSize.x;
+        spriteSource->Cols() = m_PannelData->m_GridSize.y;
+
         auto* texture = spriteSource->GetTexture();
         glm::ivec2 size = texture->GetSize();
         //glm::vec2 dims = spriteSource->GetSize();

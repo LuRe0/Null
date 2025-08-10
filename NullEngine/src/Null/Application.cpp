@@ -47,6 +47,7 @@ namespace NULLENGINE
 		AddCreateFunction<NEventManager>([&engine]() { engine.Add<NULLENGINE::NEventManager>(); });
 		AddCreateFunction<NCameraManager>([&engine]() { engine.Add<NULLENGINE::NCameraManager>(); });
 		AddCreateFunction<NAnimationGraphManager>([&engine]() { engine.Add<NAnimationGraphManager>(); });
+		AddCreateFunction<NAnimationEventManager>([&engine]() { engine.Add<NAnimationEventManager>(); });
 		AddCreateFunction<NShaderManager>([&engine]() { engine.Add<NULLENGINE::NShaderManager>(); });
 		AddCreateFunction<NComputeShaderManager>([&engine]() { engine.Add<NULLENGINE::NComputeShaderManager>(); });
 		AddCreateFunction<NMeshManager>([&engine]() { engine.Add<NULLENGINE::NMeshManager>(); });

@@ -42,7 +42,7 @@ namespace NULLENGINE
 	class PerspectiveCameraController;
 	class CameraController;
 	//class AnimationGraphEditor;
-	class PannelData;
+	class ScenePannelData;
 	//class Pannel;
 	class KeyPressEvent;
 	class Event;
@@ -60,13 +60,16 @@ namespace NULLENGINE
         void OnRender() override;
         bool HandleKeyboardShortcuts(const KeyPressEvent& e) override;
         void OnEvent(const Event& e) override;
-
+        void Reset() override
+        {
+            m_PannelData = ScenePannelData();
+        }
         void AddPannel(std::unique_ptr<AnimationPannel>&& pannel);
 
     private:
         // Your existing scene-specific members
         std::vector<std::unique_ptr<AnimationPannel>> m_Pannels;
-        PannelData m_PannelData;
+        ScenePannelData m_PannelData;
         glm::vec2 m_ViewportSize = { 0, 0 };
         glm::vec2 m_viewportBounds[2];
   

@@ -17,6 +17,7 @@
 #include <magic_enum/magic_enum.hpp>
 #include "../Editors/SceneEditor.h"
 #include "../../../NullEngine/src/Null/Tools/ImGuiH.h"
+#include "../Editors/AnimationClipEditor.h"
 #include "NIncludes.h"
 
 //#include "backends/imgui_impl_opengl3.h"
@@ -43,7 +44,10 @@ namespace NULLENGINE
 		auto* src = srcManager->Get(m_PannelData->selectedSpriteSourceID);
 		ImGui::Begin("Sprite Source Hierarchy");
 
-		ImGuiH::DrawDragDrop("Sprite Source Selector", m_PannelData->selectedSpriteSourceID, src, NTextureManager::Instance(), NSpriteSourceManager::Instance(), 1.250f);
+		if (ImGuiH::DrawDragDrop("Sprite Source Selector", m_PannelData->selectedSpriteSourceID, src, NTextureManager::Instance(), NSpriteSourceManager::Instance(), 1.250f))
+		{
+			m_Parent->SetDirty(true);
+		}
 
 		ImGui::End();
 	}

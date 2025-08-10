@@ -132,6 +132,7 @@
   <ItemGroup>
     <ClInclude Include="src\Editors\AnimationClipEditor.h" />
     <ClInclude Include="src\Editors\AnimationGraphEditor.h" />
+    <ClInclude Include="src\Editors\AnimationMontageEditor.h" />
     <ClInclude Include="src\Editors\ImGuiEditor.h" />
     <ClInclude Include="src\Editors\SceneEditor.h" />
     <ClInclude Include="src\Pannels\ArchetypeEditorPannel.h" />
@@ -142,16 +143,21 @@
     <ClInclude Include="src\Pannels\ContentBrowserPannel.h" />
     <ClInclude Include="src\Pannels\EditorConsolePannel.h" />
     <ClInclude Include="src\Pannels\EditorToolbarPannel.h" />
+    <ClInclude Include="src\Pannels\EventPropertiesPannel.h" />
     <ClInclude Include="src\Pannels\FrameSelectionPannel.h" />
     <ClInclude Include="src\Pannels\ModuleStatsPannel.h" />
+    <ClInclude Include="src\Pannels\MontagePreviewPannel.h" />
+    <ClInclude Include="src\Pannels\MontagePropertiesPannel.h" />
     <ClInclude Include="src\Pannels\SceneHierarchyPannel.h" />
     <ClInclude Include="src\Pannels\ScenePropertyPannel.h" />
     <ClInclude Include="src\Pannels\SpriteSourcePannel.h" />
     <ClInclude Include="src\Pannels\TimePannel.h" />
+    <ClInclude Include="src\Pannels\TimelinePannel.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Editors\AnimationClipEditor.cpp" />
     <ClCompile Include="src\Editors\AnimationGraphEditor.cpp" />
+    <ClCompile Include="src\Editors\AnimationMontageEditor.cpp" />
     <ClCompile Include="src\Editors\ImGuiEditor.cpp" />
     <ClCompile Include="src\Editors\SceneEditor.cpp" />
     <ClCompile Include="src\NullEditor.cpp" />
@@ -163,12 +169,16 @@
     <ClCompile Include="src\Pannels\ContentBrowserPannel.cpp" />
     <ClCompile Include="src\Pannels\EditorConsolePannel.cpp" />
     <ClCompile Include="src\Pannels\EditorToolbarPannel.cpp" />
+    <ClCompile Include="src\Pannels\EventPropertiesPannel.cpp" />
     <ClCompile Include="src\Pannels\FrameSelectionPannel.cpp" />
     <ClCompile Include="src\Pannels\ModuleStatsPannel.cpp" />
+    <ClCompile Include="src\Pannels\MontagePreviewPannel.cpp" />
+    <ClCompile Include="src\Pannels\MontagePropertiesPannel.cpp" />
     <ClCompile Include="src\Pannels\SceneHierarchyPannel.cpp" />
     <ClCompile Include="src\Pannels\ScenePropertyPannel.cpp" />
     <ClCompile Include="src\Pannels\SpriteSourcePannel.cpp" />
     <ClCompile Include="src\Pannels\TimePannel.cpp" />
+    <ClCompile Include="src\Pannels\TimelinePannel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NullEngine\NullEngine.vcxproj">

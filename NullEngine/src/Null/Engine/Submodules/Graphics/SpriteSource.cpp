@@ -50,7 +50,7 @@ namespace NULLENGINE
 
 
 		float u = uSize * (frameIndex % m_Cols);
-		float v = vSize * (frameIndex / m_Rows);
+		float v = vSize * (frameIndex / m_Cols);
 
 
 		return glm::vec2(u, v);

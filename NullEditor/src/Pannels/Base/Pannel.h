@@ -34,14 +34,24 @@
 namespace NULLENGINE
 {
 	class SceneEditor;
-	//class AnimationClip;
+	class AnimationClip;
+	class ImGuiEditor;
 	class AnimationClipEditor;
+	class SpriteSource;
+	class AnimationMontageEditor;
 	class Scene;
 	using EntityID = uint32_t;
 
-  
+	struct MontagePannelData
+    {
+		AnimationClip* selectedClip = nullptr;
+		SpriteSource* selectedSpriteSource = nullptr;
+		float m_PlaybackTime = 0.0f;
+        bool isPlaying = false;
+		int currentFrame = 0;
+    };
 
-    struct PannelData
+    struct ScenePannelData
     {
         EntityID m_SelectedEntity = 0;
         Scene* m_Context = nullptr;
@@ -59,15 +69,13 @@ namespace NULLENGINE
         // UI state
         bool isPlaying = false;
         float animLength = 0.50f;
-        bool hasUnsavedChanges = false;
 
         void UpdateClipFromSelection(int startFrame, int endFrame)
         {
             workingClip.startingFrame = startFrame;
             workingClip.frameCount = startFrame >= 0 ? (endFrame - startFrame) + 1 : 0;
-            workingClip.frameDuration = animLength / (float)workingClip.frameCount;
+            //workingClip.animationLength = animLength / (float)workingClip.frameCount;
             workingClip.spriteSheetID = selectedSpriteSourceID;
-            hasUnsavedChanges = true;
         }
     };
 
@@ -80,16 +88,22 @@ namespace NULLENGINE
 
         void SetPannelData(DataType& data) { m_PannelData = &data; }
         void SetPannelParent(ParentType* parent) { m_Parent = parent; }
+		void SetID(uint32_t id) { m_ID = id; }
         virtual void OnImGUIRender() = 0;
 
     protected:
         DataType* m_PannelData = nullptr;
         ParentType* m_Parent = nullptr;
+
+        uint32_t m_ID;
     };
 
     // Usage:
-    using ScenePannel = Pannel<PannelData, SceneEditor>;
+    using ScenePannel = Pannel<ScenePannelData, SceneEditor>;
     using AnimationPannel = Pannel<AnimationPannelData, AnimationClipEditor>;
+    using MontagePannel = Pannel<MontagePannelData, AnimationMontageEditor>;
+    struct EmptyData {};
+    using GenericPannel = Pannel<EmptyData, ImGuiEditor>;
 
 
 }

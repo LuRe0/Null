@@ -69,6 +69,7 @@ namespace NULLENGINE
 			m_LuaState["math"]["abs"] = [](double val) {
 				return std::abs(val);
 				};
+
 			ScriptHelper::SetLuaState(m_LuaState);
 
 		}
@@ -693,7 +694,7 @@ namespace NULLENGINE
 			// Create a new Lua environment for this script
 			sol::environment env(m_LuaState, sol::create, m_LuaState.globals());
 			sol::table script = m_LuaState.script_file(fullPath, env);
-
+			
 			// Attach the owning entity to the Lua environment
 			auto& entity = scene->GetCurrentScene()->GetEntity(id);
 			env["pEntity"] = entity;

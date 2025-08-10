@@ -68,6 +68,10 @@ namespace NULLENGINE
 
 		void CreateScript(const std::string& filename);
 
+		void CreateEventWindowScript(const std::string& filename);
+
+		void CreateEventTriggerScript(const std::string& filename);
+
 		void ReloadScript(const std::string& filename);
 
 		void AddScriptWatcher(const std::string filepath, const std::string& filename);

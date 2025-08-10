@@ -62,7 +62,11 @@ namespace NULLENGINE
         bool HandleKeyboardShortcuts(const KeyPressEvent& e) override;
         void OnEvent(const Event& e) override;
         void AddPannel(std::unique_ptr<AnimationPannel>&& pannel);
-
+        void SaveChanges() override;
+		void Reset() override
+        {
+            m_PannelData = AnimationPannelData();
+		}
         void SetPannelData(const AnimationPannelData& data);
         void SetPannelParent();
 
@@ -80,9 +84,7 @@ namespace NULLENGINE
         void KeyboardShortcuts();
         bool OnKeyPressed(const KeyPressEvent& e);
 
-        void ExportClipsImpl();
         void SaveCurrentClipImpl();
-        void OpenClipLibraryImpl();
         void NewClipImpl();
 
 

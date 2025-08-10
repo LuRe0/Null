@@ -100,3 +100,4 @@ using EntityID = uint32_t;
 #include "Null/Engine/Submodules/ECS/Components/AnimationControllerComponent.h"
 #include "Null/Engine/Submodules/ECS/Systems/AnimationControllerSystem.h"
 #include "Null/Engine/Modules/NAnimationGraphManager.h"
+#include "Null/Engine/Modules/NAnimationEventManager.h"

@@ -1,0 +1,12 @@
+{
+    "dimension": [
+        9,
+        10
+    ],
+    "flags": 18,
+    "frameCount": 8,
+    "frameDuration": 0.04374999925494194,
+    "name": "Lightning_Run_Cycle",
+    "spriteSheetID": "chr_lightning_anim",
+    "startingFrame": 9
+}

@@ -8,6 +8,66 @@
                     "archetype": "",
                     "parentArchetype": ""
                 },
+                "Name": {
+                    "componentFlags": 3,
+                    "name": "LeftWall"
+                },
+                "Sprite": {
+                    "ComponentFlags": 3,
+                    "dimension": [
+                        1,
+                        1
+                    ],
+                    "emissiveColor": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "emissiveStrength": 0.0,
+                    "emissiveTexture": "",
+                    "fade": 0.004999999888241291,
+                    "frameindex": 0,
+                    "meshname": "Quad",
+                    "texture": "",
+                    "thickness": 1.0,
+                    "tint": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                "Transform": {
+                    "ComponentFlags": 3,
+                    "rotation": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        50.0,
+                        1500.0,
+                        1.0
+                    ],
+                    "translation": [
+                        -1037.2530517578125,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "name": "LeftWall",
+            "parentArchetype": ""
+        },
+        {
+            "archetype": "",
+            "components": {
+                "Archetype": {
+                    "ComponentFlags": 3,
+                    "archetype": "",
+                    "parentArchetype": ""
+                },
                 "BoxCollider2D": {
                     "ComponentFlags": 3,
                     "colliders": [
@@ -480,66 +540,6 @@
                 }
             },
             "name": "Background",
-            "parentArchetype": ""
-        },
-        {
-            "archetype": "",
-            "components": {
-                "Archetype": {
-                    "ComponentFlags": 3,
-                    "archetype": "",
-                    "parentArchetype": ""
-                },
-                "Name": {
-                    "componentFlags": 3,
-                    "name": "LeftWall"
-                },
-                "Sprite": {
-                    "ComponentFlags": 3,
-                    "dimension": [
-                        1,
-                        1
-                    ],
-                    "emissiveColor": [
-                        1.0,
-                        1.0,
-                        1.0,
-                        1.0
-                    ],
-                    "emissiveStrength": 0.0,
-                    "emissiveTexture": "",
-                    "fade": 0.004999999888241291,
-                    "frameindex": 0,
-                    "meshname": "Quad",
-                    "texture": "",
-                    "thickness": 1.0,
-                    "tint": [
-                        1.0,
-                        1.0,
-                        1.0,
-                        1.0
-                    ]
-                },
-                "Transform": {
-                    "ComponentFlags": 3,
-                    "rotation": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "scale": [
-                        50.0,
-                        1500.0,
-                        1.0
-                    ],
-                    "translation": [
-                        -1037.2530517578125,
-                        0.0,
-                        0.0
-                    ]
-                }
-            },
-            "name": "LeftWall",
             "parentArchetype": ""
         },
         {

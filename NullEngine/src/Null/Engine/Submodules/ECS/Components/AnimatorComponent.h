@@ -29,7 +29,7 @@ namespace NULLENGINE
 		uint32_t lastClipID = 0;
 
 		// Runtime modifiers
-		float frameSpeedModifier = 1.0f;
+		float playRate = 1.0f;
 
 		AnimatorFlagSet flags;
         ComponentFlagSet componentFlags = ComponentFlagSet(ComponentFlags_Enabled | ComponentFlags_Serialized);

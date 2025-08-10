@@ -76,6 +76,106 @@ end
 return Template_Script
 )";
 
+static std::string TemplatedEventWindowScript = R"(
+local Template_Window_Event = {
+    data = {
+        name = { value = "Template_Window_Event", serialize = true }
+    }
+}
+
+setmetatable(setmetatable(Template_Window_Event, {
+    __index = function(t, k)
+        if Template_Window_Event.data[k] then
+            return Template_Window_Event.data[k].value
+        else
+            return nil
+        end
+    end,
+    __newindex = function(t, k, v)
+        if Template_Window_Event.data[k] then
+            Template_Window_Event.data[k].value = v
+        else
+            rawset(t, k, v)
+        end
+    end
+}), {
+    __index = function(t, k)
+        if Template_Window_Event.data[k] then
+            return Template_Window_Event.data[k].value
+        else
+            return nil
+        end
+    end,
+    __newindex = function(t, k, v)
+        if Template_Window_Event.data[k] then
+            Template_Window_Event.data[k].value = v
+        else
+            rawset(t, k, v)
+        end
+    end
+})
+
+function Template_Window_Event:onBegin(entity)
+    -- print("Template_Window_Event started")
+end
+
+function Template_Window_Event:onTick(entity)
+    -- print("Template_Window_Event ticking")
+end
+
+function Template_Window_Event:onEnd(entity)
+    -- print("Template_Window_Event ended")
+    -- Cleanup code here
+end
+
+return Template_Window_Event
+)";
+
+static std::string TemplatedEventScript = R"(
+local Template_Event = {
+    data = {
+        name = { value = "Template_Event", serialize = true }
+    }
+}
+
+setmetatable(setmetatable(Template_Event, {
+    __index = function(t, k)
+        if Template_Event.data[k] then
+            return Template_Event.data[k].value
+        else
+            return nil
+        end
+    end,
+    __newindex = function(t, k, v)
+        if Template_Event.data[k] then
+            Template_Event.data[k].value = v
+        else
+            rawset(t, k, v)
+        end
+    end
+}), {
+    __index = function(t, k)
+        if Template_Event.data[k] then
+            return Template_Event.data[k].value
+        else
+            return nil
+        end
+    end,
+    __newindex = function(t, k, v)
+        if Template_Event.data[k] then
+            Template_Event.data[k].value = v
+        else
+            rawset(t, k, v)
+        end
+    end
+})
+
+function Template_Event:onEvent(entity)
+   -- print("Template_Event triggered")
+end
+
+return Template_Event
+)";
 
     void replaceAll(std::string& subject, const std::string& search, const std::string& replace) 
     {
@@ -183,6 +283,87 @@ return Template_Script
         ShellExecuteA(NULL, "open", fileP.c_str(), NULL, NULL, SW_SHOWNORMAL);
         //AddScriptWatcher(filePath, filename);
     }
+
+    void NScriptingInterface::CreateEventWindowScript(const std::string& filename)
+    {
+        std::string filePath = std::string("../Assets/Scripts/Events") + filename + std::string(".lua");
+
+        std::ofstream outFile(filePath);
+
+        // Check if the file was successfully opened
+        if (!outFile) {
+            std::cerr << "Error opening file for writing: " << filename << std::endl;
+            return; // Return an error code
+        }
+
+        std::string luaScript = TemplatedScript;
+
+        //std::string text = "Quick brown fox";
+        std::regex temp("Template_Window_Event");
+
+        // write the results to an output iterator
+        luaScript = std::regex_replace(luaScript, temp, filename);
+
+        // Write the Lua script to the file
+        outFile << luaScript;
+
+        // Close the file
+        outFile.close();
+
+
+        // Convert to a filesystem path
+        std::filesystem::path relativePath(filePath);
+
+        // Get the absolute path
+        std::filesystem::path absolutePath = std::filesystem::absolute(relativePath);
+
+        // Convert the absolute path to a C-style string
+        std::string fileP = absolutePath.string();
+
+        ShellExecuteA(NULL, "open", fileP.c_str(), NULL, NULL, SW_SHOWNORMAL);
+        //AddScriptWatcher(filePath, filename);
+    }
+
+    void NScriptingInterface::CreateEventTriggerScript(const std::string& filename)
+    {
+        std::string filePath = std::string("../Assets/Scripts/Events") + filename + std::string(".lua");
+
+        std::ofstream outFile(filePath);
+
+        // Check if the file was successfully opened
+        if (!outFile) {
+            std::cerr << "Error opening file for writing: " << filename << std::endl;
+            return; // Return an error code
+        }
+
+        std::string luaScript = TemplatedScript;
+
+        //std::string text = "Quick brown fox";
+        std::regex temp("Template_Event");
+
+        // write the results to an output iterator
+        luaScript = std::regex_replace(luaScript, temp, filename);
+
+        // Write the Lua script to the file
+        outFile << luaScript;
+
+        // Close the file
+        outFile.close();
+
+
+        // Convert to a filesystem path
+        std::filesystem::path relativePath(filePath);
+
+        // Get the absolute path
+        std::filesystem::path absolutePath = std::filesystem::absolute(relativePath);
+
+        // Convert the absolute path to a C-style string
+        std::string fileP = absolutePath.string();
+
+        ShellExecuteA(NULL, "open", fileP.c_str(), NULL, NULL, SW_SHOWNORMAL);
+        //AddScriptWatcher(filePath, filename);
+    }
+
     void NScriptingInterface::ReloadScript(const std::string& filename)
     {
         NEventManager* eventManager =   NEventManager::Instance();

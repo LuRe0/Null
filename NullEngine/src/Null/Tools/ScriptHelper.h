@@ -55,6 +55,10 @@ namespace NULLENGINE
 		{
 			s_LuaState = &lua;
 		}
+		static sol::state* GetLuaState()
+		{
+			return s_LuaState;
+		}
 	private:
 		static sol::state* s_LuaState;
 

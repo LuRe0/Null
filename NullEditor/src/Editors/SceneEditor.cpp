@@ -73,10 +73,12 @@ namespace NULLENGINE
 		auto pannel7 = std::make_unique<EditorToolbarPannel>();
 		auto pannel8 = std::make_unique<TimePannel>();
 
+		pannel4.get()->SetID(STRID(m_Name));
+
 		AddPannel(std::move(pannel));
 		AddPannel(std::move(pannel2));
 		AddPannel(std::move(pannel3));
-		AddPannel(std::move(pannel4));
+		AddGenericPannel(std::move(pannel4));
 		AddPannel(std::move(pannel5));
 		AddPannel(std::move(pannel6));
 		AddPannel(std::move(pannel7));
@@ -84,6 +86,7 @@ namespace NULLENGINE
 
 		SetPannelData(m_PannelData);
 		SetPannelParent();
+
 
 
 		NEventManager* eventManager = NEventManager::Instance();
@@ -272,6 +275,8 @@ namespace NULLENGINE
 
 	void SceneEditor::OnRender()
 	{
+		ImGuiEditor::OnRender();
+
 		for (auto& panel : m_Pannels)
 			panel->OnImGUIRender();
 
@@ -345,7 +350,14 @@ namespace NULLENGINE
 		m_Pannels.push_back(std::move(pannel));
 	}
 
-	void SceneEditor::SetPannelData(const PannelData& data)
+	void SceneEditor::SaveChanges()
+	{
+		SaveSceneImpl();
+		m_HasUnsavedChanges = false;
+		NLE_CORE_INFO("Changes saved in Scene Editor");
+	}
+
+	void SceneEditor::SetPannelData(const ScenePannelData& data)
 	{
 		for (auto& pannel : m_Pannels)
 			pannel.get()->SetPannelData(m_PannelData);

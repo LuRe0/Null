@@ -1,8 +1,12 @@
 {
+    "animationLength": 0.5,
+    "dimension": [
+        9,
+        10
+    ],
     "flags": 18,
     "frameCount": 9,
-    "frameDuration": 0.0555555559694767,
-    "name": "IDLE",
+    "name": "Idle",
     "spriteSheetID": "chr_lightning_anim",
     "startingFrame": 0
 }

@@ -51,7 +51,7 @@ namespace NULLENGINE
 
 		static std::pair<bool, bool> DrawTopLevelHeader(const char* label, bool* enabled, int id);
 
-		static void DrawDragDrop(const char* label, uint32_t& nameID, SpriteSource*& source, NTextureManager* texMgr, NSpriteSourceManager* srcMgr, float scale = 1.0f);
+		static bool DrawDragDrop(const char* label, uint32_t& nameID, SpriteSource*& source, NTextureManager* texMgr, NSpriteSourceManager* srcMgr, float scale = 1.0f);
 
 
 		static std::tuple<bool, bool, bool> CollapsingHeaderWithFlagCheckboxAndRemove(const std::string& label, uint8_t& flags, uint32_t flagBit);

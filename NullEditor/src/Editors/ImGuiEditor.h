@@ -43,6 +43,7 @@ namespace NULLENGINE
     {
         SCENE,
         ANIMATION_CLIP,
+        ANIMATION_MONTAGE,
         STATE_MACHINE,
         ARCHETYPE,
         BEHAVIOR_TREE
@@ -59,9 +60,11 @@ namespace NULLENGINE
         virtual void OnAttach() {}
         virtual void OnDetach() {}
         virtual void OnUpdate(float dt) {}
-        virtual void OnRender() = 0; // Renders the docked window
+        virtual void OnRender(); // Renders the docked window
         virtual void RenderMenuBar() = 0; // Renders the docked window
         virtual bool HandleKeyboardShortcuts(const KeyPressEvent& e) { return false; }
+        void AddGenericPannel(std::unique_ptr<GenericPannel>&& pannel);
+
         virtual void OnEvent(const Event& e) {}
         void SetParent(ImGuiLayer* p) { m_Parent = p; }
 
@@ -71,6 +74,10 @@ namespace NULLENGINE
         bool IsOpen() const { return m_IsOpen; }
         void SetShouldSelect(bool should) { m_ShouldSelect = should; }
         bool ShouldSelect() const { return m_ShouldSelect; }
+        void SetDirty(bool d) { m_HasUnsavedChanges = d; }
+        bool HasUnsavedChanges() { return m_HasUnsavedChanges; }
+		virtual void SaveChanges() = 0; // Implement in derived classes to handle saving
+        virtual void Reset() = 0; // Implement in derived classes to reset editor state
         const std::string& GetName() const { return m_Name; }
         EditorType GetType() const { return m_Type; }
 
@@ -82,6 +89,8 @@ namespace NULLENGINE
         bool m_HasUnsavedChanges = false;
         ImGuiLayer* m_Parent;
 
+
+
         // Helper to create the editor's main window with dockspace
         bool BeginEditorWindow(ImGuiWindowFlags extra_flags = 0);
         void EndEditorWindow();
@@ -92,6 +101,7 @@ namespace NULLENGINE
 
     private:
         bool m_ShouldSelect = false;
+        std::vector<std::unique_ptr<GenericPannel>> m_GenericPannels;
 
 	};
 

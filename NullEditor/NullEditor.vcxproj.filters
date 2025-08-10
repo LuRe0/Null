@@ -10,73 +10,103 @@
     <Filter Include="Pannels\Base">
       <UniqueIdentifier>{20C617B6-0C29-A75A-B5AE-DF10A1F072DD}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Pannels\SceneEditor">
-      <UniqueIdentifier>{c1b7d116-cd24-4f59-ab83-fdd24e970e95}</UniqueIdentifier>
+    <Filter Include="Pannels\Base\Scene">
+      <UniqueIdentifier>{c3a3eafd-4792-4d00-82de-db7852ee7c50}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Editors\Base">
-      <UniqueIdentifier>{5f73a80d-ef64-46a6-b3a1-c743b027fc6e}</UniqueIdentifier>
+    <Filter Include="Pannels\Base\General">
+      <UniqueIdentifier>{1b3df673-f9cb-43ae-bab3-33c8bd70b8a2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Pannels\AnimationClipEditor">
-      <UniqueIdentifier>{ae588d86-68c5-44e9-8b6b-6ae3442a6a66}</UniqueIdentifier>
+    <Filter Include="Pannels\Base\Animation Clip">
+      <UniqueIdentifier>{f07d159a-2b6b-4031-a666-681a7d22451e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pannels\Base\Montage">
+      <UniqueIdentifier>{008ac6ed-0e9c-41c1-835f-71229d89e033}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Editors\AnimationClipEditor.h">
+      <Filter>Editors</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Editors\AnimationGraphEditor.h">
+      <Filter>Editors</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Editors\AnimationMontageEditor.h">
+      <Filter>Editors</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Editors\ImGuiEditor.h">
+      <Filter>Editors</Filter>
+    </ClInclude>
     <ClInclude Include="src\Editors\SceneEditor.h">
       <Filter>Editors</Filter>
     </ClInclude>
     <ClInclude Include="src\Pannels\Base\Pannel.h">
       <Filter>Pannels\Base</Filter>
     </ClInclude>
-    <ClInclude Include="src\Pannels\ComponentInspectorPannel.h">
-      <Filter>Pannels\SceneEditor</Filter>
+    <ClInclude Include="src\Pannels\ArchetypeEditorPannel.h">
+      <Filter>Pannels\Base\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="src\Pannels\ContentBrowserPannel.h">
-      <Filter>Pannels\SceneEditor</Filter>
+    <ClInclude Include="src\Pannels\ComponentInspectorPannel.h">
+      <Filter>Pannels\Base\Scene</Filter>
     </ClInclude>
     <ClInclude Include="src\Pannels\EditorConsolePannel.h">
-      <Filter>Pannels\SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Pannels\EditorToolbarPannel.h">
-      <Filter>Pannels\SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Pannels\ModuleStatsPannel.h">
-      <Filter>Pannels\SceneEditor</Filter>
+      <Filter>Pannels\Base\Scene</Filter>
     </ClInclude>
     <ClInclude Include="src\Pannels\SceneHierarchyPannel.h">
-      <Filter>Pannels\SceneEditor</Filter>
+      <Filter>Pannels\Base\Scene</Filter>
     </ClInclude>
     <ClInclude Include="src\Pannels\ScenePropertyPannel.h">
-      <Filter>Pannels\SceneEditor</Filter>
+      <Filter>Pannels\Base\Scene</Filter>
     </ClInclude>
     <ClInclude Include="src\Pannels\TimePannel.h">
-      <Filter>Pannels\SceneEditor</Filter>
+      <Filter>Pannels\Base\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="src\Editors\ImGuiEditor.h">
-      <Filter>Editors\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Editors\AnimationGraphEditor.h">
-      <Filter>Editors</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Pannels\ArchetypeEditorPannel.h">
-      <Filter>Pannels\SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Editors\AnimationClipEditor.h">
-      <Filter>Editors</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Pannels\SpriteSourcePannel.h">
-      <Filter>Pannels\AnimationClipEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Pannels\FrameSelectionPannel.h">
-      <Filter>Pannels\AnimationClipEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Pannels\ClipPropertiesPannel.h">
-      <Filter>Pannels\AnimationClipEditor</Filter>
+    <ClInclude Include="src\Pannels\ContentBrowserPannel.h">
+      <Filter>Pannels\Base\General</Filter>
     </ClInclude>
     <ClInclude Include="src\Pannels\ClipPreviewPannel.h">
-      <Filter>Pannels\AnimationClipEditor</Filter>
+      <Filter>Pannels\Base\Animation Clip</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Pannels\ClipPropertiesPannel.h">
+      <Filter>Pannels\Base\Animation Clip</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Pannels\FrameSelectionPannel.h">
+      <Filter>Pannels\Base\Animation Clip</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Pannels\SpriteSourcePannel.h">
+      <Filter>Pannels\Base\Animation Clip</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Pannels\EditorToolbarPannel.h">
+      <Filter>Pannels\Base\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Pannels\ModuleStatsPannel.h">
+      <Filter>Pannels\Base\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Pannels\EventPropertiesPannel.h">
+      <Filter>Pannels\Base\Montage</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Pannels\MontagePreviewPannel.h">
+      <Filter>Pannels\Base\Montage</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Pannels\MontagePropertiesPannel.h">
+      <Filter>Pannels\Base\Montage</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Pannels\TimelinePannel.h">
+      <Filter>Pannels\Base\Montage</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Editors\AnimationClipEditor.cpp">
+      <Filter>Editors</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Editors\AnimationGraphEditor.cpp">
+      <Filter>Editors</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Editors\AnimationMontageEditor.cpp">
+      <Filter>Editors</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Editors\ImGuiEditor.cpp">
+      <Filter>Editors</Filter>
+    </ClCompile>
     <ClCompile Include="src\Editors\SceneEditor.cpp">
       <Filter>Editors</Filter>
     </ClCompile>
@@ -84,53 +114,56 @@
     <ClCompile Include="src\Pannels\Base\Pannel.cpp">
       <Filter>Pannels\Base</Filter>
     </ClCompile>
-    <ClCompile Include="src\Pannels\ComponentInspectorPannel.cpp">
-      <Filter>Pannels\SceneEditor</Filter>
+    <ClCompile Include="src\Pannels\ArchetypeEditorPannel.cpp">
+      <Filter>Pannels\Base\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="src\Pannels\ContentBrowserPannel.cpp">
-      <Filter>Pannels\SceneEditor</Filter>
+    <ClCompile Include="src\Pannels\ComponentInspectorPannel.cpp">
+      <Filter>Pannels\Base\Scene</Filter>
     </ClCompile>
     <ClCompile Include="src\Pannels\EditorConsolePannel.cpp">
-      <Filter>Pannels\SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Pannels\EditorToolbarPannel.cpp">
-      <Filter>Pannels\SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Pannels\ModuleStatsPannel.cpp">
-      <Filter>Pannels\SceneEditor</Filter>
+      <Filter>Pannels\Base\Scene</Filter>
     </ClCompile>
     <ClCompile Include="src\Pannels\SceneHierarchyPannel.cpp">
-      <Filter>Pannels\SceneEditor</Filter>
+      <Filter>Pannels\Base\Scene</Filter>
     </ClCompile>
     <ClCompile Include="src\Pannels\ScenePropertyPannel.cpp">
-      <Filter>Pannels\SceneEditor</Filter>
+      <Filter>Pannels\Base\Scene</Filter>
     </ClCompile>
     <ClCompile Include="src\Pannels\TimePannel.cpp">
-      <Filter>Pannels\SceneEditor</Filter>
+      <Filter>Pannels\Base\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="src\Editors\ImGuiEditor.cpp">
-      <Filter>Editors\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Editors\AnimationGraphEditor.cpp">
-      <Filter>Editors</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Pannels\ArchetypeEditorPannel.cpp">
-      <Filter>Pannels\SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Editors\AnimationClipEditor.cpp">
-      <Filter>Editors</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Pannels\SpriteSourcePannel.cpp">
-      <Filter>Pannels\AnimationClipEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Pannels\FrameSelectionPannel.cpp">
-      <Filter>Pannels\AnimationClipEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Pannels\ClipPropertiesPannel.cpp">
-      <Filter>Pannels\AnimationClipEditor</Filter>
+    <ClCompile Include="src\Pannels\ContentBrowserPannel.cpp">
+      <Filter>Pannels\Base\General</Filter>
     </ClCompile>
     <ClCompile Include="src\Pannels\ClipPreviewPannel.cpp">
-      <Filter>Pannels\AnimationClipEditor</Filter>
+      <Filter>Pannels\Base\Animation Clip</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Pannels\ClipPropertiesPannel.cpp">
+      <Filter>Pannels\Base\Animation Clip</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Pannels\FrameSelectionPannel.cpp">
+      <Filter>Pannels\Base\Animation Clip</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Pannels\SpriteSourcePannel.cpp">
+      <Filter>Pannels\Base\Animation Clip</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Pannels\EditorToolbarPannel.cpp">
+      <Filter>Pannels\Base\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Pannels\ModuleStatsPannel.cpp">
+      <Filter>Pannels\Base\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Pannels\EventPropertiesPannel.cpp">
+      <Filter>Pannels\Base\Montage</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Pannels\MontagePreviewPannel.cpp">
+      <Filter>Pannels\Base\Montage</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Pannels\MontagePropertiesPannel.cpp">
+      <Filter>Pannels\Base\Montage</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Pannels\TimelinePannel.cpp">
+      <Filter>Pannels\Base\Montage</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

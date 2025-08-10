@@ -16,8 +16,8 @@
 #include "ImGuiEditor.h"
 #include "Null/Engine/Submodules/Layers/Layer.h"
 #include <glm/glm.hpp>
-#include <memory>
 #include "../Pannels/Base/Pannel.h"
+#include <memory>
 
 //******************************************************************************//
 // Definitions  														        //
@@ -34,56 +34,49 @@
 //******************************************************************************//
 
 
+#pragma once
+
+//------------------------------------------------------------------------------
+//
+// File Name:    {{EDITOR_NAME}}.h
+// Author(s):    {{ AUTHOR_NAME }}
+// Date:         {{ DATE }}
+// 
+//------------------------------------------------------------------------------
+
+
+
 namespace NULLENGINE
 {
-    class Scene;
-    class Camera;
-    class OrthographicCameraController;
-    class PerspectiveCameraController;
-    class CameraController;
-    class AnimationClipEditor;
-    class PannelData;
-    class Pannel;
     class KeyPressEvent;
-    class Event;
-    class SceneSwitchEvent;
+	class Event;
+	class SceneSwitchEvent;
 
-
-    class NLE_API AnimationClipEditor : public ImGuiEditor
+    class {{EDITOR_NAME}} : public ImGuiEditor
     {
     public:
-        AnimationClipEditor();
+    {{EDITOR_NAME}}();
 
-        void OnAttach() override;
-        void OnDetach() override;
-        void OnUpdate(float dt) override;
-        void OnRender() override;
-        void RenderMenuBar() override; // Renders the menu bar
-        bool HandleKeyboardShortcuts(const KeyPressEvent& e) override;
-        void OnEvent(const Event& e) override;
+    void OnAttach() override;
+    void OnDetach() override;
+    void OnUpdate(float dt) override;
+    void OnRender() override;
+    void RenderMenuBar() override;
+    bool HandleKeyboardShortcuts(const KeyPressEvent & e) override;
+    void OnEvent(const Event & e) override;
+    void SaveChanges() override
+    void Reset() override
+    {
+        m_PannelData =  {{EDITOR_PANNEL}}Data();
+    }
+    void AddPannel(std::unique_ptr<{{EDITOR_PANNEL}}>&& pannel);
+    void SetPannelData(const MontagePannelData& data);
+    void SetPannelParent();
 
-        // Scene-specific methods
     private:
-        uint32_t m_SelectedSpriteSourceID = 0;
-        //AnimationClip m_CurrentClip;
-        //std::vector<AnimationClip> m_ClipLibrary;
-
-        // Grid state
-        glm::ivec2 m_GridSize = { 1, 1 };
-        glm::ivec2 m_SelectedFrameStart = { 0, 0 };
-        glm::ivec2 m_SelectedFrameEnd = { 0, 0 };
-
-        //PannelData m_PannelData;
+        std::vector<std::unique_ptr<{{EDITOR_PANNEL}}>> m_Pannels;
+        {{EDITOR_PANNEL}}Data m_PannelData;
         void KeyboardShortcuts();
-        bool OnKeyPressed(const KeyPressEvent& e);
-
-        void ExportClipsImpl();
-        void SaveCurrentClipImpl();
-        void OpenClipLibraryImpl();
-
-
-        //bool OnSceneSwitched(const SceneSwitchEvent& e);
+        bool OnKeyPressed(const KeyPressEvent & e);
     };
-
-
-};
+}

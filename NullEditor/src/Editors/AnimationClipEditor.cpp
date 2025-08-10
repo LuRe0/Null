@@ -1,4 +1,4 @@
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //
 // File Name:	NStub.cpp
 // Author(s):	Anthon Reid
@@ -51,7 +51,7 @@
 
 namespace NULLENGINE
 {
-	AnimationClipEditor::AnimationClipEditor() : ImGuiEditor("Animation Clip", EditorType::ANIMATION_CLIP)
+	AnimationClipEditor::AnimationClipEditor() : ImGuiEditor("Animation Clip Creator", EditorType::ANIMATION_CLIP)
 	{
 		m_IsOpen = false; // Scene editor always open by default
 
@@ -90,50 +90,7 @@ namespace NULLENGINE
 		//Pannel data here
 
 
-		if (m_CODA)
-		{
-			ImGui::OpenPopup("Unsaved Changes");
 
-			if (ImGui::BeginPopupModal("Unsaved Changes", NULL, ImGuiWindowFlags_AlwaysAutoResize))
-			{
-				const char* message = "You have unsaved changes. Are you sure you want to close?";
-				ImVec2 textSize = ImGui::CalcTextSize(message);
-				ImVec2 windowSize = ImGui::GetContentRegionAvail();
-				ImGui::SetCursorPosX((windowSize.x - textSize.x) * 0.5f);
-				ImGui::Text("%s", message);
-
-				ImGui::Dummy(ImVec2(0.0f, 10.0f));
-
-				float buttonWidth = 100.0f;
-				float buttonSpacing = ImGui::GetStyle().ItemSpacing.x;
-				float totalWidth = buttonWidth * 3.0f + buttonSpacing * 2.0f;
-				ImGui::SetCursorPosX((windowSize.x - totalWidth) * 0.5f);
-
-				if (ImGui::Button("Save & Close", ImVec2(buttonWidth, 0)))
-				{
-					SaveCurrentClipImpl();
-					m_CODA = false;
-					Hide();
-				}
-				ImGui::SameLine();
-
-				if (ImGui::Button("Don't Save", ImVec2(buttonWidth, 0)))
-				{
-					m_CODA = false;
-					m_HasUnsavedChanges = false;
-					Hide();
-				}
-				ImGui::SameLine();
-
-				if (ImGui::Button("Cancel", ImVec2(buttonWidth, 0)))
-				{
-					m_CODA = false;
-				}
-
-				ImGui::EndPopup();
-			}
-
-		}
 		KeyboardShortcuts();
 	}
 
@@ -151,11 +108,19 @@ namespace NULLENGINE
 		m_Pannels.push_back(std::move(pannel));
 	}
 
+	void AnimationClipEditor::SaveChanges()
+	{
+		SaveCurrentClipImpl();
+		m_HasUnsavedChanges = false;
+		NLE_CORE_INFO("Changes saved in Animation Clip Editor");
+	}
+
 	void AnimationClipEditor::SetPannelData(const AnimationPannelData& data)
 	{
 		for (auto& pannel : m_Pannels)
 			pannel.get()->SetPannelData(m_PannelData);
 	}
+
 	void AnimationClipEditor::SetPannelParent()
 	{
 		for (auto& pannel : m_Pannels)
@@ -164,8 +129,63 @@ namespace NULLENGINE
 
 	void AnimationClipEditor::OnRender()
 	{
+		ImGuiEditor::OnRender();
+
 		for (auto& panel : m_Pannels)
 			panel->OnImGUIRender();
+
+
+
+		if (m_CODA)
+		{
+			ImGui::OpenPopup("Unsaved Changes");
+		}
+
+		//ImGui::SetNextWindowSize(ImVec2(450, 150), ImGuiCond_Once);
+
+		if (ImGui::BeginPopupModal("Unsaved Changes", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+		{
+			const char* message = "Are you sure you want to close?";
+			ImVec2 textSize = ImGui::CalcTextSize(message);
+			ImVec2 windowSize = ImGui::GetContentRegionAvail();
+			ImGui::SetCursorPosX((windowSize.x - textSize.x) * 0.5f);
+			ImGui::Text("%s", message);
+
+			ImGui::Dummy(ImVec2(0.0f, 10.0f));
+
+			float buttonWidth = 100.0f;
+			float buttonSpacing = ImGui::GetStyle().ItemSpacing.x;
+			float totalWidth = buttonWidth * 3.0f + buttonSpacing * 2.0f;
+			ImGui::SetCursorPosX((windowSize.x - totalWidth) * 0.5f);
+
+			if (ImGui::Button("Save", ImVec2(buttonWidth, 0)))
+			{
+				SaveCurrentClipImpl();
+				m_CODA = false;
+				Reset();
+			}
+			ImGui::SameLine();
+
+			if (ImGui::Button("Don't Save", ImVec2(buttonWidth, 0)))
+			{
+				m_CODA = false;
+				m_HasUnsavedChanges = false;
+				Reset();
+				ImGui::CloseCurrentPopup();
+
+			}
+			ImGui::SameLine();
+
+			if (ImGui::Button("Cancel", ImVec2(buttonWidth, 0)))
+			{
+				m_CODA = false;
+				ImGui::CloseCurrentPopup();
+
+			}
+
+			ImGui::EndPopup();
+		}
+
 	}
 
 	void AnimationClipEditor::RenderMenuBar()
@@ -176,36 +196,17 @@ namespace NULLENGINE
 			{
 				NewClipImpl();
 			}
-			if (ImGui::MenuItem("Open Clip Library", "CTRL+O", false))
-			{
-				OpenClipLibraryImpl();
-			}
+	
 			if (ImGui::MenuItem("Save Clip", "CTRL+S", false))
 			{
 				SaveCurrentClipImpl();
-			}
-			if (ImGui::MenuItem("Export Clips", "CTRL+E", false))
-			{
-				ExportClipsImpl();
-			}
-			ImGui::Separator();
-			if (ImGui::MenuItem("Close Editor", NULL, false))
-			{
-				if (m_HasUnsavedChanges)
-				{
-					m_CODA = true;
-				}
-				else
-				{
-					Hide();
-				}
 			}
 			ImGui::EndMenu();
 		}
 	}
 	void AnimationClipEditor::OnEvent(const Event& e)
 	{
-		
+
 	}
 
 
@@ -216,24 +217,14 @@ namespace NULLENGINE
 
 		if ((ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl)) && ImGui::IsKeyPressed(ImGuiKey_N))
 		{
+			NewClipImpl();
 		}
 
-		if ((ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl)) && ImGui::IsKeyPressed(ImGuiKey_O))
-		{
-		}
 
-		if ((ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl)) &&
-			(ImGui::IsKeyDown(ImGuiKey_LeftAlt) || ImGui::IsKeyDown(ImGuiKey_RightAlt)) && ImGui::IsKeyPressed(ImGuiKey_S))
-		{
-		}
-
-		if ((ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl)) &&
-			(ImGui::IsKeyDown(ImGuiKey_LeftShift) || ImGui::IsKeyDown(ImGuiKey_RightShift)) && ImGui::IsKeyPressed(ImGuiKey_S))
-		{
-		}
 
 		if ((ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl)) && ImGui::IsKeyPressed(ImGuiKey_S))
 		{
+			SaveCurrentClipImpl();
 		}
 	}
 
@@ -249,12 +240,20 @@ namespace NULLENGINE
 	//	return true;
 	//}
 
-	void AnimationClipEditor::ExportClipsImpl()
-	{ }
 	void AnimationClipEditor::SaveCurrentClipImpl()
-	{ }
-	void AnimationClipEditor::OpenClipLibraryImpl()
-	{ }
+	{
+		if (HasUnsavedChanges())
+		{
+			NAnimationClipManager::Instance()->SaveClipToFile(m_PannelData.workingClip);
+			NLE_CORE_INFO("Changes saved in Animation Clip Editor");
+		}
+		else
+		{
+			NLE_CORE_INFO("No changes to save in Animation Clip Editor");
+		}
+	}
 	void AnimationClipEditor::NewClipImpl()
-	{ }
+	{
+		m_CODA = HasUnsavedChanges();
+	}
 }

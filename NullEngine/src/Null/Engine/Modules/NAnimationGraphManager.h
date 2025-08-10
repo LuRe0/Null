@@ -10,7 +10,7 @@
 #include "Null/Core.h"
 #include "Null/Engine/Modules/Base/IModule.h"
 #include "Null/Engine/Modules/NResourceManager.h"
-#include "Null/Engine/Submodules/AnimationGraph.h"
+#include "Null/Engine/Submodules/Animation/AnimationGraph.h"
 
 namespace NULLENGINE
 {
